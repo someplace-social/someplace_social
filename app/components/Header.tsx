@@ -1,26 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown if clicked outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
 
   return (
     <header className={styles.header}>
@@ -38,11 +24,12 @@ export default function Header() {
       <nav className={styles.nav}>
         <div 
           className={styles.navItem}
-          ref={dropdownRef}
+          onMouseEnter={() => setIsDropdownOpen(true)}
+          onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <span onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+          <Link href="/weekly-event-guides" className={styles.navLink}>
             Weekly Event Guides
-          </span>
+          </Link>
           {isDropdownOpen && (
             <div className={styles.dropdownMenu}>
               <Link href="/medellin" className={styles.dropdownLink}>
