@@ -1,3 +1,10 @@
+.title {
+  font-size: 2.5em; /* Adjust size as needed */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
 .listing {
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #eee;

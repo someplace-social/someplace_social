@@ -36,8 +36,8 @@ export default function Header() {
             </div>
           )}
         </div>
-        <Link href="/about">About</Link>
-        <Link href="/contact">Contact</Link>
+        <Link href="/about" className={styles.navLink}>About</Link>
+        <Link href="/contact" className={styles.navLink}>Contact</Link>
         <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
           Donate
         </a>

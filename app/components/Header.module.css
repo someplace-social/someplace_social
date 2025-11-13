@@ -13,6 +13,15 @@
   align-items: center;
 }
 
+.navLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
+
 .navItem {
   position: relative;
   cursor: pointer;
@@ -41,6 +50,7 @@
 
 .dropdownLink:hover {
   background-color: #f0f0f0;
+  text-decoration: none;
 }
 
 .donateButton {

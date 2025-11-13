@@ -16,7 +16,6 @@ export default function MedellinPage() {
   const [filters, setFilters] = useState({ activity: 'all', area: 'all' });
 
   useEffect(() => {
-    // getEvents is now only called once on component mount
     getEvents().then(fetchedEvents => {
       setAllEvents(fetchedEvents);
     });
@@ -62,7 +61,7 @@ export default function MedellinPage() {
 
   return (
     <main className={pageStyles.page}>
-      <h1>Medellin Weekly Events & Activity Guide</h1>
+      <h1 className={styles.title}>Medellin Weekly Events & Activity Guide</h1>
       
       <FilterBar 
         activities={uniqueActivities} 
