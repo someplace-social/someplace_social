@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styles from './FilterBar.module.css';
 
-const MAX_PRICE = 100; // Max price for the slider
+const MAX_PRICE = 100;
 
 type FilterBarProps = {
   activities: string[];
@@ -47,8 +47,8 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.notesSection}>
+    <div className={styles.wrapper}>
+      <div className={styles.notesContainer}>
         <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
         <ol className={styles.notesList}>
           <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
@@ -57,7 +57,7 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
           <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
         </ol>
       </div>
-      <div className={styles.filtersGroup}>
+      <div className={styles.filtersContainer}>
         <select value={activity} onChange={handleActivityChange} className={styles.select}>
           <option value="all">Activity</option>
           {activities.map(act => <option key={act} value={act}>{act}</option>)}
@@ -66,18 +66,10 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
           <option value="all">Area</option>
           {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
         </select>
-        <div className={styles.priceFilter}>
-          <label htmlFor="price">Price</label>
-          <input
-            type="range"
-            id="price"
-            min="0"
-            max={MAX_PRICE}
-            value={price}
-            onChange={handlePriceChange}
-            className={styles.slider}
-          />
-        </div>
+        <select value={price} onChange={(e) => handlePriceChange(e as any)} className={styles.select}>
+            <option value={MAX_PRICE}>Price</option>
+            {/* Add more price options if needed */}
+        </select>
         <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
       </div>
     </div>

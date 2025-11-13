@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { getEvents, Event } from '../lib/google-sheets';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import ContactForm from '../components/ContactForm';
+import EventListing from './EventListing'; // New import
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
 
@@ -22,6 +23,18 @@ const editEventFields = [
 export default function MedellinPage() {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState({ activity: 'all', area: 'all', price: 100 });
+  const editFormRef = useRef<HTMLDivElement>(null); // Ref for the form section
+
+  // Function to handle the edit click
+  const handleEditClick = (content: string) => {
+    if (editFormRef.current) {
+      const textarea = editFormRef.current.querySelector('textarea[name="What Needs to be Changed"]');
+      if (textarea) {
+        (textarea as HTMLTextAreaElement).value = "Please update this listing:\n\n" + content;
+        editFormRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
 
   useEffect(() => {
     getEvents().then(fetchedEvents => {
@@ -72,7 +85,6 @@ export default function MedellinPage() {
 
   return (
     <main className={pageStyles.page}>
-      {/* Hero Section */}
       <section className={pageStyles.heroSection}>
         <div className={pageStyles.heroText}>
           <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
@@ -84,36 +96,25 @@ export default function MedellinPage() {
         </div>
       </section>
 
-      {/* Filter Bar */}
       <FilterBar 
         activities={uniqueActivities} 
         areas={uniqueAreas} 
         onFilterChange={setFilters} 
       />
 
-      {/* Accordions Section */}
       <div style={{ width: '100%' }}>
         {daysOfWeek.map(day => (
           eventsByDay[day] && eventsByDay[day].length > 0 ? (
             <DayAccordion key={day} title={day}>
               {eventsByDay[day].map((event, index) => (
-                <div key={index} className={styles.listing}>
-                  <strong className={styles.listingTitle}>{event.title}</strong>
-                  <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
-                  <p className={styles.listingDetails}>
-                    <span>⏳{event.startTime} - {event.endTime}</span>
-                    <span>💰{event.price || 'Free/Varies'}</span>
-                    <span>📍{event.location}</span>
-                  </p>
-                </div>
+                <EventListing key={index} event={event} onEdit={handleEditClick} />
               ))}
             </DayAccordion>
           ) : null
         ))}
       </div>
 
-      {/* Edit Listing Form Section */}
-      <section style={{width: '100%', marginTop: '4rem'}}>
+      <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
         <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that's incorrect, let us know below.</p>
         <p>*Note: click the "✏️ EDIT" link at the end of the listing that needs to be updated to copy and paste its details below automatically.</p>
