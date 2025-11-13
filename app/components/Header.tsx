@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const headerStyles: React.CSSProperties = {
   display: 'flex',
@@ -51,8 +52,14 @@ export default function Header() {
   return (
     <header style={headerStyles}>
       <div>
-        <Link href="/" style={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold', fontSize: '1.5rem' }}>
-          Someplace Social
+        <Link href="/">
+          <Image 
+            src="/images/logo.svg" 
+            alt="Someplace Social Logo" 
+            width={150} 
+            height={50} 
+            priority // Preload the logo as it's important for LCP
+          />
         </Link>
       </div>
       <nav style={navStyles}>
