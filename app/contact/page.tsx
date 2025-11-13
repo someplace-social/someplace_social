@@ -47,19 +47,19 @@ const submitEventFields = [
   { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
   { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
   { name: 'Event Details', label: 'Event Details (Please include all info)', type: 'textarea', required: true },
-];
+] as const;
 
 const editEventFields = [
   { name: 'Your Email', label: 'Your Email (So we can follow up)', type: 'email', required: true },
   { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated?', type: 'text', required: true },
   { name: 'What Needs to be Changed', label: 'What Needs to be Changed?', type: 'textarea', required: true },
-];
+] as const;
 
 const askQuestionFields = [
   { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
   { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
   { name: 'Your Question', label: 'Anything else you\'d like to say?', type: 'textarea', required: true },
-];
+] as const;
 
 export default function ContactPage() {
   return (

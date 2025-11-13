@@ -4,7 +4,8 @@ import { useState } from 'react';
 
 type ContactFormProps = {
   formType: string;
-  fields: { name: string; label: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+  // This is the only line that has changed
+  fields: readonly { name: string; label: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
 };
 
 const formStyles: React.CSSProperties = {
