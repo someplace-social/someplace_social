@@ -2,13 +2,27 @@
   background-color: #fdf8e1;
   border: 1px solid #eee;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  justify-content: space-between;
+}
+
+.notesSection {
+  margin-bottom: 1.5rem;
+}
+
+.notesTitle {
+  font-size: 1.8em;
+  margin-bottom: 1rem;
+}
+
+.notesList {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.notesList a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .filtersGroup {

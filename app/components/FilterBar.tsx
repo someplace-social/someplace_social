@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import styles from './FilterBar.module.css';
 
 const MAX_PRICE = 100; // Max price for the slider
@@ -47,18 +48,26 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
 
   return (
     <div className={styles.container}>
-      <span>A Few Quick Notes...</span>
+      <div className={styles.notesSection}>
+        <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
+        <ol className={styles.notesList}>
+          <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
+          <li>Correct info depends on the community! Click “✏️EDIT ” if event info needs to be updated.</li>
+          <li>Know of an event or activity that should be on this list? <Link href="/contact">Submit a listing.</Link></li>
+          <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
+        </ol>
+      </div>
       <div className={styles.filtersGroup}>
         <select value={activity} onChange={handleActivityChange} className={styles.select}>
-          <option value="all">All Activities</option>
+          <option value="all">Activity</option>
           {activities.map(act => <option key={act} value={act}>{act}</option>)}
         </select>
         <select value={area} onChange={handleAreaChange} className={styles.select}>
-          <option value="all">All Areas</option>
+          <option value="all">Area</option>
           {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
         </select>
         <div className={styles.priceFilter}>
-          <label htmlFor="price">Max Price: ${price}</label>
+          <label htmlFor="price">Price</label>
           <input
             type="range"
             id="price"
