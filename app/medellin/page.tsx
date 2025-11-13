@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { getEvents, Event } from '../lib/google-sheets';
-import DayAccordion from './DayAccordion'; // Changed import
+import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
@@ -13,7 +13,7 @@ const daysOfWeek = [
 
 export default function MedellinPage() {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [filters, setFilters] = useState({ activity: 'all', area: 'all' });
+  const [filters, setFilters] = useState({ activity: 'all', area: 'all', price: 100 });
 
   useEffect(() => {
     getEvents().then(fetchedEvents => {
@@ -48,7 +48,10 @@ export default function MedellinPage() {
       
       const areaMatch = filters.area === 'all' || event.area === filters.area;
 
-      return activityMatch && areaMatch;
+      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, "")) || 0;
+      const priceMatch = numericPrice <= filters.price;
+
+      return activityMatch && areaMatch && priceMatch;
     });
   }, [allEvents, filters]);
 
@@ -60,32 +63,37 @@ export default function MedellinPage() {
   }, {} as Record<string, Event[]>);
 
   return (
-    <main className={pageStyles.page}>
-      <h1 className={styles.title}>Medellin Weekly Events & Activity Guide</h1>
+    <>
+      <div className={pageStyles.page}>
+        <h1 className={styles.title}>Medellin Weekly Events & Activity Guide</h1>
+        <FilterBar 
+          activities={uniqueActivities} 
+          areas={uniqueAreas} 
+          onFilterChange={setFilters} 
+        />
+      </div>
       
-      <FilterBar 
-        activities={uniqueActivities} 
-        areas={uniqueAreas} 
-        onFilterChange={setFilters} 
-      />
-
-      {daysOfWeek.map(day => (
-        eventsByDay[day] && eventsByDay[day].length > 0 ? (
-          <DayAccordion key={day} title={day}>
-            {eventsByDay[day].map((event, index) => (
-              <div key={index} className={styles.listing}>
-                <strong className={styles.listingTitle}>{event.title}</strong>
-                <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
-                <p className={styles.listingDetails}>
-                  <span>⏳{event.startTime} - {event.endTime}</span>
-                  <span>💰{event.price || 'Free/Varies'}</span>
-                  <span>📍{event.location}</span>
-                </p>
+      <div style={{ width: '100%' }}>
+        {daysOfWeek.map(day => (
+          eventsByDay[day] && eventsByDay[day].length > 0 ? (
+            <DayAccordion key={day} title={day}>
+              <div className={pageStyles.page} style={{paddingTop: 0, paddingBottom: 0}}>
+                {eventsByDay[day].map((event, index) => (
+                  <div key={index} className={styles.listing}>
+                    <strong className={styles.listingTitle}>{event.title}</strong>
+                    <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
+                    <p className={styles.listingDetails}>
+                      <span>⏳{event.startTime} - {event.endTime}</span>
+                      <span>💰{event.price || 'Free/Varies'}</span>
+                      <span>📍{event.location}</span>
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </DayAccordion>
-        ) : null
-      ))}
-    </main>
+            </DayAccordion>
+          ) : null
+        ))}
+      </div>
+    </>
   );
 }

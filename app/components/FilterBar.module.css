@@ -8,12 +8,14 @@
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
-  justify-content: space-between; /* This will space out the items */
+  justify-content: space-between;
 }
 
 .filtersGroup {
   display: flex;
   gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .select {
@@ -22,6 +24,16 @@
   border-radius: 4px;
   background-color: white;
   min-width: 150px;
+}
+
+.priceFilter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.slider {
+  width: 100px;
 }
 
 .button {
