@@ -1,4 +1,5 @@
 import Accordion from '../components/Accordion';
+import ContactForm from '../components/ContactForm';
 
 const pageStyles: React.CSSProperties = {
   display: 'flex',
@@ -42,6 +43,24 @@ const contentBoxStyles: React.CSSProperties = {
   width: '100%',
 };
 
+const submitEventFields = [
+  { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
+  { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
+  { name: 'Event Details', label: 'Event Details (Please include all info)', type: 'textarea', required: true },
+];
+
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email (So we can follow up)', type: 'email', required: true },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated?', type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed?', type: 'textarea', required: true },
+];
+
+const askQuestionFields = [
+  { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
+  { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
+  { name: 'Your Question', label: 'Anything else you\'d like to say?', type: 'textarea', required: true },
+];
+
 export default function ContactPage() {
   return (
     <main style={pageStyles}>
@@ -74,14 +93,15 @@ export default function ContactPage() {
             <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
             <p><strong>• Open:</strong> must be inclusive and open to all.</p>
             <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <p style={{marginTop: '2rem'}}>FORM PLACEHOLDER</p>
+            <hr style={{margin: '2rem 0'}} />
+            <ContactForm formType="Submit an Event" fields={submitEventFields} />
           </div>
         </Accordion>
         <Accordion title="Edit Event Info">
-          <p>FORM PLACEHOLDER</p>
+          <ContactForm formType="Edit Event Info" fields={editEventFields} />
         </Accordion>
         <Accordion title="Ask a Question">
-          <p>FORM PLACEHOLDER</p>
+          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
         </Accordion>
       </div>
     </main>
