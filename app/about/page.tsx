@@ -1,4 +1,6 @@
-// Reusing styles from homepage for consistency
+import Image from 'next/image';
+
+// Reusing styles for consistency
 const pageStyles: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -22,15 +24,9 @@ const heroTextStyles: React.CSSProperties = {
   maxWidth: '500px',
 };
 
-const illustrationPlaceholderStyles: React.CSSProperties = {
+const illustrationContainerStyles: React.CSSProperties = {
   flex: 1,
   maxWidth: '400px',
-  height: '300px',
-  backgroundColor: '#e0e0e0',
-  borderRadius: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 };
 
 const contentBoxStyles: React.CSSProperties = {
@@ -63,8 +59,8 @@ export default function AboutPage() {
             Why Someplace Social? Someplace Social (formerly TheFlyer.info) was born out of frustration that a quick easy list of weekly activities in Medellin didn't exist. I ended up spending too much time making my own lists and decided to make a website out of it so I could help other people.
           </p>
         </div>
-        <div style={illustrationPlaceholderStyles}>
-          <span>Illustration Placeholder</span>
+        <div style={illustrationContainerStyles}>
+          <Image src="/images/hero-about.png" alt="Illustration of a person relaxing in a hammock" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
 

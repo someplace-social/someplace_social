@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Accordion from '../components/Accordion';
 import ContactForm from '../components/ContactForm';
 
@@ -24,15 +25,9 @@ const heroTextStyles: React.CSSProperties = {
   maxWidth: '500px',
 };
 
-const illustrationPlaceholderStyles: React.CSSProperties = {
+const illustrationContainerStyles: React.CSSProperties = {
   flex: 1,
   maxWidth: '400px',
-  height: '300px',
-  backgroundColor: '#e0e0e0',
-  borderRadius: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 };
 
 const contentBoxStyles: React.CSSProperties = {
@@ -71,8 +66,8 @@ export default function ContactPage() {
             This site relies on the community to keep information updated and spread the word. If you see info that's incorrect, have a suggestion, or just want to say hello, let us know below.
           </p>
         </div>
-        <div style={illustrationPlaceholderStyles}>
-          <span>Illustration Placeholder</span>
+        <div style={illustrationContainerStyles}>
+          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
 

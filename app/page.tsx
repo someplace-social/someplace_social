@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Inline styles for organization
 const pageStyles: React.CSSProperties = {
@@ -24,15 +25,9 @@ const heroTextStyles: React.CSSProperties = {
   maxWidth: '500px',
 };
 
-const illustrationPlaceholderStyles: React.CSSProperties = {
+const illustrationContainerStyles: React.CSSProperties = {
   flex: 1,
   maxWidth: '400px',
-  height: '300px',
-  backgroundColor: '#e0e0e0',
-  borderRadius: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 };
 
 const contentBoxStyles: React.CSSProperties = {
@@ -66,8 +61,8 @@ export default function Home() {
           <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>Our mission is to promote creative communities and connect likeminded people worldwide. (Formerly TheFlyer.info)</p>
           <Link href="/medellin" style={buttonStyles}>Medellin Weekly Events</Link>
         </div>
-        <div style={illustrationPlaceholderStyles}>
-          <span>Illustration Placeholder</span>
+        <div style={illustrationContainerStyles}>
+          <Image src="/images/hero-home.png" alt="Illustration of a capybara with a backpack looking at a signpost" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
 
