@@ -1,0 +1,31 @@
+.header {
+  background-color: transparent;
+  padding: 20px 10px;
+  cursor: pointer;
+  font-size: 3em;
+  font-weight: normal;
+  position: relative;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center; /* Center the day name */
+  align-items: center;
+}
+
+.header::after {
+  content: '▾';
+  position: absolute;
+  right: 10px;
+  transition: transform 0.3s;
+}
+
+.header.open::after {
+  transform: rotate(-180deg);
+}
+
+.content {
+  padding: 10px;
+  background-color: #fffbee;
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import styles from './FilterBar.module.css';
 
 type FilterBarProps = {
   activities: string[];
@@ -8,42 +9,44 @@ type FilterBarProps = {
   onFilterChange: (filters: { activity: string; area: string }) => void;
 };
 
-const filterContainerStyles: React.CSSProperties = {
-  display: 'flex',
-  gap: '1rem',
-  marginBottom: '2rem',
-  padding: '1rem',
-  backgroundColor: '#fdf8e1',
-  border: '1px solid #eee',
-  borderRadius: '8px',
-};
-
 export default function FilterBar({ activities, areas, onFilterChange }: FilterBarProps) {
   const [activity, setActivity] = useState('all');
   const [area, setArea] = useState('all');
 
+  const handleFilterChange = (newActivity: string, newArea: string) => {
+    onFilterChange({ activity: newActivity, area: newArea });
+  };
+
   const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newActivity = e.target.value;
     setActivity(newActivity);
-    onFilterChange({ activity: newActivity, area });
+    handleFilterChange(newActivity, area);
   };
 
   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newArea = e.target.value;
     setArea(newArea);
-    onFilterChange({ activity, area: newArea });
+    handleFilterChange(activity, newArea);
+  };
+
+  const clearFilters = () => {
+    setActivity('all');
+    setArea('all');
+    handleFilterChange('all', 'all');
   };
 
   return (
-    <div style={filterContainerStyles}>
-      <select value={activity} onChange={handleActivityChange}>
+    <div className={styles.container}>
+      <p>A Few Quick Notes...</p>
+      <select value={activity} onChange={handleActivityChange} className={styles.select}>
         <option value="all">All Activities</option>
         {activities.map(act => <option key={act} value={act}>{act}</option>)}
       </select>
-      <select value={area} onChange={handleAreaChange}>
+      <select value={area} onChange={handleAreaChange} className={styles.select}>
         <option value="all">All Areas</option>
         {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
       </select>
+      <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
     </div>
   );
 }

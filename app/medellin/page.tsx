@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { getEvents, Event } from '../lib/google-sheets';
-import Accordion from '../components/Accordion';
+import DayAccordion from './DayAccordion'; // Changed import
 import FilterBar from '../components/FilterBar';
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
@@ -71,7 +71,7 @@ export default function MedellinPage() {
 
       {daysOfWeek.map(day => (
         eventsByDay[day] && eventsByDay[day].length > 0 ? (
-          <Accordion key={day} title={day}>
+          <DayAccordion key={day} title={day}>
             {eventsByDay[day].map((event, index) => (
               <div key={index} className={styles.listing}>
                 <strong className={styles.listingTitle}>{event.title}</strong>
@@ -83,7 +83,7 @@ export default function MedellinPage() {
                 </p>
               </div>
             ))}
-          </Accordion>
+          </DayAccordion>
         ) : null
       ))}
     </main>
