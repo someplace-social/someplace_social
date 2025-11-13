@@ -19,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={karla.className}>
-        <Header />
-        {children}
-        <Footer />
+        <div style={{ backgroundColor: '#fffbee' }}> {/* This is the new content container */}
+          <Header />
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   )

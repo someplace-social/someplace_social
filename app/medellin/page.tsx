@@ -1,15 +1,24 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { getEvents, Event } from '../lib/google-sheets';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
+import ContactForm from '../components/ContactForm';
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
+
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email (optional)', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', type: 'textarea', required: true },
+] as const;
 
 export default function MedellinPage() {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
@@ -64,14 +73,24 @@ export default function MedellinPage() {
 
   return (
     <>
-      <div className={pageStyles.page}>
-        <h1 className={styles.title}>Medellin Weekly Events & Activity Guide</h1>
+      <main className={pageStyles.page}>
+        <section className={pageStyles.heroSection}>
+          <div className={pageStyles.heroText}>
+            <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
+            <p>by Someplace Social</p>
+            <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
+          </div>
+          <div className={pageStyles.illustrationContainer}>
+            <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+          </div>
+        </section>
+
         <FilterBar 
           activities={uniqueActivities} 
           areas={uniqueAreas} 
           onFilterChange={setFilters} 
         />
-      </div>
+      </main>
       
       <div style={{ width: '100%' }}>
         {daysOfWeek.map(day => (
@@ -94,6 +113,15 @@ export default function MedellinPage() {
           ) : null
         ))}
       </div>
+
+      <main className={pageStyles.page} style={{marginTop: '4rem'}}>
+        <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
+        <p>These listings stay up to date because of the community members like you! If you see info that's incorrect, let us know below.</p>
+        <p>*Note: click the "✏️ EDIT" link at the end of the listing that needs to be updated to copy and paste its details below automatically.</p>
+        <div style={{width: '100%', marginTop: '2rem'}}>
+          <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
+        </div>
+      </main>
     </>
   );
 }

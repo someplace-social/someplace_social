@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #ddd;
-  position: relative;
+  background-color: #272626;
+  color: white;
 }
 
 .nav {
@@ -15,47 +15,16 @@
 
 .navLink {
   text-decoration: none;
-  color: inherit;
+  color: white;
 }
 
 .navLink:hover {
   text-decoration: underline;
 }
 
-.navItem {
-  position: relative;
-  cursor: pointer;
-}
-
-.dropdownMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  z-index: 10;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.dropdownLink {
-  display: block;
-  white-space: nowrap;
-  padding: 0.5rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.dropdownLink:hover {
-  background-color: #f0f0f0;
-  text-decoration: none;
-}
-
 .donateButton {
-  background-color: #272626;
-  color: white;
+  background-color: #fdf8e1; /* Light color for contrast */
+  color: #272626; /* Dark text */
   padding: 8px 16px;
   border: none;
   border-radius: 4px;

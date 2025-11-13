@@ -2,7 +2,8 @@ const footerStyles: React.CSSProperties = {
   textAlign: 'center',
   padding: '2rem',
   marginTop: '4rem',
-  borderTop: '1px solid #ddd',
+  backgroundColor: '#272626',
+  color: 'white',
 };
 
 const iconContainerStyles: React.CSSProperties = {
@@ -13,7 +14,7 @@ const iconContainerStyles: React.CSSProperties = {
 };
 
 const iconLinkStyles: React.CSSProperties = {
-  color: 'inherit', // This will make the icons match the text color
+  color: 'white', // Changed to white
 };
 
 const iconStyles: React.CSSProperties = {
