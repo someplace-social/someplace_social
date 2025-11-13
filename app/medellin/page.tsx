@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import { getEvents, Event } from '../lib/google-sheets';
 import Accordion from '../components/Accordion';
 
@@ -5,8 +8,18 @@ const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
 
-export default async function MedellinPage() {
-  const events = await getEvents();
+export default function MedellinPage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      const fetchedEvents = await getEvents();
+      setEvents(fetchedEvents);
+      setIsLoading(false);
+    }
+    fetchEvents();
+  }, []);
 
   // Group events by the day of the week
   const eventsByDay = events.reduce((acc, event) => {
@@ -17,6 +30,15 @@ export default async function MedellinPage() {
     acc[day].push(event);
     return acc;
   }, {} as Record<string, Event[]>);
+
+  if (isLoading) {
+    return (
+      <main style={{ padding: '2rem' }}>
+        <h1>Medellin Weekly Events & Activity Guide</h1>
+        <p>Loading listings...</p>
+      </main>
+    );
+  }
 
   return (
     <main style={{ padding: '2rem' }}>
