@@ -1,0 +1,16 @@
+.listing {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.listingTitle {
+  font-weight: bold;
+}
+
+.listingDetails {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}

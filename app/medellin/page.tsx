@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { getEvents, Event } from '../lib/google-sheets';
 import Accordion from '../components/Accordion';
 import FilterBar from '../components/FilterBar';
+import pageStyles from '../Page.module.css';
+import styles from './Medellin.module.css';
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -11,16 +13,13 @@ const daysOfWeek = [
 
 export default function MedellinPage() {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({ activity: 'all', area: 'all' });
 
   useEffect(() => {
-    async function fetchEvents() {
-      const fetchedEvents = await getEvents();
+    // getEvents is now only called once on component mount
+    getEvents().then(fetchedEvents => {
       setAllEvents(fetchedEvents);
-      setIsLoading(false);
-    }
-    fetchEvents();
+    });
   }, []);
 
   const uniqueActivities = useMemo(() => {
@@ -61,17 +60,8 @@ export default function MedellinPage() {
     return acc;
   }, {} as Record<string, Event[]>);
 
-  if (isLoading) {
-    return (
-      <main style={{ padding: '2rem' }}>
-        <h1>Medellin Weekly Events & Activity Guide</h1>
-        <p>Loading listings...</p>
-      </main>
-    );
-  }
-
   return (
-    <main style={{ padding: '2rem' }}>
+    <main className={pageStyles.page}>
       <h1>Medellin Weekly Events & Activity Guide</h1>
       
       <FilterBar 
@@ -84,13 +74,13 @@ export default function MedellinPage() {
         eventsByDay[day] && eventsByDay[day].length > 0 ? (
           <Accordion key={day} title={day}>
             {eventsByDay[day].map((event, index) => (
-              <div key={index} style={{ marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
-                <strong>{event.title}</strong>
+              <div key={index} className={styles.listing}>
+                <strong className={styles.listingTitle}>{event.title}</strong>
                 <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
-                <p>
-                  <span>⏳{event.startTime} - {event.endTime}</span> | 
-                  <span> 💰{event.price || 'Free/Varies'}</span> | 
-                  <span> 📍{event.location}</span>
+                <p className={styles.listingDetails}>
+                  <span>⏳{event.startTime} - {event.endTime}</span>
+                  <span>💰{event.price || 'Free/Varies'}</span>
+                  <span>📍{event.location}</span>
                 </p>
               </div>
             ))}

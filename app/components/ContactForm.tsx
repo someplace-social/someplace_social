@@ -1,35 +1,11 @@
 "use client";
 
 import { useState } from 'react';
+import styles from './ContactForm.module.css';
 
 type ContactFormProps = {
   formType: string;
-  // This is the only line that has changed
   fields: readonly { name: string; label: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
-};
-
-const formStyles: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '1rem',
-};
-
-const inputStyles: React.CSSProperties = {
-  padding: '0.75rem',
-  border: '1px solid #ccc',
-  borderRadius: '4px',
-  fontSize: '1rem',
-};
-
-const buttonStyles: React.CSSProperties = {
-  backgroundColor: '#272626',
-  color: 'white',
-  padding: '10px 20px',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  fontSize: '1rem',
-  alignSelf: 'flex-start',
 };
 
 export default function ContactForm({ formType, fields }: ContactFormProps) {
@@ -65,16 +41,16 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={formStyles}>
+    <form onSubmit={handleSubmit} className={styles.form}>
       {fields.map(field => (
-        <div key={field.name}>
+        <div key={field.name} className={styles.field}>
           <label htmlFor={field.name}>{field.label}</label>
           {field.type === 'textarea' ? (
             <textarea
               id={field.name}
               name={field.name}
               required={field.required}
-              style={{ ...inputStyles, minHeight: '150px', resize: 'vertical' }}
+              className={styles.textarea}
             />
           ) : (
             <input
@@ -82,12 +58,12 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
               id={field.name}
               name={field.name}
               required={field.required}
-              style={inputStyles}
+              className={styles.input}
             />
           )}
         </div>
       ))}
-      <button type="submit" style={buttonStyles}>Send Message</button>
+      <button type="submit" className={styles.button}>Send Message</button>
       {status && <p>{status}</p>}
     </form>
   );

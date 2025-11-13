@@ -1,0 +1,28 @@
+.header {
+  background-color: #fffbee;
+  padding: 20px 10px;
+  cursor: pointer;
+  font-size: 3em;
+  position: relative;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon {
+  transform: rotate(0deg);
+  transition: transform 0.3s;
+}
+
+.iconOpen {
+  transform: rotate(-180deg);
+}
+
+.content {
+  padding: 10px;
+  background-color: #fffbee;
+}
