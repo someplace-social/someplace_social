@@ -5,7 +5,7 @@ import styles from './ContactForm.module.css';
 
 type ContactFormProps = {
   formType: string;
-  fields: readonly { name: string; label: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
 };
 
 export default function ContactForm({ formType, fields }: ContactFormProps) {
@@ -50,6 +50,7 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
               id={field.name}
               name={field.name}
               required={field.required}
+              placeholder={field.placeholder || ''}
               className={styles.textarea}
             />
           ) : (
@@ -58,6 +59,7 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
               id={field.name}
               name={field.name}
               required={field.required}
+              placeholder={field.placeholder || ''}
               className={styles.input}
             />
           )}

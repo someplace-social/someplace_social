@@ -4,21 +4,36 @@ import ContactForm from '../components/ContactForm';
 import styles from '../Page.module.css';
 
 const submitEventFields = [
-  { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
-  { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
-  { name: 'Event Details', label: 'Event Details (Please include all info)', type: 'textarea', required: true },
+  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: true },
+  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: true },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: true },
+  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Monday', type: 'text', required: true },
+  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: true },
+  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
+  { name: 'Activity Type', label: 'Type of Activity', placeholder: 'e.g. Language Exchange, Dance, Social...', type: 'text', required: true },
+  { name: 'Other Activities', label: '*If you chose "Other" under "Type of Activity", list the activities here', placeholder: '', type: 'text', required: false },
+  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: true },
+  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: true },
+  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: true },
+  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: true },
+  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: true },
+  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
+  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
+  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
+  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
+  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
 ] as const;
 
 const editEventFields = [
-  { name: 'Your Email', label: 'Your Email (So we can follow up)', type: 'email', required: true },
-  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated?', type: 'text', required: true },
-  { name: 'What Needs to be Changed', label: 'What Needs to be Changed?', type: 'textarea', required: true },
+  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
 ] as const;
 
 const askQuestionFields = [
-  { name: 'Your Name', label: 'Your Name', type: 'text', required: true },
-  { name: 'Your Email', label: 'Your Email Address', type: 'email', required: true },
-  { name: 'Your Question', label: 'Anything else you\'d like to say?', type: 'textarea', required: true },
+  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
+  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
+  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
 ] as const;
 
 export default function ContactPage() {
@@ -28,7 +43,7 @@ export default function ContactPage() {
         <div className={styles.heroText}>
           <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Contact Us</h1>
           <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This site relies on the community to keep information updated and spread the word. If you see info that's incorrect, have a suggestion, or just want to say hello, let us know below.
+            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
           </p>
         </div>
         <div className={styles.illustrationContainer}>
@@ -38,7 +53,7 @@ export default function ContactPage() {
 
       <section className={styles.contentBox}>
         <h2 style={{ fontSize: '2em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-        <p>This site has no ads and is not pay-to-play. It only runs on donations. If you're able, buy me a drink.</p>
+        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
       </section>
 
       <div style={{width: '100%', marginTop: '2rem'}}>
