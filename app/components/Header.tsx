@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   return (
     <header className={styles.header}>
       <div>
@@ -22,22 +19,7 @@ export default function Header() {
         </Link>
       </div>
       <nav className={styles.nav}>
-        <div 
-          className={styles.navItem}
-          onMouseEnter={() => setIsDropdownOpen(true)}
-          onMouseLeave={() => setIsDropdownOpen(false)}
-        >
-          <Link href="/weekly-event-guides" className={styles.navLink}>
-            Weekly Event Guides
-          </Link>
-          {isDropdownOpen && (
-            <div className={styles.dropdownMenu}>
-              <Link href="/medellin" className={styles.dropdownLink}>
-                Medellin
-              </Link>
-            </div>
-          )}
-        </div>
+        <Link href="/medellin" className={styles.navLink}>Medellin</Link>
         <Link href="/about" className={styles.navLink}>About</Link>
         <Link href="/contact" className={styles.navLink}>Contact</Link>
         <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
