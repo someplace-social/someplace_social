@@ -1,29 +1,30 @@
 import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
-// This function will be triggered when a POST request is made to /api/send-form
+// Initialize Resend with the API key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
+const recipientEmail = process.env.EMAIL_RECIPIENT;
+
 export async function POST(request: Request) {
   try {
+    if (!recipientEmail) {
+      throw new Error('Recipient email is not configured.');
+    }
+
     const body = await request.json();
     const { formType, message } = body;
 
-    // In a real application, you would use a service like Resend, SendGrid, or Nodemailer
-    // to send an email here. For now, we will just log the data to the server console.
-    // This demonstrates that the backend is receiving the data correctly.
-    
-    console.log('--- FORM SUBMISSION ---');
-    console.log('Form Type:', formType);
-    console.log('Message:', message);
-    console.log('Recipient:', process.env.EMAIL_RECIPIENT); // Example of using an environment variable
-    console.log('-----------------------');
-    
-    // You would add your email sending logic here.
-    // For example, using Resend:
-    // await resend.emails.send({
-    //   from: 'onboarding@resend.dev',
-    //   to: process.env.EMAIL_RECIPIENT,
-    //   subject: `New Submission: ${formType}`,
-    //   text: message,
-    // });
+    const { data, error } = await resend.emails.send({
+      from: 'Someplace Social <onboarding@resend.dev>', // Resend requires this domain
+      to: recipientEmail,
+      subject: `New Form Submission: ${formType}`,
+      text: message, // The plain text content of the email
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
   } catch (error) {
