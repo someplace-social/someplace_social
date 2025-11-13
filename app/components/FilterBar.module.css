@@ -8,6 +8,12 @@
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
+  justify-content: space-between; /* This will space out the items */
+}
+
+.filtersGroup {
+  display: flex;
+  gap: 1rem;
 }
 
 .select {

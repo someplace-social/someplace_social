@@ -37,16 +37,18 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
 
   return (
     <div className={styles.container}>
-      <p>A Few Quick Notes...</p>
-      <select value={activity} onChange={handleActivityChange} className={styles.select}>
-        <option value="all">All Activities</option>
-        {activities.map(act => <option key={act} value={act}>{act}</option>)}
-      </select>
-      <select value={area} onChange={handleAreaChange} className={styles.select}>
-        <option value="all">All Areas</option>
-        {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
-      </select>
-      <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
+      <span>A Few Quick Notes...</span>
+      <div className={styles.filtersGroup}>
+        <select value={activity} onChange={handleActivityChange} className={styles.select}>
+          <option value="all">All Activities</option>
+          {activities.map(act => <option key={act} value={act}>{act}</option>)}
+        </select>
+        <select value={area} onChange={handleAreaChange} className={styles.select}>
+          <option value="all">All Areas</option>
+          {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
+        </select>
+        <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
+      </div>
     </div>
   );
 }

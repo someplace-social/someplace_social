@@ -12,6 +12,10 @@ const iconContainerStyles: React.CSSProperties = {
   margin: '1rem 0',
 };
 
+const iconLinkStyles: React.CSSProperties = {
+  color: 'inherit', // This will make the icons match the text color
+};
+
 const iconStyles: React.CSSProperties = {
   width: '24px',
   height: '24px',
@@ -40,10 +44,10 @@ export default function Footer() {
     <footer style={footerStyles}>
       <p>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
       <div style={iconContainerStyles}>
-        <a href="https://www.instagram.com/someplacesocial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <a href="https://www.instagram.com/someplacesocial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
           <InstagramIcon />
         </a>
-        <a href="mailto:someplacesocial@gmail.com" aria-label="Email">
+        <a href="mailto:someplacesocial@gmail.com" aria-label="Email" style={iconLinkStyles}>
           <EmailIcon />
         </a>
       </div>

@@ -14,10 +14,13 @@ export default function DayAccordion({ title, children }: AccordionProps) {
   return (
     <div>
       <div 
-        className={`${styles.header} ${isOpen ? styles.open : ''}`} 
+        className={styles.header} 
         onClick={() => setIsOpen(!isOpen)}
       >
-        {title}
+        <span className={styles.title}>{title}</span>
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▾
+        </span>
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}
     </div>
