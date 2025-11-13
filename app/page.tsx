@@ -78,7 +78,9 @@ export default function Home() {
         </Link>
         <p>Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
         <p style={{ marginTop: '1rem' }}><strong>More Social Projects & Cities Coming Soon</strong></p>
-        <button style={buttonStyles}>Donate</button>
+        <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={buttonStyles}>
+          Donate
+        </a>
       </section>
     </main>
   );
