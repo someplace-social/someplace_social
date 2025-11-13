@@ -17,7 +17,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className={`${styles.contentBox}`} style={{ textAlign: 'center' }}>
+      <section className={styles.contentBox}>
         <h2 style={{ fontSize: '2em', marginBottom: '1rem' }}>Current Projects</h2>
         <Link href="/medellin" style={{ textDecoration: 'none', color: 'inherit' }}>
           <h3 style={{ fontSize: '1.5em' }}>Weekly Event & Activity Guides</h3>

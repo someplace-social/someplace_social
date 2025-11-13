@@ -8,7 +8,7 @@
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 1.5rem;
-  margin-bottom: 1rem; /* Space between notes and filters */
+  margin-bottom: 1rem;
 }
 
 .notesTitle {
@@ -31,6 +31,7 @@
   gap: 1rem;
   align-items: center;
   width: 100%;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .select {
@@ -38,7 +39,20 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
-  flex: 1; /* This makes the select boxes grow to fill space */
+  flex: 1;
+  min-width: 120px; /* Prevent selects from becoming too small */
+}
+
+.priceFilter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 180px; /* Prevent price filter from becoming too small */
+}
+
+.slider {
+  width: 100%; /* Make slider fill available space */
 }
 
 .button {
@@ -48,5 +62,5 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  white-space: nowrap; /* Prevents the button text from wrapping */
+  white-space: nowrap;
 }

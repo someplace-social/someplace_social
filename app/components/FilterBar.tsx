@@ -66,10 +66,18 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
           <option value="all">Area</option>
           {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
         </select>
-        <select value={price} onChange={(e) => handlePriceChange(e as any)} className={styles.select}>
-            <option value={MAX_PRICE}>Price</option>
-            {/* Add more price options if needed */}
-        </select>
+        <div className={styles.priceFilter}>
+          <label htmlFor="price">Price: {price}k</label>
+          <input
+            type="range"
+            id="price"
+            min="0"
+            max={MAX_PRICE}
+            value={price}
+            onChange={handlePriceChange}
+            className={styles.slider}
+          />
+        </div>
         <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
       </div>
     </div>

@@ -2,7 +2,7 @@ const footerStyles: React.CSSProperties = {
   textAlign: 'center',
   padding: '2rem',
   marginTop: '4rem',
-  backgroundColor: '#272626',
+  backgroundColor: '#1A1A1A', // Darkened color
   color: 'white',
 };
 
@@ -14,7 +14,7 @@ const iconContainerStyles: React.CSSProperties = {
 };
 
 const iconLinkStyles: React.CSSProperties = {
-  color: 'white', // Changed to white
+  color: 'white',
 };
 
 const iconStyles: React.CSSProperties = {
