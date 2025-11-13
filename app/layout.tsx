@@ -1,5 +1,10 @@
 import type { Metadata } from 'next'
+import { Karla } from 'next/font/google'
 import './globals.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
+
+const karla = Karla({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Someplace Social',
@@ -13,7 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={karla.className}>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }
