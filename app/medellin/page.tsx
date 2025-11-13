@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { getEvents, Event } from '../lib/google-sheets';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
@@ -72,56 +71,56 @@ export default function MedellinPage() {
   }, {} as Record<string, Event[]>);
 
   return (
-    <>
-      <main className={pageStyles.page}>
-        <section className={pageStyles.heroSection}>
-          <div className={pageStyles.heroText}>
-            <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
-            <p>by Someplace Social</p>
-            <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
-          </div>
-          <div className={pageStyles.illustrationContainer}>
-            <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-          </div>
-        </section>
+    <main className={pageStyles.page}>
+      {/* Hero Section */}
+      <section className={pageStyles.heroSection}>
+        <div className={pageStyles.heroText}>
+          <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
+          <p>by Someplace Social</p>
+          <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
+        </div>
+        <div className={pageStyles.illustrationContainer}>
+          <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
 
-        <FilterBar 
-          activities={uniqueActivities} 
-          areas={uniqueAreas} 
-          onFilterChange={setFilters} 
-        />
-      </main>
-      
+      {/* Filter Bar */}
+      <FilterBar 
+        activities={uniqueActivities} 
+        areas={uniqueAreas} 
+        onFilterChange={setFilters} 
+      />
+
+      {/* Accordions Section */}
       <div style={{ width: '100%' }}>
         {daysOfWeek.map(day => (
           eventsByDay[day] && eventsByDay[day].length > 0 ? (
             <DayAccordion key={day} title={day}>
-              <div className={pageStyles.page} style={{paddingTop: 0, paddingBottom: 0}}>
-                {eventsByDay[day].map((event, index) => (
-                  <div key={index} className={styles.listing}>
-                    <strong className={styles.listingTitle}>{event.title}</strong>
-                    <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
-                    <p className={styles.listingDetails}>
-                      <span>⏳{event.startTime} - {event.endTime}</span>
-                      <span>💰{event.price || 'Free/Varies'}</span>
-                      <span>📍{event.location}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
+              {eventsByDay[day].map((event, index) => (
+                <div key={index} className={styles.listing}>
+                  <strong className={styles.listingTitle}>{event.title}</strong>
+                  <p>{[event.activity1, event.activity2, event.activity3].filter(a => a).join(', ')}</p>
+                  <p className={styles.listingDetails}>
+                    <span>⏳{event.startTime} - {event.endTime}</span>
+                    <span>💰{event.price || 'Free/Varies'}</span>
+                    <span>📍{event.location}</span>
+                  </p>
+                </div>
+              ))}
             </DayAccordion>
           ) : null
         ))}
       </div>
 
-      <main className={pageStyles.page} style={{marginTop: '4rem'}}>
+      {/* Edit Listing Form Section */}
+      <section style={{width: '100%', marginTop: '4rem'}}>
         <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that's incorrect, let us know below.</p>
         <p>*Note: click the "✏️ EDIT" link at the end of the listing that needs to be updated to copy and paste its details below automatically.</p>
         <div style={{width: '100%', marginTop: '2rem'}}>
           <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
         </div>
-      </main>
-    </>
+      </section>
+    </main>
   );
 }
