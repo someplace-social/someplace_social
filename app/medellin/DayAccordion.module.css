@@ -8,7 +8,7 @@
   margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
-  justify-content: space-between; /* Changed from center */
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -29,4 +29,11 @@
 .content {
   padding: 10px;
   background-color: #fffbee;
+}
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .title, .icon {
+    font-size: 2em; /* Reduce font size on mobile */
+  }
 }

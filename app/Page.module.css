@@ -45,3 +45,15 @@
   display: inline-block;
   margin-top: 1rem;
 }
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem; /* Reduce padding on mobile */
+  }
+
+  .heroSection {
+    flex-direction: column; /* Stack hero content vertically */
+    text-align: center;
+  }
+}
