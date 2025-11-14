@@ -4,24 +4,24 @@ import ContactForm from '../components/ContactForm';
 import styles from '../Page.module.css';
 
 const submitEventFields = [
-  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: true },
-  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: true },
-  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: true },
-  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Monday', type: 'text', required: true },
-  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: true },
-  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: true },
-  { name: 'Activity Type', label: 'Type of Activity', placeholder: 'e.g. Language Exchange, Dance, Social...', type: 'text', required: true },
-  { name: 'Other Activities', label: '*If you chose "Other" under "Type of Activity", list the activities here', placeholder: '', type: 'text', required: false }, // This is the only optional field
-  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: true },
-  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: true },
-  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: true },
-  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: true },
-  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: true },
-  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: true },
-  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: true },
-  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: true },
-  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: true },
-  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: true },
+  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
+  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
+  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Monday', type: 'text', required: false },
+  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
+  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
+  { name: 'Activity Type', label: 'Type of Activity', placeholder: 'e.g. Language Exchange, Dance, Social...', type: 'text', required: false },
+  { name: 'Other Activities', label: '*If you chose "Other" under "Type of Activity", list the activities here', placeholder: '', type: 'text', required: false },
+  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
+  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
+  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
+  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
+  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
+  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
+  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
+  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
+  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
+  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
 ] as const;
 
 const editEventFields = [
@@ -52,7 +52,7 @@ export default function ContactPage() {
       </section>
 
       <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
         <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
       </section>
 

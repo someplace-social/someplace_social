@@ -2,7 +2,7 @@ const footerStyles: React.CSSProperties = {
   textAlign: 'center',
   padding: '2rem',
   marginTop: '4rem',
-  backgroundColor: '#1A1A1A', // Darkened color
+  backgroundColor: '#1A1A1A',
   color: 'white',
 };
 
@@ -45,7 +45,7 @@ export default function Footer() {
     <footer style={footerStyles}>
       <p>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
       <div style={iconContainerStyles}>
-        <a href="https://www.instagram.com/someplacesocial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
+        <a href="https://www.instagram.com/someplace.social/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
           <InstagramIcon />
         </a>
         <a href="mailto:someplacesocial@gmail.com" aria-label="Email" style={iconLinkStyles}>

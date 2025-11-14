@@ -18,9 +18,9 @@ export default function Home() {
       </section>
 
       <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2em', marginBottom: '1rem' }}>Current Projects</h2>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Current Projects</h2>
         <Link href="/medellin" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <h3 style={{ fontSize: '1.5em' }}>Weekly Event & Activity Guides</h3>
+          <h3 style={{ fontSize: '1.8em' }}>Weekly Event & Activity Guides</h3>
         </Link>
         <p>Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do happening in a city near you.</p>
         <p style={{ marginTop: '1rem' }}><strong>More Social Projects & Cities Coming Soon</strong></p>

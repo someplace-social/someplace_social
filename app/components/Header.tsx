@@ -12,9 +12,10 @@ export default function Header() {
           <Image 
             src="/images/logo.svg" 
             alt="Someplace Social Logo" 
-            width={150} 
-            height={50} 
+            width={300} 
+            height={100} 
             priority
+            style={{ width: 'auto', height: '50px' }} // Control display size while maintaining quality
           />
         </Link>
       </div>
