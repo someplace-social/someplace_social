@@ -7,8 +7,12 @@ import Footer from './components/Footer'
 const karla = Karla({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Someplace Social',
-  description: 'Community supported events, group activities, and weekly classes all in one place.',
+  metadataBase: new URL('https://www.someplacesocial.org'), // Set your production URL here
+  title: {
+    default: 'Someplace Social | Community Event Listings',
+    template: '%s | Someplace Social',
+  },
+  description: 'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
 }
 
 export default function RootLayout({
@@ -19,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={karla.className}>
-        <div style={{ backgroundColor: '#fffbee' }}> {/* This is the new content container */}
+        <div style={{ backgroundColor: '#fffbee' }}>
           <Header />
           {children}
           <Footer />

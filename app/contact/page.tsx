@@ -2,6 +2,12 @@ import Image from 'next/image';
 import Accordion from '../components/Accordion';
 import ContactForm from '../components/ContactForm';
 import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
+};
 
 const submitEventFields = [
   { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },

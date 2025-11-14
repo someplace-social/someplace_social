@@ -1,5 +1,11 @@
 import Image from 'next/image';
 import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
+};
 
 export default function AboutPage() {
   return (

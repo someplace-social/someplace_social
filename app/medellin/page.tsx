@@ -9,6 +9,10 @@ import ContactForm from '../components/ContactForm';
 import EventListing from './EventListing';
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
+// Note: We cannot use generateMetadata in a client component.
+// SEO for this page will be handled by a metadata object in a parent layout if needed,
+// or by setting the title dynamically on the client side if essential.
+// For now, the default title from the root layout will be used.
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -36,6 +40,7 @@ export default function MedellinPage() {
   };
 
   useEffect(() => {
+    document.title = "Weekly Events in Medellin | Someplace Social";
     getEvents().then(fetchedEvents => {
       setAllEvents(fetchedEvents);
     });
