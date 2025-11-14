@@ -52,7 +52,7 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
         <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
         <ol className={styles.notesList}>
           <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
-          <li>Correct info depends on the community! Click “✏️EDIT ” if event info needs to be updated.</li>
+          <li>Correct info depends on the community! Click “✏️ EDIT” if event info needs to be updated.</li>
           <li>Know of an event or activity that should be on this list? <Link href="/contact">Submit a listing.</Link></li>
           <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
         </ol>

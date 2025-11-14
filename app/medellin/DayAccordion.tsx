@@ -19,7 +19,7 @@ export default function DayAccordion({ title, children }: AccordionProps) {
       >
         <span className={styles.title}>{title}</span>
         <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▾
+          ▼
         </span>
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}

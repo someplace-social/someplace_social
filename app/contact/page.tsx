@@ -47,7 +47,7 @@ export default function ContactPage() {
     <main className={styles.page}>
       <section className={styles.heroSection}>
         <div className={styles.heroText}>
-          <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Contact Us</h1>
+          <h1>Contact Us</h1>
           <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
             This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
           </p>

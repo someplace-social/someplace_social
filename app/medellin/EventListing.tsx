@@ -17,7 +17,7 @@ export default function EventListing({ event, onEdit }: EventListingProps) {
   const activities = [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', ');
   const organizationText = event.organization ? ` w/ ${event.organization}` : "";
 
-  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price} 📍 ${event.location} 🗺️${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
+  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
 
   return (
     <div className={styles.listing}>
@@ -27,7 +27,7 @@ export default function EventListing({ event, onEdit }: EventListingProps) {
         <span>⏳ {event.startTime} - {event.endTime}</span>
         <span>💰 {event.price || 'Free or Varies'}</span>
         <span>📍 {event.location}</span>
-        <span>🗺️ {event.area}</span>
+        <span>🗺️  {event.area}</span>
       </p>
       <p className={styles.listingLinks}>
         {createLink('Map', event.map)}

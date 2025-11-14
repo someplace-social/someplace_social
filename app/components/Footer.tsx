@@ -49,7 +49,7 @@ export default function Footer() {
         className={pageStyles.page} 
         style={{ padding: '0 2rem', alignItems: 'center' }} // This line is the fix
       >
-        <p>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
+        <p style={{ textAlign: 'center' }}>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
         <div style={iconContainerStyles}>
           <a href="https://www.instagram.com/someplace.social/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
             <InstagramIcon />

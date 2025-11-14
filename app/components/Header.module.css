@@ -26,6 +26,7 @@
 .navLink {
   text-decoration: none;
   color: white;
+  font-size: 1.25rem; /* Adjusted to be smaller than 1.5rem but larger than original */
 }
 
 .navLink:hover {
@@ -108,4 +109,4 @@
   .hamburger {
     display: flex;
   }
-} 
+}

@@ -12,7 +12,7 @@ export default function AboutPage() {
     <main className={styles.page}>
       <section className={styles.heroSection}>
         <div className={styles.heroText}>
-          <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>About The Guides</h1>
+          <h1>About The Guides</h1>
           <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
             We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
           </p>

@@ -16,7 +16,7 @@ export default function Accordion({ title, children }: AccordionProps) {
       <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
         {title}
         <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▾
+          ▼
         </span>
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}

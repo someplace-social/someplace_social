@@ -24,7 +24,7 @@ export default function Home() {
       <main className={styles.page}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
-            <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Someplace Social</h1>
+            <h1>Someplace Social</h1>
             <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
               <strong>Medellin Community Listings</strong>
             </p>

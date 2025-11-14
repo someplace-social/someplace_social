@@ -87,7 +87,7 @@ export default function MedellinPage() {
     <main className={pageStyles.page}>
       <section className={pageStyles.heroSection}>
         <div className={pageStyles.heroText}>
-          <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
+          <h1>Medellin Weekly Events & Activity Guide</h1>
           <p><strong>by Someplace Social</strong></p>
           <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
         </div>
@@ -117,7 +117,7 @@ export default function MedellinPage() {
       <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
         <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
-        <p>*Note: click the “✏️EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
+        <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
         <div style={{width: '100%', marginTop: '2rem'}}>
           <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
         </div>
