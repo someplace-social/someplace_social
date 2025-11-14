@@ -1,12 +1,19 @@
+/* app/components/Header.module.css */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
+  padding: 1rem 0; /* Vertical padding, horizontal is handled by container */
   background-color: #1A1A1A;
   color: white;
   position: relative;
   z-index: 100;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem; /* Matches desktop .page padding */
 }
 
 /* --- Desktop Navigation --- */
@@ -85,6 +92,10 @@
 
 /* --- Media Query for Mobile --- */
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem; /* Matches mobile .page padding */
+  }
+
   .nav {
     display: none;
   }

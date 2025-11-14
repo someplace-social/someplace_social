@@ -1,3 +1,4 @@
+// app/components/Header.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -23,33 +24,35 @@ export default function Header() {
       {isMobileMenuOpen && <div className={styles.backdrop} onClick={() => setIsMobileMenuOpen(false)} />}
 
       <header className={styles.header}>
-        <div>
-          <Link href="/">
-            <Image 
-              src="/images/logo.svg" 
-              alt="Someplace Social Logo" 
-              width={250}
-              height={83}
-              priority
-            />
-          </Link>
-        </div>
+        <div className={styles.container}>
+          <div>
+            <Link href="/">
+              <Image 
+                src="/images/logo.svg" 
+                alt="Someplace Social Logo" 
+                width={250}
+                height={83}
+                priority
+              />
+            </Link>
+          </div>
 
-        {/* Desktop Navigation */}
-        <nav className={styles.nav}>
-          <Link href="/medellin" className={styles.navLink}>Medellin</Link>
-          <Link href="/about" className={styles.navLink}>About</Link>
-          <Link href="/contact" className={styles.navLink}>Contact</Link>
-          <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
-            Donate
-          </a>
-        </nav>
+          {/* Desktop Navigation */}
+          <nav className={styles.nav}>
+            <Link href="/medellin" className={styles.navLink}>Medellin</Link>
+            <Link href="/about" className={styles.navLink}>About</Link>
+            <Link href="/contact" className={styles.navLink}>Contact</Link>
+            <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
+              Donate
+            </a>
+          </nav>
 
-        {/* Hamburger Icon */}
-        <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(true)}>
-          <div></div>
-          <div></div>
-          <div></div>
+          {/* Hamburger Icon */}
+          <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(true)}>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       </header>
 
