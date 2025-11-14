@@ -25,17 +25,16 @@ export default function Header() {
 
       <header className={styles.header}>
         <div className={styles.container}>
-          <div>
-            <Link href="/">
-              <Image 
-                src="/images/logo.svg" 
-                alt="Someplace Social Logo" 
-                width={250}
-                height={83}
-                priority
-              />
-            </Link>
-          </div>
+          <Link href="/">
+            <Image 
+              src="/images/logo.svg" 
+              alt="Someplace Social Logo" 
+              width={250}
+              height={83}
+              priority
+              className={styles.logoImage}
+            />
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className={styles.nav}>
@@ -67,4 +66,4 @@ export default function Header() {
       </nav>
     </>
   );
-} 
+}

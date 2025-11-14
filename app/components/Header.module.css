@@ -96,6 +96,11 @@
     padding: 0 1rem; /* Matches mobile .page padding */
   }
 
+  .logoImage {
+    width: 200px;
+    height: auto;
+  }
+
   .nav {
     display: none;
   }
