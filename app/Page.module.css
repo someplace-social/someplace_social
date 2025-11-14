@@ -1,8 +1,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* Changed from 'center' to allow full width */
-  text-align: left; /* Enforce left alignment */
+  align-items: stretch;
+  text-align: left;
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
@@ -55,6 +55,12 @@
 
   .heroSection {
     flex-direction: column;
-    text-align: center; /* Only center text in the hero section on mobile */
+    align-items: flex-start;
+  }
+
+  /* This is the new, more specific fix */
+  .heroText {
+    text-align: left;
+    width: 100%; /* Ensure it takes full width to align left */
   }
 }

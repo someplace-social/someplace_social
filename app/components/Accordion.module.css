@@ -1,9 +1,8 @@
 .header {
-  background-color: transparent;
+  background-color: transparent; /* Changed from #fffbee */
   padding: 20px 10px;
   cursor: pointer;
-  font-size: 3em;
-  font-weight: normal;
+  font-size: 3em; /* Matched to DayAccordion */
   position: relative;
   border-top: 2px solid black;
   border-bottom: 2px solid black;
@@ -16,6 +15,7 @@
 
 .icon {
   transition: transform 0.3s;
+  font-size: 1em; /* Inherit size from header */
 }
 
 .iconOpen {
@@ -25,4 +25,11 @@
 .content {
   padding: 10px;
   background-color: #fffbee;
+}
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .header {
+    font-size: 2em; /* Reduce font size on mobile */
+  }
 }

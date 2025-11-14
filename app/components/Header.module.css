@@ -5,7 +5,7 @@
   padding: 1rem 2rem;
   background-color: #1A1A1A;
   color: white;
-  position: relative; /* For z-index context */
+  position: relative;
   z-index: 100;
 }
 
@@ -64,23 +64,23 @@
 .mobileNav {
   position: fixed;
   top: 0;
-  left: 0;
+  right: 0; /* Changed from left to right */
   height: 100vh;
-  width: 60%; /* Takes up 60% of the screen width */
-  max-width: 300px; /* With a max width for larger screens */
+  width: 60%;
+  max-width: 300px;
   background-color: #1A1A1A;
   z-index: 120;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align links to the left */
+  align-items: flex-start;
   padding: 4rem 2rem;
   gap: 2rem;
-  transform: translateX(-100%); /* Hidden by default */
+  transform: translateX(100%); /* Changed to slide from the right */
   transition: transform 0.3s ease-in-out;
 }
 
 .mobileNav.open {
-  transform: translateX(0); /* Slides in when open */
+  transform: translateX(0);
 }
 
 /* --- Media Query for Mobile --- */

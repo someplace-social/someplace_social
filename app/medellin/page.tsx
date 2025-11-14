@@ -9,10 +9,6 @@ import ContactForm from '../components/ContactForm';
 import EventListing from './EventListing';
 import pageStyles from '../Page.module.css';
 import styles from './Medellin.module.css';
-// Note: We cannot use generateMetadata in a client component.
-// SEO for this page will be handled by a metadata object in a parent layout if needed,
-// or by setting the title dynamically on the client side if essential.
-// For now, the default title from the root layout will be used.
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -92,7 +88,7 @@ export default function MedellinPage() {
       <section className={pageStyles.heroSection}>
         <div className={pageStyles.heroText}>
           <h1 style={{ fontSize: '3em', marginBottom: '1rem' }}>Medellin Weekly Events & Activity Guide</h1>
-          <p>by Someplace Social</p>
+          <p><strong>by Someplace Social</strong></p>
           <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
         </div>
         <div className={pageStyles.illustrationContainer}>

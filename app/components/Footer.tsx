@@ -1,8 +1,8 @@
-import pageStyles from '../Page.module.css'; // Import the shared page styles
+import pageStyles from '../Page.module.css';
 
 const footerStyles: React.CSSProperties = {
   textAlign: 'center',
-  padding: '2rem 0', // Adjust padding
+  padding: '2rem 0',
   marginTop: '4rem',
   backgroundColor: '#1A1A1A',
   color: 'white',
@@ -45,7 +45,10 @@ const EmailIcon = () => (
 export default function Footer() {
   return (
     <footer style={footerStyles}>
-      <div className={pageStyles.page} style={{padding: '0 2rem'}}> {/* Use the page class to constrain width */}
+      <div 
+        className={pageStyles.page} 
+        style={{ padding: '0 2rem', alignItems: 'center' }} // This line is the fix
+      >
         <p>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
         <div style={iconContainerStyles}>
           <a href="https://www.instagram.com/someplace.social/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
