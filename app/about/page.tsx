@@ -40,7 +40,7 @@ export default function AboutPage() {
         <div className={styles.heroText}>
           <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
           <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            Someplace Social (formerly TheFlyer.info) was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
+            Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
           </p>
           <div style={{ marginTop: '1rem' }}>
              <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.button}>
