@@ -1,19 +1,33 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+  
+  // Close menu if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [headerRef]);
 
   return (
-    <header className={styles.header}>
+    <header className={styles.header} ref={headerRef}>
       <div>
         <Link href="/">
           <Image 
@@ -44,14 +58,16 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Menu */}
-      <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <Link href="/medellin" className={styles.navLink} onClick={toggleMobileMenu}>Medellin</Link>
-        <Link href="/about" className={styles.navLink} onClick={toggleMobileMenu}>About</Link>
-        <Link href="/contact" className={styles.navLink} onClick={toggleMobileMenu}>Contact</Link>
-        <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
-          Donate
-        </a>
-      </nav>
+      {isMobileMenuOpen && (
+        <nav className={styles.mobileNav}>
+          <Link href="/medellin" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Medellin</Link>
+          <Link href="/about" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+          <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
+          <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
+            Donate
+          </a>
+        </nav>
+      )}
     </header>
   );
 }

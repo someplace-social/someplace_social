@@ -50,7 +50,7 @@
 }
 
 .mobileNav {
-  display: none; /* Hidden by default */
+  display: flex; /* Always flex, but only rendered when open */
   position: absolute;
   top: 100%;
   left: 0;
@@ -71,9 +71,5 @@
 
   .hamburger {
     display: flex; /* Show hamburger on mobile */
-  }
-
-  .mobileNav.open {
-    display: flex; /* Show mobile nav when open */
   }
 }
