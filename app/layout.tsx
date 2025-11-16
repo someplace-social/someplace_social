@@ -13,6 +13,10 @@ export const metadata: Metadata = {
     template: '%s | Someplace Social',
   },
   description: 'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 }
 
 export default function RootLayout({
