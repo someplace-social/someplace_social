@@ -7,6 +7,10 @@ import Footer from './components/Footer'
 
 const karla = Karla({ subsets: ['latin'] })
 
+// This pulls the ID from your Vercel Environment Variable, 
+// or falls back to the hardcoded one if the variable is missing.
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
   title: {
@@ -36,7 +40,7 @@ export default function RootLayout({
 
         {/* Google Analytics */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-NSETWN0K9W"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -45,7 +49,7 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-NSETWN0K9W');
+            gtag('config', '${GA_MEASUREMENT_ID}');
           `}
         </Script>
       </body>
