@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Karla } from 'next/font/google'
+import { GoogleAnalytics } from '@next/third-parties/google' // <--- 1. Import this
 import './globals.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -7,7 +8,7 @@ import Footer from './components/Footer'
 const karla = Karla({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.someplacesocial.org'), // Set your production URL here
+  metadataBase: new URL('https://www.someplacesocial.org'),
   title: {
     default: 'Someplace Social | Community Event Listings',
     template: '%s | Someplace Social',
@@ -33,6 +34,8 @@ export default function RootLayout({
           <Footer />
         </div>
       </body>
+      {/* 2. Add the component here with your ID */}
+      <GoogleAnalytics gaId="G-NSETWN0K9W" />
     </html>
   )
 }
