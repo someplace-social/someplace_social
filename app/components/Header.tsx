@@ -41,9 +41,9 @@ export default function Header() {
             <Link href="/medellin" className={styles.navLink}>Medellin</Link>
             <Link href="/about" className={styles.navLink}>About</Link>
             <Link href="/contact" className={styles.navLink}>Contact</Link>
-            <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
-              Donate
-            </a>
+            <Link href="/support" className={styles.supportButton}>
+              Support
+            </Link>
           </nav>
 
           {/* Hamburger Icon */}
@@ -60,9 +60,9 @@ export default function Header() {
         <Link href="/medellin" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Medellin</Link>
         <Link href="/about" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
         <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
-        <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.donateButton}>
-          Donate
-        </a>
+        <Link href="/support" className={styles.supportButton} onClick={() => setIsMobileMenuOpen(false)}>
+          Support
+        </Link>
       </nav>
     </>
   );

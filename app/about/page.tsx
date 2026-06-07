@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from '../Page.module.css';
 import type { Metadata } from 'next';
 
@@ -49,9 +50,9 @@ export default function AboutPage() {
             Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
           </p>
           <div style={{ marginTop: '1rem' }}>
-             <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.button}>
-              Donate
-            </a>
+             <Link href="/support" className={styles.button}>
+              Support
+            </Link>
           </div>
         </div>
       </section>
