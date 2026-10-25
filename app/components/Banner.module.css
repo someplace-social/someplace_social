@@ -1,18 +1,18 @@
 .banner {
-  background-color: #272626;
-  color: #fffbee;
+  background-color: #cc4532;
+  color: #ffffff;
   text-align: center;
-  padding: 0.75rem 1rem;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
 
 .link {
-  color: #fffbee;
+  color: #ffffff;
   text-decoration: underline;
   font-weight: bold;
 }
 
 .link:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
