@@ -1,0 +1,18 @@
+.banner {
+  background-color: #272626;
+  color: #fffbee;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.link {
+  color: #fffbee;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.link:hover {
+  opacity: 0.8;
+}
