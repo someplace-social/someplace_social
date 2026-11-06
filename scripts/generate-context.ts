@@ -9,6 +9,8 @@ const DEFAULT_INCLUDES: string[] = [
   'package.json',
   'next.config.ts',
   'tsconfig.json',
+  'eslint.config.mjs',
+  'postcss.config.mjs',
   'README.md'
 ];
 
@@ -56,7 +58,7 @@ function skeletonize(content: string): string {
 function generateProjectTree(dir = '.', prefix = ''): string {
   const ignoredFolders = new Set(['.git', '.next', 'node_modules', 'public', '.vercel', 'dist', 'out']);
   const items = fs.readdirSync(dir, { withFileTypes: true })
-    .filter((i: fs.Dirent) => !ignoredFolders.has(i.name) && !i.name.startsWith('.') && !i.name.includes('lock'))
+    .filter((i: fs.Dirent) => !ignoredFolders.has(i.name) && !i.name.startsWith('.') && !i.name.includes('lock') && !i.name.includes('.temp.'))
     .sort((a: fs.Dirent, b: fs.Dirent) => (b.isDirectory() ? 1 : 0) - (a.isDirectory() ? 1 : 0) || a.name.localeCompare(b.name));
 
   let output = '';
@@ -158,6 +160,9 @@ async function main(): Promise<void> {
       fileContent = fs.readFileSync(tempOutputFile, 'utf8');
       fs.unlinkSync(tempOutputFile);
     }
+    if (fs.existsSync('repomix.temp.json')) {
+      fs.unlinkSync('repomix.temp.json');
+    }
 
     if (isSkeleton) {
       console.log('Applying skeletonization...');
@@ -171,10 +176,6 @@ async function main(): Promise<void> {
     chunks.push(fileContent);
 
     fs.writeFileSync('repomix-output.txt', chunks.join(''), 'utf8');
-
-    if (fs.existsSync('repomix.temp.json')) {
-      fs.unlinkSync('repomix.temp.json');
-    }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`Generated fresh repomix-output.txt in ${elapsed}s.`);

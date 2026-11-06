@@ -1,0 +1,1636 @@
+#TASK
+
+
+
+
+#PROJECT FILES
+
+Project Structure Map:
++--- root
++--- app
+|   +--- about
+|   |   \--- page.tsx
+|   +--- api
+|   |   \--- send-form
+|   |       \--- route.ts
+|   +--- components
+|   |   +--- Accordion.module.css
+|   |   +--- Accordion.tsx
+|   |   +--- Banner.module.css
+|   |   +--- Banner.tsx
+|   |   +--- ContactForm.module.css
+|   |   +--- ContactForm.tsx
+|   |   +--- FilterBar.module.css
+|   |   +--- FilterBar.tsx
+|   |   +--- Footer.tsx
+|   |   +--- GoogleAnalytics.tsx
+|   |   +--- Header.module.css
+|   |   \--- Header.tsx
+|   +--- contact
+|   |   \--- page.tsx
+|   +--- lib
+|   |   \--- google-sheets.ts
+|   +--- medellin
+|   |   +--- DayAccordion.module.css
+|   |   +--- DayAccordion.tsx
+|   |   +--- EventListing.tsx
+|   |   +--- loading.tsx
+|   |   +--- Medellin.module.css
+|   |   \--- page.tsx
+|   +--- support
+|   |   \--- page.tsx
+|   +--- apple-icon.png
+|   +--- favicon-source.png
+|   +--- favicon.ico
+|   +--- globals.css
+|   +--- globals.d.ts
+|   +--- icon.png
+|   +--- layout.tsx
+|   +--- Page.module.css
+|   \--- page.tsx
++--- scripts
+|   +--- db.ps1
+|   \--- generate-context.ts
++--- eslint.config.mjs
++--- next-env.d.ts
++--- next.config.ts
++--- package.json
++--- postcss.config.mjs
++--- README.md
++--- repomix.config.json
++--- repomix.temp.json
+\--- tsconfig.json
+
+
+This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where comments have been removed, empty lines have been removed.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: app/**/*, components/**/*, lib/**/*, package.json, next.config.ts, tsconfig.json, README.md
+- Files matching these patterns are excluded: node_modules, .next, .git, .vercel, pnpm-lock.yaml, package-lock.json, public/**/*, **/*.png, **/*.jpg, **/*.jpeg, **/*.svg, **/*.ico, **/*.pdf, **/*.lock, **/dist/**, repomix-output.txt, project-context.txt, ctx-map.txt, .claude/settings.local.json, **/.env*, .env*
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Code comments have been removed from supported file types
+- Empty lines have been removed from all files
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+app/about/page.tsx
+app/api/send-form/route.ts
+app/components/Accordion.module.css
+app/components/Accordion.tsx
+app/components/Banner.module.css
+app/components/Banner.tsx
+app/components/ContactForm.module.css
+app/components/ContactForm.tsx
+app/components/FilterBar.module.css
+app/components/FilterBar.tsx
+app/components/Footer.tsx
+app/components/GoogleAnalytics.tsx
+app/components/Header.module.css
+app/components/Header.tsx
+app/contact/page.tsx
+app/globals.css
+app/globals.d.ts
+app/layout.tsx
+app/lib/google-sheets.ts
+app/medellin/DayAccordion.module.css
+app/medellin/DayAccordion.tsx
+app/medellin/EventListing.tsx
+app/medellin/loading.tsx
+app/medellin/Medellin.module.css
+app/medellin/page.tsx
+app/Page.module.css
+app/page.tsx
+app/support/page.tsx
+next.config.ts
+package.json
+README.md
+tsconfig.json
+
+================================================================
+Files
+================================================================
+
+================
+File: app/components/ContactForm.module.css
+================
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+}
+.input,
+.textarea {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+.button {
+  background-color: #272626;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-start;
+}
+
+================
+File: app/components/GoogleAnalytics.tsx
+================
+'use client';
+import Script from 'next/script';
+export default function GoogleAnalytics({ gaId }: { gaId: string }) {
+  return (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${gaId}');
+        `}
+      </Script>
+    </>
+  );
+}
+
+================
+File: app/globals.d.ts
+================
+declare module '*.css';
+
+================
+File: app/medellin/loading.tsx
+================
+import styles from '../Page.module.css';
+export default function Loading() {
+  return (
+    <main className={styles.page}>
+      <h1>Medellin Weekly Events & Activity Guide</h1>
+      <p>Loading listings...</p>
+    </main>
+  );
+}
+
+================
+File: app/support/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Support Us',
+  description: 'Learn how you can support Someplace Social and keep the community going.',
+};
+export default function SupportPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroText}>
+          <h1>Support Someplace Social</h1>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
+          </p>
+        </div>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+        <div>
+          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
+          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+            The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
+          </p>
+          <Link href="/contact" className={styles.button}>Submit or Edit Events</Link>
+        </div>
+        <div>
+          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
+          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+            If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+          </p>
+          <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.button}>Buy Me a Drink</a>
+        </div>
+        <div>
+          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
+          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+            Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
+          </p>
+          <a href="https://sites.google.com/view/starlink-referral-link" target="_blank" rel="noopener noreferrer" className={styles.button}>Get Starlink Referral</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from "next";
+const nextConfig: NextConfig = {
+};
+export default nextConfig;
+
+================
+File: app/api/send-form/route.ts
+================
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+const resend = new Resend(process.env.RESEND_API_KEY);
+const recipientEmail = process.env.EMAIL_RECIPIENT;
+export async function POST(request: Request) {
+  try {
+    if (!recipientEmail) {
+      throw new Error('Recipient email is not configured.');
+    }
+    const body = await request.json();
+    const { formType, message } = body;
+    const { data, error } = await resend.emails.send({
+      from: 'Someplace Social <onboarding@resend.dev>',
+      to: recipientEmail,
+      subject: `New Form Submission: ${formType}`,
+      text: message,
+    });
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
+    }
+    return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
+  } catch (error) {
+    console.error('Error processing form:', error);
+    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
+  }
+}
+
+================
+File: app/components/Banner.module.css
+================
+.banner {
+  background-color: #cc4532;
+  color: #ffffff;
+  text-align: center;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+.link {
+  color: #ffffff;
+  text-decoration: underline;
+  font-weight: bold;
+}
+.link:hover {
+  opacity: 0.85;
+}
+
+================
+File: app/components/Banner.tsx
+================
+import Link from 'next/link';
+import styles from './Banner.module.css';
+export default function Banner() {
+  return (
+    <div className={styles.banner}>
+      Many of these listings are likely out of date. If you have interest in gathering up to date information for the community,{' '}
+      <Link href="/contact" className={styles.link}>
+        please reach out
+      </Link>
+      .
+    </div>
+  );
+}
+
+================
+File: app/lib/google-sheets.ts
+================
+export type Event = {
+  database: string;
+  title: string;
+  organization: string;
+  activity1: string;
+  activity2: string;
+  activity3: string;
+  startTime: string;
+  endTime: string;
+  price: string;
+  location: string;
+  area: string;
+  map: string;
+  social: string;
+  website: string;
+  contact: string;
+  dayOfWeek: string;
+  id: string;
+  notes: string;
+};
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub?gid=0&single=true&output=csv';
+function parseCsv(csvText: string): string[][] {
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let inQuotes = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField);
+      currentField = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      currentRow.push(currentField);
+      rows.push(currentRow);
+      currentRow = [];
+      currentField = '';
+      // Skip the next character if it's a newline sequence (\r\n)
+      if (char === '\r' && csvText[i + 1] === '\n') {
+        i++;
+      }
+    } else {
+      currentField += char;
+    }
+  }
+  // Add the last field and row
+  currentRow.push(currentField);
+  rows.push(currentRow);
+  return rows;
+}
+export async function getEvents(): Promise<Event[]> {
+  try {
+    const response = await fetch(CSV_URL, {
+      next: { revalidate: 3600 }, // Revalidate data every hour
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch sheet: ${response.statusText}`);
+    }
+    const csvText = await response.text();
+    const rows = parseCsv(csvText);
+    const dataRows = rows.slice(1); // Remove header row
+    const events = dataRows.map((row): Event | null => {
+      // Ensure the row has enough columns to prevent errors
+      if (row.length < 18) return null;
+      return {
+        database: row[0] || '',
+        title: row[1] || '',
+        organization: row[2] || '',
+        activity1: row[3] || '',
+        activity2: row[4] || '',
+        activity3: row[5] || '',
+        startTime: row[6] || '',
+        endTime: row[7] || '',
+        price: row[8] || '',
+        location: row[9] || '',
+        area: row[10] || '',
+        map: row[11] || '',
+        social: row[12] || '',
+        website: row[13] || '',
+        contact: row[14] || '',
+        dayOfWeek: row[15] || '',
+        id: row[16] || '',
+        notes: row[17] || '',
+      };
+    }).filter(event => event !== null) as Event[];
+    return events.filter(event => event.database.toLowerCase().trim() === 'medellin' && event.title);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return [];
+  }
+}
+
+================
+File: app/medellin/EventListing.tsx
+================
+import { Event } from '../lib/google-sheets';
+import styles from './Medellin.module.css';
+type EventListingProps = {
+  event: Event;
+  onEdit: (content: string) => void;
+};
+const createLink = (text: string, url: string) => {
+  if (!url || url.trim() === '') return null;
+  const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
+  return <a href={fullUrl} target="_blank" rel="noopener noreferrer">{text}</a>;
+};
+export default function EventListing({ event, onEdit }: EventListingProps) {
+  const activities = [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', ');
+  const organizationText = event.organization ? ` w/ ${event.organization}` : "";
+  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
+  return (
+    <div className={styles.listing}>
+      <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
+      <p><em>{activities}</em></p>
+      <p className={styles.listingDetails}>
+        <span>⏳ {event.startTime} - {event.endTime}</span>
+        <span>💰 {event.price || 'Free or Varies'}</span>
+        <span>📍 {event.location}</span>
+        <span>🗺️  {event.area}</span>
+      </p>
+      <p className={styles.listingLinks}>
+        {createLink('Map', event.map)}
+        {createLink('Social', event.social)}
+        {createLink('Website', event.website)}
+        {createLink('Contact', event.contact)}
+        <a href="#" onClick={(e) => { e.preventDefault(); onEdit(visualText); }} className={styles.editLink}>✏️ EDIT</a>
+      </p>
+    </div>
+  );
+}
+
+================
+File: README.md
+================
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started TEST
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+================
+File: tsconfig.json
+================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "types": ["node"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+
+================
+File: app/components/Accordion.module.css
+================
+.header {
+  background-color: transparent;
+  padding: 20px 10px;
+  cursor: pointer;
+  font-size: 3em;
+  position: relative;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.icon {
+  transition: transform 0.3s;
+  font-size: 1em;
+}
+.iconOpen {
+  transform: rotate(-180deg);
+}
+.content {
+  padding: 10px;
+  background-color: #fffbee;
+}
+@media (max-width: 768px) {
+  .header {
+    font-size: 2em;
+  }
+}
+
+================
+File: app/components/Accordion.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './Accordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+export default function Accordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        {title}
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
+}
+
+================
+File: app/globals.css
+================
+body {
+  background-color: #272626;
+  color: #272626;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+================
+File: app/medellin/DayAccordion.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './DayAccordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+export default function DayAccordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <div
+        className={styles.header}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={styles.title}>{title}</span>
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
+}
+
+================
+File: app/medellin/Medellin.module.css
+================
+.title {
+  font-size: 2.5em;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.listing {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+.listingTitle {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.listingDetails {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.listingLinks {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.listingLinks a {
+  color: inherit;
+  text-decoration: underline;
+}
+.editLink {
+  color: #cc4532 !important;
+}
+
+================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
+  );
+}
+
+================
+File: app/medellin/DayAccordion.module.css
+================
+.header {
+  background-color: transparent;
+  padding: 20px 10px;
+  cursor: pointer;
+  position: relative;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.title {
+  font-size: 3em;
+  font-weight: normal;
+}
+.icon {
+  font-size: 3em;
+  transition: transform 0.3s;
+}
+.iconOpen {
+  transform: rotate(-180deg);
+}
+.content {
+  padding: 10px;
+  background-color: #fffbee;
+}
+@media (max-width: 768px) {
+  .title, .icon {
+    font-size: 2em;
+  }
+}
+
+================
+File: app/components/FilterBar.module.css
+================
+.wrapper {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+.notesContainer {
+  background-color: #fdf8e1;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.notesTitle {
+  font-size: 1.8em;
+  margin-bottom: 1rem;
+}
+.notesList {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.notesList a {
+  color: inherit;
+  text-decoration: underline;
+}
+.filtersContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  flex: 1;
+  min-width: 120px;
+}
+.priceFilter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 180px;
+}
+.slider {
+  width: 100%;
+}
+.button {
+  background-color: #272626;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+================
+File: app/Page.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 2.4em;
+  margin-bottom: 1rem;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+.heroText {
+  flex: 1;
+  max-width: 500px;
+}
+.illustrationContainer {
+  flex: 1;
+  max-width: 400px;
+}
+.contentBox {
+  background-color: #fdf8e1;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 2rem;
+}
+.button {
+  background-color: #272626;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 1rem;
+}
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .heroText {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+================
+File: app/components/FilterBar.tsx
+================
+"use client";
+import { useState } from 'react';
+import Link from 'next/link';
+import styles from './FilterBar.module.css';
+const MAX_PRICE = 100;
+type FilterBarProps = {
+  activities: string[];
+  areas: string[];
+  onFilterChange: (filters: { activity: string; area: string; price: number }) => void;
+};
+export default function FilterBar({ activities, areas, onFilterChange }: FilterBarProps) {
+  const [activity, setActivity] = useState('all');
+  const [area, setArea] = useState('all');
+  const [price, setPrice] = useState(MAX_PRICE);
+  const handleFilterChange = (newActivity: string, newArea: string, newPrice: number) => {
+    onFilterChange({ activity: newActivity, area: newArea, price: newPrice });
+  };
+  const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newActivity = e.target.value;
+    setActivity(newActivity);
+    handleFilterChange(newActivity, area, price);
+  };
+  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newArea = e.target.value;
+    setArea(newArea);
+    handleFilterChange(activity, newArea, price);
+  };
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrice = Number(e.target.value);
+    setPrice(newPrice);
+    handleFilterChange(activity, area, newPrice);
+  };
+  const clearFilters = () => {
+    setActivity('all');
+    setArea('all');
+    setPrice(MAX_PRICE);
+    handleFilterChange('all', 'all', MAX_PRICE);
+  };
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.notesContainer}>
+        <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
+        <ol className={styles.notesList}>
+          <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
+          <li>Correct info depends on the community! Click “✏️ EDIT” if event info needs to be updated.</li>
+          <li>Know of an event or activity that should be on this list? <Link href="/contact">Submit a listing.</Link></li>
+          <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
+        </ol>
+      </div>
+      <div className={styles.filtersContainer}>
+        <select value={activity} onChange={handleActivityChange} className={styles.select}>
+          <option value="all">Activity</option>
+          {activities.map(act => <option key={act} value={act}>{act}</option>)}
+        </select>
+        <select value={area} onChange={handleAreaChange} className={styles.select}>
+          <option value="all">Area</option>
+          {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
+        </select>
+        <div className={styles.priceFilter}>
+          <label htmlFor="price">Price: {price}k</label>
+          <input
+            type="range"
+            id="price"
+            min="0"
+            max={MAX_PRICE}
+            value={price}
+            onChange={handlePriceChange}
+            className={styles.slider}
+          />
+        </div>
+        <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
+      </div>
+    </div>
+  );
+}
+
+================
+File: package.json
+================
+{
+  "name": "someplace-social",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
+    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
+    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
+    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
+    "repomix": "repomix"
+  },
+  "dependencies": {
+    "@next/third-parties": "^16.0.7",
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.0.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "resend": "^6.4.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.0.4",
+    "repomix": "^0.2.32",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
+}
+
+================
+File: app/components/Footer.tsx
+================
+import pageStyles from '../Page.module.css';
+const footerStyles: React.CSSProperties = {
+  textAlign: 'center',
+  padding: '2rem 0',
+  marginTop: '4rem',
+  backgroundColor: '#1A1A1A',
+  color: 'white',
+};
+const iconContainerStyles: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '1rem',
+  margin: '1rem 0',
+};
+const iconLinkStyles: React.CSSProperties = {
+  color: 'white',
+};
+const iconStyles: React.CSSProperties = {
+  width: '24px',
+  height: '24px',
+};
+const InstagramIcon = () => (
+  <svg style={iconStyles} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+const EmailIcon = () => (
+  <svg style={iconStyles} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+    <polyline points="22,6 12,13 2,6"></polyline>
+  </svg>
+);
+export default function Footer() {
+  return (
+    <footer style={footerStyles}>
+      <div
+        className={pageStyles.page}
+        style={{ padding: '0 2rem', alignItems: 'center' }}
+      >
+        <p style={{ textAlign: 'center' }}>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
+        <div style={iconContainerStyles}>
+          <a href="https://www.instagram.com/someplace.social/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
+            <InstagramIcon />
+          </a>
+          <a href="mailto:someplacesocial@gmail.com" aria-label="Email" style={iconLinkStyles}>
+            <EmailIcon />
+          </a>
+        </div>
+        <p>©2024. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import Image from 'next/image';
+import Accordion from '../components/Accordion';
+import ContactForm from '../components/ContactForm';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
+};
+const submitEventFields = [
+  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
+  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
+  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Monday', type: 'text', required: false },
+  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
+  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
+  { name: 'Activity Type', label: 'Type of Activity', placeholder: 'e.g. Language Exchange, Dance, Social...', type: 'text', required: false },
+  { name: 'Other Activities', label: '*If you chose "Other" under "Type of Activity", list the activities here', placeholder: '', type: 'text', required: false },
+  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
+  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
+  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
+  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
+  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
+  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
+  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
+  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
+  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
+  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
+] as const;
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
+] as const;
+const askQuestionFields = [
+  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
+  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
+  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
+] as const;
+export default function ContactPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroText}>
+          <h1>Contact Us</h1>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
+          </p>
+        </div>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <section className={styles.contentBox}>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
+      </section>
+      <div style={{width: '100%', marginTop: '2rem'}}>
+        <Accordion title="Submit an Event">
+          <div>
+            <strong>A FEW NOTES</strong>
+            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
+            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
+            <br/>
+            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
+            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
+            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
+            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
+            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
+            <hr style={{margin: '2rem 0'}} />
+            <ContactForm formType="Submit an Event" fields={submitEventFields} />
+          </div>
+        </Accordion>
+        <Accordion title="Edit Event Info">
+          <ContactForm formType="Edit Event Info" fields={editEventFields} />
+        </Accordion>
+        <Accordion title="Ask a Question">
+          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
+        </Accordion>
+      </div>
+    </main>
+  );
+}
+
+================
+File: app/layout.tsx
+================
+import type { Metadata } from 'next'
+import { Karla } from 'next/font/google'
+import './globals.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Banner from './components/Banner'
+import GoogleAnalytics from './components/GoogleAnalytics'
+import { Analytics } from "@vercel/analytics/react"
+const karla = Karla({ subsets: ['latin'] })
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.someplacesocial.org'),
+  title: {
+    default: 'Someplace Social | Community Event Listings',
+    template: '%s | Someplace Social',
+  },
+  description: 'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+}
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={karla.className}>
+        <div style={{ backgroundColor: '#fffbee' }}>
+          <Banner />
+          <Header />
+          {children}
+          <Footer />
+        </div>
+        {}
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
+        {}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+
+================
+File: app/about/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
+};
+export default function AboutPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroText}>
+          <h1>About The Guides</h1>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
+          </p>
+        </div>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-guides.png" alt="Illustration of capybaras sitting around a table" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <section className={styles.contentBox}>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Why Our Listings Are Different</h2>
+        <ul>
+          <li><strong>More listings</strong> because we don't rely on the organization hosting the events to add. Anyone from the community can submit and spread the word.</li>
+          <li><strong>Better organized</strong> events listed in order of date and time rather than by who pays the most.</li>
+          <li><strong>Better quality</strong> events because they are vetted by real humans.</li>
+        </ul>
+        <h2 style={{ fontSize: '2.5em', marginTop: '2.5rem', marginBottom: '1rem' }}>Event Listings Criteria</h2>
+        <ul>
+          <li><strong>Regularly Occurring:</strong> must happen weekly or biweekly.</li>
+          <li><strong>Group Event:</strong> must be open to multiple people. No one-on-one sessions.</li>
+          <li><strong>Open:</strong> must be inclusive and open to all.</li>
+          <li><strong>Affordable:</strong> must be relatively affordable.</li>
+        </ul>
+      </section>
+      <section className={styles.heroSection} style={{ marginTop: '4rem' }}>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-about.png" alt="Illustration of a person relaxing in a hammock" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+        <div className={styles.heroText}>
+          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
+          </p>
+          <div style={{ marginTop: '1rem' }}>
+             <Link href="/support" className={styles.button}>
+              Support
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+================
+File: app/page.tsx
+================
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './Page.module.css';
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Someplace Social",
+  "url": "https://www.someplacesocial.org",
+  "logo": "https://www.someplacesocial.org/images/logo.svg",
+  "description": "Community supported events, group activities, and weekly classes all in one place.",
+  "sameAs": [
+    "https://www.instagram.com/someplace.social/"
+  ]
+};
+export default function Home() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main className={styles.page}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Someplace Social</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              <strong>Medellin Community Listings</strong>
+            </p>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin.
+            </p>
+            <Link href="/medellin" className={styles.button}>Medellin Weekly Events</Link>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image src="/images/hero-home.png" alt="Illustration of a capybara with a backpack looking at a signpost" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}
+
+================
+File: app/components/Header.module.css
+================
+.header {
+  padding: 1rem 0;
+  background-color: #1A1A1A;
+  color: white;
+  position: relative;
+  z-index: 100;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.navLink {
+  text-decoration: none;
+  color: white;
+  font-size: 1.25rem;
+}
+.navLink:hover {
+  text-decoration: underline;
+}
+.supportButton {
+  background-color: #fdf8e1;
+  color: #272626;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+.hamburger div {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  border-radius: 5px;
+}
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 110;
+}
+.mobileNav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 60%;
+  max-width: 300px;
+  background-color: #1A1A1A;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4rem 2rem;
+  gap: 2rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+.mobileNav.open {
+  transform: translateX(0);
+}
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .logoImage {
+    width: 200px;
+    height: auto;
+  }
+  .nav {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+}
+
+================
+File: app/medellin/page.tsx
+================
+"use client";
+import { useState, useEffect, useMemo, useRef } from 'react';
+import Image from 'next/image';
+import { getEvents, Event } from '../lib/google-sheets';
+import DayAccordion from './DayAccordion';
+import FilterBar from '../components/FilterBar';
+import ContactForm from '../components/ContactForm';
+import EventListing from './EventListing';
+import pageStyles from '../Page.module.css';
+import styles from './Medellin.module.css';
+const daysOfWeek = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+];
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
+] as const;
+export default function MedellinPage() {
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [filters, setFilters] = useState({ activity: 'all', area: 'all', price: 100 });
+  const editFormRef = useRef<HTMLDivElement>(null);
+  const handleEditClick = (content: string) => {
+    if (editFormRef.current) {
+      const textarea = editFormRef.current.querySelector('textarea[name="What Needs to be Changed"]');
+      if (textarea) {
+        (textarea as HTMLTextAreaElement).value = "Please update this listing:\n\n" + content;
+        editFormRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+  useEffect(() => {
+    document.title = "Weekly Events in Medellin | Someplace Social";
+    getEvents().then(fetchedEvents => {
+      setAllEvents(fetchedEvents);
+    });
+  }, []);
+  const uniqueActivities = useMemo(() => {
+    const activitySet = new Set<string>();
+    allEvents.forEach(event => {
+      if (event.activity1) activitySet.add(event.activity1);
+      if (event.activity2) activitySet.add(event.activity2);
+      if (event.activity3) activitySet.add(event.activity3);
+    });
+    return Array.from(activitySet).sort();
+  }, [allEvents]);
+  const uniqueAreas = useMemo(() => {
+    const areaSet = new Set<string>();
+    allEvents.forEach(event => {
+      if (event.area) areaSet.add(event.area);
+    });
+    return Array.from(areaSet).sort();
+  }, [allEvents]);
+  const filteredEvents = useMemo(() => {
+    return allEvents.filter(event => {
+      const activityMatch = filters.activity === 'all' ||
+        event.activity1 === filters.activity ||
+        event.activity2 === filters.activity ||
+        event.activity3 === filters.activity;
+      const areaMatch = filters.area === 'all' || event.area === filters.area;
+      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, "")) || 0;
+      const priceMatch = numericPrice <= filters.price;
+      return activityMatch && areaMatch && priceMatch;
+    });
+  }, [allEvents, filters]);
+  const eventsByDay = filteredEvents.reduce((acc, event) => {
+    const day = event.dayOfWeek;
+    if (!acc[day]) acc[day] = [];
+    acc[day].push(event);
+    return acc;
+  }, {} as Record<string, Event[]>);
+  return (
+    <main className={pageStyles.page}>
+      <section className={pageStyles.heroSection}>
+        <div className={pageStyles.heroText}>
+          <h1>Medellin Weekly Events & Activity Guide</h1>
+          <p><strong>by Someplace Social</strong></p>
+          <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
+        </div>
+        <div className={pageStyles.illustrationContainer}>
+          <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <FilterBar
+        activities={uniqueActivities}
+        areas={uniqueAreas}
+        onFilterChange={setFilters}
+      />
+      <div style={{ width: '100%' }}>
+        {daysOfWeek.map(day => (
+          eventsByDay[day] && eventsByDay[day].length > 0 ? (
+            <DayAccordion key={day} title={day}>
+              {eventsByDay[day].map((event, index) => (
+                <EventListing key={index} event={event} onEdit={handleEditClick} />
+              ))}
+            </DayAccordion>
+          ) : null
+        ))}
+      </div>
+      <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
+        <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
+        <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
+        <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
+        <div style={{width: '100%', marginTop: '2rem'}}>
+          <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+================
+File: app/components/Header.tsx
+================
+"use client";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './Header.module.css';
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [isMobileMenuOpen]);
+  return (
+    <>
+      {}
+      {isMobileMenuOpen && <div className={styles.backdrop} onClick={() => setIsMobileMenuOpen(false)} />}
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <Link href="/">
+            <Image
+              src="/images/logo.svg"
+              alt="Someplace Social Logo"
+              width={250}
+              height={83}
+              priority
+              className={styles.logoImage}
+            />
+          </Link>
+          {}
+          <nav className={styles.nav}>
+            <Link href="/medellin" className={styles.navLink}>Medellin</Link>
+            <Link href="/about" className={styles.navLink}>About</Link>
+            <Link href="/contact" className={styles.navLink}>Contact</Link>
+            <Link href="/support" className={styles.supportButton}>
+              Support
+            </Link>
+          </nav>
+          {}
+          <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(true)}>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </header>
+      {}
+      <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
+        <Link href="/medellin" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Medellin</Link>
+        <Link href="/about" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+        <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
+        <Link href="/support" className={styles.supportButton} onClick={() => setIsMobileMenuOpen(false)}>
+          Support
+        </Link>
+      </nav>
+    </>
+  );
+}
+
+
+
+================================================================
+End of Codebase
+================================================================
