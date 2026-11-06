@@ -1,0 +1,41 @@
+{
+  "output": {
+    "filePath": "repomix-output.txt",
+    "style": "plain",
+    "removeComments": true,
+    "removeEmptyLines": true,
+    "showLineNumbers": false,
+    "topFilesLength": 0,
+    "showSummary": false,
+    "showDirectoryStructure": false,
+    "headerText": "#TASK\n\n\n\n\n#PROJECT FILES\n\n\n"
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "scripts/**/*",
+      "node_modules",
+      ".next",
+      ".git",
+      ".vercel",
+      "pnpm-lock.yaml",
+      "package-lock.json",
+      "public/**/*",
+      "**/*.png",
+      "**/*.jpg",
+      "**/*.jpeg",
+      "**/*.svg",
+      "**/*.ico",
+      "**/*.pdf",
+      "**/*.lock",
+      "**/dist/**",
+      "repomix-output.txt",
+      "project-context.txt",
+      "ctx-map.txt",
+      ".claude/settings.local.json",
+      "**/.env*",
+      ".env*"
+    ]
+  }
+}
