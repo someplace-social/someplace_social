@@ -27,18 +27,38 @@ export type Event = {
 
 const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
 
-function buildCsvUrl(city?: CityConfig): string {
-  if (city?.csvUrl) return city.csvUrl;
-  if (process.env.GOOGLE_SHEETS_CSV_URL && !city) {
-    return process.env.GOOGLE_SHEETS_CSV_URL;
+async function resolveGid(city: CityConfig): Promise<string> {
+  if (city.sheetGid !== undefined && city.sheetGid !== '') {
+    return city.sheetGid;
   }
-  if (city?.sheetGid) {
-    return `${BASE_CSV_URL}?gid=${city.sheetGid}&single=true&output=csv`;
+
+  try {
+    const pubHtmlUrl = `${BASE_CSV_URL}html`;
+    const res = await fetch(pubHtmlUrl, { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const html = await res.text();
+      const tabName = city.sheetTab.trim();
+      const escapedTab = tabName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      const matchA = html.match(new RegExp(`gid=([0-9]+)[^"]*"[^>]*>[^<]*${escapedTab}`, 'i'));
+      if (matchA && matchA[1]) return matchA[1];
+
+      const matchB = html.match(new RegExp(`id="sheet-button-([0-9]+)"[^>]*>[^<]*<a[^>]*>[^<]*${escapedTab}`, 'i'));
+      if (matchB && matchB[1]) return matchB[1];
+
+      const matchC = html.match(new RegExp(`{[^}]*name:\\s*"${escapedTab}"[^}]*gid:\\s*"([0-9]+)"`, 'i'));
+      if (matchC && matchC[1]) return matchC[1];
+    }
+  } catch (err) {
+    console.error('Failed to auto-detect sheet gid from pubhtml:', err);
   }
-  if (city?.sheetTab) {
-    return `${BASE_CSV_URL}?output=csv&sheet=${encodeURIComponent(city.sheetTab)}`;
-  }
-  return `${BASE_CSV_URL}?gid=0&single=true&output=csv`;
+
+  return '0';
+}
+
+function buildCsvUrl(city: CityConfig, gid: string): string {
+  if (city.csvUrl) return city.csvUrl;
+  return `${BASE_CSV_URL}?gid=${gid}&single=true&output=csv`;
 }
 
 function parseCsv(csvText: string): string[][] {
@@ -123,7 +143,7 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
 
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
   try {
-    let cityConfig: CityConfig | undefined;
+    let cityConfig: CityConfig;
     if (typeof cityOrTab === 'string') {
       cityConfig = CITIES[cityOrTab] || {
         slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
@@ -138,7 +158,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       cityConfig = CITIES['medellin-colombia'];
     }
 
-    const csvUrl = buildCsvUrl(cityConfig);
+    const gid = await resolveGid(cityConfig);
+    const csvUrl = buildCsvUrl(cityConfig, gid);
+
     const response = await fetch(csvUrl, {
       next: { revalidate: 3600 },
     });
@@ -206,14 +228,19 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       const db = (event.database || '').toLowerCase().trim();
       const targetName = cityConfig.name.toLowerCase();
       const targetTab = cityConfig.sheetTab.toLowerCase();
-      const matchesDb =
-        !db ||
-        db === targetName ||
-        db === targetTab ||
-        db === 'medellin' ||
-        db === 'colombia' ||
-        db === 'fort collins';
-      return matchesDb && Boolean(event.title);
+      const targetSlug = cityConfig.slug.toLowerCase();
+
+      if (db) {
+        const matchesCity =
+          db === targetName ||
+          db === targetTab ||
+          db === targetSlug ||
+          targetSlug.includes(db) ||
+          db.includes(targetName);
+        if (!matchesCity) return false;
+      }
+
+      return Boolean(event.title);
     });
   } catch (error) {
     console.error('Error fetching events:', error);

@@ -23,6 +23,7 @@ export const CITIES: Record<string, CityConfig> = {
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
     sheetTab: 'Fort Collins',
+    sheetGid: '',
   },
   'fortcollins-colorado': {
     slug: 'fort-collins-colorado',
@@ -30,6 +31,7 @@ export const CITIES: Record<string, CityConfig> = {
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
     sheetTab: 'Fort Collins',
+    sheetGid: '',
   },
 };
 
