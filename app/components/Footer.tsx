@@ -22,7 +22,7 @@ export default function Footer() {
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            alignItems: 'flex-start',
+            alignItems: 'flex-end',
             justifyContent: 'space-between',
             gap: '24px 48px',
           }}
@@ -48,27 +48,32 @@ export default function Footer() {
               – Kurt Vonnegut
             </figcaption>
           </figure>
-          <a
-            href="https://buymeacoffee.com/someplacesocial"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '48px',
-              padding: '0 24px',
-              backgroundColor: '#1f1b16',
-              color: '#FFF9EC',
-              borderRadius: '10px',
-              fontSize: '15px',
-              fontWeight: 700,
-              textDecoration: 'none',
-              alignSelf: 'flex-start',
-            }}
-          >
-            Buy me a drink
-          </a>
+
+          <div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '15px',
+                lineHeight: 1.5,
+                color: '#4f483e',
+              }}
+            >
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#1f1b16',
+                  fontWeight: 700,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                }}
+              >
+                Buy me a drink
+              </a>
+            </p>
+          </div>
         </div>
         <div style={{ marginTop: '40px', fontSize: '13px', color: '#6f675c' }}>
           © 2026 Someplace Social. All rights reserved.

@@ -9,39 +9,6 @@
   position: relative;
 }
 
-.topBar {
-  background-color: var(--topbar-bg);
-  border-bottom: 1px solid var(--line);
-}
-
-.topBarInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 0 32px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 400;
-  color: #4f483e;
-}
-
-.topBarLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-.topBarLink:hover {
-  color: var(--accent);
-}
-
 .header {
   position: relative;
   border-bottom: 1px solid var(--line);
@@ -76,6 +43,7 @@
   width: auto;
   max-width: 220px;
   object-fit: contain;
+  filter: brightness(0);
 }
 
 .brandSubtitle {
@@ -495,12 +463,13 @@
   color: #ffffff;
 }
 
-.selectChipWrapper {
+/* Custom Multi-Select Dropdown */
+.multiSelectWrapper {
   position: relative;
   width: 100%;
 }
 
-.selectChip {
+.multiSelectTrigger {
   width: 100%;
   display: flex;
   align-items: center;
@@ -515,27 +484,94 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 32px;
+  text-align: left;
 }
 
-.selectChip:hover {
+.multiSelectTrigger:hover {
   background-color: #ebdcba;
 }
 
-.selectChipActive {
+.multiSelectTriggerActive {
   background-color: #ebdcba;
   font-weight: 700;
 }
 
-.selectArrow {
+.multiSelectMenu {
   position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
   color: var(--ink);
+  user-select: none;
+}
+
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
 }
 
 .clearFiltersBtn {
@@ -549,6 +585,10 @@
   align-self: flex-start;
   padding: 4px 0;
   font-family: inherit;
+}
+
+.clearFiltersBtn:hover {
+  color: var(--accent);
 }
 
 .mobileSectionHeader {
@@ -833,6 +873,7 @@
   margin-bottom: 6px;
 }
 
+/* Footer with Integrated Support Text Line */
 .footer {
   border-top: 1px solid var(--line);
   background-color: var(--bg);
@@ -849,7 +890,7 @@
 .footerQuoteRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 24px 48px;
 }
@@ -876,25 +917,31 @@
   color: var(--muted);
 }
 
-.footerDrinkBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 24px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  align-self: flex-start;
+.footerSupportCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: 0 0 auto;
 }
 
-.footerDrinkBtn:hover {
-  opacity: 0.9;
-  color: var(--bg);
+.footerSupportText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4f483e;
+}
+
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.buyDrinkLink:hover {
+  color: var(--accent);
 }
 
 .footerCopyright {
@@ -1029,10 +1076,6 @@
 /* Responsive Mobile Styles (< 900px)                           */
 /* ------------------------------------------------------------- */
 @media (max-width: 899px) {
-  .topBar {
-    display: none;
-  }
-
   .headerInner {
     padding: 14px 16px;
   }
@@ -1265,9 +1308,13 @@
     margin-top: 10px;
   }
 
-  .footerDrinkBtn {
-    margin: 16px auto 0;
-    align-self: center;
+  .footerSupportCol {
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .footerSupportText {
+    text-align: center;
   }
 
   .footerCopyright {

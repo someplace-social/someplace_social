@@ -63,13 +63,18 @@ export default function CityEventsView({
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [freeOnly, setFreeOnly] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState('');
-  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
 
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [activityDropdownOpen, setActivityDropdownOpen] = useState(false);
+  const [areaDropdownOpen, setAreaDropdownOpen] = useState(false);
+
   const citiesMenuRef = useRef<HTMLDivElement>(null);
+  const activityMenuRef = useRef<HTMLDivElement>(null);
+  const areaMenuRef = useRef<HTMLDivElement>(null);
 
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
   const [editEmail, setEditEmail] = useState('');
@@ -81,6 +86,12 @@ export default function CityEventsView({
     function handleClickOutside(e: MouseEvent) {
       if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
         setCitiesMenuOpen(false);
+      }
+      if (activityMenuRef.current && !activityMenuRef.current.contains(e.target as Node)) {
+        setActivityDropdownOpen(false);
+      }
+      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
+        setAreaDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -132,6 +143,30 @@ export default function CityEventsView({
     return Array.from(set).sort();
   }, [allEvents]);
 
+  const toggleActivity = (act: string) => {
+    setSelectedActivities((prev) =>
+      prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
+    );
+  };
+
+  const toggleArea = (ar: string) => {
+    setSelectedAreas((prev) =>
+      prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
+    );
+  };
+
+  const activityLabel = useMemo(() => {
+    if (selectedActivities.length === 0) return 'All activities';
+    if (selectedActivities.length === 1) return selectedActivities[0];
+    return `Activities (${selectedActivities.length})`;
+  }, [selectedActivities]);
+
+  const areaLabel = useMemo(() => {
+    if (selectedAreas.length === 0) return 'All areas';
+    if (selectedAreas.length === 1) return selectedAreas[0];
+    return `Areas (${selectedAreas.length})`;
+  }, [selectedAreas]);
+
   const getFilteredEventsForDay = (dayIndex: number) => {
     const day = rollingWeek[dayIndex];
     if (!day) return [];
@@ -141,15 +176,25 @@ export default function CityEventsView({
         const matchesCurrentDay = matchesDay(ev.dayOfWeek, dayName);
         if (!matchesCurrentDay) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
-        if (selectedActivity) {
-          const acts = [ev.activity1, ev.activity2, ev.activity3].map((a) =>
-            (a || '').trim().toLowerCase()
+
+        if (selectedActivities.length > 0) {
+          const acts = [ev.activity1, ev.activity2, ev.activity3]
+            .filter(Boolean)
+            .map((a) => a.trim().toLowerCase());
+          const hasActivityMatch = selectedActivities.some((sa) =>
+            acts.includes(sa.toLowerCase())
           );
-          if (!acts.includes(selectedActivity.toLowerCase())) return false;
+          if (!hasActivityMatch) return false;
         }
-        if (selectedArea && ev.area.trim() !== selectedArea.trim()) {
-          return false;
+
+        if (selectedAreas.length > 0) {
+          const areaLower = (ev.area || '').trim().toLowerCase();
+          const hasAreaMatch = selectedAreas.some(
+            (sa) => sa.toLowerCase() === areaLower
+          );
+          if (!hasAreaMatch) return false;
         }
+
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -157,7 +202,7 @@ export default function CityEventsView({
 
   const currentList = useMemo(() => {
     return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedActivity, selectedArea, rollingWeek]);
+  }, [allEvents, activeDayIdx, freeOnly, selectedActivities, selectedAreas, rollingWeek]);
 
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
@@ -165,12 +210,13 @@ export default function CityEventsView({
     return nextEvent ? nextEvent.id || nextEvent.title : null;
   }, [activeDayIdx, currentList, nowHour]);
 
-  const hasActiveFilters = freeOnly || selectedActivity !== '' || selectedArea !== '';
+  const hasActiveFilters =
+    freeOnly || selectedActivities.length > 0 || selectedAreas.length > 0;
 
   const clearFilters = () => {
     setFreeOnly(false);
-    setSelectedActivity('');
-    setSelectedArea('');
+    setSelectedActivities([]);
+    setSelectedAreas([]);
   };
 
   const handleOpenEdit = (event: Event) => {
@@ -226,20 +272,6 @@ export default function CityEventsView({
 
   return (
     <div className={styles.pageContainer}>
-      <aside className={styles.topBar}>
-        <div className={styles.topBarInner}>
-          Free for everyone, no ads.
-          <a
-            href="https://buymeacoffee.com/someplacesocial"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.topBarLink}
-          >
-            Buy me a drink
-          </a>
-        </div>
-      </aside>
-
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.brandCol}>
@@ -514,66 +546,164 @@ export default function CityEventsView({
                 </span>
               </button>
 
-              <div className={styles.selectChipWrapper}>
-                <select
-                  className={`${styles.selectChip} ${
-                    selectedActivity ? styles.selectChipActive : ''
+              {/* Multi-Select Activities (Desktop) */}
+              <div className={styles.multiSelectWrapper} ref={activityMenuRef}>
+                <button
+                  type="button"
+                  className={`${styles.multiSelectTrigger} ${
+                    selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''
                   }`}
-                  aria-label="Filter activity"
-                  value={selectedActivity}
-                  onChange={(e) => setSelectedActivity(e.target.value)}
+                  aria-expanded={activityDropdownOpen}
+                  onClick={() => setActivityDropdownOpen(!activityDropdownOpen)}
                 >
-                  <option value="">All activities</option>
-                  {activities.map((act) => (
-                    <option key={act} value={act}>
-                      {act}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className={styles.selectArrow}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                  <span>{activityLabel}</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path
+                      d={
+                        activityDropdownOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'
+                      }
+                    />
+                  </svg>
+                </button>
+
+                {activityDropdownOpen && (
+                  <div className={styles.multiSelectMenu}>
+                    <div className={styles.multiSelectMenuHeader}>
+                      <span>Select activities</span>
+                      {selectedActivities.length > 0 && (
+                        <button
+                          type="button"
+                          className={styles.multiSelectClearLink}
+                          onClick={() => setSelectedActivities([])}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    {activities.map((act) => {
+                      const isSelected = selectedActivities.includes(act);
+                      return (
+                        <label key={act} className={styles.multiSelectOption}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleActivity(act)}
+                            className={styles.hiddenCheckbox}
+                          />
+                          <span
+                            className={`${styles.customCheckbox} ${
+                              isSelected ? styles.customCheckboxChecked : ''
+                            }`}
+                          >
+                            {isSelected && (
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </span>
+                          <span>{act}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
-              <div className={styles.selectChipWrapper}>
-                <select
-                  className={`${styles.selectChip} ${
-                    selectedArea ? styles.selectChipActive : ''
+              {/* Multi-Select Areas (Desktop) */}
+              <div className={styles.multiSelectWrapper} ref={areaMenuRef}>
+                <button
+                  type="button"
+                  className={`${styles.multiSelectTrigger} ${
+                    selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''
                   }`}
-                  aria-label="Filter area"
-                  value={selectedArea}
-                  onChange={(e) => setSelectedArea(e.target.value)}
+                  aria-expanded={areaDropdownOpen}
+                  onClick={() => setAreaDropdownOpen(!areaDropdownOpen)}
                 >
-                  <option value="">All areas</option>
-                  {areas.map((ar) => (
-                    <option key={ar} value={ar}>
-                      {ar}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className={styles.selectArrow}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                  <span>{areaLabel}</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path
+                      d={areaDropdownOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}
+                    />
+                  </svg>
+                </button>
+
+                {areaDropdownOpen && (
+                  <div className={styles.multiSelectMenu}>
+                    <div className={styles.multiSelectMenuHeader}>
+                      <span>Select areas</span>
+                      {selectedAreas.length > 0 && (
+                        <button
+                          type="button"
+                          className={styles.multiSelectClearLink}
+                          onClick={() => setSelectedAreas([])}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    {areas.map((ar) => {
+                      const isSelected = selectedAreas.includes(ar);
+                      return (
+                        <label key={ar} className={styles.multiSelectOption}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleArea(ar)}
+                            className={styles.hiddenCheckbox}
+                          />
+                          <span
+                            className={`${styles.customCheckbox} ${
+                              isSelected ? styles.customCheckboxChecked : ''
+                            }`}
+                          >
+                            {isSelected && (
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </span>
+                          <span>{ar}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {hasActiveFilters && (
@@ -639,66 +769,162 @@ export default function CityEventsView({
               Free only
             </button>
 
-            <div className={styles.selectChipWrapper}>
-              <select
-                className={`${styles.selectChip} ${
-                  selectedActivity ? styles.selectChipActive : ''
+            {/* Multi-Select Activities (Mobile) */}
+            <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
+              <button
+                type="button"
+                className={`${styles.multiSelectTrigger} ${
+                  selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''
                 }`}
-                aria-label="Activity"
-                value={selectedActivity}
-                onChange={(e) => setSelectedActivity(e.target.value)}
+                onClick={() => setActivityDropdownOpen(!activityDropdownOpen)}
               >
-                <option value="">All activities</option>
-                {activities.map((act) => (
-                  <option key={act} value={act}>
-                    {act}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className={styles.selectArrow}
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+                <span>{activityLabel}</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path
+                    d={
+                      activityDropdownOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'
+                    }
+                  />
+                </svg>
+              </button>
+
+              {activityDropdownOpen && (
+                <div className={styles.multiSelectMenu}>
+                  <div className={styles.multiSelectMenuHeader}>
+                    <span>Activities</span>
+                    {selectedActivities.length > 0 && (
+                      <button
+                        type="button"
+                        className={styles.multiSelectClearLink}
+                        onClick={() => setSelectedActivities([])}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  {activities.map((act) => {
+                    const isSelected = selectedActivities.includes(act);
+                    return (
+                      <label key={act} className={styles.multiSelectOption}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleActivity(act)}
+                          className={styles.hiddenCheckbox}
+                        />
+                        <span
+                          className={`${styles.customCheckbox} ${
+                            isSelected ? styles.customCheckboxChecked : ''
+                          }`}
+                        >
+                          {isSelected && (
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </span>
+                        <span>{act}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            <div className={styles.selectChipWrapper}>
-              <select
-                className={`${styles.selectChip} ${
-                  selectedArea ? styles.selectChipActive : ''
+            {/* Multi-Select Areas (Mobile) */}
+            <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
+              <button
+                type="button"
+                className={`${styles.multiSelectTrigger} ${
+                  selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''
                 }`}
-                aria-label="Area"
-                value={selectedArea}
-                onChange={(e) => setSelectedArea(e.target.value)}
+                onClick={() => setAreaDropdownOpen(!areaDropdownOpen)}
               >
-                <option value="">All areas</option>
-                {areas.map((ar) => (
-                  <option key={ar} value={ar}>
-                    {ar}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className={styles.selectArrow}
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+                <span>{areaLabel}</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path
+                    d={areaDropdownOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'}
+                  />
+                </svg>
+              </button>
+
+              {areaDropdownOpen && (
+                <div className={styles.multiSelectMenu}>
+                  <div className={styles.multiSelectMenuHeader}>
+                    <span>Areas</span>
+                    {selectedAreas.length > 0 && (
+                      <button
+                        type="button"
+                        className={styles.multiSelectClearLink}
+                        onClick={() => setSelectedAreas([])}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  {areas.map((ar) => {
+                    const isSelected = selectedAreas.includes(ar);
+                    return (
+                      <label key={ar} className={styles.multiSelectOption}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleArea(ar)}
+                          className={styles.hiddenCheckbox}
+                        />
+                        <span
+                          className={`${styles.customCheckbox} ${
+                            isSelected ? styles.customCheckboxChecked : ''
+                          }`}
+                        >
+                          {isSelected && (
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </span>
+                        <span>{ar}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {hasActiveFilters && (
@@ -1085,15 +1311,22 @@ export default function CityEventsView({
                 – Kurt Vonnegut
               </figcaption>
             </figure>
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.footerDrinkBtn}
-            >
-              Buy me a drink
-            </a>
+
+            <div className={styles.footerSupportCol}>
+              <p className={styles.footerSupportText}>
+                Free for everyone, no ads.{' '}
+                <a
+                  href="https://buymeacoffee.com/someplacesocial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.buyDrinkLink}
+                >
+                  Buy me a drink
+                </a>
+              </p>
+            </div>
           </div>
+
           <div className={styles.footerCopyright}>
             © 2026 Someplace Social. All rights reserved.
           </div>
