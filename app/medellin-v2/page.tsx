@@ -161,7 +161,7 @@ export default function MedellinV2Page() {
     setEditEmail('');
     setEditStatus(null);
     setEditMessage(
-      `Event: ${event.title}\nOrganizer: ${event.organization || 'N/A'}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
+      `Event: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
     );
   };
 
@@ -338,6 +338,7 @@ export default function MedellinV2Page() {
                     const tagList = [ev.activity1, ev.activity2, ev.activity3].filter(
                       Boolean
                     );
+                    const displayVenue = ev.venue || ev.location;
 
                     return (
                       <div className={styles.ev} key={uniqueId}>
@@ -360,7 +361,7 @@ export default function MedellinV2Page() {
                             )}
                             <div className={styles.name}>
                               {ev.title}
-                              {ev.organization && (
+                              {ev.organization && ev.organization !== displayVenue && (
                                 <span className={styles.host}>
                                   {' '}
                                   w/ {ev.organization}
@@ -368,7 +369,7 @@ export default function MedellinV2Page() {
                               )}
                             </div>
                             <div className={styles.where}>
-                              {ev.location}
+                              {displayVenue}
                               {ev.area ? ` · ${ev.area}` : ''}
                             </div>
                             {tagList.length > 0 && (
