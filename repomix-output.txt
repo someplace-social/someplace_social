@@ -32,6 +32,13 @@ Project Structure Map:
 |   |   +--- [city]
 |   |   |   +--- layout.tsx
 |   |   |   \--- page.tsx
+|   |   +--- components
+|   |   |   +--- DayPicker.tsx
+|   |   |   +--- EventCard.tsx
+|   |   |   +--- EventFooter.tsx
+|   |   |   +--- EventHeader.tsx
+|   |   |   +--- FilterControls.tsx
+|   |   |   \--- SuggestEditModal.tsx
 |   |   +--- CityEventsView.tsx
 |   |   +--- EventsView.module.css
 |   |   \--- utils.ts
@@ -143,6 +150,12 @@ app/contact/page.tsx
 app/events/[city]/layout.tsx
 app/events/[city]/page.tsx
 app/events/CityEventsView.tsx
+app/events/components/DayPicker.tsx
+app/events/components/EventCard.tsx
+app/events/components/EventFooter.tsx
+app/events/components/EventHeader.tsx
+app/events/components/FilterControls.tsx
+app/events/components/SuggestEditModal.tsx
 app/events/EventsView.module.css
 app/events/utils.ts
 app/globals.css
@@ -249,461 +262,1116 @@ export default function CityLayout({
 }
 
 ================
-File: app/events/EventsView.module.css
+File: app/events/components/DayPicker.tsx
 ================
-.container {
-  --bg: #fffbee;
-  --card: #ffffff;
-  --ink: #1f1b16;
-  --muted: #6f675c;
-  --line: #eadfc8;
-  --accent: #d2432f;
-  --free: #1f7a4d;
-  --freebg: #e4f4ea;
-  --chip: #f3ead4;
-  box-sizing: border-box;
-  background-color: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  font-family: inherit;
+'use client';
+import styles from '../EventsView.module.css';
+const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+interface DayPickerProps {
+  rollingWeek: Date[];
+  activeDayIdx: number;
+  onSelectDay: (idx: number) => void;
+  getEventCountForDay: (idx: number) => number;
 }
-@media (prefers-color-scheme: dark) {
-  .container:not([data-theme='light']) {
-    --bg: #17130f;
-    --card: #221c16;
-    --ink: #f7efdf;
-    --muted: #a89d8c;
-    --line: #3a3128;
-    --accent: #ff6b52;
-    --free: #7be0a6;
-    --freebg: #1d3a2b;
-    --chip: #2c241b;
-  }
+export default function DayPicker({
+  rollingWeek,
+  activeDayIdx,
+  onSelectDay,
+  getEventCountForDay,
+}: DayPickerProps) {
+  return (
+    <>
+      <div className={styles.dayListVertical} role="group" aria-label="Day list">
+        {rollingWeek.map((day, idx) => {
+          const label =
+            idx === 0
+              ? 'Today'
+              : `${DAY_NAMES_SHORT[day.getDay()]} ${day.getDate()}`;
+          const count = getEventCountForDay(idx);
+          const isSelected = idx === activeDayIdx;
+          return (
+            <button
+              key={idx}
+              type="button"
+              className={`${styles.dayBtnVertical} ${
+                isSelected ? styles.dayBtnVerticalActive : ''
+              }`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectDay(idx)}
+            >
+              <span>{label}</span>
+              <span
+                className={`${styles.dayCountText} ${
+                  isSelected ? styles.dayCountTextActive : ''
+                }`}
+              >
+                {count} events
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
+        {rollingWeek.map((day, idx) => {
+          const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
+          const count = getEventCountForDay(idx);
+          const isSelected = idx === activeDayIdx;
+          return (
+            <button
+              key={idx}
+              type="button"
+              className={`${styles.mobileDayBtn} ${
+                isSelected ? styles.mobileDayBtnActive : ''
+              }`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectDay(idx)}
+            >
+              <span
+                className={`${styles.mobileDayLabel} ${
+                  isSelected ? styles.mobileDayLabelActive : ''
+                }`}
+              >
+                {dayShort}
+              </span>
+              <span className={styles.mobileDayNum}>{day.getDate()}</span>
+              <span
+                className={`${styles.mobileDayCount} ${
+                  isSelected ? styles.mobileDayCountActive : ''
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
 }
-.wrap {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 0 16px 48px;
+
+================
+File: app/events/components/EventCard.tsx
+================
+'use client';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  isFreePrice,
+  ensureExternalUrl,
+  getTagStyle,
+} from '../utils';
+import styles from '../EventsView.module.css';
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
 }
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 0 6px;
+export default function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList = [event.activity1, event.activity2, event.activity3].filter(Boolean);
+  const displayVenue = event.venue || event.location;
+  return (
+    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
+      <button
+        type="button"
+        className={styles.cardRow}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <div className={styles.timeCol}>
+          {start}
+          {end && <div className={styles.endTimeText}>to {end}</div>}
+        </div>
+        <div className={styles.infoCol}>
+          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
+          <div className={styles.eventTitle}>
+            {event.title}
+            {event.organization && event.organization !== displayVenue && (
+              <span className={styles.eventHost}> w/ {event.organization}</span>
+            )}
+          </div>
+          <div className={styles.eventLocation}>
+            {displayVenue}
+            {event.area ? ` · ${event.area}` : ''}
+          </div>
+          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12V4h8l10 10-8 8L3 12z" />
+              <circle cx="7.5" cy="8.5" r="1" />
+            </svg>
+            {isFree ? 'Free' : event.price || 'Varies'}
+          </div>
+          {tagList.length > 0 && (
+            <div className={styles.tagList}>
+              {tagList.map((tag) => {
+                const customStyle = getTagStyle(tag);
+                return (
+                  <span
+                    key={tag}
+                    className={styles.tagChip}
+                    style={{
+                      color: customStyle.color,
+                      backgroundColor: customStyle.background,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <span
+          aria-hidden="true"
+          className={`${styles.chevronCircle} ${
+            isOpen ? styles.chevronCircleOpen : ''
+          }`}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className={styles.expandedDrawer}>
+          {(event.about || event.notes) && (
+            <p className={styles.eventDescription}>{event.about || event.notes}</p>
+          )}
+          <div className={styles.drawerActionRow}>
+            <div className={styles.buttonGrid4}>
+              <a
+                href={
+                  event.map
+                    ? ensureExternalUrl(event.map)
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${displayVenue}, ${cityName}`
+                      )}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.actionBtnPrimary}
+                aria-label="Open in Maps"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Maps
+              </a>
+              {event.website ? (
+                <a
+                  href={ensureExternalUrl(event.website)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </div>
+              )}
+              {event.social ? (
+                <a
+                  href={ensureExternalUrl(event.social)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </div>
+              )}
+              {event.contact ? (
+                <a
+                  href={ensureExternalUrl(event.contact)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              className={styles.suggestEditBtn}
+              onClick={() => onOpenEdit(event)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
+              </svg>
+              Suggest edit
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
-.brand {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  line-height: 1;
-  letter-spacing: -0.01em;
+
+================
+File: app/events/components/EventFooter.tsx
+================
+import styles from '../EventsView.module.css';
+export default function EventFooter() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerQuoteRow}>
+          <div className={styles.footerLeftSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
+          <div className={styles.footerRightSection}>
+            <div className={styles.footerSupportText}>
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.buyDrinkLink}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }
-.brand small {
-  display: block;
-  font-weight: 500;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 3px;
-  letter-spacing: 0;
+
+================
+File: app/events/components/EventHeader.tsx
+================
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { CityConfig } from '../../lib/cities';
+import styles from '../EventsView.module.css';
+interface EventHeaderProps {
+  city: CityConfig;
+  allCityOptions: CityConfig[];
 }
-.top a {
-  font-size: 14px;
-  color: var(--ink);
-  text-decoration: none;
-  border: 1.5px solid var(--ink);
-  border-radius: 99px;
-  padding: 6px 12px;
-  font-weight: 700;
-  transition: opacity 0.15s ease;
+export default function EventHeader({ city, allCityOptions }: EventHeaderProps) {
+  const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const citiesMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
+        setCitiesMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandCol}>
+            <Link href={`/events/${city.slug}`} className={styles.brandLogoLink}>
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={360}
+                height={100}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            <div className={styles.brandSubtitle}>{city.heroLocation}</div>
+          </div>
+          <nav className={styles.navDesktop}>
+            <div className={styles.citiesWrapper} ref={citiesMenuRef}>
+              <button
+                type="button"
+                className={styles.citiesBtn}
+                aria-expanded={citiesMenuOpen}
+                onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
+              >
+                Cities
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {citiesMenuOpen && (
+                <div className={styles.citiesDropdown}>
+                  {allCityOptions.map((c) => {
+                    const isActive = c.slug === city.slug;
+                    return (
+                      <Link
+                        key={c.slug}
+                        href={`/events/${c.slug}`}
+                        className={`${styles.cityOption} ${
+                          isActive ? styles.cityOptionActive : ''
+                        }`}
+                        onClick={() => setCitiesMenuOpen(false)}
+                      >
+                        {c.name}
+                        {isActive && (
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12.5l4.5 4.5L19 7.5" />
+                          </svg>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
+            </Link>
+          </nav>
+          <div className={styles.navMobileActions}>
+            <Link href="/contact" className={styles.mobileAddBtn}>
+              + Add
+            </Link>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Choose City</div>
+            <div className={styles.drawerCityList}>
+              {allCityOptions.map((c) => {
+                const isActive = c.slug === city.slug;
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/events/${c.slug}`}
+                    className={`${styles.drawerCityItem} ${
+                      isActive ? styles.drawerCityItemActive : ''
+                    }`}
+                    onClick={() => setMobileDrawerOpen(false)}
+                  >
+                    {c.name}
+                    {isActive && <span>✓</span>}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              <Link
+                href="/about"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                + Add event
+              </Link>
+            </div>
+            <div className={styles.drawerFooter}>
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.drawerSupportBtn}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
-.top a:hover {
-  opacity: 0.8;
+
+================
+File: app/events/components/FilterControls.tsx
+================
+'use client';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import styles from '../EventsView.module.css';
+interface FilterControlsProps {
+  freeOnly: boolean;
+  onToggleFree: () => void;
+  timeSections: string[];
+  selectedTimes: string[];
+  onToggleTime: (timeName: string) => void;
+  onClearTimes: () => void;
+  activities: string[];
+  selectedActivities: string[];
+  onToggleActivity: (act: string) => void;
+  onClearActivities: () => void;
+  areas: string[];
+  selectedAreas: string[];
+  onToggleArea: (ar: string) => void;
+  onClearAreas: () => void;
+  hasActiveFilters: boolean;
+  onClearAllFilters: () => void;
 }
-.stick {
-  position: sticky;
-  top: 0;
-  background: var(--bg);
-  z-index: 5;
-  padding: 8px 0 10px;
-  margin: 0 -16px;
-  padding-left: 16px;
-  padding-right: 16px;
-  border-bottom: 1px solid var(--line);
+export default function FilterControls({
+  freeOnly,
+  onToggleFree,
+  timeSections,
+  selectedTimes,
+  onToggleTime,
+  onClearTimes,
+  activities,
+  selectedActivities,
+  onToggleActivity,
+  onClearActivities,
+  areas,
+  selectedAreas,
+  onToggleArea,
+  onClearAreas,
+  hasActiveFilters,
+  onClearAllFilters,
+}: FilterControlsProps) {
+  const [timeMenuOpen, setTimeMenuOpen] = useState(false);
+  const [actMenuOpen, setActMenuOpen] = useState(false);
+  const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+  const timeMenuRef = useRef<HTMLDivElement>(null);
+  const actMenuRef = useRef<HTMLDivElement>(null);
+  const areaMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (timeMenuRef.current && !timeMenuRef.current.contains(e.target as Node)) {
+        setTimeMenuOpen(false);
+      }
+      if (actMenuRef.current && !actMenuRef.current.contains(e.target as Node)) {
+        setActMenuOpen(false);
+      }
+      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
+        setAreaMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  const timeLabel = useMemo(() => {
+    if (selectedTimes.length === 0) return 'All times';
+    if (selectedTimes.length === 1) return selectedTimes[0];
+    return `Times (${selectedTimes.length})`;
+  }, [selectedTimes]);
+  const activityLabel = useMemo(() => {
+    if (selectedActivities.length === 0) return 'All activities';
+    if (selectedActivities.length === 1) return selectedActivities[0];
+    return `Activities (${selectedActivities.length})`;
+  }, [selectedActivities]);
+  const areaLabel = useMemo(() => {
+    if (selectedAreas.length === 0) return 'All areas';
+    if (selectedAreas.length === 1) return selectedAreas[0];
+    return `Areas (${selectedAreas.length})`;
+  }, [selectedAreas]);
+  return (
+    <>
+      <div className={styles.filterBlockDesktop}>
+        <div className={styles.filterTitle}>Filter</div>
+        <div className={styles.filterListVertical}>
+          <button
+            type="button"
+            className={styles.filterFreeBtn}
+            aria-pressed={freeOnly}
+            onClick={onToggleFree}
+          >
+            Free only
+            <span
+              className={`${styles.checkboxSquare} ${
+                freeOnly ? styles.checkboxChecked : ''
+              }`}
+            >
+              {freeOnly && (
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </span>
+          </button>
+          {}
+          <div className={styles.multiSelectWrapper} ref={timeMenuRef}>
+            <button
+              type="button"
+              className={`${styles.multiSelectTrigger} ${
+                selectedTimes.length > 0 ? styles.multiSelectTriggerActive : ''
+              }`}
+              aria-expanded={timeMenuOpen}
+              onClick={() => setTimeMenuOpen(!timeMenuOpen)}
+            >
+              <span>{timeLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d={timeMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+              </svg>
+            </button>
+            {timeMenuOpen && (
+              <div className={styles.multiSelectMenu}>
+                <div className={styles.multiSelectMenuHeader}>
+                  <span>Time of day</span>
+                  {selectedTimes.length > 0 && (
+                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearTimes}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+                {timeSections.map((tName) => {
+                  const isChecked = selectedTimes.includes(tName);
+                  return (
+                    <label key={tName} className={styles.multiSelectOption}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => onToggleTime(tName)}
+                        className={styles.hiddenCheckbox}
+                      />
+                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                        {isChecked && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </span>
+                      <span>{tName}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {}
+          <div className={styles.multiSelectWrapper} ref={actMenuRef}>
+            <button
+              type="button"
+              className={`${styles.multiSelectTrigger} ${
+                selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''
+              }`}
+              aria-expanded={actMenuOpen}
+              onClick={() => setActMenuOpen(!actMenuOpen)}
+            >
+              <span>{activityLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d={actMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+              </svg>
+            </button>
+            {actMenuOpen && (
+              <div className={styles.multiSelectMenu}>
+                <div className={styles.multiSelectMenuHeader}>
+                  <span>Select activities</span>
+                  {selectedActivities.length > 0 && (
+                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearActivities}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+                {activities.map((act) => {
+                  const isChecked = selectedActivities.includes(act);
+                  return (
+                    <label key={act} className={styles.multiSelectOption}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => onToggleActivity(act)}
+                        className={styles.hiddenCheckbox}
+                      />
+                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                        {isChecked && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </span>
+                      <span>{act}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {}
+          <div className={styles.multiSelectWrapper} ref={areaMenuRef}>
+            <button
+              type="button"
+              className={`${styles.multiSelectTrigger} ${
+                selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''
+              }`}
+              aria-expanded={areaMenuOpen}
+              onClick={() => setAreaMenuOpen(!areaMenuOpen)}
+            >
+              <span>{areaLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d={areaMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+              </svg>
+            </button>
+            {areaMenuOpen && (
+              <div className={styles.multiSelectMenu}>
+                <div className={styles.multiSelectMenuHeader}>
+                  <span>Select areas</span>
+                  {selectedAreas.length > 0 && (
+                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearAreas}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+                {areas.map((ar) => {
+                  const isChecked = selectedAreas.includes(ar);
+                  return (
+                    <label key={ar} className={styles.multiSelectOption}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => onToggleArea(ar)}
+                        className={styles.hiddenCheckbox}
+                      />
+                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                        {isChecked && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </span>
+                      <span>{ar}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              className={styles.clearFiltersBtn}
+              onClick={onClearAllFilters}
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+      {}
+      <div className={styles.mobileFiltersRow}>
+        <button
+          type="button"
+          className={`${styles.mobileFreeBtn} ${freeOnly ? styles.mobileFreeBtnActive : ''}`}
+          onClick={onToggleFree}
+        >
+          Free only
+        </button>
+        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
+          <button
+            type="button"
+            className={`${styles.multiSelectTrigger} ${selectedTimes.length > 0 ? styles.multiSelectTriggerActive : ''}`}
+            onClick={() => setTimeMenuOpen(!timeMenuOpen)}
+          >
+            <span>{timeLabel}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d={timeMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+            </svg>
+          </button>
+          {timeMenuOpen && (
+            <div className={styles.multiSelectMenu}>
+              <div className={styles.multiSelectMenuHeader}>
+                <span>Time of day</span>
+                {selectedTimes.length > 0 && (
+                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearTimes}>
+                    Clear
+                  </button>
+                )}
+              </div>
+              {timeSections.map((tName) => {
+                const isChecked = selectedTimes.includes(tName);
+                return (
+                  <label key={tName} className={styles.multiSelectOption}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => onToggleTime(tName)}
+                      className={styles.hiddenCheckbox}
+                    />
+                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                      {isChecked && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    <span>{tName}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
+          <button
+            type="button"
+            className={`${styles.multiSelectTrigger} ${selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''}`}
+            onClick={() => setActMenuOpen(!actMenuOpen)}
+          >
+            <span>{activityLabel}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d={actMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+            </svg>
+          </button>
+          {actMenuOpen && (
+            <div className={styles.multiSelectMenu}>
+              <div className={styles.multiSelectMenuHeader}>
+                <span>Activities</span>
+                {selectedActivities.length > 0 && (
+                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearActivities}>
+                    Clear
+                  </button>
+                )}
+              </div>
+              {activities.map((act) => {
+                const isChecked = selectedActivities.includes(act);
+                return (
+                  <label key={act} className={styles.multiSelectOption}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => onToggleActivity(act)}
+                      className={styles.hiddenCheckbox}
+                    />
+                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                      {isChecked && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    <span>{act}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
+          <button
+            type="button"
+            className={`${styles.multiSelectTrigger} ${selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''}`}
+            onClick={() => setAreaMenuOpen(!areaMenuOpen)}
+          >
+            <span>{areaLabel}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d={areaMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+            </svg>
+          </button>
+          {areaMenuOpen && (
+            <div className={styles.multiSelectMenu}>
+              <div className={styles.multiSelectMenuHeader}>
+                <span>Areas</span>
+                {selectedAreas.length > 0 && (
+                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearAreas}>
+                    Clear
+                  </button>
+                )}
+              </div>
+              {areas.map((ar) => {
+                const isChecked = selectedAreas.includes(ar);
+                return (
+                  <label key={ar} className={styles.multiSelectOption}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => onToggleArea(ar)}
+                      className={styles.hiddenCheckbox}
+                    />
+                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
+                      {isChecked && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    <span>{ar}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            className={styles.clearFiltersBtn}
+            onClick={onClearAllFilters}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    </>
+  );
 }
-.days {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 10px;
+
+================
+File: app/events/components/SuggestEditModal.tsx
+================
+'use client';
+import { useState } from 'react';
+import { Event } from '../../lib/google-sheets';
+import styles from '../EventsView.module.css';
+interface SuggestEditModalProps {
+  event: Event;
+  cityName: string;
+  onClose: () => void;
 }
-.days::-webkit-scrollbar,
-.filters::-webkit-scrollbar {
-  display: none;
-}
-.day {
-  flex: 0 0 auto;
-  min-width: 58px;
-  border: 1.5px solid var(--line);
-  background: var(--card);
-  color: var(--ink);
-  border-radius: 14px;
-  padding: 8px 6px 7px;
-  text-align: center;
-  cursor: pointer;
-  font: inherit;
-  transition: background-color 0.15s, border-color 0.15s;
-}
-.day b {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 20px;
-  line-height: 1.1;
-}
-.day span {
-  display: block;
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.day[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
-}
-.day[aria-pressed='true'] span {
-  color: var(--bg);
-  opacity: 0.8;
-}
-.filters {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  align-items: center;
-}
-.chip,
-select.chip {
-  flex: 0 0 auto;
-  font-size: 14px;
-  font-weight: 500;
-  background: var(--chip);
-  color: var(--ink);
-  border: 1.5px solid transparent;
-  border-radius: 99px;
-  padding: 7px 13px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  font-family: inherit;
-}
-select.chip {
-  padding-right: 14px;
-}
-.chip[aria-pressed='true'],
-select.chip.on {
-  background: var(--accent);
-  color: #ffffff;
-}
-.clear {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 14px;
-  text-decoration: underline;
-  cursor: pointer;
-  flex: 0 0 auto;
-  padding: 4px 6px;
-  font-family: inherit;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 30px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 22px 0 2px;
-}
-.sub {
-  color: var(--muted);
-  font-size: 14px;
-  margin: 0 0 6px;
-}
-.grp {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  margin: 22px 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.grp::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-.ev {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.row {
-  display: flex;
-  gap: 14px;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: 0;
-  color: inherit;
-  font: inherit;
-  padding: 13px 14px;
-  cursor: pointer;
-  align-items: flex-start;
-}
-.time {
-  flex: 0 0 48px;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 22px;
-  line-height: 1;
-}
-.time small {
-  display: block;
-  font-family: inherit;
-  font-weight: 500;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-.mid {
-  flex: 1;
-  min-width: 0;
-}
-.name {
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1.25;
-}
-.host {
-  color: var(--muted);
-  font-weight: 400;
-}
-.where {
-  font-size: 14px;
-  color: var(--muted);
-  margin-top: 3px;
-}
-.tags {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 6px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.tags i {
-  font-style: normal;
-  background: var(--chip);
-  border-radius: 6px;
-  padding: 2px 7px;
-}
-.price {
-  flex: 0 0 auto;
-  font-weight: 700;
-  font-size: 13px;
-  border-radius: 99px;
-  padding: 4px 10px;
-  border: 1.5px solid var(--line);
-}
-.price.f {
-  background: var(--freebg);
-  color: var(--free);
-  border-color: transparent;
-}
-.next {
-  display: inline-block;
-  font-weight: 700;
-  font-size: 11px;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 6px;
-  padding: 2px 7px;
-  margin-bottom: 6px;
-}
-.more {
-  padding: 0 14px 14px 76px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.more a,
-.more button {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  border: 1.5px solid var(--ink);
-  border-radius: 99px;
-  padding: 7px 14px;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-}
-.more a.map {
-  background: var(--ink);
-  color: var(--bg);
-}
-.more button.edit {
-  border-color: var(--line);
-  color: var(--muted);
-  font-weight: 500;
-}
-.empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 44px 10px;
-}
-.empty b {
-  display: block;
-  color: var(--ink);
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 20px;
-  margin-bottom: 6px;
-}
-.foot {
-  margin-top: 34px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.6;
-}
-.foot a {
-  color: var(--ink);
-  font-weight: 700;
-}
-.row:focus-visible,
-.day:focus-visible,
-.chip:focus-visible,
-.more a:focus-visible,
-.more button:focus-visible,
-select:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.modalContent {
-  background: var(--card);
-  color: var(--ink);
-  border-radius: 20px;
-  max-width: 480px;
-  width: 100%;
-  padding: 24px;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-.modalHeader h2 {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-}
-.modalHeader small {
-  display: block;
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 4px;
-}
-.closeBtn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.modalForm {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.modalField {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.modalField label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.modalInput,
-.modalTextarea {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--ink);
-  font: inherit;
-  font-size: 14px;
-}
-.modalTextarea {
-  min-height: 120px;
-  resize: vertical;
-}
-.modalActions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 10px;
-}
-.submitBtn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 99px;
-  padding: 9px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.cancelBtn {
-  background: transparent;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
-  border-radius: 99px;
-  padding: 9px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.statusMsg {
-  margin-top: 8px;
-  font-size: 13px;
-  font-weight: 600;
+export default function SuggestEditModal({
+  event,
+  cityName,
+  onClose,
+}: SuggestEditModalProps) {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState(
+    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
+  );
+  const [status, setStatus] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus('Submitting update...');
+    try {
+      const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Edit a Listing (${cityName})`,
+          message: fullMessage,
+        }),
+      });
+      const res = await response.json();
+      if (res.success) {
+        setStatus('Thanks! Your edit suggestion has been sent.');
+        setTimeout(onClose, 1800);
+      } else {
+        setStatus('Failed to send. Please try again.');
+      }
+    } catch {
+      setStatus('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div
+        className={styles.modalContent}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className={styles.modalHeader}>
+          <div>
+            <h2 className={styles.modalTitle}>Suggest Edit</h2>
+            <small className={styles.modalSubtitle}>{event.title}</small>
+          </div>
+          <button
+            type="button"
+            className={styles.modalCloseBtn}
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.modalField}>
+            <label htmlFor="editEmail">Your Email (optional)</label>
+            <input
+              id="editEmail"
+              type="email"
+              className={styles.modalInput}
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalField}>
+            <label htmlFor="editMessage">What needs to be changed? *</label>
+            <textarea
+              id="editMessage"
+              required
+              className={styles.modalTextarea}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalActions}>
+            <button
+              type="button"
+              className={styles.modalCancelBtn}
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.modalSubmitBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Edit'}
+            </button>
+          </div>
+          {status && <p className={styles.statusMsg}>{status}</p>}
+        </form>
+      </div>
+    </div>
+  );
 }
 
 ================
@@ -920,571 +1588,6 @@ export default async function CityEventsPage({ params }: PageProps) {
 }
 
 ================
-File: app/events/CityEventsView.tsx
-================
-'use client';
-import { useState, useEffect, useMemo, useId } from 'react';
-import Link from 'next/link';
-import { CityConfig } from '../lib/cities';
-import { getEvents, Event } from '../lib/google-sheets';
-import {
-  parseHour,
-  formatTimeRange,
-  isFreePrice,
-  matchesDay,
-  ensureExternalUrl,
-} from './utils';
-import styles from './EventsView.module.css';
-const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const DAY_NAMES_LONG = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-const MONTH_NAMES = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-type TimeGroup = {
-  name: string;
-  predicate: (hour: number) => boolean;
-};
-const TIME_GROUPS: TimeGroup[] = [
-  { name: 'Morning', predicate: (h) => h < 12 },
-  { name: 'Afternoon', predicate: (h) => h >= 12 && h < 17 },
-  { name: 'Evening', predicate: (h) => h >= 17 && h < 20 },
-  { name: 'Night', predicate: (h) => h >= 20 },
-];
-export default function CityEventsView({
-  city,
-  initialEvents = [],
-}: {
-  city: CityConfig;
-  initialEvents?: Event[];
-}) {
-  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
-  const [loading, setLoading] = useState(initialEvents.length === 0);
-  const [activeDayIdx, setActiveDayIdx] = useState(0);
-  const [freeOnly, setFreeOnly] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState('');
-  const [selectedArea, setSelectedArea] = useState('');
-  const [openEventId, setOpenEventId] = useState<string | null>(null);
-  const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
-  const [editEmail, setEditEmail] = useState('');
-  const [editMessage, setEditMessage] = useState('');
-  const [editStatus, setEditStatus] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const activitySelectId = useId();
-  const areaSelectId = useId();
-  useEffect(() => {
-    if (initialEvents.length === 0) {
-      setLoading(true);
-      getEvents(city)
-        .then((data) => {
-          setAllEvents(data);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setAllEvents(initialEvents);
-      setLoading(false);
-    }
-  }, [city, initialEvents]);
-  const rollingWeek = useMemo(() => {
-    const today = new Date();
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      return d;
-    });
-  }, []);
-  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
-  const now = new Date();
-  const nowHour = now.getHours() + now.getMinutes() / 60;
-  const activities = useMemo(() => {
-    const set = new Set<string>();
-    allEvents.forEach((ev) => {
-      if (ev.activity1) set.add(ev.activity1.trim());
-      if (ev.activity2) set.add(ev.activity2.trim());
-      if (ev.activity3) set.add(ev.activity3.trim());
-    });
-    return Array.from(set).filter(Boolean).sort();
-  }, [allEvents]);
-  const areas = useMemo(() => {
-    const set = new Set<string>();
-    allEvents.forEach((ev) => {
-      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 30) {
-        set.add(ev.area.trim());
-      }
-    });
-    return Array.from(set).sort();
-  }, [allEvents]);
-  const getFilteredEventsForDay = (dayIndex: number) => {
-    const day = rollingWeek[dayIndex];
-    if (!day) return [];
-    const dayName = DAY_NAMES_LONG[day.getDay()];
-    return allEvents
-      .filter((ev) => {
-        const matchesCurrentDay = matchesDay(ev.dayOfWeek, dayName);
-        if (!matchesCurrentDay) return false;
-        if (freeOnly && !isFreePrice(ev.price)) return false;
-        if (selectedActivity) {
-          const acts = [ev.activity1, ev.activity2, ev.activity3].map((a) =>
-            (a || '').trim().toLowerCase()
-          );
-          if (!acts.includes(selectedActivity.toLowerCase())) return false;
-        }
-        if (selectedArea && ev.area.trim() !== selectedArea.trim()) {
-          return false;
-        }
-        return true;
-      })
-      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
-  };
-  const currentList = useMemo(() => {
-    return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedActivity, selectedArea, rollingWeek]);
-  const nextUpEventId = useMemo(() => {
-    if (activeDayIdx !== 0) return null;
-    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
-    return nextEvent ? nextEvent.id || nextEvent.title : null;
-  }, [activeDayIdx, currentList, nowHour]);
-  const hasActiveFilters = freeOnly || selectedActivity !== '' || selectedArea !== '';
-  const clearFilters = () => {
-    setFreeOnly(false);
-    setSelectedActivity('');
-    setSelectedArea('');
-  };
-  const handleOpenEdit = (event: Event) => {
-    setEditModalEvent(event);
-    setEditEmail('');
-    setEditStatus(null);
-    setEditMessage(
-      `City: ${city.name}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
-    );
-  };
-  const handleCloseEdit = () => {
-    setEditModalEvent(null);
-    setEditStatus(null);
-  };
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editModalEvent) return;
-    setIsSubmitting(true);
-    setEditStatus('Submitting update...');
-    try {
-      const fullMessage = `Sender Email: ${editEmail || 'Not provided'}\n\n${editMessage}`;
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: `Edit a Listing (${city.name})`,
-          message: fullMessage,
-        }),
-      });
-      const res = await response.json();
-      if (res.success) {
-        setEditStatus('Thanks! Your edit suggestion has been sent.');
-        setTimeout(() => {
-          handleCloseEdit();
-        }, 1800);
-      } else {
-        setEditStatus('Failed to send. Please try again.');
-      }
-    } catch {
-      setEditStatus('An error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  return (
-    <div className={styles.container}>
-      <div className={styles.wrap}>
-        <header className={styles.top}>
-          <div className={styles.brand}>
-            Someplace Social
-            <small>{city.heroLocation}</small>
-          </div>
-          <Link href="/contact">+ Add event</Link>
-        </header>
-        <section className={styles.stick}>
-          <div className={styles.days} role="group" aria-label="Pick a day">
-            {rollingWeek.map((day, idx) => {
-              const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
-              const count = getFilteredEventsForDay(idx).length;
-              const isSelected = idx === activeDayIdx;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  className={styles.day}
-                  aria-pressed={isSelected}
-                  onClick={() => {
-                    setActiveDayIdx(idx);
-                    setOpenEventId(null);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                >
-                  <span>{dayShort}</span>
-                  <b>{day.getDate()}</b>
-                  <span>{count} events</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className={styles.filters}>
-            <button
-              type="button"
-              className={styles.chip}
-              aria-pressed={freeOnly}
-              onClick={() => setFreeOnly(!freeOnly)}
-            >
-              Free only
-            </button>
-            <select
-              id={activitySelectId}
-              className={`${styles.chip} ${selectedActivity ? styles.on : ''}`}
-              aria-label="Activity"
-              value={selectedActivity}
-              onChange={(e) => setSelectedActivity(e.target.value)}
-            >
-              <option value="">All activities</option>
-              {activities.map((act) => (
-                <option key={act} value={act}>
-                  {act}
-                </option>
-              ))}
-            </select>
-            <select
-              id={areaSelectId}
-              className={`${styles.chip} ${selectedArea ? styles.on : ''}`}
-              aria-label="Area"
-              value={selectedArea}
-              onChange={(e) => setSelectedArea(e.target.value)}
-            >
-              <option value="">All areas</option>
-              {areas.map((ar) => (
-                <option key={ar} value={ar}>
-                  {ar}
-                </option>
-              ))}
-            </select>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                className={styles.clear}
-                onClick={clearFilters}
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </section>
-        <h1 className={styles.title}>
-          {activeDayIdx === 0
-            ? 'Today'
-            : activeDayIdx === 1
-            ? 'Tomorrow'
-            : DAY_NAMES_LONG[activeDate.getDay()]}
-        </h1>
-        <p className={styles.sub}>
-          {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
-          {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
-          {currentList.length === 1 ? 'thing' : 'things'} on
-        </p>
-        <main id="list">
-          {loading ? (
-            <div className={styles.empty}>
-              <b>Loading {city.name} events...</b>
-              Gathering weekly activities.
-            </div>
-          ) : currentList.length === 0 ? (
-            <div className={styles.empty}>
-              <b>Nothing listed{hasActiveFilters ? ' with these filters' : ''}</b>
-              {hasActiveFilters
-                ? 'Try clearing a filter.'
-                : 'Know a spot that runs on this day? Add it.'}
-            </div>
-          ) : (
-            TIME_GROUPS.map((group) => {
-              const groupEvents = currentList.filter((ev) =>
-                group.predicate(parseHour(ev.startTime))
-              );
-              if (groupEvents.length === 0) return null;
-              return (
-                <div key={group.name}>
-                  <div className={styles.grp}>{group.name}</div>
-                  {groupEvents.map((ev, i) => {
-                    const uniqueId = ev.id || `${ev.title}-${i}`;
-                    const isOpen = openEventId === uniqueId;
-                    const isNextUp = uniqueId === nextUpEventId;
-                    const { start, end } = formatTimeRange(ev.startTime, ev.endTime);
-                    const isFree = isFreePrice(ev.price);
-                    const tagList = [ev.activity1, ev.activity2, ev.activity3].filter(
-                      Boolean
-                    );
-                    const displayVenue = ev.venue || ev.location;
-                    return (
-                      <div className={styles.ev} key={uniqueId}>
-                        <button
-                          type="button"
-                          className={styles.row}
-                          aria-expanded={isOpen}
-                          onClick={() => setOpenEventId(isOpen ? null : uniqueId)}
-                        >
-                          <div className={styles.time}>
-                            {start}
-                            {end && <small>to {end}</small>}
-                          </div>
-                          <div className={styles.mid}>
-                            {isNextUp && (
-                              <>
-                                <span className={styles.next}>Next up</span>
-                                <br />
-                              </>
-                            )}
-                            <div className={styles.name}>
-                              {ev.title}
-                              {ev.organization && ev.organization !== displayVenue && (
-                                <span className={styles.host}>
-                                  {' '}
-                                  w/ {ev.organization}
-                                </span>
-                              )}
-                            </div>
-                            <div className={styles.where}>
-                              {displayVenue}
-                              {ev.area ? ` · ${ev.area}` : ''}
-                            </div>
-                            {tagList.length > 0 && (
-                              <div className={styles.tags}>
-                                {tagList.map((tag) => (
-                                  <i key={tag}>{tag}</i>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <span className={`${styles.price} ${isFree ? styles.f : ''}`}>
-                            {ev.price || 'Free'}
-                          </span>
-                        </button>
-                        {isOpen && (
-                          <div className={styles.more}>
-                            {ev.map && (
-                              <a
-                                className={styles.map}
-                                href={ensureExternalUrl(ev.map)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Open in Maps
-                              </a>
-                            )}
-                            {ev.website && (
-                              <a
-                                href={ensureExternalUrl(ev.website)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Website
-                              </a>
-                            )}
-                            {ev.social && (
-                              <a
-                                href={ensureExternalUrl(ev.social)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Instagram
-                              </a>
-                            )}
-                            {ev.contact && (
-                              <a
-                                href={ensureExternalUrl(ev.contact)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Contact
-                              </a>
-                            )}
-                            <button
-                              type="button"
-                              className={styles.edit}
-                              onClick={() => handleOpenEdit(ev)}
-                            >
-                              Suggest edit
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })
-          )}
-        </main>
-        <footer className={styles.foot} id="add">
-          Details change fast. Tap an event, then <b>Suggest edit</b> if something is
-          off. Know about an event? <Link href="/contact">Submit a listing</Link>.
-          <br />
-          <br />
-          Free for everyone, no ads.{' '}
-          <a
-            href="https://buymeacoffee.com/someplacesocial"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Buy me a drink
-          </a>
-          .
-        </footer>
-      </div>
-      {editModalEvent && (
-        <div className={styles.modalBackdrop} onClick={handleCloseEdit}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className={styles.modalHeader}>
-              <div>
-                <h2>Suggest Edit</h2>
-                <small>{editModalEvent.title}</small>
-              </div>
-              <button
-                type="button"
-                className={styles.closeBtn}
-                onClick={handleCloseEdit}
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleEditSubmit} className={styles.modalForm}>
-              <div className={styles.modalField}>
-                <label htmlFor="editEmail">Your Email (optional)</label>
-                <input
-                  id="editEmail"
-                  type="email"
-                  className={styles.modalInput}
-                  placeholder="name@example.com"
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                />
-              </div>
-              <div className={styles.modalField}>
-                <label htmlFor="editMessage">What needs to be changed? *</label>
-                <textarea
-                  id="editMessage"
-                  required
-                  className={styles.modalTextarea}
-                  value={editMessage}
-                  onChange={(e) => setEditMessage(e.target.value)}
-                />
-              </div>
-              <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  className={styles.cancelBtn}
-                  onClick={handleCloseEdit}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitBtn}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Edit'}
-                </button>
-              </div>
-              {editStatus && <p className={styles.statusMsg}>{editStatus}</p>}
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-================
-File: app/events/utils.ts
-================
-export function parseHour(timeStr: string): number {
-  if (!timeStr) return 18;
-  const cleaned = timeStr.trim().toLowerCase();
-  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
-  if (match) {
-    let hour = parseInt(match[1], 10);
-    const minute = match[2] ? parseInt(match[2], 10) : 0;
-    const meridian = match[3];
-    if (meridian) {
-      const isPm = meridian.startsWith('p');
-      const isAm = meridian.startsWith('a');
-      if (isPm && hour < 12) hour += 12;
-      if (isAm && hour === 12) hour = 0;
-    } else {
-      if (hour >= 1 && hour <= 6) {
-        hour += 12;
-      }
-    }
-    return hour + minute / 60;
-  }
-  const numMatch = cleaned.match(/\d+/);
-  return numMatch ? parseInt(numMatch[0], 10) : 18;
-}
-export function formatTimeLabel(timeStr: string): string {
-  if (!timeStr) return '';
-  const cleaned = timeStr.trim();
-  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
-  if (match) {
-    const hour = match[1];
-    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
-    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
-    return `${hour}${minute}${meridian}`;
-  }
-  return cleaned;
-}
-export function formatTimeRange(startTime: string, endTime: string): { start: string; end?: string } {
-  const start = formatTimeLabel(startTime);
-  const end = endTime ? formatTimeLabel(endTime) : undefined;
-  return { start, end };
-}
-export function isFreePrice(price: string): boolean {
-  if (!price) return true;
-  const p = price.trim().toLowerCase();
-  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
-}
-export function matchesDay(eventDays: string, targetDayName: string): boolean {
-  if (!eventDays || !targetDayName) return false;
-  return eventDays.toLowerCase().includes(targetDayName.toLowerCase());
-}
-export function ensureExternalUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
-}
-
-================
 File: app/medellin/EventListing.tsx
 ================
 import { Event } from '../lib/google-sheets';
@@ -1662,14 +1765,99 @@ export default function Accordion({ title, children }: AccordionProps) {
 }
 
 ================
-File: app/globals.css
+File: app/events/utils.ts
 ================
-body {
-  background-color: #272626;
-  color: #272626;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+export function parseHour(timeStr: string): number {
+  if (!timeStr) return 18;
+  const cleaned = timeStr.trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
+  if (match) {
+    let hour = parseInt(match[1], 10);
+    const minute = match[2] ? parseInt(match[2], 10) : 0;
+    const meridian = match[3];
+    if (meridian) {
+      const isPm = meridian.startsWith('p');
+      const isAm = meridian.startsWith('a');
+      if (isPm && hour < 12) hour += 12;
+      if (isAm && hour === 12) hour = 0;
+    } else {
+      if (hour >= 1 && hour <= 6) {
+        hour += 12;
+      }
+    }
+    return hour + minute / 60;
+  }
+  const numMatch = cleaned.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0], 10) : 18;
+}
+export function formatTimeLabel(timeStr: string): string {
+  if (!timeStr) return '';
+  const cleaned = timeStr.trim();
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  if (match) {
+    const hour = match[1];
+    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
+    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
+    return `${hour}${minute}${meridian}`;
+  }
+  return cleaned;
+}
+export function formatTimeRange(
+  startTime: string,
+  endTime: string
+): { start: string; end?: string } {
+  const start = formatTimeLabel(startTime);
+  const end = endTime ? formatTimeLabel(endTime) : undefined;
+  return { start, end };
+}
+export function isFreePrice(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+export function matchesDay(eventDays: string, targetDayName: string): boolean {
+  if (!eventDays || !targetDayName) return false;
+  return eventDays.toLowerCase().includes(targetDayName.toLowerCase());
+}
+export function ensureExternalUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+export function getTagStyle(tag: string): { color: string; background: string } {
+  const t = (tag || '').trim().toLowerCase();
+  if (t.includes('science')) {
+    return { color: '#0f5c5c', background: '#d3efec' };
+  }
+  if (t.includes('craft')) {
+    return { color: '#8a3d0c', background: '#fde4cf' };
+  }
+  if (t.includes('food') || t.includes('drink')) {
+    return { color: '#6b5200', background: '#f4eab8' };
+  }
+  if (t.includes('community') || t.includes('social')) {
+    return { color: '#3b4a54', background: '#e1e7ea' };
+  }
+  if (t.includes('music') || t.includes('bluegrass')) {
+    return { color: '#5b2a86', background: '#ecdcf7' };
+  }
+  if (t.includes('trivia')) {
+    return { color: '#2d3f7a', background: '#dde4f7' };
+  }
+  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
+    return { color: '#8a1f4f', background: '#fbdce9' };
+  }
+  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
+    return { color: '#852b2b', background: '#f9dede' };
+  }
+  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
+    return { color: '#1f6a42', background: '#d7f0df' };
+  }
+  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
+    return { color: '#2c4f7c', background: '#dbe5f7' };
+  }
+  return { color: '#4f483e', background: '#f3ead4' };
 }
 
 ================
@@ -1837,6 +2025,1168 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
 }
 
 ================
+File: app/events/EventsView.module.css
+================
+.pageContainer {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.header {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
+}
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.brandLogoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 72px;
+  width: auto;
+  max-width: 380px;
+  object-fit: contain;
+  filter: brightness(0);
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.navDesktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.citiesWrapper {
+  position: relative;
+}
+.citiesBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.citiesBtn:hover {
+  background-color: #ebdcb9;
+}
+.citiesDropdown {
+  position: absolute;
+  z-index: 40;
+  top: 100%;
+  left: 0;
+  width: 200px;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.cityOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+}
+.cityOption:hover {
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive {
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+}
+.navLink:hover {
+  color: var(--accent);
+}
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  margin-left: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.addEventBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.mobileAddBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 27, 22, 0.45);
+  z-index: 100;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background-color: var(--bg);
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.drawerTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.drawerCloseBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerCityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerCityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.drawerCityItemActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
+}
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerFooter {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.drawerSupportBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+.mainLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 32px 72px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+}
+.aside {
+  flex: 0 0 280px;
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+}
+.asideTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+.asideSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0;
+}
+.dayListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 28px;
+}
+.dayBtnVertical {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 14px;
+  background: none;
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.dayBtnVertical:hover {
+  background-color: var(--topbar-bg);
+}
+.dayBtnVerticalActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
+}
+.dayCountText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.dayCountTextActive {
+  color: #e6dfd0;
+}
+.filterBlockDesktop {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filterFreeBtn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filterFreeBtn:hover {
+  background-color: #ebdcba;
+}
+.checkboxSquare {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checkboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+.multiSelectTrigger:hover {
+  background-color: #ebdcba;
+}
+.multiSelectTriggerActive {
+  background-color: #ebdcba;
+  font-weight: 700;
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 0;
+  font-family: inherit;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileSectionHeader {
+  display: none;
+}
+.mobileDaysGrid {
+  display: none;
+}
+.mobileFiltersRow {
+  display: none;
+}
+.contentCol {
+  flex: 999 1 520px;
+  min-width: 0;
+}
+.timeGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.timeGroupHeader:first-of-type {
+  margin-top: 0;
+}
+.timeGroupLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.eventCard {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.eventCardOpen {
+  border-color: var(--ink);
+  box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
+}
+.cardRow {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.timeCol {
+  flex: 0 0 76px;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1;
+}
+.endTimeText {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.infoCol {
+  flex: 1;
+  min-width: 0;
+  padding-right: 48px;
+}
+.nextUpBadge {
+  display: inline-block;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  background-color: var(--accent);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-bottom: 6px;
+}
+.eventTitle {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.eventHost {
+  color: var(--muted);
+  font-weight: 400;
+}
+.eventLocation {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.priceLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.priceFree {
+  color: var(--free);
+}
+.pricePaid {
+  color: var(--price-donation);
+}
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.tagChip {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.chevronCircle {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  pointer-events: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.chevronCircleOpen {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.expandedDrawer {
+  border-top: 1px solid var(--line);
+  padding: 16px 20px 18px 116px;
+  background-color: transparent;
+}
+.eventDescription {
+  margin: 0 0 14px;
+  max-width: 580px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4f483e;
+}
+.drawerActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.buttonGrid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  gap: 8px;
+}
+.actionBtnPrimary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 60px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.actionBtnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+.actionBtnOutline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 60px;
+  border: 1.5px solid #e0d4b8;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  text-decoration: none;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.actionBtnOutline:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.suggestEditBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.suggestEditBtn:hover {
+  color: var(--accent);
+}
+.emptyState {
+  text-align: center;
+  color: var(--muted);
+  padding: 56px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.emptyStateTitle {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.footer {
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  margin-top: auto;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 32px 32px;
+}
+.footerQuoteRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px 48px;
+}
+.footerLeftSection {
+  flex: 1 1 500px;
+  max-width: 580px;
+}
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.footerAuthor {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footerCopyright {
+  margin-top: 18px;
+  font-size: 11px;
+  color: #8c8275;
+}
+.footerRightSection {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+.footerSupportText {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #4f483e;
+}
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 27, 22, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modalContent {
+  background-color: #ffffff;
+  color: var(--ink);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.2);
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.modalTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+.modalSubtitle {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.modalField label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.modalInput,
+.modalTextarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background-color: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.modalTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.modalSubmitBtn {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 99px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.modalCancelBtn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.statusMsg {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+@media (max-width: 899px) {
+  .headerInner {
+    padding: 14px 16px;
+  }
+  .logoImage {
+    height: 50px;
+    max-width: 260px;
+  }
+  .brandSubtitle {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .navDesktop {
+    display: none;
+  }
+  .navMobileActions {
+    display: flex;
+  }
+  .mainLayout {
+    padding: 16px 16px 40px;
+    flex-direction: column;
+    gap: 0;
+  }
+  .aside {
+    display: none;
+  }
+  .mobileDaysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    width: 100%;
+  }
+  .mobileDayBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 0 7px;
+    min-height: 66px;
+    border: 1.5px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .mobileDayBtnActive {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .mobileDayLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayLabelActive {
+    color: #e6dfd0;
+  }
+  .mobileDayNum {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .mobileDayCount {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayCountActive {
+    color: #e6dfd0;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobileFreeBtn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+    background-color: var(--topbar-bg);
+    color: var(--ink);
+    border: 0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  .mobileFreeBtnActive {
+    background-color: var(--ink);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .mobileSectionHeader {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  .mobileHeadingTitle {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+  }
+  .mobileHeadingSubtitle {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 0;
+  }
+  .timeGroupHeader {
+    margin: 18px 0 8px;
+  }
+  .cardRow {
+    gap: 14px;
+    padding: 14px;
+  }
+  .timeCol {
+    flex: 0 0 54px;
+    font-size: 22px;
+  }
+  .endTimeText {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .infoCol {
+    padding-right: 36px;
+  }
+  .eventTitle {
+    font-size: 16px;
+  }
+  .eventLocation {
+    font-size: 14px;
+  }
+  .priceLine {
+    font-size: 14px;
+  }
+  .chevronCircle {
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+  }
+  .expandedDrawer {
+    padding: 14px 14px 6px;
+  }
+  .eventDescription {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .drawerActionRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .buttonGrid4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+  .suggestEditBtn {
+    align-self: flex-end;
+  }
+  .footerInner {
+    padding: 24px 16px 28px;
+  }
+  .footerQuoteRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .footerLeftSection {
+    max-width: 100%;
+  }
+  .footerQuoteText {
+    font-size: 13px;
+  }
+  .footerRightSection {
+    width: 100%;
+  }
+}
+
+================
+File: app/globals.css
+================
+:root {
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --topbar-bg: #f3ead4;
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent);
+}
+
+================
 File: app/lib/cities.ts
 ================
 export type CityConfig = {
@@ -1984,6 +3334,298 @@ File: app/components/FilterBar.module.css
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
+}
+
+================
+File: app/events/CityEventsView.tsx
+================
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { CityConfig, CITIES } from '../lib/cities';
+import { getEvents, Event } from '../lib/google-sheets';
+import { parseHour, isFreePrice, matchesDay } from './utils';
+import EventHeader from './components/EventHeader';
+import DayPicker from './components/DayPicker';
+import FilterControls from './components/FilterControls';
+import EventCard from './components/EventCard';
+import SuggestEditModal from './components/SuggestEditModal';
+import EventFooter from './components/EventFooter';
+import styles from './EventsView.module.css';
+const DAY_NAMES_LONG = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const TIME_GROUPS = [
+  { name: 'Morning', predicate: (h: number) => h < 12 },
+  { name: 'Afternoon', predicate: (h: number) => h >= 12 && h < 17 },
+  { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
+  { name: 'Night', predicate: (h: number) => h >= 20 },
+];
+export default function CityEventsView({
+  city,
+  initialEvents = [],
+}: {
+  city: CityConfig;
+  initialEvents?: Event[];
+}) {
+  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
+  const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [openEventId, setOpenEventId] = useState<string | null>(null);
+  const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  useEffect(() => {
+    if (initialEvents.length === 0) {
+      setLoading(true);
+      getEvents(city)
+        .then((data) => setAllEvents(data))
+        .finally(() => setLoading(false));
+    } else {
+      setAllEvents(initialEvents);
+      setLoading(false);
+    }
+  }, [city, initialEvents]);
+  const rollingWeek = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      return d;
+    });
+  }, []);
+  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+  const now = new Date();
+  const nowHour = now.getHours() + now.getMinutes() / 60;
+  const activities = useMemo(() => {
+    const set = new Set<string>();
+    allEvents.forEach((ev) => {
+      if (ev.activity1) set.add(ev.activity1.trim());
+      if (ev.activity2) set.add(ev.activity2.trim());
+      if (ev.activity3) set.add(ev.activity3.trim());
+    });
+    return Array.from(set).filter(Boolean).sort();
+  }, [allEvents]);
+  const areas = useMemo(() => {
+    const set = new Set<string>();
+    allEvents.forEach((ev) => {
+      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 35) {
+        set.add(ev.area.trim());
+      }
+    });
+    return Array.from(set).sort();
+  }, [allEvents]);
+  const toggleTime = (tName: string) => {
+    setSelectedTimes((prev) =>
+      prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
+    );
+  };
+  const toggleActivity = (act: string) => {
+    setSelectedActivities((prev) =>
+      prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
+    );
+  };
+  const toggleArea = (ar: string) => {
+    setSelectedAreas((prev) =>
+      prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
+    );
+  };
+  const getFilteredEventsForDay = (dayIndex: number) => {
+    const day = rollingWeek[dayIndex];
+    if (!day) return [];
+    const dayName = DAY_NAMES_LONG[day.getDay()];
+    return allEvents
+      .filter((ev) => {
+        if (!matchesDay(ev.dayOfWeek, dayName)) return false;
+        if (freeOnly && !isFreePrice(ev.price)) return false;
+        const evHour = parseHour(ev.startTime);
+        if (selectedTimes.length > 0) {
+          const matchesTime = selectedTimes.some((tgName) => {
+            const group = TIME_GROUPS.find((g) => g.name === tgName);
+            return group ? group.predicate(evHour) : false;
+          });
+          if (!matchesTime) return false;
+        }
+        if (selectedActivities.length > 0) {
+          const acts = [ev.activity1, ev.activity2, ev.activity3]
+            .filter(Boolean)
+            .map((a) => a.trim().toLowerCase());
+          const hasActivityMatch = selectedActivities.some((sa) =>
+            acts.includes(sa.toLowerCase())
+          );
+          if (!hasActivityMatch) return false;
+        }
+        if (selectedAreas.length > 0) {
+          const areaLower = (ev.area || '').trim().toLowerCase();
+          const hasAreaMatch = selectedAreas.some(
+            (sa) => sa.toLowerCase() === areaLower
+          );
+          if (!hasAreaMatch) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
+  };
+  const currentList = useMemo(() => {
+    return getFilteredEventsForDay(activeDayIdx);
+  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, rollingWeek]);
+  const nextUpEventId = useMemo(() => {
+    if (activeDayIdx !== 0) return null;
+    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
+    return nextEvent ? nextEvent.id || nextEvent.title : null;
+  }, [activeDayIdx, currentList, nowHour]);
+  const hasActiveFilters =
+    freeOnly || selectedTimes.length > 0 || selectedActivities.length > 0 || selectedAreas.length > 0;
+  const clearAllFilters = () => {
+    setFreeOnly(false);
+    setSelectedTimes([]);
+    setSelectedActivities([]);
+    setSelectedAreas([]);
+  };
+  const allCityOptions = useMemo(() => {
+    return Object.values(CITIES).filter(
+      (c, index, arr) => arr.findIndex((x) => x.slug === c.slug) === index
+    );
+  }, []);
+  return (
+    <div className={styles.pageContainer}>
+      <EventHeader city={city} allCityOptions={allCityOptions} />
+      <main className={styles.mainLayout}>
+        <aside className={styles.aside}>
+          <h1 className={styles.asideTitle}>
+            {activeDayIdx === 0
+              ? 'Today'
+              : activeDayIdx === 1
+              ? 'Tomorrow'
+              : DAY_NAMES_LONG[activeDate.getDay()]}
+          </h1>
+          <p className={styles.asideSubtitle}>
+            {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
+            {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
+            {currentList.length === 1 ? 'thing' : 'things'} on
+          </p>
+          <DayPicker
+            rollingWeek={rollingWeek}
+            activeDayIdx={activeDayIdx}
+            onSelectDay={(idx) => {
+              setActiveDayIdx(idx);
+              setOpenEventId(null);
+            }}
+            getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
+          />
+          <FilterControls
+            freeOnly={freeOnly}
+            onToggleFree={() => setFreeOnly(!freeOnly)}
+            timeSections={TIME_GROUPS.map((g) => g.name)}
+            selectedTimes={selectedTimes}
+            onToggleTime={toggleTime}
+            onClearTimes={() => setSelectedTimes([])}
+            activities={activities}
+            selectedActivities={selectedActivities}
+            onToggleActivity={toggleActivity}
+            onClearActivities={() => setSelectedActivities([])}
+            areas={areas}
+            selectedAreas={selectedAreas}
+            onToggleArea={toggleArea}
+            onClearAreas={() => setSelectedAreas([])}
+            hasActiveFilters={hasActiveFilters}
+            onClearAllFilters={clearAllFilters}
+          />
+        </aside>
+        <section className={styles.contentCol}>
+          <div className={styles.mobileSectionHeader}>
+            <h1 className={styles.mobileHeadingTitle}>
+              {activeDayIdx === 0
+                ? 'Today'
+                : activeDayIdx === 1
+                ? 'Tomorrow'
+                : DAY_NAMES_LONG[activeDate.getDay()]}
+            </h1>
+            <p className={styles.mobileHeadingSubtitle}>
+              {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
+              {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
+              {currentList.length === 1 ? 'thing' : 'things'} on
+            </p>
+          </div>
+          {loading ? (
+            <div className={styles.emptyState}>
+              <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
+              Gathering up-to-date weekly community activities.
+            </div>
+          ) : currentList.length === 0 ? (
+            <div className={styles.emptyState}>
+              <b className={styles.emptyStateTitle}>
+                Nothing listed{hasActiveFilters ? ' with these filters' : ''}
+              </b>
+              {hasActiveFilters
+                ? 'Try clearing your filters to see more events.'
+                : 'Know an event or group happening on this day? Submit it above.'}
+            </div>
+          ) : (
+            TIME_GROUPS.map((group) => {
+              const groupEvents = currentList.filter((ev) =>
+                group.predicate(parseHour(ev.startTime))
+              );
+              if (groupEvents.length === 0) return null;
+              return (
+                <div key={group.name}>
+                  <div className={styles.timeGroupHeader}>
+                    {group.name}
+                    <div className={styles.timeGroupLine} />
+                  </div>
+                  {groupEvents.map((ev, i) => {
+                    const uniqueId = ev.id || `${ev.title}-${i}`;
+                    return (
+                      <EventCard
+                        key={uniqueId}
+                        event={ev}
+                        isOpen={openEventId === uniqueId}
+                        isNextUp={uniqueId === nextUpEventId}
+                        cityName={city.name}
+                        onToggle={() =>
+                          setOpenEventId(openEventId === uniqueId ? null : uniqueId)
+                        }
+                        onOpenEdit={setEditModalEvent}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })
+          )}
+        </section>
+      </main>
+      <EventFooter />
+      {editModalEvent && (
+        <SuggestEditModal
+          event={editModalEvent}
+          cityName={city.name}
+          onClose={() => setEditModalEvent(null)}
+        />
+      )}
+    </div>
+  );
 }
 
 ================
@@ -2170,65 +3812,6 @@ File: package.json
 }
 
 ================
-File: app/components/Footer.tsx
-================
-import pageStyles from '../Page.module.css';
-const footerStyles: React.CSSProperties = {
-  textAlign: 'center',
-  padding: '2rem 0',
-  marginTop: '4rem',
-  backgroundColor: '#1A1A1A',
-  color: 'white',
-};
-const iconContainerStyles: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'center',
-  gap: '1rem',
-  margin: '1rem 0',
-};
-const iconLinkStyles: React.CSSProperties = {
-  color: 'white',
-};
-const iconStyles: React.CSSProperties = {
-  width: '24px',
-  height: '24px',
-};
-const InstagramIcon = () => (
-  <svg style={iconStyles} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
-);
-const EmailIcon = () => (
-  <svg style={iconStyles} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-    <polyline points="22,6 12,13 2,6"></polyline>
-  </svg>
-);
-export default function Footer() {
-  return (
-    <footer style={footerStyles}>
-      <div
-        className={pageStyles.page}
-        style={{ padding: '0 2rem', alignItems: 'center' }}
-      >
-        <p style={{ textAlign: 'center' }}>"What should young people do with their lives today? Many things, obviously. But the most daring thing is to create stable communities in which the terrible disease of loneliness can be cured." – Kurt Vonnegut</p>
-        <div style={iconContainerStyles}>
-          <a href="https://www.instagram.com/someplace.social/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={iconLinkStyles}>
-            <InstagramIcon />
-          </a>
-          <a href="mailto:someplacesocial@gmail.com" aria-label="Email" style={iconLinkStyles}>
-            <EmailIcon />
-          </a>
-        </div>
-        <p>©2024. All rights reserved.</p>
-      </div>
-    </footer>
-  );
-}
-
-================
 File: app/contact/page.tsx
 ================
 import Image from 'next/image';
@@ -2316,53 +3899,6 @@ export default function ContactPage() {
 }
 
 ================
-File: app/layout.tsx
-================
-import type { Metadata } from 'next'
-import { Karla } from 'next/font/google'
-import './globals.css'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import Banner from './components/Banner'
-import GoogleAnalytics from './components/GoogleAnalytics'
-import { Analytics } from "@vercel/analytics/react"
-const karla = Karla({ subsets: ['latin'] })
-export const metadata: Metadata = {
-  metadataBase: new URL('https://www.someplacesocial.org'),
-  title: {
-    default: 'Someplace Social | Community Event Listings',
-    template: '%s | Someplace Social',
-  },
-  description: 'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
-  icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
-  },
-}
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body className={karla.className}>
-        <div style={{ backgroundColor: '#fffbee' }}>
-          <Banner />
-          <Header />
-          {children}
-          <Footer />
-        </div>
-        {}
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
-        {}
-        <Analytics />
-      </body>
-    </html>
-  )
-}
-
-================
 File: app/about/page.tsx
 ================
 import Image from 'next/image';
@@ -2419,6 +3955,140 @@ export default function AboutPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+================
+File: app/components/Footer.tsx
+================
+import pageStyles from '../Page.module.css';
+export default function Footer() {
+  return (
+    <footer
+      style={{
+        borderTop: '1px solid #eadfc8',
+        backgroundColor: '#FFF9EC',
+        marginTop: 'auto',
+      }}
+    >
+      <div
+        className={pageStyles.page}
+        style={{
+          maxWidth: '1120px',
+          margin: '0 auto',
+          padding: '40px 32px 32px',
+          alignItems: 'stretch',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: '24px 48px',
+          }}
+        >
+          <div style={{ flex: '1 1 500px', maxWidth: '580px' }}>
+            <blockquote
+              style={{
+                margin: 0,
+                fontFamily: 'var(--font-karla), system-ui, sans-serif',
+                fontWeight: 500,
+                fontSize: '13px',
+                lineHeight: 1.5,
+                color: '#1f1b16',
+              }}
+            >
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: '#6f675c' }}>
+              - Kurt Vonnegut
+            </div>
+            <div style={{ marginTop: '18px', fontSize: '11px', color: '#8c8275' }}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
+          <div style={{ flex: '0 0 auto', paddingTop: '2px' }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '13.5px',
+                lineHeight: 1.4,
+                color: '#4f483e',
+              }}
+            >
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#1f1b16',
+                  fontWeight: 700,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                }}
+              >
+                Buy me a drink
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
+File: app/layout.tsx
+================
+import type { Metadata } from 'next';
+import { Karla, Bricolage_Grotesque } from 'next/font/google';
+import './globals.css';
+import GoogleAnalytics from './components/GoogleAnalytics';
+import { Analytics } from '@vercel/analytics/react';
+const karla = Karla({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-karla',
+  display: 'swap',
+});
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['500', '700', '800'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.someplacesocial.org'),
+  title: {
+    default: 'Someplace Social | Community Event Listings',
+    template: '%s | Someplace Social',
+  },
+  description:
+    'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+};
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`${karla.variable} ${bricolage.variable}`}>
+      <body className={karla.className}>
+        {children}
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
+        <Analytics />
+      </body>
+    </html>
   );
 }
 
@@ -2746,54 +4416,76 @@ export default function Home() {
 File: app/components/Header.module.css
 ================
 .header {
-  padding: 1rem 0;
-  background-color: #1A1A1A;
-  color: white;
+  padding: 18px 0;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--line);
   position: relative;
-  z-index: 100;
+  z-index: 50;
 }
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1000px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 32px;
+}
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 72px;
+  width: auto;
+  max-width: 380px;
+  object-fit: contain;
+  filter: brightness(0);
 }
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 12px;
   align-items: center;
 }
 .navLink {
   text-decoration: none;
-  color: white;
-  font-size: 1.25rem;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 12px;
 }
 .navLink:hover {
-  text-decoration: underline;
+  color: var(--accent);
 }
-.supportButton {
-  background-color: #fdf8e1;
-  color: #272626;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
   text-decoration: none;
-  font-size: 1rem;
+  background: transparent;
+}
+.addEventBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
 }
 .hamburger {
   display: none;
   flex-direction: column;
   gap: 4px;
   cursor: pointer;
+  padding: 8px;
 }
 .hamburger div {
-  width: 25px;
-  height: 3px;
-  background-color: white;
-  border-radius: 5px;
+  width: 24px;
+  height: 2.5px;
+  background-color: var(--ink);
+  border-radius: 4px;
 }
 .backdrop {
   position: fixed;
@@ -2801,7 +4493,7 @@ File: app/components/Header.module.css
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(31, 27, 22, 0.45);
   z-index: 110;
 }
 .mobileNav {
@@ -2809,28 +4501,73 @@ File: app/components/Header.module.css
   top: 0;
   right: 0;
   height: 100vh;
-  width: 60%;
-  max-width: 300px;
-  background-color: #1A1A1A;
+  width: 280px;
+  max-width: 85vw;
+  background-color: var(--bg);
   z-index: 120;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 4rem 2rem;
-  gap: 2rem;
+  padding: 24px 20px;
+  gap: 12px;
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
 }
 .mobileNav.open {
   transform: translateX(0);
 }
-@media (max-width: 768px) {
+.mobileNavHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+.mobileNavTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.mobileNavLink {
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.mobileNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.mobileSupportBtn {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+@media (max-width: 899px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 16px;
   }
   .logoImage {
-    width: 200px;
-    height: auto;
+    height: 50px;
+    max-width: 260px;
   }
   .nav {
     display: none;
@@ -2957,7 +4694,7 @@ export default function MedellinPage() {
 ================
 File: app/components/Header.tsx
 ================
-"use client";
+'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -2973,45 +4710,101 @@ export default function Header() {
   }, [isMobileMenuOpen]);
   return (
     <>
-      {}
-      {isMobileMenuOpen && <div className={styles.backdrop} onClick={() => setIsMobileMenuOpen(false)} />}
+      {isMobileMenuOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
       <header className={styles.header}>
         <div className={styles.container}>
-          <Link href="/">
+          <Link href="/" className={styles.logoLink}>
             <Image
               src="/images/logo.svg"
               alt="Someplace Social Logo"
-              width={250}
-              height={83}
+              width={190}
+              height={50}
               priority
               className={styles.logoImage}
             />
           </Link>
-          {}
           <nav className={styles.nav}>
-            <Link href="/medellin" className={styles.navLink}>Medellin</Link>
-            <Link href="/about" className={styles.navLink}>About</Link>
-            <Link href="/contact" className={styles.navLink}>Contact</Link>
-            <Link href="/support" className={styles.supportButton}>
-              Support
+            <Link href="/events/fort-collins-colorado" className={styles.navLink}>
+              Fort Collins
+            </Link>
+            <Link href="/events/medellin-colombia" className={styles.navLink}>
+              Medellín
+            </Link>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
             </Link>
           </nav>
-          {}
-          <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(true)}>
+          <div
+            className={styles.hamburger}
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Toggle navigation menu"
+          >
             <div></div>
             <div></div>
             <div></div>
           </div>
         </div>
       </header>
-      {}
       <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <Link href="/medellin" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Medellin</Link>
-        <Link href="/about" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
-        <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
-        <Link href="/support" className={styles.supportButton} onClick={() => setIsMobileMenuOpen(false)}>
-          Support
+        <div className={styles.mobileNavHeader}>
+          <span className={styles.mobileNavTitle}>Someplace Social</span>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <Link
+          href="/events/fort-collins-colorado"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Fort Collins
         </Link>
+        <Link
+          href="/events/medellin-colombia"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Medellín
+        </Link>
+        <Link
+          href="/about"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          About
+        </Link>
+        <Link
+          href="/contact"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Contact
+        </Link>
+        <a
+          href="https://buymeacoffee.com/someplacesocial"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.mobileSupportBtn}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Buy me a drink
+        </a>
       </nav>
     </>
   );

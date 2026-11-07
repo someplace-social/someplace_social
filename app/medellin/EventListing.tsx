@@ -6,7 +6,6 @@ type EventListingProps = {
   onEdit: (content: string) => void;
 };
 
-// Helper to create links only if a URL is provided
 const createLink = (text: string, url: string) => {
   if (!url || url.trim() === '') return null;
   const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
@@ -16,8 +15,7 @@ const createLink = (text: string, url: string) => {
 export default function EventListing({ event, onEdit }: EventListingProps) {
   const activities = [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', ');
   const organizationText = event.organization ? ` w/ ${event.organization}` : "";
-
-  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
+  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
 
   return (
     <div className={styles.listing}>
@@ -26,6 +24,7 @@ export default function EventListing({ event, onEdit }: EventListingProps) {
       <p className={styles.listingDetails}>
         <span>⏳ {event.startTime} - {event.endTime}</span>
         <span>💰 {event.price || 'Free or Varies'}</span>
+        {event.preRegistration && <span>📋 {event.preRegistration}</span>}
         <span>📍 {event.location}</span>
         <span>🗺️  {event.area}</span>
       </p>

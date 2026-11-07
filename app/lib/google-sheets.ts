@@ -30,7 +30,6 @@ const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8
 
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
-
   const gid = city.sheetGid || '0';
   const spreadsheetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
   const tabName = encodeURIComponent(city.sheetTab);
@@ -48,6 +47,7 @@ function parseCsv(csvText: string): string[][] {
   let currentRow: string[] = [];
   let currentField = '';
   let inQuotes = false;
+
   for (let i = 0; i < csvText.length; i++) {
     const char = csvText[i];
     if (char === '"') {
@@ -79,7 +79,6 @@ function parseCsv(csvText: string): string[][] {
 
 function parseSheetData(rawText: string): string[][] {
   const trimmed = rawText.trim();
-
   if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
     try {
       const startIdx = trimmed.indexOf('{');
@@ -90,14 +89,12 @@ function parseSheetData(rawText: string): string[][] {
         if (data.table) {
           const cols: { label?: string; id?: string }[] = data.table.cols || [];
           const headerRow: string[] = cols.map((col) => col.label || col.id || '');
-
           const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
             return (row.c || []).map((cell) => {
               if (!cell || cell.v === null || cell.v === undefined) return '';
               return String(cell.f || cell.v).trim();
             });
           });
-
           if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
             return [headerRow, ...dataRows];
           } else if (dataRows.length > 0) {
@@ -109,7 +106,6 @@ function parseSheetData(rawText: string): string[][] {
       console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
     }
   }
-
   return parseCsv(rawText);
 }
 
@@ -130,7 +126,7 @@ const HEADER_ALIASES: Record<string, string[]> = {
   endTime: ['endtime', 'end'],
   frequency: ['frequency'],
   price: ['price', 'cost'],
-  preRegistration: ['preregistration', 'prereg'],
+  preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
   map: ['map', 'googlemap', 'googlemaplink', 'maps'],
   social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
   website: ['website', 'site', 'url'],
@@ -195,11 +191,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
           cache: isDev ? 'no-store' : 'default',
           next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
         });
-
         if (response.ok) {
           const text = await response.text();
           const trimmed = text.trim();
-
           if (
             trimmed &&
             !trimmed.startsWith('<!DOCTYPE html') &&

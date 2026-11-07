@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { Event } from '../../lib/google-sheets';
 import styles from '../EventsView.module.css';
@@ -17,7 +16,7 @@ export default function SuggestEditModal({
 }: SuggestEditModalProps) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState(
-    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
+    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})${event.preRegistration ? `\nPre-Registration: ${event.preRegistration}` : ''}\n\nRequested changes: `
   );
   const [status, setStatus] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +25,7 @@ export default function SuggestEditModal({
     e.preventDefault();
     setIsSubmitting(true);
     setStatus('Submitting update...');
+
     try {
       const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
       const response = await fetch('/api/send-form', {
@@ -36,6 +36,7 @@ export default function SuggestEditModal({
           message: fullMessage,
         }),
       });
+
       const res = await response.json();
       if (res.success) {
         setStatus('Thanks! Your edit suggestion has been sent.');
@@ -72,6 +73,7 @@ export default function SuggestEditModal({
             ✕
           </button>
         </div>
+
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           <div className={styles.modalField}>
             <label htmlFor="editEmail">Your Email (optional)</label>
@@ -84,6 +86,7 @@ export default function SuggestEditModal({
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div className={styles.modalField}>
             <label htmlFor="editMessage">What needs to be changed? *</label>
             <textarea
@@ -94,6 +97,7 @@ export default function SuggestEditModal({
               onChange={(e) => setMessage(e.target.value)}
             />
           </div>
+
           <div className={styles.modalActions}>
             <button
               type="button"
@@ -111,6 +115,7 @@ export default function SuggestEditModal({
               {isSubmitting ? 'Sending...' : 'Send Edit'}
             </button>
           </div>
+
           {status && <p className={styles.statusMsg}>{status}</p>}
         </form>
       </div>

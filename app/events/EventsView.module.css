@@ -767,6 +767,15 @@
   color: #4f483e;
 }
 
+.preRegistration {
+  margin: 0 0 14px;
+  max-width: 580px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  font-weight: 700;
+}
+
 .drawerActionRow {
   display: flex;
   align-items: center;
@@ -863,7 +872,6 @@
   margin-bottom: 6px;
 }
 
-/* Footer Section - Matches User Reference Image */
 .footer {
   border-top: 1px solid var(--line);
   background-color: var(--bg);
@@ -1059,9 +1067,6 @@
   font-weight: 600;
 }
 
-/* ------------------------------------------------------------- */
-/* Responsive Mobile Styles (< 900px)                           */
-/* ------------------------------------------------------------- */
 @media (max-width: 899px) {
   .headerInner {
     padding: 14px 16px;
@@ -1246,10 +1251,15 @@
   }
 
   .expandedDrawer {
-    padding: 14px 14px 6px;
+    padding: 14px 14px 8px;
   }
 
   .eventDescription {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .preRegistration {
     font-size: 14px;
     line-height: 1.45;
   }

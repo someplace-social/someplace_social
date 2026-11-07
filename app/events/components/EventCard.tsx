@@ -1,5 +1,4 @@
 'use client';
-
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -43,7 +42,6 @@ export default function EventCard({
           {start}
           {end && <div className={styles.endTimeText}>to {end}</div>}
         </div>
-
         <div className={styles.infoCol}>
           {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
           <div className={styles.eventTitle}>
@@ -56,7 +54,6 @@ export default function EventCard({
             {displayVenue}
             {event.area ? ` · ${event.area}` : ''}
           </div>
-
           <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
             <svg
               width="15"
@@ -73,7 +70,6 @@ export default function EventCard({
             </svg>
             {isFree ? 'Free' : event.price || 'Varies'}
           </div>
-
           {tagList.length > 0 && (
             <div className={styles.tagList}>
               {tagList.map((tag) => {
@@ -94,7 +90,6 @@ export default function EventCard({
             </div>
           )}
         </div>
-
         <span
           aria-hidden="true"
           className={`${styles.chevronCircle} ${
@@ -122,6 +117,12 @@ export default function EventCard({
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
 
+          {event.preRegistration && (
+            <p className={styles.preRegistration}>
+              Pre-Registration: {event.preRegistration}
+            </p>
+          )}
+
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>
               <a
@@ -143,7 +144,6 @@ export default function EventCard({
                 </svg>
                 Maps
               </a>
-
               {event.website ? (
                 <a
                   href={ensureExternalUrl(event.website)}
@@ -166,7 +166,6 @@ export default function EventCard({
                   Website
                 </div>
               )}
-
               {event.social ? (
                 <a
                   href={ensureExternalUrl(event.social)}
@@ -191,7 +190,6 @@ export default function EventCard({
                   Instagram
                 </div>
               )}
-
               {event.contact ? (
                 <a
                   href={ensureExternalUrl(event.contact)}
@@ -215,7 +213,6 @@ export default function EventCard({
                 </div>
               )}
             </div>
-
             <button
               type="button"
               className={styles.suggestEditBtn}
