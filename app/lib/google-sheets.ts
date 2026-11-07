@@ -36,9 +36,9 @@ function getCandidateUrls(city: CityConfig): string[] {
   const tabName = encodeURIComponent(city.sheetTab);
 
   return [
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}&headers=1`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}&headers=1`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${gid}&headers=1`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${gid}`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
     `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
   ];
@@ -90,16 +90,16 @@ function parseSheetData(rawText: string): string[][] {
         const data = JSON.parse(jsonStr);
         if (data.table) {
           const cols = data.table.cols || [];
-          const headerRow = cols.map((col: { label?: string; id?: string }) => col.label || col.id || '');
+          const headerRow: string[] = cols.map((col: { label?: string; id?: string }) => col.label || col.id || '');
 
-          const dataRows = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
             return (row.c || []).map((cell) => {
               if (!cell || cell.v === null || cell.v === undefined) return '';
               return String(cell.f || cell.v).trim();
             });
           });
 
-          if (headerRow.some(h => h && !h.match(/^[A-Z]$/))) {
+          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
             return [headerRow, ...dataRows];
           } else if (dataRows.length > 0) {
             return dataRows;
@@ -107,7 +107,7 @@ function parseSheetData(rawText: string): string[][] {
         }
       }
     } catch (e) {
-      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV:', e);
+      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
     }
   }
 
@@ -185,6 +185,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
     let rawText = '';
+    let winningUrl = '';
+
+    console.log(`[Someplace Social] Fetching ${cityConfig.name} events (gid: ${cityConfig.sheetGid})...`);
 
     for (const url of candidateUrls) {
       try {
@@ -208,28 +211,34 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
             !trimmed.includes('accounts.google.com')
           ) {
             rawText = text;
+            winningUrl = url;
             break;
           }
         }
       } catch (fetchErr) {
-        console.warn(`[Someplace Social] Could not fetch from ${url}:`, fetchErr);
+        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
       }
     }
 
     if (!rawText) {
-      console.warn(`[Someplace Social] No data returned for ${cityConfig.name}`);
+      console.warn(`[Someplace Social] No CSV/table data returned for ${cityConfig.name}`);
       return [];
     }
 
-    const rows = parseSheetData(rawText);
-    if (rows.length < 2) return [];
+    console.log(`[Someplace Social] Successfully downloaded sheet data from: ${winningUrl}`);
 
-    const headerRow = rows[0].map(h => normalizeHeader(h));
+    const rows = parseSheetData(rawText);
+    if (rows.length < 2) {
+      console.warn(`[Someplace Social] Sheet returned less than 2 rows (got ${rows.length})`);
+      return [];
+    }
+
+    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
 
     Object.keys(HEADER_ALIASES).forEach((field) => {
       const aliases = HEADER_ALIASES[field];
-      const foundIdx = headerRow.findIndex(h => aliases.includes(h));
+      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
       if (foundIdx !== -1) {
         headerIndexMap[field] = foundIdx;
       }
