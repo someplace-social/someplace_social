@@ -35,9 +35,9 @@ function getCandidateUrls(city: CityConfig): string[] {
   const spreadsheetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
 
   return [
-    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
   ];
 }
 
@@ -147,20 +147,30 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         const response = await fetch(url, {
           next: { revalidate: isDev ? 10 : 3600 },
         });
+
         if (response.ok) {
           const text = await response.text();
-          if (text && !text.trim().startsWith('<!DOCTYPE html') && !text.trim().startsWith('<html')) {
+          const trimmed = text.trim();
+
+          if (
+            trimmed &&
+            !trimmed.startsWith('<!DOCTYPE html') &&
+            !trimmed.startsWith('<html') &&
+            !trimmed.includes('accounts.google.com')
+          ) {
             csvText = text;
             break;
+          } else {
+            console.warn(`[Someplace Social] Google Sheets URL returned HTML/login instead of CSV. Ensure sheet is set to "Anyone with the link can view": ${url}`);
           }
         }
-      } catch {
-        // Continue to next candidate
+      } catch (fetchErr) {
+        console.warn(`[Someplace Social] Could not fetch from ${url}:`, fetchErr);
       }
     }
 
     if (!csvText) {
-      console.warn(`No CSV data returned for ${cityConfig.name}`);
+      console.warn(`[Someplace Social] No CSV data available for ${cityConfig.name}. Please check sharing permissions on Google Sheets.`);
       return [];
     }
 

@@ -2,7 +2,7 @@ export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
 
-  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
   if (match) {
     let hour = parseInt(match[1], 10);
     const minute = match[2] ? parseInt(match[2], 10) : 0;
