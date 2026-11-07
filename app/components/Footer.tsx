@@ -14,7 +14,7 @@ export default function Footer() {
         style={{
           maxWidth: '1120px',
           margin: '0 auto',
-          padding: '48px 32px 32px',
+          padding: '40px 32px 32px',
           alignItems: 'stretch',
         }}
       >
@@ -22,20 +22,19 @@ export default function Footer() {
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            alignItems: 'flex-end',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
             gap: '24px 48px',
           }}
         >
-          <figure style={{ margin: 0, flex: '1 1 480px', maxWidth: '700px' }}>
+          <div style={{ flex: '1 1 500px', maxWidth: '580px' }}>
             <blockquote
               style={{
                 margin: 0,
-                fontFamily: 'var(--font-bricolage), system-ui, sans-serif',
+                fontFamily: 'var(--font-karla), system-ui, sans-serif',
                 fontWeight: 500,
-                fontSize: '22px',
-                lineHeight: 1.4,
-                letterSpacing: '-0.01em',
+                fontSize: '13px',
+                lineHeight: 1.5,
                 color: '#1f1b16',
               }}
             >
@@ -44,17 +43,20 @@ export default function Footer() {
               communities in which the terrible disease of loneliness can be
               cured.”
             </blockquote>
-            <figcaption style={{ marginTop: '14px', fontSize: '15px', color: '#6f675c' }}>
-              – Kurt Vonnegut
-            </figcaption>
-          </figure>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: '#6f675c' }}>
+              - Kurt Vonnegut
+            </div>
+            <div style={{ marginTop: '18px', fontSize: '11px', color: '#8c8275' }}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
 
-          <div>
+          <div style={{ flex: '0 0 auto', paddingTop: '2px' }}>
             <p
               style={{
                 margin: 0,
-                fontSize: '15px',
-                lineHeight: 1.5,
+                fontSize: '13.5px',
+                lineHeight: 1.4,
                 color: '#4f483e',
               }}
             >
@@ -74,9 +76,6 @@ export default function Footer() {
               </a>
             </p>
           </div>
-        </div>
-        <div style={{ marginTop: '40px', fontSize: '13px', color: '#6f675c' }}>
-          © 2026 Someplace Social. All rights reserved.
         </div>
       </div>
     </footer>
