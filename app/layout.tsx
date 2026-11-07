@@ -1,14 +1,22 @@
-import type { Metadata } from 'next'
-import { Karla } from 'next/font/google'
-import './globals.css'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import Banner from './components/Banner'
-import GoogleAnalytics from './components/GoogleAnalytics'
-// 1. IMPORT VERCEL ANALYTICS
-import { Analytics } from "@vercel/analytics/react"
+import type { Metadata } from 'next';
+import { Karla, Bricolage_Grotesque } from 'next/font/google';
+import './globals.css';
+import GoogleAnalytics from './components/GoogleAnalytics';
+import { Analytics } from '@vercel/analytics/react';
 
-const karla = Karla({ subsets: ['latin'] })
+const karla = Karla({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-karla',
+  display: 'swap',
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['500', '700', '800'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
@@ -16,34 +24,26 @@ export const metadata: Metadata = {
     default: 'Someplace Social | Community Event Listings',
     template: '%s | Someplace Social',
   },
-  description: 'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+  description:
+    'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
   icons: {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${karla.variable} ${bricolage.variable}`}>
       <body className={karla.className}>
-        <div style={{ backgroundColor: '#fffbee' }}>
-          <Banner />
-          <Header />
-          {children}
-          <Footer />
-        </div>
-        
-        {/* Google Analytics (Keep this if you want) */}
+        {children}
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
-
-        {/* 2. ADD VERCEL ANALYTICS HERE */}
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

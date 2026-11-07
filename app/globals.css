@@ -1,7 +1,36 @@
+:root {
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --topbar-bg: #f3ead4;
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  background-color: #272626; /* Changed to black */
-  color: #272626;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent);
 }

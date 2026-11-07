@@ -1,62 +1,83 @@
-/* app/components/Header.module.css */
 .header {
-  padding: 1rem 0; /* Vertical padding, horizontal is handled by container */
-  background-color: #1A1A1A;
-  color: white;
+  padding: 14px 0;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--line);
   position: relative;
-  z-index: 100;
+  z-index: 50;
 }
 
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1000px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 0 2rem; /* Matches desktop .page padding */
+  padding: 0 32px;
 }
 
-/* --- Desktop Navigation --- */
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logoImage {
+  height: 38px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+}
+
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 12px;
   align-items: center;
 }
 
 .navLink {
   text-decoration: none;
-  color: white;
-  font-size: 1.25rem; /* Adjusted to be smaller than 1.5rem but larger than original */
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 12px;
 }
 
 .navLink:hover {
-  text-decoration: underline;
+  color: var(--accent);
 }
 
-.supportButton {
-  background-color: #fdf8e1;
-  color: #272626;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
   text-decoration: none;
-  font-size: 1rem;
+  background: transparent;
 }
 
-/* --- Mobile Navigation --- */
+.addEventBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+
 .hamburger {
   display: none;
   flex-direction: column;
   gap: 4px;
   cursor: pointer;
+  padding: 8px;
 }
 
 .hamburger div {
-  width: 25px;
-  height: 3px;
-  background-color: white;
-  border-radius: 5px;
+  width: 24px;
+  height: 2.5px;
+  background-color: var(--ink);
+  border-radius: 4px;
 }
 
 .backdrop {
@@ -65,47 +86,94 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(31, 27, 22, 0.45);
   z-index: 110;
 }
 
 .mobileNav {
   position: fixed;
   top: 0;
-  right: 0; /* Changed from left to right */
+  right: 0;
   height: 100vh;
-  width: 60%;
-  max-width: 300px;
-  background-color: #1A1A1A;
+  width: 280px;
+  max-width: 85vw;
+  background-color: var(--bg);
   z-index: 120;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 4rem 2rem;
-  gap: 2rem;
-  transform: translateX(100%); /* Changed to slide from the right */
+  padding: 24px 20px;
+  gap: 12px;
+  transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
 }
 
 .mobileNav.open {
   transform: translateX(0);
 }
 
-/* --- Media Query for Mobile --- */
-@media (max-width: 768px) {
+.mobileNavHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.mobileNavTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.mobileNavLink {
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.mobileNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+
+.mobileSupportBtn {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+@media (max-width: 899px) {
   .container {
-    padding: 0 1rem; /* Matches mobile .page padding */
+    padding: 0 16px;
   }
-
   .logoImage {
-    width: 200px;
-    height: auto;
+    height: 30px;
+    max-width: 170px;
   }
-
   .nav {
     display: none;
   }
-
   .hamburger {
     display: flex;
   }

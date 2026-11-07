@@ -1,5 +1,4 @@
-// app/components/Header.tsx
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -9,7 +8,6 @@ import styles from './Header.module.css';
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -20,49 +18,101 @@ export default function Header() {
 
   return (
     <>
-      {/* Backdrop overlay */}
-      {isMobileMenuOpen && <div className={styles.backdrop} onClick={() => setIsMobileMenuOpen(false)} />}
-
+      {isMobileMenuOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
       <header className={styles.header}>
         <div className={styles.container}>
-          <Link href="/">
-            <Image 
-              src="/images/logo.svg" 
-              alt="Someplace Social Logo" 
-              width={250}
-              height={83}
+          <Link href="/" className={styles.logoLink}>
+            <Image
+              src="/images/logo.svg"
+              alt="Someplace Social Logo"
+              width={190}
+              height={50}
               priority
               className={styles.logoImage}
             />
           </Link>
-
-          {/* Desktop Navigation */}
           <nav className={styles.nav}>
-            <Link href="/medellin" className={styles.navLink}>Medellin</Link>
-            <Link href="/about" className={styles.navLink}>About</Link>
-            <Link href="/contact" className={styles.navLink}>Contact</Link>
-            <Link href="/support" className={styles.supportButton}>
-              Support
+            <Link href="/events/fort-collins-colorado" className={styles.navLink}>
+              Fort Collins
+            </Link>
+            <Link href="/events/medellin-colombia" className={styles.navLink}>
+              Medellín
+            </Link>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
             </Link>
           </nav>
-
-          {/* Hamburger Icon */}
-          <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(true)}>
+          <div
+            className={styles.hamburger}
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Toggle navigation menu"
+          >
             <div></div>
             <div></div>
             <div></div>
           </div>
         </div>
       </header>
-
-      {/* Mobile Navigation Drawer */}
       <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <Link href="/medellin" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Medellin</Link>
-        <Link href="/about" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>About</Link>
-        <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
-        <Link href="/support" className={styles.supportButton} onClick={() => setIsMobileMenuOpen(false)}>
-          Support
+        <div className={styles.mobileNavHeader}>
+          <span className={styles.mobileNavTitle}>Someplace Social</span>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <Link
+          href="/events/fort-collins-colorado"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Fort Collins
         </Link>
+        <Link
+          href="/events/medellin-colombia"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Medellín
+        </Link>
+        <Link
+          href="/about"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          About
+        </Link>
+        <Link
+          href="/contact"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Contact
+        </Link>
+        <a
+          href="https://buymeacoffee.com/someplacesocial"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.mobileSupportBtn}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Buy me a drink
+        </a>
       </nav>
     </>
   );

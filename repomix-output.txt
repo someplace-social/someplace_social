@@ -1,160 +1,5 @@
 #TASK
 
-we are redesigning the layout of the medellin page site / app. we will make a new page called "Medellin v2.0". it will not be linked to the main page, and it will not be findable by google index (for now). 
-
-I'm attaching a an example of what I want it to look like. pay very careful attention exactly what the layout is doing, what it looks like, what button there are, what funcationality there should be. You will use exactly this and fit our existing "Medellin" page into this new design. If there are minor adjustments you need to make to make this work - that's fine. But in general this is what we are using. 
-but do make our website colors / theme match to the app. 
-
-
-
-MULTI-STEP PROCESS:
-
-
-1) Make a plan:
-As soon as you get the files, investigate the issue at hand and find the root. 
-#RULES
-- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
-- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan. 
-- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
-- Always do whatever is standard for similar professional applications like ours. 
-- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-- In your plan, if a single response may be over 25k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response. 
-- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan. 
-
-2) Implement plan: 
-Implement the outline / plan. 
-
-
-
-
-
-
-
-#GUIDELINES
-You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
-1. PROJECT CONTEXT
-Project Name: Someplace Social
-Environment: Windows 11
-Package Manager: PNPM
-2. CORE DIRECTIVES (NON-NEGOTIABLE)
-Full File Output: When modifying a file, output the ENTIRE , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
-Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
-PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
-Response length: If your response contains more than approximately 30k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
-3. RULES
-Security: Security is very important - always keep in mind best practices.
-Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices. 
-DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
-Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
-Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
-Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
-Egress: Keep egress low whenever possible.
-Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
-Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
-Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
-Simple & Robust: The simplest and most robust solution is best. When building or fixing a problem, always start with what coild be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
-Page text: when writing text, choose simple, easy to understand,  straightforward words for page titles, page text, etc. 
-Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
-UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-
-
-4. RESPONSE FORMAT RULES
-Start with a brief explanation of what you are doing.
-Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
-End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
-Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: $targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }
-5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):
-IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow. 
-Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
-File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
-Code Output: A single, complete, full-file code block.
-Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
-Git Commands: The very last item in your response must be a single code block containing the final git commands.
-5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
-- Never provide multiple open commands in a row.
-- Never provide multiple file code blocks in a row.
-- Never list all commands first and all files afterward.
-- Never open several files before showing the first file’s contents.
-- Never skip ahead to later files.
-- Never bundle files together in one code block.
-- The command for file N+1 MUST appear immediately before the code block for file N+1.
-- The ONLY allowed pattern is:
-open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
-5.3 FORBIDDEN PATTERNS:
-- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
-- open 1 -> open 2 -> file 1 -> file 2
-- any response that shows all commands first and all files later 
-
-EXAMPLE OF CORRECT RESPONSE FORMAT:
-This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
-
-Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc… 
-
-```powershell
-pnpx supabase migration new create_example_table
-```
-
-Here is the sql code.
-
-```sql
--- supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
-create table example (
-  ...
-);
-```
-
-Next we will push to supabase.
-
-```powershell
-pnpx supabase db push
-```
-
-Now we’ll create a new file.
-
-```powershell
-New-Item 'app/index.tsx' -Force
-code 'app/index.tsx'
-```
-
-Here is the full code for our new file.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function HelloScreen() {
-  // ...
-  return <Text>hello, world</Text>;
-  // ...
-}
-```
-
-Now we’ll open page2.
-
-```powershell
-code 'app/page2.tsx'
-```
-
-Here is the updated code for page2.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function PageTwoScreen() {
-  // ...
-  return <Text>hello, world page 2</Text>;
-  // ...
-}
-```
-
-Finally, we will commit.
-
-```powershell
-git add .
-git commit -m "feat: Add example migration and pages"
-```
-
-
-
 
 
 
@@ -183,7 +28,15 @@ Project Structure Map:
 |   |   \--- Header.tsx
 |   +--- contact
 |   |   \--- page.tsx
+|   +--- events
+|   |   +--- [city]
+|   |   |   +--- layout.tsx
+|   |   |   \--- page.tsx
+|   |   +--- CityEventsView.tsx
+|   |   +--- EventsView.module.css
+|   |   \--- utils.ts
 |   +--- lib
+|   |   +--- cities.ts
 |   |   \--- google-sheets.ts
 |   +--- medellin
 |   |   +--- DayAccordion.module.css
@@ -191,6 +44,8 @@ Project Structure Map:
 |   |   +--- EventListing.tsx
 |   |   +--- loading.tsx
 |   |   +--- Medellin.module.css
+|   |   \--- page.tsx
+|   +--- medellin-v2
 |   |   \--- page.tsx
 |   +--- support
 |   |   \--- page.tsx
@@ -285,10 +140,17 @@ app/components/GoogleAnalytics.tsx
 app/components/Header.module.css
 app/components/Header.tsx
 app/contact/page.tsx
+app/events/[city]/layout.tsx
+app/events/[city]/page.tsx
+app/events/CityEventsView.tsx
+app/events/EventsView.module.css
+app/events/utils.ts
 app/globals.css
 app/globals.d.ts
 app/layout.tsx
+app/lib/cities.ts
 app/lib/google-sheets.ts
+app/medellin-v2/page.tsx
 app/medellin/DayAccordion.module.css
 app/medellin/DayAccordion.tsx
 app/medellin/EventListing.tsx
@@ -366,6 +228,482 @@ export default function GoogleAnalytics({ gaId }: { gaId: string }) {
       </Script>
     </>
   );
+}
+
+================
+File: app/events/[city]/layout.tsx
+================
+import { Bricolage_Grotesque } from 'next/font/google';
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['500', '700', '800'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
+export default function CityLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <div className={bricolage.variable}>{children}</div>;
+}
+
+================
+File: app/events/EventsView.module.css
+================
+.container {
+  --bg: #fffbee;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --free: #1f7a4d;
+  --freebg: #e4f4ea;
+  --chip: #f3ead4;
+  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-family: inherit;
+}
+@media (prefers-color-scheme: dark) {
+  .container:not([data-theme='light']) {
+    --bg: #17130f;
+    --card: #221c16;
+    --ink: #f7efdf;
+    --muted: #a89d8c;
+    --line: #3a3128;
+    --accent: #ff6b52;
+    --free: #7be0a6;
+    --freebg: #1d3a2b;
+    --chip: #2c241b;
+  }
+}
+.wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 6px;
+}
+.brand {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.brand small {
+  display: block;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 0;
+}
+.top a {
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+.top a:hover {
+  opacity: 0.8;
+}
+.stick {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 5;
+  padding: 8px 0 10px;
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.days {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 10px;
+}
+.days::-webkit-scrollbar,
+.filters::-webkit-scrollbar {
+  display: none;
+}
+.day {
+  flex: 0 0 auto;
+  min-width: 58px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 8px 6px 7px;
+  text-align: center;
+  cursor: pointer;
+  font: inherit;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.day b {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.day span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.day[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.day[aria-pressed='true'] span {
+  color: var(--bg);
+  opacity: 0.8;
+}
+.filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  align-items: center;
+}
+.chip,
+select.chip {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--chip);
+  color: var(--ink);
+  border: 1.5px solid transparent;
+  border-radius: 99px;
+  padding: 7px 13px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+}
+select.chip {
+  padding-right: 14px;
+}
+.chip[aria-pressed='true'],
+select.chip.on {
+  background: var(--accent);
+  color: #ffffff;
+}
+.clear {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 4px 6px;
+  font-family: inherit;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 22px 0 2px;
+}
+.sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 6px;
+}
+.grp {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 22px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.grp::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.ev {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.row {
+  display: flex;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 13px 14px;
+  cursor: pointer;
+  align-items: flex-start;
+}
+.time {
+  flex: 0 0 48px;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+}
+.time small {
+  display: block;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.mid {
+  flex: 1;
+  min-width: 0;
+}
+.name {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.25;
+}
+.host {
+  color: var(--muted);
+  font-weight: 400;
+}
+.where {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.tags {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tags i {
+  font-style: normal;
+  background: var(--chip);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+.price {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 99px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--line);
+}
+.price.f {
+  background: var(--freebg);
+  color: var(--free);
+  border-color: transparent;
+}
+.next {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-bottom: 6px;
+}
+.more {
+  padding: 0 14px 14px 76px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.more a,
+.more button {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 99px;
+  padding: 7px 14px;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+.more a.map {
+  background: var(--ink);
+  color: var(--bg);
+}
+.more button.edit {
+  border-color: var(--line);
+  color: var(--muted);
+  font-weight: 500;
+}
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 44px 10px;
+}
+.empty b {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.foot {
+  margin-top: 34px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.foot a {
+  color: var(--ink);
+  font-weight: 700;
+}
+.row:focus-visible,
+.day:focus-visible,
+.chip:focus-visible,
+.more a:focus-visible,
+.more button:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modalContent {
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.modalHeader h2 {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+.modalHeader small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.modalField label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.modalInput,
+.modalTextarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.modalTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.submitBtn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cancelBtn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.statusMsg {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 ================
@@ -461,14 +799,6 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 
 ================
-File: next.config.ts
-================
-import type { NextConfig } from "next";
-const nextConfig: NextConfig = {
-};
-export default nextConfig;
-
-================
 File: postcss.config.mjs
 ================
 const config = {
@@ -548,99 +878,610 @@ export default function Banner() {
 }
 
 ================
-File: app/lib/google-sheets.ts
+File: app/events/[city]/page.tsx
 ================
-export type Event = {
-  database: string;
-  title: string;
-  organization: string;
-  activity1: string;
-  activity2: string;
-  activity3: string;
-  startTime: string;
-  endTime: string;
-  price: string;
-  location: string;
-  area: string;
-  map: string;
-  social: string;
-  website: string;
-  contact: string;
-  dayOfWeek: string;
-  id: string;
-  notes: string;
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getEvents } from '../../lib/google-sheets';
+import CityEventsView from '../CityEventsView';
+type PageProps = {
+  params: Promise<{ city: string }>;
 };
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub?gid=0&single=true&output=csv';
-function parseCsv(csvText: string): string[][] {
-  const rows = [];
-  let currentRow = [];
-  let currentField = '';
-  let inQuotes = false;
-  for (let i = 0; i < csvText.length; i++) {
-    const char = csvText[i];
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      currentRow.push(currentField);
-      currentField = '';
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      currentRow.push(currentField);
-      rows.push(currentRow);
-      currentRow = [];
-      currentField = '';
-      // Skip the next character if it's a newline sequence (\r\n)
-      if (char === '\r' && csvText[i + 1] === '\n') {
-        i++;
-      }
-    } else {
-      currentField += char;
-    }
-  }
-  // Add the last field and row
-  currentRow.push(currentField);
-  rows.push(currentRow);
-  return rows;
+export async function generateStaticParams() {
+  return getAllCitySlugs().map((city) => ({ city }));
 }
-export async function getEvents(): Promise<Event[]> {
-  try {
-    const response = await fetch(CSV_URL, {
-      next: { revalidate: 3600 }, // Revalidate data every hour
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch sheet: ${response.statusText}`);
-    }
-    const csvText = await response.text();
-    const rows = parseCsv(csvText);
-    const dataRows = rows.slice(1); // Remove header row
-    const events = dataRows.map((row): Event | null => {
-      // Ensure the row has enough columns to prevent errors
-      if (row.length < 18) return null;
-      return {
-        database: row[0] || '',
-        title: row[1] || '',
-        organization: row[2] || '',
-        activity1: row[3] || '',
-        activity2: row[4] || '',
-        activity3: row[5] || '',
-        startTime: row[6] || '',
-        endTime: row[7] || '',
-        price: row[8] || '',
-        location: row[9] || '',
-        area: row[10] || '',
-        map: row[11] || '',
-        social: row[12] || '',
-        website: row[13] || '',
-        contact: row[14] || '',
-        dayOfWeek: row[15] || '',
-        id: row[16] || '',
-        notes: row[17] || '',
-      };
-    }).filter(event => event !== null) as Event[];
-    return events.filter(event => event.database.toLowerCase().trim() === 'medellin' && event.title);
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    return {
+      title: 'City Not Found · Someplace Social',
+      robots: { index: false, follow: false },
+    };
   }
+  return {
+    title: `${city.name} this week · Someplace Social`,
+    description: `Weekly events, classes, and activities in ${city.heroLocation}.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
+export default async function CityEventsPage({ params }: PageProps) {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    notFound();
+  }
+  const events = await getEvents(city);
+  return <CityEventsView city={city} initialEvents={events} />;
+}
+
+================
+File: app/events/CityEventsView.tsx
+================
+'use client';
+import { useState, useEffect, useMemo, useId } from 'react';
+import Link from 'next/link';
+import { CityConfig } from '../lib/cities';
+import { getEvents, Event } from '../lib/google-sheets';
+import {
+  parseHour,
+  formatTimeRange,
+  isFreePrice,
+  matchesDay,
+  ensureExternalUrl,
+} from './utils';
+import styles from './EventsView.module.css';
+const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAY_NAMES_LONG = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+type TimeGroup = {
+  name: string;
+  predicate: (hour: number) => boolean;
+};
+const TIME_GROUPS: TimeGroup[] = [
+  { name: 'Morning', predicate: (h) => h < 12 },
+  { name: 'Afternoon', predicate: (h) => h >= 12 && h < 17 },
+  { name: 'Evening', predicate: (h) => h >= 17 && h < 20 },
+  { name: 'Night', predicate: (h) => h >= 20 },
+];
+export default function CityEventsView({
+  city,
+  initialEvents = [],
+}: {
+  city: CityConfig;
+  initialEvents?: Event[];
+}) {
+  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
+  const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
+  const [openEventId, setOpenEventId] = useState<string | null>(null);
+  const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  const [editEmail, setEditEmail] = useState('');
+  const [editMessage, setEditMessage] = useState('');
+  const [editStatus, setEditStatus] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const activitySelectId = useId();
+  const areaSelectId = useId();
+  useEffect(() => {
+    if (initialEvents.length === 0) {
+      setLoading(true);
+      getEvents(city)
+        .then((data) => {
+          setAllEvents(data);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setAllEvents(initialEvents);
+      setLoading(false);
+    }
+  }, [city, initialEvents]);
+  const rollingWeek = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      return d;
+    });
+  }, []);
+  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+  const now = new Date();
+  const nowHour = now.getHours() + now.getMinutes() / 60;
+  const activities = useMemo(() => {
+    const set = new Set<string>();
+    allEvents.forEach((ev) => {
+      if (ev.activity1) set.add(ev.activity1.trim());
+      if (ev.activity2) set.add(ev.activity2.trim());
+      if (ev.activity3) set.add(ev.activity3.trim());
+    });
+    return Array.from(set).filter(Boolean).sort();
+  }, [allEvents]);
+  const areas = useMemo(() => {
+    const set = new Set<string>();
+    allEvents.forEach((ev) => {
+      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 30) {
+        set.add(ev.area.trim());
+      }
+    });
+    return Array.from(set).sort();
+  }, [allEvents]);
+  const getFilteredEventsForDay = (dayIndex: number) => {
+    const day = rollingWeek[dayIndex];
+    if (!day) return [];
+    const dayName = DAY_NAMES_LONG[day.getDay()];
+    return allEvents
+      .filter((ev) => {
+        const matchesCurrentDay = matchesDay(ev.dayOfWeek, dayName);
+        if (!matchesCurrentDay) return false;
+        if (freeOnly && !isFreePrice(ev.price)) return false;
+        if (selectedActivity) {
+          const acts = [ev.activity1, ev.activity2, ev.activity3].map((a) =>
+            (a || '').trim().toLowerCase()
+          );
+          if (!acts.includes(selectedActivity.toLowerCase())) return false;
+        }
+        if (selectedArea && ev.area.trim() !== selectedArea.trim()) {
+          return false;
+        }
+        return true;
+      })
+      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
+  };
+  const currentList = useMemo(() => {
+    return getFilteredEventsForDay(activeDayIdx);
+  }, [allEvents, activeDayIdx, freeOnly, selectedActivity, selectedArea, rollingWeek]);
+  const nextUpEventId = useMemo(() => {
+    if (activeDayIdx !== 0) return null;
+    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
+    return nextEvent ? nextEvent.id || nextEvent.title : null;
+  }, [activeDayIdx, currentList, nowHour]);
+  const hasActiveFilters = freeOnly || selectedActivity !== '' || selectedArea !== '';
+  const clearFilters = () => {
+    setFreeOnly(false);
+    setSelectedActivity('');
+    setSelectedArea('');
+  };
+  const handleOpenEdit = (event: Event) => {
+    setEditModalEvent(event);
+    setEditEmail('');
+    setEditStatus(null);
+    setEditMessage(
+      `City: ${city.name}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
+    );
+  };
+  const handleCloseEdit = () => {
+    setEditModalEvent(null);
+    setEditStatus(null);
+  };
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editModalEvent) return;
+    setIsSubmitting(true);
+    setEditStatus('Submitting update...');
+    try {
+      const fullMessage = `Sender Email: ${editEmail || 'Not provided'}\n\n${editMessage}`;
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Edit a Listing (${city.name})`,
+          message: fullMessage,
+        }),
+      });
+      const res = await response.json();
+      if (res.success) {
+        setEditStatus('Thanks! Your edit suggestion has been sent.');
+        setTimeout(() => {
+          handleCloseEdit();
+        }, 1800);
+      } else {
+        setEditStatus('Failed to send. Please try again.');
+      }
+    } catch {
+      setEditStatus('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <div className={styles.container}>
+      <div className={styles.wrap}>
+        <header className={styles.top}>
+          <div className={styles.brand}>
+            Someplace Social
+            <small>{city.heroLocation}</small>
+          </div>
+          <Link href="/contact">+ Add event</Link>
+        </header>
+        <section className={styles.stick}>
+          <div className={styles.days} role="group" aria-label="Pick a day">
+            {rollingWeek.map((day, idx) => {
+              const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
+              const count = getFilteredEventsForDay(idx).length;
+              const isSelected = idx === activeDayIdx;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  className={styles.day}
+                  aria-pressed={isSelected}
+                  onClick={() => {
+                    setActiveDayIdx(idx);
+                    setOpenEventId(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  <span>{dayShort}</span>
+                  <b>{day.getDate()}</b>
+                  <span>{count} events</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className={styles.filters}>
+            <button
+              type="button"
+              className={styles.chip}
+              aria-pressed={freeOnly}
+              onClick={() => setFreeOnly(!freeOnly)}
+            >
+              Free only
+            </button>
+            <select
+              id={activitySelectId}
+              className={`${styles.chip} ${selectedActivity ? styles.on : ''}`}
+              aria-label="Activity"
+              value={selectedActivity}
+              onChange={(e) => setSelectedActivity(e.target.value)}
+            >
+              <option value="">All activities</option>
+              {activities.map((act) => (
+                <option key={act} value={act}>
+                  {act}
+                </option>
+              ))}
+            </select>
+            <select
+              id={areaSelectId}
+              className={`${styles.chip} ${selectedArea ? styles.on : ''}`}
+              aria-label="Area"
+              value={selectedArea}
+              onChange={(e) => setSelectedArea(e.target.value)}
+            >
+              <option value="">All areas</option>
+              {areas.map((ar) => (
+                <option key={ar} value={ar}>
+                  {ar}
+                </option>
+              ))}
+            </select>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className={styles.clear}
+                onClick={clearFilters}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </section>
+        <h1 className={styles.title}>
+          {activeDayIdx === 0
+            ? 'Today'
+            : activeDayIdx === 1
+            ? 'Tomorrow'
+            : DAY_NAMES_LONG[activeDate.getDay()]}
+        </h1>
+        <p className={styles.sub}>
+          {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
+          {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
+          {currentList.length === 1 ? 'thing' : 'things'} on
+        </p>
+        <main id="list">
+          {loading ? (
+            <div className={styles.empty}>
+              <b>Loading {city.name} events...</b>
+              Gathering weekly activities.
+            </div>
+          ) : currentList.length === 0 ? (
+            <div className={styles.empty}>
+              <b>Nothing listed{hasActiveFilters ? ' with these filters' : ''}</b>
+              {hasActiveFilters
+                ? 'Try clearing a filter.'
+                : 'Know a spot that runs on this day? Add it.'}
+            </div>
+          ) : (
+            TIME_GROUPS.map((group) => {
+              const groupEvents = currentList.filter((ev) =>
+                group.predicate(parseHour(ev.startTime))
+              );
+              if (groupEvents.length === 0) return null;
+              return (
+                <div key={group.name}>
+                  <div className={styles.grp}>{group.name}</div>
+                  {groupEvents.map((ev, i) => {
+                    const uniqueId = ev.id || `${ev.title}-${i}`;
+                    const isOpen = openEventId === uniqueId;
+                    const isNextUp = uniqueId === nextUpEventId;
+                    const { start, end } = formatTimeRange(ev.startTime, ev.endTime);
+                    const isFree = isFreePrice(ev.price);
+                    const tagList = [ev.activity1, ev.activity2, ev.activity3].filter(
+                      Boolean
+                    );
+                    const displayVenue = ev.venue || ev.location;
+                    return (
+                      <div className={styles.ev} key={uniqueId}>
+                        <button
+                          type="button"
+                          className={styles.row}
+                          aria-expanded={isOpen}
+                          onClick={() => setOpenEventId(isOpen ? null : uniqueId)}
+                        >
+                          <div className={styles.time}>
+                            {start}
+                            {end && <small>to {end}</small>}
+                          </div>
+                          <div className={styles.mid}>
+                            {isNextUp && (
+                              <>
+                                <span className={styles.next}>Next up</span>
+                                <br />
+                              </>
+                            )}
+                            <div className={styles.name}>
+                              {ev.title}
+                              {ev.organization && ev.organization !== displayVenue && (
+                                <span className={styles.host}>
+                                  {' '}
+                                  w/ {ev.organization}
+                                </span>
+                              )}
+                            </div>
+                            <div className={styles.where}>
+                              {displayVenue}
+                              {ev.area ? ` · ${ev.area}` : ''}
+                            </div>
+                            {tagList.length > 0 && (
+                              <div className={styles.tags}>
+                                {tagList.map((tag) => (
+                                  <i key={tag}>{tag}</i>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <span className={`${styles.price} ${isFree ? styles.f : ''}`}>
+                            {ev.price || 'Free'}
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className={styles.more}>
+                            {ev.map && (
+                              <a
+                                className={styles.map}
+                                href={ensureExternalUrl(ev.map)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Open in Maps
+                              </a>
+                            )}
+                            {ev.website && (
+                              <a
+                                href={ensureExternalUrl(ev.website)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Website
+                              </a>
+                            )}
+                            {ev.social && (
+                              <a
+                                href={ensureExternalUrl(ev.social)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Instagram
+                              </a>
+                            )}
+                            {ev.contact && (
+                              <a
+                                href={ensureExternalUrl(ev.contact)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Contact
+                              </a>
+                            )}
+                            <button
+                              type="button"
+                              className={styles.edit}
+                              onClick={() => handleOpenEdit(ev)}
+                            >
+                              Suggest edit
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })
+          )}
+        </main>
+        <footer className={styles.foot} id="add">
+          Details change fast. Tap an event, then <b>Suggest edit</b> if something is
+          off. Know about an event? <Link href="/contact">Submit a listing</Link>.
+          <br />
+          <br />
+          Free for everyone, no ads.{' '}
+          <a
+            href="https://buymeacoffee.com/someplacesocial"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Buy me a drink
+          </a>
+          .
+        </footer>
+      </div>
+      {editModalEvent && (
+        <div className={styles.modalBackdrop} onClick={handleCloseEdit}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.modalHeader}>
+              <div>
+                <h2>Suggest Edit</h2>
+                <small>{editModalEvent.title}</small>
+              </div>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={handleCloseEdit}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit} className={styles.modalForm}>
+              <div className={styles.modalField}>
+                <label htmlFor="editEmail">Your Email (optional)</label>
+                <input
+                  id="editEmail"
+                  type="email"
+                  className={styles.modalInput}
+                  placeholder="name@example.com"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                />
+              </div>
+              <div className={styles.modalField}>
+                <label htmlFor="editMessage">What needs to be changed? *</label>
+                <textarea
+                  id="editMessage"
+                  required
+                  className={styles.modalTextarea}
+                  value={editMessage}
+                  onChange={(e) => setEditMessage(e.target.value)}
+                />
+              </div>
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={handleCloseEdit}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.submitBtn}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Edit'}
+                </button>
+              </div>
+              {editStatus && <p className={styles.statusMsg}>{editStatus}</p>}
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+================
+File: app/events/utils.ts
+================
+export function parseHour(timeStr: string): number {
+  if (!timeStr) return 18;
+  const cleaned = timeStr.trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
+  if (match) {
+    let hour = parseInt(match[1], 10);
+    const minute = match[2] ? parseInt(match[2], 10) : 0;
+    const meridian = match[3];
+    if (meridian) {
+      const isPm = meridian.startsWith('p');
+      const isAm = meridian.startsWith('a');
+      if (isPm && hour < 12) hour += 12;
+      if (isAm && hour === 12) hour = 0;
+    } else {
+      if (hour >= 1 && hour <= 6) {
+        hour += 12;
+      }
+    }
+    return hour + minute / 60;
+  }
+  const numMatch = cleaned.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0], 10) : 18;
+}
+export function formatTimeLabel(timeStr: string): string {
+  if (!timeStr) return '';
+  const cleaned = timeStr.trim();
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  if (match) {
+    const hour = match[1];
+    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
+    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
+    return `${hour}${minute}${meridian}`;
+  }
+  return cleaned;
+}
+export function formatTimeRange(startTime: string, endTime: string): { start: string; end?: string } {
+  const start = formatTimeLabel(startTime);
+  const end = endTime ? formatTimeLabel(endTime) : undefined;
+  return { start, end };
+}
+export function isFreePrice(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+export function matchesDay(eventDays: string, targetDayName: string): boolean {
+  if (!eventDays || !targetDayName) return false;
+  return eventDays.toLowerCase().includes(targetDayName.toLowerCase());
+}
+export function ensureExternalUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
 }
 
 ================
@@ -832,6 +1673,14 @@ body {
 }
 
 ================
+File: app/medellin-v2/page.tsx
+================
+import { redirect } from 'next/navigation';
+export default function MedellinV2Page() {
+  redirect('/events/medellin-colombia');
+}
+
+================
 File: app/medellin/DayAccordion.tsx
 ================
 "use client";
@@ -896,6 +1745,28 @@ File: app/medellin/Medellin.module.css
 .editLink {
   color: #cc4532 !important;
 }
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from "next";
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/medellin-v2',
+        destination: '/events/medellin-colombia',
+        permanent: false,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/events/fort-collins-colorado',
+        permanent: false,
+      },
+    ];
+  },
+};
+export default nextConfig;
 
 ================
 File: app/components/ContactForm.tsx
@@ -963,6 +1834,58 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
       {status && <p>{status}</p>}
     </form>
   );
+}
+
+================
+File: app/lib/cities.ts
+================
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+};
+const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '1461731059',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+  'fortcollins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '1461731059',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+};
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return ['medellin-colombia', 'fort-collins-colorado'];
 }
 
 ================
@@ -1497,6 +2420,281 @@ export default function AboutPage() {
       </section>
     </main>
   );
+}
+
+================
+File: app/lib/google-sheets.ts
+================
+import { CityConfig, CITIES } from './cities';
+export type Event = {
+  id: string;
+  title: string;
+  venue: string;
+  organization: string;
+  location: string;
+  area: string;
+  activity1: string;
+  activity2: string;
+  activity3: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  frequency: string;
+  price: string;
+  preRegistration: string;
+  map: string;
+  social: string;
+  website: string;
+  contact: string;
+  about: string;
+  notes: string;
+  database: string;
+};
+const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+function getCandidateUrls(city: CityConfig): string[] {
+  if (city.csvUrl) return [city.csvUrl];
+  const gid = city.sheetGid || '0';
+  const spreadsheetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
+  const tabName = encodeURIComponent(city.sheetTab);
+  return [
+    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}`,
+  ];
+}
+function parseCsv(csvText: string): string[][] {
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentField = '';
+  let inQuotes = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (char === '"') {
+      if (inQuotes && csvText[i + 1] === '"') {
+        currentField += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField);
+      currentField = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      currentRow.push(currentField);
+      rows.push(currentRow);
+      currentRow = [];
+      currentField = '';
+      if (char === '\r' && csvText[i + 1] === '\n') {
+        i++;
+      }
+    } else {
+      currentField += char;
+    }
+  }
+  currentRow.push(currentField);
+  rows.push(currentRow);
+  return rows;
+}
+function parseSheetData(rawText: string): string[][] {
+  const trimmed = rawText.trim();
+  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
+    try {
+      const startIdx = trimmed.indexOf('{');
+      const endIdx = trimmed.lastIndexOf('}');
+      if (startIdx !== -1 && endIdx !== -1) {
+        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
+        const data = JSON.parse(jsonStr);
+        if (data.table) {
+          const cols: { label?: string; id?: string }[] = data.table.cols || [];
+          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
+          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+            return (row.c || []).map((cell) => {
+              if (!cell || cell.v === null || cell.v === undefined) return '';
+              return String(cell.f || cell.v).trim();
+            });
+          });
+          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
+            return [headerRow, ...dataRows];
+          } else if (dataRows.length > 0) {
+            return dataRows;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
+    }
+  }
+  return parseCsv(rawText);
+}
+const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
+const HEADER_ALIASES: Record<string, string[]> = {
+  id: ['id'],
+  title: ['title', 'eventname', 'name'],
+  venue: ['venue', 'place'],
+  organization: ['organization', 'organizer', 'host'],
+  location: ['location', 'address'],
+  area: ['area', 'neighborhood'],
+  activity1: ['activity1', 'activity'],
+  activity2: ['activity2'],
+  activity3: ['activity3'],
+  dayOfWeek: ['dayofweek', 'day', 'days'],
+  startTime: ['starttime', 'start'],
+  endTime: ['endtime', 'end'],
+  frequency: ['frequency'],
+  price: ['price', 'cost'],
+  preRegistration: ['preregistration', 'prereg'],
+  map: ['map', 'googlemap', 'googlemaplink', 'maps'],
+  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
+  website: ['website', 'site', 'url'],
+  contact: ['contact', 'whatsapp', 'phone'],
+  about: ['about', 'description'],
+  notes: ['notes', 'note'],
+  database: ['database', 'db', 'sheet'],
+};
+const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
+  id: 0,
+  title: 1,
+  venue: 2,
+  organization: 2,
+  location: 3,
+  area: 4,
+  activity1: 5,
+  activity2: 6,
+  activity3: 7,
+  dayOfWeek: 8,
+  startTime: 9,
+  endTime: 10,
+  frequency: 11,
+  price: 12,
+  preRegistration: 13,
+  map: 14,
+  social: 15,
+  website: 16,
+  contact: 17,
+  about: 18,
+  notes: 19,
+};
+export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
+  try {
+    let cityConfig: CityConfig;
+    if (typeof cityOrTab === 'string') {
+      cityConfig = CITIES[cityOrTab] || {
+        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
+        name: cityOrTab,
+        region: '',
+        heroLocation: cityOrTab,
+        sheetTab: cityOrTab,
+      };
+    } else if (cityOrTab) {
+      cityConfig = cityOrTab;
+    } else {
+      cityConfig = CITIES['medellin-colombia'];
+    }
+    const candidateUrls = getCandidateUrls(cityConfig);
+    const isDev = process.env.NODE_ENV === 'development';
+    let rawText = '';
+    for (const url of candidateUrls) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/csv, application/json, text/plain, */*',
+          },
+          cache: isDev ? 'no-store' : 'default',
+          next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+        });
+        if (response.ok) {
+          const text = await response.text();
+          const trimmed = text.trim();
+          if (
+            trimmed &&
+            !trimmed.startsWith('<!DOCTYPE html') &&
+            !trimmed.startsWith('<html') &&
+            !trimmed.includes('accounts.google.com')
+          ) {
+            rawText = text;
+            break;
+          }
+        }
+      } catch (fetchErr) {
+        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+      }
+    }
+    if (!rawText) {
+      console.warn(`[Someplace Social] No CSV data available for ${cityConfig.name}`);
+      return [];
+    }
+    const rows = parseSheetData(rawText);
+    if (rows.length < 2) return [];
+    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
+    const headerIndexMap: Record<string, number> = {};
+    Object.keys(HEADER_ALIASES).forEach((field) => {
+      const aliases = HEADER_ALIASES[field];
+      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
+      if (foundIdx !== -1) {
+        headerIndexMap[field] = foundIdx;
+      }
+    });
+    const dataRows = rows.slice(1);
+    const events = dataRows.map((row): Event | null => {
+      if (row.length === 0 || row.every(cell => cell.trim() === '')) return null;
+      const getValue = (field: string): string => {
+        const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+        if (colIdx !== undefined && colIdx < row.length) {
+          return (row[colIdx] || '').trim();
+        }
+        return '';
+      };
+      const venueVal = getValue('venue');
+      const orgVal = getValue('organization');
+      const locVal = getValue('location');
+      return {
+        id: getValue('id'),
+        title: getValue('title'),
+        venue: venueVal,
+        organization: orgVal || venueVal,
+        location: locVal || venueVal,
+        area: getValue('area'),
+        activity1: getValue('activity1'),
+        activity2: getValue('activity2'),
+        activity3: getValue('activity3'),
+        dayOfWeek: getValue('dayOfWeek'),
+        startTime: getValue('startTime'),
+        endTime: getValue('endTime'),
+        frequency: getValue('frequency'),
+        price: getValue('price'),
+        preRegistration: getValue('preRegistration'),
+        map: getValue('map'),
+        social: getValue('social'),
+        website: getValue('website'),
+        contact: getValue('contact'),
+        about: getValue('about'),
+        notes: getValue('notes'),
+        database: getValue('database'),
+      };
+    }).filter((event): event is Event => event !== null);
+    return events.filter((event) => {
+      const db = (event.database || '').toLowerCase().trim();
+      const targetName = cityConfig.name.toLowerCase();
+      const targetTab = cityConfig.sheetTab.toLowerCase();
+      const targetSlug = cityConfig.slug.toLowerCase();
+      if (db) {
+        const matchesCity =
+          db === targetName ||
+          db === targetTab ||
+          db === targetSlug ||
+          targetSlug.includes(db) ||
+          db.includes(targetName);
+        if (!matchesCity) return false;
+      }
+      return Boolean(event.title);
+    });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
 }
 
 ================
