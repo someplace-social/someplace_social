@@ -17,8 +17,15 @@ export const CITIES: Record<string, CityConfig> = {
     sheetTab: 'Medellin',
     sheetGid: '0',
   },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+  },
   'fortcollins-colorado': {
-    slug: 'fortcollins-colorado',
+    slug: 'fort-collins-colorado',
     name: 'Fort Collins',
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
@@ -33,5 +40,5 @@ export function getCityBySlug(slug: string): CityConfig | undefined {
 }
 
 export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
+  return ['medellin-colombia', 'fort-collins-colorado'];
 }

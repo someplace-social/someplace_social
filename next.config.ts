@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         destination: '/events/medellin-colombia',
         permanent: false,
       },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/events/fort-collins-colorado',
+        permanent: false,
+      },
     ];
   },
 };
