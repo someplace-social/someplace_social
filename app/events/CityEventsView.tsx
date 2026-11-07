@@ -50,9 +50,15 @@ const TIME_GROUPS: TimeGroup[] = [
   { name: 'Night', predicate: (h) => h >= 20 },
 ];
 
-export default function CityEventsView({ city }: { city: CityConfig }) {
-  const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function CityEventsView({
+  city,
+  initialEvents = [],
+}: {
+  city: CityConfig;
+  initialEvents?: Event[];
+}) {
+  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [freeOnly, setFreeOnly] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState('');
@@ -69,15 +75,20 @@ export default function CityEventsView({ city }: { city: CityConfig }) {
   const areaSelectId = useId();
 
   useEffect(() => {
-    setLoading(true);
-    getEvents(city)
-      .then((data) => {
-        setAllEvents(data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [city]);
+    if (initialEvents.length === 0) {
+      setLoading(true);
+      getEvents(city)
+        .then((data) => {
+          setAllEvents(data);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setAllEvents(initialEvents);
+      setLoading(false);
+    }
+  }, [city, initialEvents]);
 
   const rollingWeek = useMemo(() => {
     const today = new Date();

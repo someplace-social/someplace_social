@@ -25,40 +25,20 @@ export type Event = {
   database: string;
 };
 
-const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
 
-async function resolveGid(city: CityConfig): Promise<string> {
-  if (city.sheetGid !== undefined && city.sheetGid !== '') {
-    return city.sheetGid;
-  }
+function getCandidateUrls(city: CityConfig): string[] {
+  if (city.csvUrl) return [city.csvUrl];
 
-  try {
-    const pubHtmlUrl = `${BASE_CSV_URL}html`;
-    const res = await fetch(pubHtmlUrl, { next: { revalidate: 3600 } });
-    if (res.ok) {
-      const html = await res.text();
-      const tabName = city.sheetTab.trim();
-      const escapedTab = tabName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const gid = city.sheetGid || '0';
+  const spreadsheetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
 
-      const matchA = html.match(new RegExp(`gid=([0-9]+)[^"]*"[^>]*>[^<]*${escapedTab}`, 'i'));
-      if (matchA && matchA[1]) return matchA[1];
-
-      const matchB = html.match(new RegExp(`id="sheet-button-([0-9]+)"[^>]*>[^<]*<a[^>]*>[^<]*${escapedTab}`, 'i'));
-      if (matchB && matchB[1]) return matchB[1];
-
-      const matchC = html.match(new RegExp(`{[^}]*name:\\s*"${escapedTab}"[^}]*gid:\\s*"([0-9]+)"`, 'i'));
-      if (matchC && matchC[1]) return matchC[1];
-    }
-  } catch (err) {
-    console.error('Failed to auto-detect sheet gid from pubhtml:', err);
-  }
-
-  return '0';
-}
-
-function buildCsvUrl(city: CityConfig, gid: string): string {
-  if (city.csvUrl) return city.csvUrl;
-  return `${BASE_CSV_URL}?gid=${gid}&single=true&output=csv`;
+  return [
+    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
+  ];
 }
 
 function parseCsv(csvText: string): string[][] {
@@ -158,16 +138,32 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       cityConfig = CITIES['medellin-colombia'];
     }
 
-    const gid = await resolveGid(cityConfig);
-    const csvUrl = buildCsvUrl(cityConfig, gid);
+    const candidateUrls = getCandidateUrls(cityConfig);
+    const isDev = process.env.NODE_ENV === 'development';
+    let csvText = '';
 
-    const response = await fetch(csvUrl, {
-      next: { revalidate: 3600 },
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch sheet: ${response.statusText}`);
+    for (const url of candidateUrls) {
+      try {
+        const response = await fetch(url, {
+          next: { revalidate: isDev ? 10 : 3600 },
+        });
+        if (response.ok) {
+          const text = await response.text();
+          if (text && !text.trim().startsWith('<!DOCTYPE html') && !text.trim().startsWith('<html')) {
+            csvText = text;
+            break;
+          }
+        }
+      } catch {
+        // Continue to next candidate
+      }
     }
-    const csvText = await response.text();
+
+    if (!csvText) {
+      console.warn(`No CSV data returned for ${cityConfig.name}`);
+      return [];
+    }
+
     const rows = parseCsv(csvText);
     if (rows.length < 2) return [];
 

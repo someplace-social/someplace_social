@@ -5,8 +5,11 @@ export type CityConfig = {
   heroLocation: string;
   sheetTab: string;
   sheetGid?: string;
+  spreadsheetId?: string;
   csvUrl?: string;
 };
+
+const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
 
 export const CITIES: Record<string, CityConfig> = {
   'medellin-colombia': {
@@ -16,6 +19,7 @@ export const CITIES: Record<string, CityConfig> = {
     heroLocation: 'Medellín, Colombia',
     sheetTab: 'Medellin',
     sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
   },
   'fort-collins-colorado': {
     slug: 'fort-collins-colorado',
@@ -23,7 +27,8 @@ export const CITIES: Record<string, CityConfig> = {
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
     sheetTab: 'Fort Collins',
-    sheetGid: '',
+    sheetGid: '1461731059',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
   },
   'fortcollins-colorado': {
     slug: 'fort-collins-colorado',
@@ -31,7 +36,8 @@ export const CITIES: Record<string, CityConfig> = {
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
     sheetTab: 'Fort Collins',
-    sheetGid: '',
+    sheetGid: '1461731059',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
   },
 };
 

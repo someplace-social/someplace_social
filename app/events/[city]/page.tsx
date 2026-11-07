@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getEvents } from '../../lib/google-sheets';
 import CityEventsView from '../CityEventsView';
 
 type PageProps = {
@@ -36,5 +37,6 @@ export default async function CityEventsPage({ params }: PageProps) {
   if (!city) {
     notFound();
   }
-  return <CityEventsView city={city} />;
+  const events = await getEvents(city);
+  return <CityEventsView city={city} initialEvents={events} />;
 }
