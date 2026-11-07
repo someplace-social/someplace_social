@@ -217,7 +217,7 @@ export default function CityEventsView({
               setActiveDayIdx(idx);
               setOpenEventId(null);
             }}
-            getEventCountForDay={getFilteredEventsForDay}
+            getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
 
           <FilterControls
@@ -295,7 +295,7 @@ export default function CityEventsView({
                         onToggle={() =>
                           setOpenEventId(openEventId === uniqueId ? null : uniqueId)
                         }
-                        onSuggestEdit={setEditModalEvent}
+                        onOpenEdit={setEditModalEvent}
                       />
                     );
                   })}
