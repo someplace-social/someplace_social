@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useId } from 'react';
 import Link from 'next/link';
+import { CityConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
 import {
   parseHour,
@@ -10,7 +11,7 @@ import {
   matchesDay,
   ensureExternalUrl,
 } from './utils';
-import styles from './MedellinV2.module.css';
+import styles from './EventsView.module.css';
 
 const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const DAY_NAMES_LONG = [
@@ -49,7 +50,7 @@ const TIME_GROUPS: TimeGroup[] = [
   { name: 'Night', predicate: (h) => h >= 20 },
 ];
 
-export default function MedellinV2Page() {
+export default function CityEventsView({ city }: { city: CityConfig }) {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
@@ -68,14 +69,15 @@ export default function MedellinV2Page() {
   const areaSelectId = useId();
 
   useEffect(() => {
-    getEvents()
+    setLoading(true);
+    getEvents(city)
       .then((data) => {
         setAllEvents(data);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [city]);
 
   const rollingWeek = useMemo(() => {
     const today = new Date();
@@ -103,7 +105,7 @@ export default function MedellinV2Page() {
   const areas = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 25) {
+      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 30) {
         set.add(ev.area.trim());
       }
     });
@@ -161,7 +163,7 @@ export default function MedellinV2Page() {
     setEditEmail('');
     setEditStatus(null);
     setEditMessage(
-      `Event: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
+      `City: ${city.name}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})\n\nRequested changes: `
     );
   };
 
@@ -182,7 +184,7 @@ export default function MedellinV2Page() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formType: 'Edit a Listing (Medellin v2)',
+          formType: `Edit a Listing (${city.name})`,
           message: fullMessage,
         }),
       });
@@ -209,7 +211,7 @@ export default function MedellinV2Page() {
         <header className={styles.top}>
           <div className={styles.brand}>
             Someplace Social
-            <small>Medellín, Colombia</small>
+            <small>{city.heroLocation}</small>
           </div>
           <Link href="/contact">+ Add event</Link>
         </header>
@@ -309,7 +311,7 @@ export default function MedellinV2Page() {
         <main id="list">
           {loading ? (
             <div className={styles.empty}>
-              <b>Loading Medellín events...</b>
+              <b>Loading {city.name} events...</b>
               Gathering weekly activities.
             </div>
           ) : currentList.length === 0 ? (

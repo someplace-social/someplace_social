@@ -1,3 +1,5 @@
+import { CityConfig, CITIES } from './cities';
+
 export type Event = {
   id: string;
   title: string;
@@ -23,7 +25,21 @@ export type Event = {
   database: string;
 };
 
-const CSV_URL = process.env.GOOGLE_SHEETS_CSV_URL || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub?gid=0&single=true&output=csv';
+const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+
+function buildCsvUrl(city?: CityConfig): string {
+  if (city?.csvUrl) return city.csvUrl;
+  if (process.env.GOOGLE_SHEETS_CSV_URL && !city) {
+    return process.env.GOOGLE_SHEETS_CSV_URL;
+  }
+  if (city?.sheetGid) {
+    return `${BASE_CSV_URL}?gid=${city.sheetGid}&single=true&output=csv`;
+  }
+  if (city?.sheetTab) {
+    return `${BASE_CSV_URL}?output=csv&sheet=${encodeURIComponent(city.sheetTab)}`;
+  }
+  return `${BASE_CSV_URL}?gid=0&single=true&output=csv`;
+}
 
 function parseCsv(csvText: string): string[][] {
   const rows: string[][] = [];
@@ -105,9 +121,25 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   notes: 19,
 };
 
-export async function getEvents(): Promise<Event[]> {
+export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
   try {
-    const response = await fetch(CSV_URL, {
+    let cityConfig: CityConfig | undefined;
+    if (typeof cityOrTab === 'string') {
+      cityConfig = CITIES[cityOrTab] || {
+        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
+        name: cityOrTab,
+        region: '',
+        heroLocation: cityOrTab,
+        sheetTab: cityOrTab,
+      };
+    } else if (cityOrTab) {
+      cityConfig = cityOrTab;
+    } else {
+      cityConfig = CITIES['medellin-colombia'];
+    }
+
+    const csvUrl = buildCsvUrl(cityConfig);
+    const response = await fetch(csvUrl, {
       next: { revalidate: 3600 },
     });
     if (!response.ok) {
@@ -172,11 +204,19 @@ export async function getEvents(): Promise<Event[]> {
 
     return events.filter((event) => {
       const db = (event.database || '').toLowerCase().trim();
-      const matchesDb = !db || db === 'medellin' || db === 'colombia';
+      const targetName = cityConfig.name.toLowerCase();
+      const targetTab = cityConfig.sheetTab.toLowerCase();
+      const matchesDb =
+        !db ||
+        db === targetName ||
+        db === targetTab ||
+        db === 'medellin' ||
+        db === 'colombia' ||
+        db === 'fort collins';
       return matchesDb && Boolean(event.title);
     });
   } catch (error) {
-    console.error("Error fetching events:", error);
+    console.error('Error fetching events:', error);
     return [];
   }
 }

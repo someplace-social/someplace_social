@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: '/medellin-v2',
+        destination: '/events/medellin-colombia',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
 
 const bricolage = Bricolage_Grotesque({
@@ -8,16 +7,7 @@ const bricolage = Bricolage_Grotesque({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'Medellín v2.0 · Someplace Social',
-  description: 'Medellín recurring weekly events, classes, and social activities.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default function MedellinV2Layout({
+export default function CityLayout({
   children,
 }: {
   children: React.ReactNode;
