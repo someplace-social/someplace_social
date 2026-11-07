@@ -26,6 +26,7 @@ export type Event = {
 };
 
 const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
 
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
@@ -35,9 +36,11 @@ function getCandidateUrls(city: CityConfig): string[] {
   const tabName = encodeURIComponent(city.sheetTab);
 
   return [
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}&headers=1`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}&headers=1`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${gid}&headers=1`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
+    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
   ];
 }
 
@@ -73,6 +76,42 @@ function parseCsv(csvText: string): string[][] {
   currentRow.push(currentField);
   rows.push(currentRow);
   return rows;
+}
+
+function parseSheetData(rawText: string): string[][] {
+  const trimmed = rawText.trim();
+
+  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
+    try {
+      const startIdx = trimmed.indexOf('{');
+      const endIdx = trimmed.lastIndexOf('}');
+      if (startIdx !== -1 && endIdx !== -1) {
+        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
+        const data = JSON.parse(jsonStr);
+        if (data.table) {
+          const cols = data.table.cols || [];
+          const headerRow = cols.map((col: { label?: string; id?: string }) => col.label || col.id || '');
+
+          const dataRows = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+            return (row.c || []).map((cell) => {
+              if (!cell || cell.v === null || cell.v === undefined) return '';
+              return String(cell.f || cell.v).trim();
+            });
+          });
+
+          if (headerRow.some(h => h && !h.match(/^[A-Z]$/))) {
+            return [headerRow, ...dataRows];
+          } else if (dataRows.length > 0) {
+            return dataRows;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV:', e);
+    }
+  }
+
+  return parseCsv(rawText);
 }
 
 const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -145,11 +184,15 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
-    let csvText = '';
+    let rawText = '';
 
     for (const url of candidateUrls) {
       try {
         const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/csv, application/json, text/plain, */*',
+          },
           cache: isDev ? 'no-store' : 'default',
           next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
         });
@@ -164,7 +207,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
             !trimmed.startsWith('<html') &&
             !trimmed.includes('accounts.google.com')
           ) {
-            csvText = text;
+            rawText = text;
             break;
           }
         }
@@ -173,12 +216,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       }
     }
 
-    if (!csvText) {
-      console.warn(`[Someplace Social] No CSV data available for ${cityConfig.name}`);
+    if (!rawText) {
+      console.warn(`[Someplace Social] No data returned for ${cityConfig.name}`);
       return [];
     }
 
-    const rows = parseCsv(csvText);
+    const rows = parseSheetData(rawText);
     if (rows.length < 2) return [];
 
     const headerRow = rows[0].map(h => normalizeHeader(h));
@@ -234,7 +277,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       };
     }).filter((event): event is Event => event !== null);
 
-    return events.filter((event) => {
+    const filtered = events.filter((event) => {
       const db = (event.database || '').toLowerCase().trim();
       const targetName = cityConfig.name.toLowerCase();
       const targetTab = cityConfig.sheetTab.toLowerCase();
@@ -252,6 +295,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 
       return Boolean(event.title);
     });
+
+    console.log(`[Someplace Social] Successfully loaded ${filtered.length} events for ${cityConfig.name}`);
+    return filtered;
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
