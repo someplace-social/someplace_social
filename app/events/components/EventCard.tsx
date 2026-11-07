@@ -118,9 +118,7 @@ export default function EventCard({
           )}
 
           {event.preRegistration && (
-            <p className={styles.preRegistration}>
-              Pre-Registration: {event.preRegistration}
-            </p>
+            <p className={styles.preRegistration}>{event.preRegistration}</p>
           )}
 
           <div className={styles.drawerActionRow}>
