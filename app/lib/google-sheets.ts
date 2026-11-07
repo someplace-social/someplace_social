@@ -36,11 +36,10 @@ function getCandidateUrls(city: CityConfig): string[] {
   const tabName = encodeURIComponent(city.sheetTab);
 
   return [
+    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
-    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
   ];
 }
 
@@ -89,8 +88,8 @@ function parseSheetData(rawText: string): string[][] {
         const jsonStr = trimmed.substring(startIdx, endIdx + 1);
         const data = JSON.parse(jsonStr);
         if (data.table) {
-          const cols = data.table.cols || [];
-          const headerRow: string[] = cols.map((col: { label?: string; id?: string }) => col.label || col.id || '');
+          const cols: { label?: string; id?: string }[] = data.table.cols || [];
+          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
 
           const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
             return (row.c || []).map((cell) => {
@@ -185,9 +184,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
     let rawText = '';
-    let winningUrl = '';
-
-    console.log(`[Someplace Social] Fetching ${cityConfig.name} events (gid: ${cityConfig.sheetGid})...`);
 
     for (const url of candidateUrls) {
       try {
@@ -211,7 +207,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
             !trimmed.includes('accounts.google.com')
           ) {
             rawText = text;
-            winningUrl = url;
             break;
           }
         }
@@ -221,17 +216,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     }
 
     if (!rawText) {
-      console.warn(`[Someplace Social] No CSV/table data returned for ${cityConfig.name}`);
+      console.warn(`[Someplace Social] No CSV data available for ${cityConfig.name}`);
       return [];
     }
-
-    console.log(`[Someplace Social] Successfully downloaded sheet data from: ${winningUrl}`);
 
     const rows = parseSheetData(rawText);
-    if (rows.length < 2) {
-      console.warn(`[Someplace Social] Sheet returned less than 2 rows (got ${rows.length})`);
-      return [];
-    }
+    if (rows.length < 2) return [];
 
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
@@ -286,7 +276,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       };
     }).filter((event): event is Event => event !== null);
 
-    const filtered = events.filter((event) => {
+    return events.filter((event) => {
       const db = (event.database || '').toLowerCase().trim();
       const targetName = cityConfig.name.toLowerCase();
       const targetTab = cityConfig.sheetTab.toLowerCase();
@@ -304,9 +294,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 
       return Boolean(event.title);
     });
-
-    console.log(`[Someplace Social] Successfully loaded ${filtered.length} events for ${cityConfig.name}`);
-    return filtered;
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
