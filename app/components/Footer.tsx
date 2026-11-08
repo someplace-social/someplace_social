@@ -6,14 +6,14 @@ export default function Footer() {
       <div className={styles.footerInner}>
         <div className={styles.footerContent}>
           <div className={styles.footerSupportText}>
-            Free for everyone, no ads.{' '}
+            Free for all, no ads.{' '}
             <a
               href="https://buymeacoffee.com/someplacesocial"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.buyDrinkLink}
             >
-              Buy me a drink
+              Buy me a drink.
             </a>
           </div>
           <div className={styles.footerQuoteSection}>
