@@ -9,19 +9,16 @@ import styles from './Header.module.css';
 interface HeaderProps {
   city?: CityConfig;
   allCityOptions?: CityConfig[];
-  cityCounts?: Record<string, number>;
 }
 
 export default function Header({
   city,
   allCityOptions,
-  cityCounts = {},
 }: HeaderProps) {
   const pathname = usePathname();
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
-
   const citiesList = useMemo(() => {
     const list = allCityOptions || getAllCities();
     return [...list].sort((a, b) => a.name.localeCompare(b.name));
@@ -75,7 +72,6 @@ export default function Header({
               </div>
             )}
           </div>
-
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
@@ -98,7 +94,6 @@ export default function Header({
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-
               <div
                 className={`${styles.citiesDropdown} ${
                   citiesMenuOpen ? '' : styles.citiesDropdownHidden
@@ -106,7 +101,6 @@ export default function Header({
               >
                 {citiesList.map((c) => {
                   const isActive = city?.slug === c.slug;
-                  const count = cityCounts[c.slug];
                   return (
                     <Link
                       key={c.slug}
@@ -117,33 +111,25 @@ export default function Header({
                       onClick={() => setCitiesMenuOpen(false)}
                     >
                       <span className={styles.cityName}>{c.name}</span>
-                      <div className={styles.cityOptionRight}>
-                        {typeof count === 'number' && (
-                          <span className={styles.cityEventCount}>
-                            {count} {count === 1 ? 'event' : 'events'}
-                          </span>
-                        )}
-                        {isActive && (
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M5 12.5l4.5 4.5L19 7.5" />
-                          </svg>
-                        )}
-                      </div>
+                      {isActive && (
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
+                      )}
                     </Link>
                   );
                 })}
               </div>
             </div>
-
             <Link
               href="/"
               className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
@@ -157,10 +143,9 @@ export default function Header({
               Contact
             </Link>
             <Link href="/contact?tab=submit" className={styles.addEventBtn}>
-              + Add event
+              +Add Event
             </Link>
           </nav>
-
           <div className={styles.navMobileActions}>
             <button
               type="button"
@@ -183,7 +168,6 @@ export default function Header({
           </div>
         </div>
       </header>
-
       {mobileDrawerOpen && (
         <div
           className={styles.drawerBackdrop}
@@ -206,12 +190,10 @@ export default function Header({
                 ✕
               </button>
             </div>
-
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
               {citiesList.map((c) => {
                 const isActive = city?.slug === c.slug;
-                const count = cityCounts[c.slug];
                 return (
                   <Link
                     key={c.slug}
@@ -222,19 +204,11 @@ export default function Header({
                     onClick={() => setMobileDrawerOpen(false)}
                   >
                     <span>{c.name}</span>
-                    <div className={styles.drawerCityItemRight}>
-                      {typeof count === 'number' && (
-                        <span className={styles.drawerCityCount}>
-                          {count} {count === 1 ? 'event' : 'events'}
-                        </span>
-                      )}
-                      {isActive && <span>✓</span>}
-                    </div>
+                    {isActive && <span>✓</span>}
                   </Link>
                 );
               })}
             </div>
-
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
@@ -256,7 +230,6 @@ export default function Header({
                 Contact
               </Link>
             </div>
-
             <div className={styles.drawerFooter}>
               <Link
                 href="/contact?tab=submit"

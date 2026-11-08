@@ -127,7 +127,6 @@ function FilterControls({
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-
   const priceMenuRef = useRef<HTMLDivElement>(null);
   const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
@@ -274,7 +273,6 @@ function FilterControls({
             </button>
           )}
         </div>
-
         <div className={styles.filterListVertical}>
           {renderSearchInput()}
           <FilterDropdown
@@ -326,7 +324,6 @@ function FilterControls({
           />
         </div>
       </div>
-
       <div className={styles.mobileAccordionWrapper}>
         <button
           type="button"
@@ -346,7 +343,6 @@ function FilterControls({
               </span>
             )}
           </div>
-
           <div className={styles.mobileTriggerRight}>
             <span className={styles.mobileTriggerStatus}>
               {mobileAccordionOpen ? 'Hide' : activeFilterCount > 0 ? 'Edit' : 'Show'}
@@ -369,19 +365,22 @@ function FilterControls({
             </svg>
           </div>
         </button>
-
         {mobileAccordionOpen && (
           <div id="mobile-filters-content" className={styles.mobileAccordionContent}>
             {renderSearchInput()}
-
             <div className={styles.mobileFiltersRow}>
-              <PriceFilterDropdown
-                priceConfig={priceConfig}
-                maxPrice={maxPrice}
-                onPriceChange={onPriceChange}
-                isOpen={priceMenuOpen}
-                onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
-                containerRef={priceMobileMenuRef}
+              <FilterDropdown
+                icon={activityIcon}
+                category="Activity"
+                value={activityValue}
+                title="Activities"
+                options={activities}
+                selected={selectedActivities}
+                isOpen={actMenuOpen}
+                onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
+                onToggleOption={onToggleActivity}
+                onClear={onClearActivities}
+                containerRef={actMobileMenuRef}
                 flexStyle
               />
               <FilterDropdown
@@ -399,20 +398,6 @@ function FilterControls({
                 flexStyle
               />
               <FilterDropdown
-                icon={activityIcon}
-                category="Activity"
-                value={activityValue}
-                title="Activities"
-                options={activities}
-                selected={selectedActivities}
-                isOpen={actMenuOpen}
-                onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
-                onToggleOption={onToggleActivity}
-                onClear={onClearActivities}
-                containerRef={actMobileMenuRef}
-                flexStyle
-              />
-              <FilterDropdown
                 icon={areaIcon}
                 category="Area"
                 value={areaValue}
@@ -426,8 +411,16 @@ function FilterControls({
                 containerRef={areaMobileMenuRef}
                 flexStyle
               />
+              <PriceFilterDropdown
+                priceConfig={priceConfig}
+                maxPrice={maxPrice}
+                onPriceChange={onPriceChange}
+                isOpen={priceMenuOpen}
+                onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+                containerRef={priceMobileMenuRef}
+                flexStyle
+              />
             </div>
-
             {hasActiveFilters && (
               <div className={styles.mobileClearRow}>
                 <button
@@ -445,5 +438,4 @@ function FilterControls({
     </>
   );
 }
-
 export default memo(FilterControls);

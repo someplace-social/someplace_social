@@ -52,15 +52,12 @@ const TIME_GROUPS = [
 export default function CityEventsView({
   city,
   initialEvents = [],
-  initialCityCounts = {},
 }: {
   city: CityConfig;
   initialEvents?: Event[];
-  initialCityCounts?: Record<string, number>;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
-  const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,12 +79,10 @@ export default function CityEventsView({
       getEvents(city)
         .then((data) => {
           setAllEvents(data);
-          setCityCounts((prev) => ({ ...prev, [city.slug]: data.length }));
         })
         .finally(() => setLoading(false));
     } else {
       setAllEvents(initialEvents);
-      setCityCounts((prev) => ({ ...prev, [city.slug]: initialEvents.length }));
       setLoading(false);
     }
   }, [city, initialEvents]);
@@ -212,7 +207,7 @@ export default function CityEventsView({
   }, [priceConfig.maxPrice]);
 
   const allCityOptions = useMemo(() => getAllCities(), []);
-  const totalEventsCount = allEvents.length || cityCounts[city.slug] || initialEvents.length;
+  const totalEventsCount = allEvents.length || initialEvents.length;
 
   const dayHeading =
     activeDayIdx === 0
@@ -220,7 +215,6 @@ export default function CityEventsView({
       : activeDayIdx === 1
       ? 'Tomorrow'
       : DAY_NAMES_LONG[activeDate.getDay()];
-
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
   } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
@@ -230,7 +224,6 @@ export default function CityEventsView({
       <Header
         city={city}
         allCityOptions={allCityOptions}
-        cityCounts={cityCounts}
       />
       <div className={styles.heroWrapper}>
         <CityHeroCard

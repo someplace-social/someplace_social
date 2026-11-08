@@ -23,10 +23,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       robots: { index: false, follow: false },
     };
   }
-
   const title = `${city.name} Events & Activities This Week`;
   const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
-
   return {
     title,
     description,
@@ -57,24 +55,13 @@ export default async function CityEventsPage({ params }: PageProps) {
   if (!city) {
     notFound();
   }
+
   const events = await getEvents(city);
-  const allSlugs = getAllCitySlugs();
-  const countEntries = await Promise.all(
-    allSlugs.map(async (slug) => {
-      const c = getCityBySlug(slug);
-      if (!c) return [slug, 0] as const;
-      if (c.slug === city.slug) return [slug, events.length] as const;
-      const otherEvents = await getEvents(c);
-      return [slug, otherEvents.length] as const;
-    })
-  );
-  const cityCounts = Object.fromEntries(countEntries);
 
   return (
     <CityEventsView
       city={city}
       initialEvents={events}
-      initialCityCounts={cityCounts}
     />
   );
 }
