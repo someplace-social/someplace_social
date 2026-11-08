@@ -1,4 +1,5 @@
 import { Event } from '../lib/google-sheets';
+import { CityPriceConfig } from '../lib/cities';
 
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
@@ -50,6 +51,78 @@ export function isFreePrice(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
   return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+
+export function isFreeOrDonation(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return (
+    isFreePrice(p) ||
+    p.includes('donation') ||
+    p.includes('aporte') ||
+    p.includes('voluntari') ||
+    p === '0k'
+  );
+}
+
+export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'): number | null {
+  if (!priceStr) return 0;
+  const cleaned = priceStr.trim().toLowerCase();
+  if (isFreeOrDonation(cleaned)) return 0;
+
+  if (currencyCode === 'COP') {
+    const kMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*k/i);
+    if (kMatch) {
+      return parseFloat(kMatch[1]);
+    }
+
+    const thousandSepMatch = cleaned.match(/(\d{1,3})[.,](\d{3})/);
+    if (thousandSepMatch) {
+      const whole = parseInt(thousandSepMatch[1], 10);
+      const frac = parseInt(thousandSepMatch[2], 10) / 1000;
+      return whole + frac;
+    }
+
+    const bigNumMatch = cleaned.match(/\b(\d{4,6})\b/);
+    if (bigNumMatch) {
+      return parseInt(bigNumMatch[1], 10) / 1000;
+    }
+
+    const smallNumMatch = cleaned.match(/\b(\d{1,3})\b/);
+    if (smallNumMatch) {
+      return parseInt(smallNumMatch[1], 10);
+    }
+
+    return null;
+  }
+
+  const usdMatch = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)/);
+  if (usdMatch) {
+    return parseFloat(usdMatch[1]);
+  }
+
+  return null;
+}
+
+export function matchesPriceFilter(
+  eventPrice: string,
+  maxPriceFilter: number,
+  priceConfig: CityPriceConfig
+): boolean {
+  if (maxPriceFilter >= priceConfig.maxPrice) {
+    return true;
+  }
+  if (isFreeOrDonation(eventPrice)) {
+    return true;
+  }
+  if (maxPriceFilter === 0) {
+    return isFreeOrDonation(eventPrice);
+  }
+  const num = parseEventPrice(eventPrice, priceConfig.currencyCode);
+  if (num === null) {
+    return false;
+  }
+  return num <= maxPriceFilter;
 }
 
 const DAY_ALIAS_MAP: Record<string, string[]> = {

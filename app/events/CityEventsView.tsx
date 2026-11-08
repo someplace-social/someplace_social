@@ -1,9 +1,8 @@
 'use client';
-
 import { useState, useEffect, useMemo } from 'react';
-import { CityConfig, getAllCities } from '../lib/cities';
+import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
+import { parseHour, matchesPriceFilter, isEventActiveOnDate } from './utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -54,17 +53,23 @@ export default function CityEventsView({
   initialEvents?: Event[];
   initialCityCounts?: Record<string, number>;
 }) {
+  const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
+
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
   const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [freeOnly, setFreeOnly] = useState(false);
+  const [maxPrice, setMaxPrice] = useState<number>(priceConfig.maxPrice);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+
+  useEffect(() => {
+    setMaxPrice(priceConfig.maxPrice);
+  }, [priceConfig]);
 
   useEffect(() => {
     if (initialEvents.length === 0) {
@@ -155,14 +160,11 @@ export default function CityEventsView({
   const getFilteredEventsForDay = (dayIndex: number) => {
     const day = rollingWeek[dayIndex];
     if (!day) return [];
-
     return allEvents
       .filter((ev) => {
         if (!isEventActiveOnDate(ev, day)) return false;
-        if (freeOnly && !isFreePrice(ev.price)) return false;
-
+        if (!matchesPriceFilter(ev.price, maxPrice, priceConfig)) return false;
         const evHour = parseHour(ev.startTime);
-
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
             const group = TIME_GROUPS.find((g) => g.name === tgName);
@@ -170,7 +172,6 @@ export default function CityEventsView({
           });
           if (!matchesTime) return false;
         }
-
         if (selectedActivities.length > 0) {
           const acts = ev.activities.map((a) => a.trim().toLowerCase());
           const hasActivityMatch = selectedActivities.some((sa) =>
@@ -178,7 +179,6 @@ export default function CityEventsView({
           );
           if (!hasActivityMatch) return false;
         }
-
         if (selectedAreas.length > 0) {
           const areaLower = (ev.area || '').trim().toLowerCase();
           const hasAreaMatch = selectedAreas.some(
@@ -186,7 +186,6 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
-
         if (searchQuery.trim()) {
           const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
           const searchableText = [
@@ -203,11 +202,9 @@ export default function CityEventsView({
             .filter(Boolean)
             .join(' ')
             .toLowerCase();
-
           const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
           if (!matchesSearch) return false;
         }
-
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -215,7 +212,17 @@ export default function CityEventsView({
 
   const currentList = useMemo(() => {
     return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, searchQuery, rollingWeek]);
+  }, [
+    allEvents,
+    activeDayIdx,
+    maxPrice,
+    priceConfig,
+    selectedTimes,
+    selectedActivities,
+    selectedAreas,
+    searchQuery,
+    rollingWeek,
+  ]);
 
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
@@ -225,14 +232,14 @@ export default function CityEventsView({
 
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
-    freeOnly ||
+    maxPrice < priceConfig.maxPrice ||
     selectedTimes.length > 0 ||
     selectedActivities.length > 0 ||
     selectedAreas.length > 0;
 
   const clearAllFilters = () => {
     setSearchQuery('');
-    setFreeOnly(false);
+    setMaxPrice(priceConfig.maxPrice);
     setSelectedTimes([]);
     setSelectedActivities([]);
     setSelectedAreas([]);
@@ -240,14 +247,12 @@ export default function CityEventsView({
 
   const allCityOptions = useMemo(() => getAllCities(), []);
   const totalEventsCount = allEvents.length || cityCounts[city.slug] || initialEvents.length;
-
   const dayHeading =
     activeDayIdx === 0
       ? 'Today'
       : activeDayIdx === 1
       ? 'Tomorrow'
       : DAY_NAMES_LONG[activeDate.getDay()];
-
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
   } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
@@ -275,7 +280,6 @@ export default function CityEventsView({
         <aside className={styles.aside}>
           <h2 className={styles.asideTitle}>{dayHeading}</h2>
           <p className={styles.asideSubtitle}>{daySubheading}</p>
-
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -285,12 +289,12 @@ export default function CityEventsView({
             }}
             getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
-
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            freeOnly={freeOnly}
-            onToggleFree={() => setFreeOnly(!freeOnly)}
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={setMaxPrice}
             timeSections={TIME_GROUPS.map((g) => g.name)}
             selectedTimes={selectedTimes}
             onToggleTime={toggleTime}
@@ -307,13 +311,11 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
-
         <section className={styles.contentCol}>
           <div className={styles.mobileSectionHeader}>
             <h2 className={styles.mobileHeadingTitle}>{dayHeading}</h2>
             <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
           </div>
-
           {loading ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
@@ -334,7 +336,6 @@ export default function CityEventsView({
                 group.predicate(parseHour(ev.startTime))
               );
               if (groupEvents.length === 0) return null;
-
               return (
                 <div key={group.name}>
                   <div className={styles.timeGroupHeader}>
@@ -364,7 +365,6 @@ export default function CityEventsView({
         </section>
       </main>
       <Footer />
-
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

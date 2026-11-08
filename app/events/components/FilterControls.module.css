@@ -87,39 +87,6 @@
   background-color: var(--ink);
   color: var(--bg);
 }
-.filterFreeBtn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.filterFreeBtn:hover {
-  background-color: #ebdcba;
-}
-.checkboxSquare {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.checkboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
 .multiSelectWrapper {
   position: relative;
   width: 100%;
@@ -218,6 +185,134 @@
   border-color: var(--ink);
   color: #ffffff;
 }
+.priceMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.priceHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.priceHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.priceHeaderReadout {
+  font-size: 13px;
+  font-weight: 700;
+}
+.priceChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.priceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid #e6d9b8;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.priceChip:hover {
+  border-color: var(--ink);
+}
+.priceChipFreeActive {
+  background: #d5efe0;
+  color: #14573a;
+  border-color: #1f7a4d;
+}
+.priceChipFreeActive:hover {
+  border-color: #1f7a4d;
+}
+.priceChipUnderActive {
+  background: var(--ink);
+  color: #fff8e7;
+  border-color: var(--ink);
+}
+.priceChipUnderActive:hover {
+  border-color: var(--ink);
+}
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
+  cursor: pointer;
+}
+.rangeSlider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  cursor: pointer;
+}
+.rangeSlider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid #1f7a4d;
+  outline-offset: 2px;
+}
+.sliderLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b6254;
+  font-weight: 500;
+  margin-top: 4px;
+}
 .clearFiltersBtn {
   background: none;
   border: 0;
@@ -250,28 +345,17 @@
   }
   .mobileFiltersRow {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     width: 100%;
     align-items: center;
   }
-  .mobileFreeBtn {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 14px;
-    background-color: var(--topbar-bg);
-    color: var(--ink);
-    border: 0;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
-  .mobileFreeBtnActive {
-    background-color: var(--ink);
-    color: var(--bg);
-    font-weight: 700;
+  .mobilePriceMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 290px;
+    max-width: calc(100vw - 32px);
+    z-index: 60;
   }
 }

@@ -1,14 +1,16 @@
 'use client';
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import FilterDropdown from './FilterDropdown';
+import PriceFilterDropdown from './PriceFilterDropdown';
+import { CityPriceConfig } from '../../lib/cities';
 import styles from './FilterControls.module.css';
 
 interface FilterControlsProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  freeOnly: boolean;
-  onToggleFree: () => void;
+  priceConfig: CityPriceConfig;
+  maxPrice: number;
+  onPriceChange: (val: number) => void;
   timeSections: string[];
   selectedTimes: string[];
   onToggleTime: (timeName: string) => void;
@@ -28,8 +30,9 @@ interface FilterControlsProps {
 export default function FilterControls({
   searchQuery,
   onSearchChange,
-  freeOnly,
-  onToggleFree,
+  priceConfig,
+  maxPrice,
+  onPriceChange,
   timeSections,
   selectedTimes,
   onToggleTime,
@@ -45,22 +48,34 @@ export default function FilterControls({
   hasActiveFilters,
   onClearAllFilters,
 }: FilterControlsProps) {
+  const [priceMenuOpen, setPriceMenuOpen] = useState(false);
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+
+  const priceMenuRef = useRef<HTMLDivElement>(null);
+  const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
   const actMenuRef = useRef<HTMLDivElement>(null);
   const areaMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (timeMenuRef.current && !timeMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        priceMenuRef.current &&
+        !priceMenuRef.current.contains(target) &&
+        (!priceMobileMenuRef.current || !priceMobileMenuRef.current.contains(target))
+      ) {
+        setPriceMenuOpen(false);
+      }
+      if (timeMenuRef.current && !timeMenuRef.current.contains(target)) {
         setTimeMenuOpen(false);
       }
-      if (actMenuRef.current && !actMenuRef.current.contains(e.target as Node)) {
+      if (actMenuRef.current && !actMenuRef.current.contains(target)) {
         setActMenuOpen(false);
       }
-      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
+      if (areaMenuRef.current && !areaMenuRef.current.contains(target)) {
         setAreaMenuOpen(false);
       }
     }
@@ -187,46 +202,28 @@ export default function FilterControls({
             onClear={onClearAreas}
             containerRef={areaMenuRef}
           />
-          <button
-            type="button"
-            className={styles.filterFreeBtn}
-            aria-pressed={freeOnly}
-            onClick={onToggleFree}
-          >
-            Free only
-            <span
-              className={`${styles.checkboxSquare} ${
-                freeOnly ? styles.checkboxChecked : ''
-              }`}
-            >
-              {freeOnly && (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </span>
-          </button>
+          <PriceFilterDropdown
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={onPriceChange}
+            isOpen={priceMenuOpen}
+            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+            containerRef={priceMenuRef}
+          />
         </div>
       </div>
       <div className={styles.mobileFiltersSection}>
         {renderSearchInput()}
         <div className={styles.mobileFiltersRow}>
-          <button
-            type="button"
-            className={`${styles.mobileFreeBtn} ${freeOnly ? styles.mobileFreeBtnActive : ''}`}
-            onClick={onToggleFree}
-          >
-            Free only
-          </button>
+          <PriceFilterDropdown
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={onPriceChange}
+            isOpen={priceMenuOpen}
+            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+            containerRef={priceMobileMenuRef}
+            flexStyle
+          />
           <FilterDropdown
             label={timeLabel}
             title="Time of day"
