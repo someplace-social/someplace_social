@@ -1,8 +1,13 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, matchesPriceFilter, isEventActiveOnDate } from './utils';
+import {
+  parseHour,
+  indexEvents,
+  filterAndCountEvents,
+  IndexedEvent,
+} from './utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -54,12 +59,12 @@ export default function CityEventsView({
   initialCityCounts?: Record<string, number>;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
-
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
   const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [maxPrice, setMaxPrice] = useState<number>(priceConfig.maxPrice);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
@@ -96,6 +101,10 @@ export default function CityEventsView({
     });
   }, []);
 
+  const indexedEvents = useMemo(() => {
+    return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
+  }, [allEvents, rollingWeek, priceConfig.currencyCode]);
+
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
   const now = new Date();
   const nowHour = now.getHours() + now.getMinutes() / 60;
@@ -131,102 +140,59 @@ export default function CityEventsView({
     return Array.from(set).sort();
   }, [allEvents]);
 
-  const toggleTime = (tName: string) => {
+  const toggleTime = useCallback((tName: string) => {
     setSelectedTimes((prev) =>
       prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
     );
-  };
+  }, []);
 
-  const toggleActivity = (act: string) => {
+  const toggleActivity = useCallback((act: string) => {
     setSelectedActivities((prev) =>
       prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
     );
-  };
+  }, []);
 
-  const handleSelectChip = (act: string) => {
-    if (selectedActivities.includes(act)) {
-      setSelectedActivities((prev) => prev.filter((a) => a !== act));
-    } else {
-      setSelectedActivities([act]);
-    }
-  };
+  const handleSelectChip = useCallback((act: string) => {
+    setSelectedActivities((prev) => {
+      if (prev.includes(act)) {
+        return prev.filter((a) => a !== act);
+      }
+      return [act];
+    });
+  }, []);
 
-  const toggleArea = (ar: string) => {
+  const toggleArea = useCallback((ar: string) => {
     setSelectedAreas((prev) =>
       prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
     );
-  };
+  }, []);
 
-  const getFilteredEventsForDay = (dayIndex: number) => {
-    const day = rollingWeek[dayIndex];
-    if (!day) return [];
-    return allEvents
-      .filter((ev) => {
-        if (!isEventActiveOnDate(ev, day)) return false;
-        if (!matchesPriceFilter(ev.price, maxPrice, priceConfig)) return false;
-        const evHour = parseHour(ev.startTime);
-        if (selectedTimes.length > 0) {
-          const matchesTime = selectedTimes.some((tgName) => {
-            const group = TIME_GROUPS.find((g) => g.name === tgName);
-            return group ? group.predicate(evHour) : false;
-          });
-          if (!matchesTime) return false;
-        }
-        if (selectedActivities.length > 0) {
-          const acts = ev.activities.map((a) => a.trim().toLowerCase());
-          const hasActivityMatch = selectedActivities.some((sa) =>
-            acts.includes(sa.toLowerCase())
-          );
-          if (!hasActivityMatch) return false;
-        }
-        if (selectedAreas.length > 0) {
-          const areaLower = (ev.area || '').trim().toLowerCase();
-          const hasAreaMatch = selectedAreas.some(
-            (sa) => sa.toLowerCase() === areaLower
-          );
-          if (!hasAreaMatch) return false;
-        }
-        if (searchQuery.trim()) {
-          const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-          const searchableText = [
-            ev.title,
-            ev.venue,
-            ev.organization,
-            ev.location,
-            ev.area,
-            ev.activity,
-            ...ev.activities,
-            ev.about,
-            ev.notes,
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-          const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
-          if (!matchesSearch) return false;
-        }
-        return true;
-      })
-      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
-  };
-
-  const currentList = useMemo(() => {
-    return getFilteredEventsForDay(activeDayIdx);
+  const { currentList, dayCounts } = useMemo(() => {
+    return filterAndCountEvents(
+      indexedEvents,
+      activeDayIdx,
+      maxPrice,
+      priceConfig,
+      selectedTimes,
+      selectedActivities,
+      selectedAreas,
+      deferredSearchQuery,
+      TIME_GROUPS
+    );
   }, [
-    allEvents,
+    indexedEvents,
     activeDayIdx,
     maxPrice,
     priceConfig,
     selectedTimes,
     selectedActivities,
     selectedAreas,
-    searchQuery,
-    rollingWeek,
+    deferredSearchQuery,
   ]);
 
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
-    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
+    const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
     return nextEvent ? nextEvent.id || nextEvent.title : null;
   }, [activeDayIdx, currentList, nowHour]);
 
@@ -237,22 +203,24 @@ export default function CityEventsView({
     selectedActivities.length > 0 ||
     selectedAreas.length > 0;
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
     setSearchQuery('');
     setMaxPrice(priceConfig.maxPrice);
     setSelectedTimes([]);
     setSelectedActivities([]);
     setSelectedAreas([]);
-  };
+  }, [priceConfig.maxPrice]);
 
   const allCityOptions = useMemo(() => getAllCities(), []);
   const totalEventsCount = allEvents.length || cityCounts[city.slug] || initialEvents.length;
+
   const dayHeading =
     activeDayIdx === 0
       ? 'Today'
       : activeDayIdx === 1
       ? 'Tomorrow'
       : DAY_NAMES_LONG[activeDate.getDay()];
+
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
   } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
@@ -287,7 +255,7 @@ export default function CityEventsView({
               setActiveDayIdx(idx);
               setOpenEventId(null);
             }}
-            getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
+            dayCounts={dayCounts}
           />
           <FilterControls
             searchQuery={searchQuery}
@@ -333,7 +301,7 @@ export default function CityEventsView({
           ) : (
             TIME_GROUPS.map((group) => {
               const groupEvents = currentList.filter((ev) =>
-                group.predicate(parseHour(ev.startTime))
+                group.predicate(ev.parsedHour)
               );
               if (groupEvents.length === 0) return null;
               return (

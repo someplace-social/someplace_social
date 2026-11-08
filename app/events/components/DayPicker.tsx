@@ -1,5 +1,5 @@
 'use client';
-
+import { memo } from 'react';
 import styles from '../EventsView.module.css';
 
 const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -8,15 +8,24 @@ interface DayPickerProps {
   rollingWeek: Date[];
   activeDayIdx: number;
   onSelectDay: (idx: number) => void;
-  getEventCountForDay: (idx: number) => number;
+  dayCounts?: number[];
+  getEventCountForDay?: (idx: number) => number;
 }
 
-export default function DayPicker({
+function DayPicker({
   rollingWeek,
   activeDayIdx,
   onSelectDay,
+  dayCounts,
   getEventCountForDay,
 }: DayPickerProps) {
+  const getCount = (idx: number) => {
+    if (dayCounts && dayCounts[idx] !== undefined) {
+      return dayCounts[idx];
+    }
+    return getEventCountForDay ? getEventCountForDay(idx) : 0;
+  };
+
   return (
     <>
       <div className={styles.dayListVertical} role="group" aria-label="Day list">
@@ -25,7 +34,7 @@ export default function DayPicker({
             idx === 0
               ? 'Today'
               : `${DAY_NAMES_SHORT[day.getDay()]} ${day.getDate()}`;
-          const count = getEventCountForDay(idx);
+          const count = getCount(idx);
           const isSelected = idx === activeDayIdx;
           return (
             <button
@@ -49,11 +58,10 @@ export default function DayPicker({
           );
         })}
       </div>
-
       <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
         {rollingWeek.map((day, idx) => {
           const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
-          const count = getEventCountForDay(idx);
+          const count = getCount(idx);
           const isSelected = idx === activeDayIdx;
           return (
             <button
@@ -87,3 +95,5 @@ export default function DayPicker({
     </>
   );
 }
+
+export default memo(DayPicker);

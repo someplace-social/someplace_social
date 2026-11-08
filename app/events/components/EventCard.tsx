@@ -1,4 +1,5 @@
 'use client';
+import { memo } from 'react';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -51,7 +52,7 @@ function ActionButton({
   );
 }
 
-export default function EventCard({
+function EventCard({
   event,
   isOpen,
   isNextUp,
@@ -245,3 +246,5 @@ export default function EventCard({
     </div>
   );
 }
+
+export default memo(EventCard);

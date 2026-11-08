@@ -28,27 +28,54 @@ export type Event = {
 
 const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
 
+const eventCache = new Map<string, { timestamp: number; data: Event[] }>();
+const CACHE_TTL_MS = 60 * 1000;
+
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
   const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
-  const tabs = [city.sheetTab];
-  if (city.sheetTab.toLowerCase() === 'medellin') {
-    tabs.push('Medellín');
-  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
-    tabs.push('FortCollins');
-  }
   const urls: string[] = [];
-  for (const tab of tabs) {
-    const encodedTab = encodeURIComponent(tab);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodedTab}`);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodedTab}`);
-  }
+
+  urls.push(
+    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+      city.sheetTab
+    )}`
+  );
+
   if (city.sheetGid) {
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`);
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
+    );
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`
+    );
+  }
+
+  if (city.sheetTab.toLowerCase() === 'medellin') {
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+        'Medellín'
+      )}`
+    );
+  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=FortCollins`
+    );
+  }
+
+  urls.push(
+    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
+      city.sheetTab
+    )}`
+  );
+
+  if (city.sheetGid) {
     urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
   }
-  urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
+  urls.push(
+    `${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`
+  );
+
   return urls;
 }
 
@@ -197,9 +224,16 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     } else {
       cityConfig = CITIES['medellin-colombia'];
     }
+
+    const cached = eventCache.get(cityConfig.slug);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
     let rows: string[][] = [];
+
     for (const url of candidateUrls) {
       try {
         const response = await fetch(url, {
@@ -231,10 +265,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
       }
     }
+
     if (rows.length < 2) {
       console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
       return [];
     }
+
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
     Object.keys(HEADER_ALIASES).forEach((field) => {
@@ -244,10 +280,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         headerIndexMap[field] = foundIdx;
       }
     });
+
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
     };
+
     const dataRows = rows.slice(1);
     const events = dataRows
       .map((row): Event | null => {
@@ -259,6 +297,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
           }
           return '';
         };
+
         const venueVal = getValue('venue');
         const orgVal = getValue('organization');
         const locVal = getValue('location');
@@ -284,6 +323,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         const activityStr = uniqueActs.join(', ');
         const rawDay = getValue('dayOfWeek');
         const dayOfWeekStr = normalizeDayOfWeek(rawDay);
+
         return {
           id: getValue('id'),
           title: getValue('title'),
@@ -310,7 +350,10 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         };
       })
       .filter((event): event is Event => event !== null);
-    return events.filter((event) => Boolean(event.title));
+
+    const validEvents = events.filter((event) => Boolean(event.title));
+    eventCache.set(cityConfig.slug, { timestamp: Date.now(), data: validEvents });
+    return validEvents;
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];

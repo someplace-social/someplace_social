@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, memo } from 'react';
 import FilterDropdown from './FilterDropdown';
 import PriceFilterDropdown from './PriceFilterDropdown';
 import { CityPriceConfig } from '../../lib/cities';
@@ -27,7 +27,7 @@ interface FilterControlsProps {
   onClearAllFilters: () => void;
 }
 
-export default function FilterControls({
+function FilterControls({
   searchQuery,
   onSearchChange,
   priceConfig,
@@ -52,7 +52,6 @@ export default function FilterControls({
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-
   const priceMenuRef = useRef<HTMLDivElement>(null);
   const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
@@ -271,3 +270,5 @@ export default function FilterControls({
     </>
   );
 }
+
+export default memo(FilterControls);

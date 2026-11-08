@@ -1,6 +1,14 @@
 import { Event } from '../lib/google-sheets';
 import { CityPriceConfig } from '../lib/cities';
 
+export type IndexedEvent = Event & {
+  parsedHour: number;
+  parsedPrice: number | null;
+  isFreeOrDonationPrice: boolean;
+  searchCorpus: string;
+  activeDays: boolean[];
+};
+
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -284,14 +292,12 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     return false;
   }
   const targetMonth = targetDate.getMonth() + 1;
-
   if (/\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned)) {
     return targetMonth % 2 === 0;
   }
   if (/\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned)) {
     return targetMonth % 2 !== 0;
   }
-
   const exceptMatch = cleaned.match(
     /\b(?:except|excluding|no meetings? in|off in)\s+([a-zA-Z]+)(?:\s*(?:and|&|,)\s*([a-zA-Z]+))?\b/i
   );
@@ -301,7 +307,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
-
   const rangeMatch = cleaned.match(
     /\b([a-zA-Z]{3,9})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,9})\b/i
   );
@@ -315,7 +320,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth >= startMonth || targetMonth <= endMonth;
     }
   }
-
   const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,9})\s+only\b/i);
   if (singleMonthMatch) {
     const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
@@ -323,7 +327,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth === m;
     }
   }
-
   if (/\bsummer\b/i.test(cleaned)) {
     return targetMonth >= 6 && targetMonth <= 8;
   }
@@ -336,7 +339,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   if (/\b(?:fall|autumn)\b/i.test(cleaned)) {
     return targetMonth >= 9 && targetMonth <= 11;
   }
-
   return true;
 }
 
@@ -365,22 +367,18 @@ function getWeekNumber(d: Date): number {
 
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const combinedText = `${event.frequency || ''} ${event.frequencyNotes || ''}`.trim();
-
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(combinedText)) {
     return false;
   }
-
   if (!isMonthActive(event.frequencyNotes, targetDate) || !isMonthActive(event.frequency, targetDate)) {
     return false;
   }
-
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const targetDayName = DAY_NAMES[targetDate.getDay()];
   const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
-
   if (/\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText)) {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 !== 0) return false;
@@ -389,16 +387,13 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 === 0) return false;
   }
-
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-
   const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText);
   const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText);
   const has3rd = /\b(3rd|third|tercer[oa]?)\b/i.test(combinedText);
   const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText);
   const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText);
   const hasLast = /\b(last|ultimo|últim[oa])\b/i.test(combinedText);
-
   if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
     const matchesOrdinal =
       (has1st && occurrence === 1) ||
@@ -407,16 +402,13 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
       (has4th && occurrence === 4) ||
       (has5th && occurrence === 5) ||
       (hasLast && isLast);
-
     return matchesOrdinal;
   }
-
   const cadence = (event.frequency || '').toLowerCase();
   if (cadence.includes('bi-weekly')) {
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
   }
-
   return true;
 }
 
@@ -460,4 +452,123 @@ export function getTagStyle(tag: string): { color: string; background: string } 
     return { color: '#2c4f7c', background: '#dbe5f7' };
   }
   return { color: '#4f483e', background: '#f3ead4' };
+}
+
+export function indexEvents(
+  events: Event[],
+  rollingWeek: Date[],
+  currencyCode: string = 'USD'
+): IndexedEvent[] {
+  return events.map((ev) => {
+    const parsedHour = parseHour(ev.startTime);
+    const freeOrDonation = isFreeOrDonation(ev.price);
+    const parsedPrice = freeOrDonation ? 0 : parseEventPrice(ev.price, currencyCode);
+    const searchCorpus = [
+      ev.title,
+      ev.venue,
+      ev.organization,
+      ev.location,
+      ev.area,
+      ev.activity,
+      ...ev.activities,
+      ev.about,
+      ev.notes,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    const activeDays = rollingWeek.map((day) => isEventActiveOnDate(ev, day));
+    return {
+      ...ev,
+      parsedHour,
+      parsedPrice,
+      isFreeOrDonationPrice: freeOrDonation,
+      searchCorpus,
+      activeDays,
+    };
+  });
+}
+
+export function filterAndCountEvents(
+  indexedEvents: IndexedEvent[],
+  activeDayIdx: number,
+  maxPrice: number,
+  priceConfig: CityPriceConfig,
+  selectedTimes: string[],
+  selectedActivities: string[],
+  selectedAreas: string[],
+  searchQuery: string,
+  timeGroups: { name: string; predicate: (h: number) => boolean }[]
+): { currentList: IndexedEvent[]; dayCounts: number[] } {
+  const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+  const currentList: IndexedEvent[] = [];
+
+  const queryTerms = searchQuery.trim()
+    ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
+    : null;
+
+  const selectedActivitiesLower =
+    selectedActivities.length > 0
+      ? selectedActivities.map((a) => a.toLowerCase())
+      : null;
+
+  const selectedAreasLower =
+    selectedAreas.length > 0
+      ? selectedAreas.map((a) => a.toLowerCase())
+      : null;
+
+  const isPriceFiltered = maxPrice < priceConfig.maxPrice;
+
+  for (let i = 0; i < indexedEvents.length; i++) {
+    const ev = indexedEvents[i];
+
+    if (isPriceFiltered) {
+      if (maxPrice === 0) {
+        if (!ev.isFreeOrDonationPrice) continue;
+      } else if (!ev.isFreeOrDonationPrice) {
+        if (ev.parsedPrice === null || ev.parsedPrice > maxPrice) continue;
+      }
+    }
+
+    if (selectedTimes.length > 0) {
+      const matchesTime = selectedTimes.some((tgName) => {
+        const group = timeGroups.find((g) => g.name === tgName);
+        return group ? group.predicate(ev.parsedHour) : false;
+      });
+      if (!matchesTime) continue;
+    }
+
+    if (selectedActivitiesLower) {
+      const hasActivityMatch = ev.activities.some((act) =>
+        selectedActivitiesLower.includes(act.trim().toLowerCase())
+      );
+      if (!hasActivityMatch) continue;
+    }
+
+    if (selectedAreasLower) {
+      const evAreaLower = (ev.area || '').trim().toLowerCase();
+      if (!selectedAreasLower.includes(evAreaLower)) continue;
+    }
+
+    if (queryTerms) {
+      const matchesSearch = queryTerms.every((term) =>
+        ev.searchCorpus.includes(term)
+      );
+      if (!matchesSearch) continue;
+    }
+
+    for (let d = 0; d < 7; d++) {
+      if (ev.activeDays[d]) {
+        dayCounts[d]++;
+      }
+    }
+
+    if (ev.activeDays[activeDayIdx]) {
+      currentList.push(ev);
+    }
+  }
+
+  currentList.sort((a, b) => a.parsedHour - b.parsedHour);
+
+  return { currentList, dayCounts };
 }

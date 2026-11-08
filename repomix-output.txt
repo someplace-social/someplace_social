@@ -4592,6 +4592,30 @@ File: package.json
 }
 
 ================
+File: app/contact/page.tsx
+================
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+export default function ContactPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
+      <Footer />
+    </div>
+  );
+}
+
+================
 File: app/events/utils.ts
 ================
 import { Event } from '../lib/google-sheets';
@@ -4638,6 +4662,20 @@ export function formatTimeRange(
   const start = formatTimeLabel(startTime);
   const end = endTime ? formatTimeLabel(endTime) : undefined;
   return { start, end };
+}
+export function formatRecurrenceText(
+  frequency?: string,
+  frequencyNotes?: string
+): string {
+  const freq = (frequency || '').trim();
+  const notes = (frequencyNotes || '').trim();
+  if (freq && notes) {
+    if (notes.startsWith(',') || notes.startsWith('.')) {
+      return `${freq}${notes}`;
+    }
+    return `${freq} ${notes}`;
+  }
+  return freq || notes || '';
 }
 export function isFreePrice(price: string): boolean {
   if (!price) return true;
@@ -4741,6 +4779,26 @@ const DAY_ALIAS_MAP: Record<string, string[]> = {
   sat: ['sat', 'saturday'],
   saturday: ['sat', 'saturday'],
 };
+const DAY_INDEX: Record<string, number> = {
+  sun: 0,
+  sunday: 0,
+  mon: 1,
+  monday: 1,
+  tue: 2,
+  tues: 2,
+  tuesday: 2,
+  wed: 3,
+  weds: 3,
+  wednesday: 3,
+  thu: 4,
+  thur: 4,
+  thurs: 4,
+  thursday: 4,
+  fri: 5,
+  friday: 5,
+  sat: 6,
+  saturday: 6,
+};
 export function normalizeDayOfWeek(dayStr: string): string {
   if (!dayStr) return '';
   const trimmed = dayStr.trim();
@@ -4781,6 +4839,7 @@ export function normalizeDayOfWeek(dayStr: string): string {
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
   const targetKey = targetDayName.trim().toLowerCase();
+  const targetIndex = DAY_INDEX[targetKey];
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
   const rawLower = eventDays.toLowerCase();
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
@@ -4790,62 +4849,90 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
     return true;
   }
   const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
-  return tokens.some((token) => aliases.includes(token));
+  if (tokens.some((token) => aliases.includes(token))) {
+    return true;
+  }
+  const rangeMatch = rawLower.match(/([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|to)\s*([a-zA-Z]+)/);
+  if (rangeMatch && targetIndex !== undefined) {
+    const d1 = DAY_INDEX[rangeMatch[1].toLowerCase()];
+    const d2 = DAY_INDEX[rangeMatch[2].toLowerCase()];
+    if (d1 !== undefined && d2 !== undefined) {
+      if (d1 <= d2) {
+        return targetIndex >= d1 && targetIndex <= d2;
+      }
+      return targetIndex >= d1 || targetIndex <= d2;
+    }
+  }
+  return false;
 }
 const MONTH_NAME_TO_NUM: Record<string, number> = {
-  jan: 1,
-  january: 1,
-  feb: 2,
-  february: 2,
-  mar: 3,
-  march: 3,
-  apr: 4,
-  april: 4,
-  may: 5,
-  jun: 6,
-  june: 6,
-  jul: 7,
-  july: 7,
-  aug: 8,
-  august: 8,
-  sep: 9,
-  sept: 9,
-  september: 9,
-  oct: 10,
-  october: 10,
-  nov: 11,
-  november: 11,
-  dec: 12,
-  december: 12,
+  jan: 1, january: 1, enero: 1, ene: 1,
+  feb: 2, february: 2, febrero: 2,
+  mar: 3, march: 3, marzo: 3,
+  apr: 4, april: 4, abril: 4, abr: 4,
+  may: 5, mayo: 5,
+  jun: 6, june: 6, junio: 6,
+  jul: 7, july: 7, julio: 7,
+  aug: 8, august: 8, agosto: 8, ago: 8,
+  sep: 9, sept: 9, september: 9, septiembre: 9, setiembre: 9, set: 9,
+  oct: 10, october: 10, octubre: 10,
+  nov: 11, november: 11, noviembre: 11,
+  dec: 12, december: 12, diciembre: 12, dic: 12,
 };
-function parseMonthIndex(str: string): number | null {
-  const cleaned = str.trim().toLowerCase();
-  return MONTH_NAME_TO_NUM[cleaned] ?? null;
-}
-export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean {
+export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
   if (!cleaned) return true;
-  if (/^irregular/i.test(cleaned)) {
+  if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(cleaned)) {
     return false;
   }
   const targetMonth = targetDate.getMonth() + 1;
-  if (/months?,\s*even/i.test(cleaned)) {
+  if (/\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned)) {
     return targetMonth % 2 === 0;
   }
-  if (/months?,\s*odd/i.test(cleaned)) {
+  if (/\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned)) {
     return targetMonth % 2 !== 0;
   }
-  const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
+  const exceptMatch = cleaned.match(
+    /\b(?:except|excluding|no meetings? in|off in)\s+([a-zA-Z]+)(?:\s*(?:and|&|,)\s*([a-zA-Z]+))?\b/i
+  );
+  if (exceptMatch) {
+    const m1 = MONTH_NAME_TO_NUM[exceptMatch[1].toLowerCase()];
+    const m2 = exceptMatch[2] ? MONTH_NAME_TO_NUM[exceptMatch[2].toLowerCase()] : null;
+    if (m1 && targetMonth === m1) return false;
+    if (m2 && targetMonth === m2) return false;
+  }
+  const rangeMatch = cleaned.match(
+    /\b([a-zA-Z]{3,9})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,9})\b/i
+  );
   if (rangeMatch) {
-    const startMonth = parseMonthIndex(rangeMatch[1]);
-    const endMonth = parseMonthIndex(rangeMatch[2]);
+    const startMonth = MONTH_NAME_TO_NUM[rangeMatch[1].toLowerCase()];
+    const endMonth = MONTH_NAME_TO_NUM[rangeMatch[2].toLowerCase()];
     if (startMonth && endMonth) {
       if (startMonth <= endMonth) {
         return targetMonth >= startMonth && targetMonth <= endMonth;
       }
       return targetMonth >= startMonth || targetMonth <= endMonth;
     }
+  }
+  const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,9})\s+only\b/i);
+  if (singleMonthMatch) {
+    const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
+    if (m) {
+      return targetMonth === m;
+    }
+  }
+  if (/\bsummer\b/i.test(cleaned)) {
+    return targetMonth >= 6 && targetMonth <= 8;
+  }
+  if (/\bwinter\b/i.test(cleaned)) {
+    return targetMonth === 12 || targetMonth <= 2;
+  }
+  if (/\bspring\b/i.test(cleaned)) {
+    return targetMonth >= 3 && targetMonth <= 5;
+  }
+  if (/\b(?:fall|autumn)\b/i.test(cleaned)) {
+    return targetMonth >= 9 && targetMonth <= 11;
   }
   return true;
 }
@@ -4871,11 +4958,11 @@ function getWeekNumber(d: Date): number {
   return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
-  const notes = (event.frequencyNotes || '').trim();
-  if (/^irregular/i.test(notes)) {
+  const combinedText = `${event.frequency || ''} ${event.frequencyNotes || ''}`.trim();
+  if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(combinedText)) {
     return false;
   }
-  if (!isMonthActive(notes, targetDate)) {
+  if (!isMonthActive(event.frequencyNotes, targetDate) || !isMonthActive(event.frequency, targetDate)) {
     return false;
   }
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -4884,31 +4971,33 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
-  const rawFreq = (event.frequency || '').trim();
-  if (!rawFreq) {
-    return true;
+  if (/\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText)) {
+    const weekNum = getWeekNumber(targetDate);
+    if (weekNum % 2 !== 0) return false;
   }
-  const parts = rawFreq.split(',').map((p) => p.trim());
-  const cadence = parts[0]?.toLowerCase() || 'weekly';
-  const pattern = (parts.slice(1).join(',') || '').toLowerCase();
+  if (/\b(?:odd\s*weeks?|weeks?[\s,]+odd)\b/i.test(combinedText)) {
+    const weekNum = getWeekNumber(targetDate);
+    if (weekNum % 2 === 0) return false;
+  }
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-  const ordinalMatches: boolean[] = [];
-  if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
-  if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
-  if (/\b3rd\b/.test(pattern)) ordinalMatches.push(occurrence === 3);
-  if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
-  if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
-  if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
-  if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
-    if (ordinalMatches.length > 0) {
-      return ordinalMatches.some(Boolean);
-    }
-    return true;
+  const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText);
+  const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText);
+  const has3rd = /\b(3rd|third|tercer[oa]?)\b/i.test(combinedText);
+  const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText);
+  const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText);
+  const hasLast = /\b(last|ultimo|últim[oa])\b/i.test(combinedText);
+  if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
+    const matchesOrdinal =
+      (has1st && occurrence === 1) ||
+      (has2nd && occurrence === 2) ||
+      (has3rd && occurrence === 3) ||
+      (has4th && occurrence === 4) ||
+      (has5th && occurrence === 5) ||
+      (hasLast && isLast);
+    return matchesOrdinal;
   }
+  const cadence = (event.frequency || '').toLowerCase();
   if (cadence.includes('bi-weekly')) {
-    if (ordinalMatches.length > 0) {
-      return ordinalMatches.some(Boolean);
-    }
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
   }
@@ -5004,24 +5093,84 @@ export default function RootLayout({
 }
 
 ================
-File: app/contact/page.tsx
+File: app/page.tsx
 ================
-import { Suspense } from 'react';
+import Image from 'next/image';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import styles from './about/About.module.css';
 import type { Metadata } from 'next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ContactView from './ContactView';
 export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
+  title: 'About Someplace Social',
+  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
 };
-export default function ContactPage() {
+const CRITERIA_ITEMS = [
+  {
+    number: '1',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly.',
+  },
+  {
+    number: '2',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No one-on-one sessions.',
+  },
+  {
+    number: '3',
+    title: 'Open',
+    description: 'Must be inclusive and open to all.',
+  },
+  {
+    number: '4',
+    title: 'Affordable',
+    description: 'Must be relatively affordable.',
+  },
+] as const;
+export default function Home() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <Suspense fallback={null}>
-        <ContactView />
-      </Suspense>
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section aria-labelledby="criteria-heading">
+          <div className={styles.criteriaHeader}>
+            <h2 id="criteria-heading" className={styles.criteriaTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.criteriaLine} aria-hidden="true" />
+          </div>
+          <div className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <div key={item.number} className={styles.criteriaCard}>
+                <div className={styles.badgeCircle} aria-hidden="true">
+                  {item.number}
+                </div>
+                <div className={styles.criteriaContent}>
+                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
+                  <p className={styles.criteriaCardDescription}>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
       <Footer />
     </div>
   );
@@ -5130,90 +5279,6 @@ export function getAllCities(): CityConfig[] {
 }
 
 ================
-File: app/page.tsx
-================
-import Image from 'next/image';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import styles from './about/About.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'About Someplace Social',
-  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
-};
-const CRITERIA_ITEMS = [
-  {
-    number: '1',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly.',
-  },
-  {
-    number: '2',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No one-on-one sessions.',
-  },
-  {
-    number: '3',
-    title: 'Open',
-    description: 'Must be inclusive and open to all.',
-  },
-  {
-    number: '4',
-    title: 'Affordable',
-    description: 'Must be relatively affordable.',
-  },
-] as const;
-export default function Home() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
-            <p className={styles.heroDescription}>
-              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-        <section aria-labelledby="criteria-heading">
-          <div className={styles.criteriaHeader}>
-            <h2 id="criteria-heading" className={styles.criteriaTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.criteriaLine} aria-hidden="true" />
-          </div>
-          <div className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <div key={item.number} className={styles.criteriaCard}>
-                <div className={styles.badgeCircle} aria-hidden="true">
-                  {item.number}
-                </div>
-                <div className={styles.criteriaContent}>
-                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
-                  <p className={styles.criteriaCardDescription}>{item.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
 File: app/components/Footer.tsx
 ================
 import styles from './Footer.module.css';
@@ -5254,251 +5319,11 @@ export default function Footer() {
 }
 
 ================
-File: app/events/components/EventCard.tsx
+File: app/about/page.tsx
 ================
-'use client';
-import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  isFreePrice,
-  ensureExternalUrl,
-  getTagStyle,
-} from '../utils';
-import styles from './EventCard.module.css';
-interface EventCardProps {
-  event: Event;
-  isOpen: boolean;
-  isNextUp: boolean;
-  cityName: string;
-  onToggle: () => void;
-  onOpenEdit: (ev: Event) => void;
-}
-function ActionButton({
-  href,
-  label,
-  icon,
-}: {
-  href?: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  if (href) {
-    return (
-      <a
-        href={ensureExternalUrl(href)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.actionBtnOutline}
-      >
-        {icon}
-        {label}
-      </a>
-    );
-  }
-  return (
-    <div
-      className={styles.actionBtnOutline}
-      style={{ opacity: 0.45, cursor: 'not-allowed' }}
-    >
-      {icon}
-      {label}
-    </div>
-  );
-}
-export default function EventCard({
-  event,
-  isOpen,
-  isNextUp,
-  cityName,
-  onToggle,
-  onOpenEdit,
-}: EventCardProps) {
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities || [];
-  const displayVenue = event.venue || event.location;
-  const recurrenceText = event.frequency
-    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
-    : event.frequencyNotes || '';
-  return (
-    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
-      <button
-        type="button"
-        className={styles.cardRow}
-        aria-expanded={isOpen}
-        onClick={onToggle}
-      >
-        <div className={styles.timeCol}>
-          {start}
-          {end && <div className={styles.endTimeText}>to {end}</div>}
-        </div>
-        <div className={styles.infoCol}>
-          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
-          <div className={styles.eventTitle}>
-            {event.title}
-            {event.organization && event.organization !== displayVenue && (
-              <span className={styles.eventHost}> w/ {event.organization}</span>
-            )}
-          </div>
-          <div className={styles.eventLocation}>
-            {displayVenue}
-            {event.area ? ` · ${event.area}` : ''}
-          </div>
-          {event.price ? (
-            <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 12V4h8l10 10-8 8L3 12z" />
-                <circle cx="7.5" cy="8.5" r="1" />
-              </svg>
-              {event.price}
-            </div>
-          ) : null}
-          {tagList.length > 0 && (
-            <div className={styles.tagList}>
-              {tagList.map((tag) => {
-                const customStyle = getTagStyle(tag);
-                return (
-                  <span
-                    key={tag}
-                    className={styles.tagChip}
-                    style={{
-                      color: customStyle.color,
-                      backgroundColor: customStyle.background,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <span
-          aria-hidden="true"
-          className={`${styles.chevronCircle} ${
-            isOpen ? styles.chevronCircleOpen : ''
-          }`}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-          </svg>
-        </span>
-      </button>
-      {isOpen && (
-        <div className={styles.expandedDrawer}>
-          {(event.about || event.notes) && (
-            <p className={styles.eventDescription}>{event.about || event.notes}</p>
-          )}
-          {recurrenceText && (
-            <p
-              className={styles.eventDescription}
-              style={{
-                fontWeight: 600,
-                color: 'var(--ink)',
-                marginBottom: event.preRegistration ? 8 : 14,
-              }}
-            >
-              📅 {recurrenceText}
-            </p>
-          )}
-          {event.preRegistration && (
-            <p
-              className={styles.eventDescription}
-              style={{
-                fontWeight: 600,
-                color: 'var(--ink)',
-                marginBottom: 14,
-              }}
-            >
-              📝 {event.preRegistration}
-            </p>
-          )}
-          <div className={styles.drawerActionRow}>
-            <div className={styles.buttonGrid4}>
-              <a
-                href={
-                  event.map
-                    ? ensureExternalUrl(event.map)
-                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${displayVenue}, ${cityName}`
-                      )}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.actionBtnPrimary}
-                aria-label="Open in Maps"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-                Maps
-              </a>
-              <ActionButton
-                href={event.website}
-                label="Website"
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                }
-              />
-              <ActionButton
-                href={event.social}
-                label="Instagram"
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                }
-              />
-              <ActionButton
-                href={event.contact}
-                label="Contact"
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                }
-              />
-            </div>
-            <button
-              type="button"
-              className={styles.suggestEditBtn}
-              onClick={() => onOpenEdit(event)}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
-              </svg>
-              Suggest edit
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+import { redirect } from 'next/navigation';
+export default function AboutPage() {
+  redirect('/');
 }
 
 ================
@@ -5860,11 +5685,250 @@ export default function CityEventsView({
 }
 
 ================
-File: app/about/page.tsx
+File: app/events/components/EventCard.tsx
 ================
-import { redirect } from 'next/navigation';
-export default function AboutPage() {
-  redirect('/');
+'use client';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  formatRecurrenceText,
+  isFreePrice,
+  ensureExternalUrl,
+  getTagStyle,
+} from '../utils';
+import styles from './EventCard.module.css';
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
+}
+function ActionButton({
+  href,
+  label,
+  icon,
+}: {
+  href?: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  if (href) {
+    return (
+      <a
+        href={ensureExternalUrl(href)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.actionBtnOutline}
+      >
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <div
+      className={styles.actionBtnOutline}
+      style={{ opacity: 0.45, cursor: 'not-allowed' }}
+    >
+      {icon}
+      {label}
+    </div>
+  );
+}
+export default function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList = event.activities || [];
+  const displayVenue = event.venue || event.location;
+  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
+  return (
+    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
+      <button
+        type="button"
+        className={styles.cardRow}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <div className={styles.timeCol}>
+          {start}
+          {end && <div className={styles.endTimeText}>to {end}</div>}
+        </div>
+        <div className={styles.infoCol}>
+          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
+          <div className={styles.eventTitle}>
+            {event.title}
+            {event.organization && event.organization !== displayVenue && (
+              <span className={styles.eventHost}> w/ {event.organization}</span>
+            )}
+          </div>
+          <div className={styles.eventLocation}>
+            {displayVenue}
+            {event.area ? ` · ${event.area}` : ''}
+          </div>
+          {event.price ? (
+            <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 12V4h8l10 10-8 8L3 12z" />
+                <circle cx="7.5" cy="8.5" r="1" />
+              </svg>
+              {event.price}
+            </div>
+          ) : null}
+          {tagList.length > 0 && (
+            <div className={styles.tagList}>
+              {tagList.map((tag) => {
+                const customStyle = getTagStyle(tag);
+                return (
+                  <span
+                    key={tag}
+                    className={styles.tagChip}
+                    style={{
+                      color: customStyle.color,
+                      backgroundColor: customStyle.background,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <span
+          aria-hidden="true"
+          className={`${styles.chevronCircle} ${
+            isOpen ? styles.chevronCircleOpen : ''
+          }`}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className={styles.expandedDrawer}>
+          {(event.about || event.notes) && (
+            <p className={styles.eventDescription}>{event.about || event.notes}</p>
+          )}
+          {recurrenceText && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: event.preRegistration ? 8 : 14,
+              }}
+            >
+              📅 {recurrenceText}
+            </p>
+          )}
+          {event.preRegistration && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: 14,
+              }}
+            >
+              📝 {event.preRegistration}
+            </p>
+          )}
+          <div className={styles.drawerActionRow}>
+            <div className={styles.buttonGrid4}>
+              <a
+                href={
+                  event.map
+                    ? ensureExternalUrl(event.map)
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${displayVenue}, ${cityName}`
+                      )}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.actionBtnPrimary}
+                aria-label="Open in Maps"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Maps
+              </a>
+              <ActionButton
+                href={event.website}
+                label="Website"
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                }
+              />
+              <ActionButton
+                href={event.social}
+                label="Instagram"
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                }
+              />
+              <ActionButton
+                href={event.contact}
+                label="Contact"
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                }
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.suggestEditBtn}
+              onClick={() => onOpenEdit(event)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
+              </svg>
+              Suggest edit
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 ================

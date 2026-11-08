@@ -4,6 +4,8 @@ import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
 import { getEvents } from '../../lib/google-sheets';
 import CityEventsView from '../CityEventsView';
 
+export const revalidate = 3600;
+
 type PageProps = {
   params: Promise<{ city: string }>;
 };
@@ -37,6 +39,7 @@ export default async function CityEventsPage({ params }: PageProps) {
   if (!city) {
     notFound();
   }
+
   const events = await getEvents(city);
   const allSlugs = getAllCitySlugs();
   const countEntries = await Promise.all(
@@ -48,6 +51,7 @@ export default async function CityEventsPage({ params }: PageProps) {
       return [slug, otherEvents.length] as const;
     })
   );
+
   const cityCounts = Object.fromEntries(countEntries);
 
   return (
