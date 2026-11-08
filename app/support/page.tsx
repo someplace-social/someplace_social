@@ -32,16 +32,18 @@ export default function SupportPage() {
             />
           </div>
         </section>
+
         <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
             <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
               The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
             </p>
-            <Link href="/contact" className={styles.button}>
+            <Link href="/contact?tab=submit" className={styles.button}>
               Submit or Edit Events
             </Link>
           </div>
+
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
             <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
@@ -56,6 +58,7 @@ export default function SupportPage() {
               Buy Me a Drink
             </a>
           </div>
+
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
             <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>

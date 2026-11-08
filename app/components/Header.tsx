@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -49,6 +50,7 @@ export default function Header({
 
   const isAboutActive = pathname === '/' || pathname === '/about';
   const isContactActive = pathname === '/contact';
+  const isCityActive = Boolean(city);
 
   return (
     <>
@@ -74,11 +76,12 @@ export default function Header({
               </div>
             )}
           </div>
+
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
                 type="button"
-                className={styles.citiesBtn}
+                className={`${styles.citiesBtn} ${isCityActive ? styles.citiesBtnActive : ''}`}
                 aria-expanded={citiesMenuOpen}
                 onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
               >
@@ -140,6 +143,7 @@ export default function Header({
                 })}
               </div>
             </div>
+
             <Link
               href="/"
               className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
@@ -152,12 +156,13 @@ export default function Header({
             >
               Contact
             </Link>
-            <Link href="/contact" className={styles.addEventBtn}>
+            <Link href="/contact?tab=submit" className={styles.addEventBtn}>
               + Add event
             </Link>
           </nav>
+
           <div className={styles.navMobileActions}>
-            <Link href="/contact" className={styles.mobileAddBtn}>
+            <Link href="/contact?tab=submit" className={styles.mobileAddBtn}>
               + Add
             </Link>
             <button
@@ -181,6 +186,7 @@ export default function Header({
           </div>
         </div>
       </header>
+
       {mobileDrawerOpen && (
         <div
           className={styles.drawerBackdrop}
@@ -203,6 +209,7 @@ export default function Header({
                 ✕
               </button>
             </div>
+
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
               {citiesList.map((c) => {
@@ -230,6 +237,7 @@ export default function Header({
                 );
               })}
             </div>
+
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
@@ -251,13 +259,14 @@ export default function Header({
                 Contact
               </Link>
               <Link
-                href="/contact"
+                href="/contact?tab=submit"
                 className={styles.drawerNavLink}
                 onClick={() => setMobileDrawerOpen(false)}
               >
                 + Add event
               </Link>
             </div>
+
             <div className={styles.drawerFooter}>
               <a
                 href="https://buymeacoffee.com/someplacesocial"

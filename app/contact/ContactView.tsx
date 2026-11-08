@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import styles from './Contact.module.css';
@@ -24,9 +24,19 @@ const PRE_REGISTRATION_OPTIONS = [
 
 export default function ContactView() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') === 'question' ? 'question' : 'submit';
+  const tabParam = searchParams.get('tab');
 
-  const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'question' | 'submit'>(() => {
+    return tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
+  });
+
+  useEffect(() => {
+    if (tabParam === 'submit' || tabParam === 'event') {
+      setActiveTab('submit');
+    } else {
+      setActiveTab('question');
+    }
+  }, [tabParam]);
 
   const [city, setCity] = useState('Medellín, Colombia');
   const [title, setTitle] = useState('');
@@ -275,53 +285,111 @@ export default function ContactView() {
         </div>
       </section>
 
-      <section className={styles.thanks}>
-        <h2 className={styles.thanksTitle}>Thanks for contributing</h2>
-        <p className={styles.thanksText}>
-          Free for everyone — no ads, no pop-ups. It runs 100% on donations. If you&apos;re able,{' '}
-          <a
-            href="https://buymeacoffee.com/someplacesocial"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.drinkLink}
-          >
-            buy me a drink
-          </a>.
-        </p>
-      </section>
-
-      <div className={styles.labelDivider}>
-        <span>Get in touch</span>
-        <div className={styles.labelLine} aria-hidden="true" />
+      <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
+        <button
+          type="button"
+          role="tab"
+          id="tab-question"
+          aria-selected={activeTab === 'question'}
+          aria-controls="panel-question"
+          className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
+          onClick={() => {
+            setActiveTab('question');
+            window.history.replaceState(null, '', '/contact');
+          }}
+        >
+          Ask a question
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-submit"
+          aria-selected={activeTab === 'submit'}
+          aria-controls="panel-submit"
+          className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
+          onClick={() => {
+            setActiveTab('submit');
+            window.history.replaceState(null, '', '/contact?tab=submit');
+          }}
+        >
+          Submit an event
+        </button>
       </div>
 
       <section className={styles.panel}>
-        <div className={styles.tabs} role="tablist" aria-label="Contact options">
-          <button
-            type="button"
-            role="tab"
-            id="tab-submit"
-            aria-selected={activeTab === 'submit'}
-            aria-controls="panel-submit"
-            className={`${styles.tabBtn} ${activeTab === 'submit' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('submit')}
+        {activeTab === 'question' ? (
+          <form
+            id="panel-question"
+            role="tabpanel"
+            aria-labelledby="tab-question"
+            onSubmit={handleQuestionSubmit}
           >
-            Submit an event
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-question"
-            aria-selected={activeTab === 'question'}
-            aria-controls="panel-question"
-            className={`${styles.tabBtn} ${activeTab === 'question' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('question')}
-          >
-            Ask a question
-          </button>
-        </div>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Ask a question</legend>
 
-        {activeTab === 'submit' ? (
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="q-first-name" className={styles.label}>
+                    First name *
+                  </label>
+                  <input
+                    id="q-first-name"
+                    type="text"
+                    required
+                    value={questionFirstName}
+                    onChange={(e) => setQuestionFirstName(e.target.value)}
+                    placeholder="e.g. John"
+                    className={styles.input}
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="q-email" className={styles.label}>
+                    Email address *
+                  </label>
+                  <input
+                    id="q-email"
+                    type="email"
+                    required
+                    value={questionEmail}
+                    onChange={(e) => setQuestionEmail(e.target.value)}
+                    placeholder="e.g. john@doe.com"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="q-message" className={styles.label}>
+                  Message *
+                </label>
+                <textarea
+                  id="q-message"
+                  required
+                  value={questionMessage}
+                  onChange={(e) => setQuestionMessage(e.target.value)}
+                  placeholder="Enter your message…"
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+
+            <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
+              {questionLoading ? 'Sending message...' : 'Send message'}
+            </button>
+
+            {questionStatus && (
+              <div
+                className={`${styles.statusAlert} ${
+                  questionStatus.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {questionStatus.message}
+              </div>
+            )}
+          </form>
+        ) : (
           <form
             id="panel-submit"
             role="tabpanel"
@@ -832,78 +900,6 @@ export default function ContactView() {
                 role="status"
               >
                 {submitStatus.message}
-              </div>
-            )}
-          </form>
-        ) : (
-          <form
-            id="panel-question"
-            role="tabpanel"
-            aria-labelledby="tab-question"
-            onSubmit={handleQuestionSubmit}
-          >
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Ask a question</legend>
-
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="q-first-name" className={styles.label}>
-                    First name *
-                  </label>
-                  <input
-                    id="q-first-name"
-                    type="text"
-                    required
-                    value={questionFirstName}
-                    onChange={(e) => setQuestionFirstName(e.target.value)}
-                    placeholder="e.g. John"
-                    className={styles.input}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <label htmlFor="q-email" className={styles.label}>
-                    Email address *
-                  </label>
-                  <input
-                    id="q-email"
-                    type="email"
-                    required
-                    value={questionEmail}
-                    onChange={(e) => setQuestionEmail(e.target.value)}
-                    placeholder="e.g. john@doe.com"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.field}>
-                <label htmlFor="q-message" className={styles.label}>
-                  Message *
-                </label>
-                <textarea
-                  id="q-message"
-                  required
-                  value={questionMessage}
-                  onChange={(e) => setQuestionMessage(e.target.value)}
-                  placeholder="Enter your message…"
-                  className={styles.textarea}
-                />
-              </div>
-            </fieldset>
-
-            <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
-              {questionLoading ? 'Sending message...' : 'Send message'}
-            </button>
-
-            {questionStatus && (
-              <div
-                className={`${styles.statusAlert} ${
-                  questionStatus.success ? styles.statusSuccess : styles.statusError
-                }`}
-                role="status"
-              >
-                {questionStatus.message}
               </div>
             )}
           </form>

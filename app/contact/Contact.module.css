@@ -13,7 +13,7 @@
   grid-template-columns: 1fr 340px;
   gap: 48px;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 .eyebrow {
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -57,54 +57,42 @@
   display: block;
   object-fit: contain;
 }
-.thanks {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 22px 26px;
-  margin-bottom: 40px;
-  box-shadow: 0 1px 4px rgba(31, 27, 22, 0.04);
-}
-.thanksTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0 0 6px;
-  color: var(--ink);
-}
-.thanksText {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.5;
-}
-.drinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
-}
-.drinkLink:hover {
-  color: var(--accent);
-  text-decoration-color: var(--accent);
-}
-.labelDivider {
+.pillGroup {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin: 0 0 24px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
 }
-.labelLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pillBtn:hover {
+  background-color: #ebdcb9;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.pillBtnActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.pillBtnActive:hover {
+  background-color: var(--ink);
+  color: #ffffff;
 }
 .panel {
   background-color: var(--card);
@@ -112,31 +100,6 @@
   border-radius: 22px;
   padding: 32px;
   box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
-}
-.tabs {
-  display: inline-flex;
-  background-color: var(--chip);
-  border-radius: 14px;
-  padding: 4px;
-  margin-bottom: 28px;
-  gap: 4px;
-}
-.tabBtn {
-  border: 0;
-  background: transparent;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--muted);
-  min-height: 44px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.tabBtnActive {
-  background-color: var(--ink);
-  color: #ffffff;
 }
 .criteria {
   background-color: var(--bg);
@@ -423,23 +386,19 @@
     max-width: 260px;
     margin: 0 auto;
   }
-  .thanks {
-    padding: 16px 18px;
-    margin-bottom: 28px;
+  .pillGroup {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .pillBtn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 13.5px;
   }
   .panel {
     padding: 20px 16px;
     border-radius: 18px;
-  }
-  .tabs {
-    width: 100%;
-    display: flex;
-  }
-  .tabBtn {
-    flex: 1;
-    text-align: center;
-    padding: 10px 12px;
-    font-size: 14px;
   }
   .criteriaGrid {
     grid-template-columns: 1fr;
