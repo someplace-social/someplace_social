@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import styles from './About.module.css';
@@ -77,15 +76,6 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className={styles.actionRow}>
-            <Link href="/contact" className={styles.submitButton}>
-              + Submit an Event
-            </Link>
-            <Link href="/events/medellin-colombia" className={styles.secondaryButton}>
-              Browse Events
-            </Link>
           </div>
         </section>
       </main>

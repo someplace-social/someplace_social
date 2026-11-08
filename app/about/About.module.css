@@ -139,61 +139,6 @@
   line-height: 1.45;
 }
 
-.actionRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-}
-
-.submitButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 0 24px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border: 1.5px solid var(--ink);
-  border-radius: 12px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.submitButton:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-
-.secondaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 20px;
-  background-color: #ffffff;
-  color: var(--ink);
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.secondaryButton:hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-
 @media (max-width: 768px) {
   .page {
     padding: 24px 16px 56px;
@@ -242,16 +187,5 @@
 
   .criteriaCardDescription {
     font-size: 14px;
-  }
-
-  .actionRow {
-    flex-direction: column;
-    align-items: stretch;
-    margin-top: 24px;
-  }
-
-  .submitButton,
-  .secondaryButton {
-    width: 100%;
   }
 }
