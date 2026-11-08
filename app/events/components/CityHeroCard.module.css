@@ -29,6 +29,15 @@
   color: var(--ink);
 }
 
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.35;
+}
+
 .lead {
   margin: 0;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -89,6 +98,11 @@
 
   .title {
     font-size: 26px;
+  }
+
+  .metaSubtitle {
+    font-size: 13px;
+    margin-top: 6px;
   }
 
   .lead {

@@ -38,7 +38,6 @@ export default function Header({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentCityCount = city ? cityCounts[city.slug] : undefined;
   const isAboutActive = pathname === '/about';
   const isContactActive = pathname === '/contact';
 
@@ -63,9 +62,6 @@ export default function Header({
             {city && (
               <div className={styles.brandSubtitle}>
                 {city.heroLocation}
-                {typeof currentCityCount === 'number' && (
-                  <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'}</>
-                )}
               </div>
             )}
           </div>

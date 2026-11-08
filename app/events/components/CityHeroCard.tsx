@@ -6,6 +6,7 @@ interface CityHeroCardProps {
   cityName: string;
   introTitle?: string;
   introDescription?: string;
+  eventCount?: number;
   activities: string[];
   selectedActivities: string[];
   onSelectChip: (activity: string) => void;
@@ -16,6 +17,7 @@ export default function CityHeroCard({
   cityName,
   introTitle,
   introDescription,
+  eventCount,
   activities,
   selectedActivities,
   onSelectChip,
@@ -30,6 +32,11 @@ export default function CityHeroCard({
         <h1 id="city-intro-heading" className={styles.title}>
           {introTitle || `${cityName} Community Listings`}
         </h1>
+        {typeof eventCount === 'number' && eventCount > 0 && (
+          <div className={styles.metaSubtitle}>
+            {cityName} · {eventCount} {eventCount === 1 ? 'event' : 'events'}
+          </div>
+        )}
       </div>
       <p className={styles.lead}>
         {introDescription ||

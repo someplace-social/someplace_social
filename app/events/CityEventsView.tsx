@@ -239,6 +239,7 @@ export default function CityEventsView({
   };
 
   const allCityOptions = useMemo(() => getAllCities(), []);
+  const totalEventsCount = allEvents.length || cityCounts[city.slug] || initialEvents.length;
 
   const dayHeading =
     activeDayIdx === 0
@@ -263,6 +264,7 @@ export default function CityEventsView({
           cityName={city.name}
           introTitle={city.introTitle}
           introDescription={city.introDescription}
+          eventCount={totalEventsCount}
           activities={activities}
           selectedActivities={selectedActivities}
           onSelectChip={handleSelectChip}
