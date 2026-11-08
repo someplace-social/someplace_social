@@ -199,6 +199,37 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 
 ================
+File: app/api/send-form/route.ts
+================
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+const resend = new Resend(process.env.RESEND_API_KEY);
+const recipientEmail = process.env.EMAIL_RECIPIENT;
+export async function POST(request: Request) {
+  try {
+    if (!recipientEmail) {
+      throw new Error('Recipient email is not configured.');
+    }
+    const body = await request.json();
+    const { formType, message } = body;
+    const { data, error } = await resend.emails.send({
+      from: 'Someplace Social <onboarding@resend.dev>',
+      to: recipientEmail,
+      subject: `New Form Submission: ${formType}`,
+      text: message,
+    });
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
+    }
+    return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
+  } catch (error) {
+    console.error('Error processing form:', error);
+    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
+  }
+}
+
+================
 File: app/components/ContactForm.module.css
 ================
 .form {
@@ -897,37 +928,6 @@ File: tsconfig.json
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
-}
-
-================
-File: app/api/send-form/route.ts
-================
-import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-const resend = new Resend(process.env.RESEND_API_KEY);
-const recipientEmail = process.env.EMAIL_RECIPIENT;
-export async function POST(request: Request) {
-  try {
-    if (!recipientEmail) {
-      throw new Error('Recipient email is not configured.');
-    }
-    const body = await request.json();
-    const { formType, message } = body;
-    const { data, error } = await resend.emails.send({
-      from: 'Someplace Social <onboarding@resend.dev>',
-      to: recipientEmail,
-      subject: `New Form Submission: ${formType}`,
-      text: message,
-    });
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
-  } catch (error) {
-    console.error('Error processing form:', error);
-    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
-  }
 }
 
 ================
@@ -3115,6 +3115,74 @@ File: app/components/Accordion.module.css
 }
 
 ================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
+  );
+}
+
+================
 File: app/events/[city]/page.tsx
 ================
 import { notFound } from 'next/navigation';
@@ -3367,74 +3435,6 @@ export default function CityHeroCard({
         })}
       </div>
     </section>
-  );
-}
-
-================
-File: app/components/ContactForm.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './ContactForm.module.css';
-type ContactFormProps = {
-  formType: string;
-  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
-};
-export default function ContactForm({ formType, fields }: ContactFormProps) {
-  const [status, setStatus] = useState('');
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('Submitting...');
-    const formData = new FormData(event.currentTarget);
-    let message = '';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
-    });
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, message }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setStatus('Message sent successfully!');
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      setStatus('An error occurred. Please try again.');
-    }
-  };
-  return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      {fields.map(field => (
-        <div key={field.name} className={styles.field}>
-          <label htmlFor={field.name}>{field.label}</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.textarea}
-            />
-          ) : (
-            <input
-              type={field.type}
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.input}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit" className={styles.button}>Send Message</button>
-      {status && <p>{status}</p>}
-    </form>
   );
 }
 
@@ -5010,6 +5010,256 @@ export default function RootLayout({
 }
 
 ================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+};
+export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
+  }
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+================
+File: app/page.tsx
+================
+import Image from 'next/image';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import styles from './about/About.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'About Someplace Social',
+  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
+};
+const CRITERIA_ITEMS = [
+  {
+    number: '1',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly.',
+  },
+  {
+    number: '2',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No one-on-one sessions.',
+  },
+  {
+    number: '3',
+    title: 'Open',
+    description: 'Must be inclusive and open to all.',
+  },
+  {
+    number: '4',
+    title: 'Affordable',
+    description: 'Must be relatively affordable.',
+  },
+] as const;
+export default function Home() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section aria-labelledby="criteria-heading">
+          <div className={styles.criteriaHeader}>
+            <h2 id="criteria-heading" className={styles.criteriaTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.criteriaLine} aria-hidden="true" />
+          </div>
+          <div className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <div key={item.number} className={styles.criteriaCard}>
+                <div className={styles.badgeCircle} aria-hidden="true">
+                  {item.number}
+                </div>
+                <div className={styles.criteriaContent}>
+                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
+                  <p className={styles.criteriaCardDescription}>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+================
+File: app/components/Footer.tsx
+================
+import styles from './Footer.module.css';
+export default function Footer() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerQuoteRow}>
+          <div className={styles.footerLeftSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
+          <div className={styles.footerRightSection}>
+            <div className={styles.footerSupportText}>
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.buyDrinkLink}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+export default function ContactPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
+      <Footer />
+    </div>
+  );
+}
+
+================
 File: app/events/components/EventCard.tsx
 ================
 'use client';
@@ -5172,7 +5422,7 @@ export default function EventCard({
                 marginBottom: event.preRegistration ? 8 : 14,
               }}
             >
-              📅Recurs: {recurrenceText}
+              📅 {recurrenceText}
             </p>
           )}
           {event.preRegistration && (
@@ -5184,7 +5434,7 @@ export default function EventCard({
                 marginBottom: 14,
               }}
             >
-              📝Pre-Registration: {event.preRegistration}
+              📝 {event.preRegistration}
             </p>
           )}
           <div className={styles.drawerActionRow}>
@@ -5254,148 +5504,6 @@ export default function EventCard({
         </div>
       )}
     </div>
-  );
-}
-
-================
-File: app/lib/cities.ts
-================
-export type CityPriceConfig = {
-  currencyCode: string;
-  currencySymbol: string;
-  unitSuffix: string;
-  maxPrice: number;
-  step: number;
-  underValue: number;
-  underLabel: string;
-  midLabel: string;
-};
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-  priceConfig?: CityPriceConfig;
-};
-export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-    priceConfig: {
-      currencyCode: 'COP',
-      currencySymbol: '$',
-      unitSuffix: 'k',
-      maxPrice: 100,
-      step: 5,
-      underValue: 40,
-      underLabel: 'Under 40k',
-      midLabel: '50k',
-    },
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-    priceConfig: {
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      unitSuffix: '',
-      maxPrice: 50,
-      step: 5,
-      underValue: 10,
-      underLabel: 'Under $10',
-      midLabel: '$25',
-    },
-  },
-};
-export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
-  currencyCode: 'USD',
-  currencySymbol: '$',
-  unitSuffix: '',
-  maxPrice: 50,
-  step: 5,
-  underValue: 10,
-  underLabel: 'Under $10',
-  midLabel: '$25',
-};
-export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
-  if (city?.priceConfig) return city.priceConfig;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return CITIES['medellin-colombia'].priceConfig!;
-  }
-  return DEFAULT_USD_PRICE_CONFIG;
-}
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-================
-File: app/components/Footer.tsx
-================
-import styles from './Footer.module.css';
-export default function Footer() {
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerInner}>
-        <div className={styles.footerQuoteRow}>
-          <div className={styles.footerLeftSection}>
-            <blockquote className={styles.footerQuoteText}>
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
-            <div className={styles.footerCopyright}>
-              © 2026 Someplace Social. All rights reserved.
-            </div>
-          </div>
-          <div className={styles.footerRightSection}>
-            <div className={styles.footerSupportText}>
-              Free for everyone, no ads.{' '}
-              <a
-                href="https://buymeacoffee.com/someplacesocial"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.buyDrinkLink}
-              >
-                Buy me a drink
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
   );
 }
 
@@ -5753,114 +5861,6 @@ export default function CityEventsView({
           onClose={() => setEditModalEvent(null)}
         />
       )}
-    </div>
-  );
-}
-
-================
-File: app/page.tsx
-================
-import Image from 'next/image';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import styles from './about/About.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'About Someplace Social',
-  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
-};
-const CRITERIA_ITEMS = [
-  {
-    number: '1',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly.',
-  },
-  {
-    number: '2',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No one-on-one sessions.',
-  },
-  {
-    number: '3',
-    title: 'Open',
-    description: 'Must be inclusive and open to all.',
-  },
-  {
-    number: '4',
-    title: 'Affordable',
-    description: 'Must be relatively affordable.',
-  },
-] as const;
-export default function Home() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
-            <p className={styles.heroDescription}>
-              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-        <section aria-labelledby="criteria-heading">
-          <div className={styles.criteriaHeader}>
-            <h2 id="criteria-heading" className={styles.criteriaTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.criteriaLine} aria-hidden="true" />
-          </div>
-          <div className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <div key={item.number} className={styles.criteriaCard}>
-                <div className={styles.badgeCircle} aria-hidden="true">
-                  {item.number}
-                </div>
-                <div className={styles.criteriaContent}>
-                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
-                  <p className={styles.criteriaCardDescription}>{item.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
-File: app/contact/page.tsx
-================
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ContactView from './ContactView';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
-};
-export default function ContactPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <Suspense fallback={null}>
-        <ContactView />
-      </Suspense>
-      <Footer />
     </div>
   );
 }

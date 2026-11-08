@@ -1,22 +1,7 @@
 import type { Metadata } from 'next';
-import { Karla, Bricolage_Grotesque } from 'next/font/google';
 import './globals.css';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import { Analytics } from '@vercel/analytics/react';
-
-const karla = Karla({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-karla',
-  display: 'swap',
-});
-
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
@@ -38,8 +23,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${karla.variable} ${bricolage.variable}`}>
-      <body className={karla.className}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;700;800&family=Karla:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
         {children}
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
         <Analytics />

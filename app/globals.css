@@ -1,4 +1,6 @@
 :root {
+  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
   --bg: #fff9ec;
   --card: #ffffff;
   --ink: #1f1b16;
@@ -11,26 +13,22 @@
   --price-donation: #7a4a00;
   --chip: #f3ead4;
 }
-
 * {
   box-sizing: border-box;
 }
-
 html,
 body {
   margin: 0;
   padding: 0;
   background-color: var(--bg);
   color: var(--ink);
-  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-karla);
   -webkit-font-smoothing: antialiased;
 }
-
 a {
   color: var(--ink);
   text-decoration: none;
 }
-
 a:hover {
   color: var(--accent);
 }
