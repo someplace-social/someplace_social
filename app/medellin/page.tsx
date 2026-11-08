@@ -2,13 +2,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { getEvents, Event } from '../lib/google-sheets';
-import { matchesDay } from '../events/utils';
+import { isEventActiveOnDate } from '../events/utils';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import ContactForm from '../components/ContactForm';
 import EventListing from './EventListing';
 import pageStyles from '../Page.module.css';
-import styles from './Medellin.module.css';
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -37,59 +36,81 @@ export default function MedellinPage() {
 
   useEffect(() => {
     document.title = "Weekly Events in Medellin | Someplace Social";
-    getEvents().then(fetchedEvents => {
+    getEvents().then((fetchedEvents) => {
       setAllEvents(fetchedEvents);
     });
   }, []);
 
   const uniqueActivities = useMemo(() => {
     const activitySet = new Set<string>();
-    allEvents.forEach(event => {
-      const list = event.activities && event.activities.length > 0
-        ? event.activities
-        : event.activity
-        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
-        : [event.activity1, event.activity2, event.activity3].filter(Boolean);
-      list.forEach(a => activitySet.add(a));
+    allEvents.forEach((event) => {
+      const list =
+        event.activities && event.activities.length > 0
+          ? event.activities
+          : event.activity
+          ? event.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+      list.forEach((a) => activitySet.add(a));
     });
     return Array.from(activitySet).sort();
   }, [allEvents]);
 
   const uniqueAreas = useMemo(() => {
     const areaSet = new Set<string>();
-    allEvents.forEach(event => {
+    allEvents.forEach((event) => {
       if (event.area) areaSet.add(event.area);
     });
     return Array.from(areaSet).sort();
   }, [allEvents]);
 
   const filteredEvents = useMemo(() => {
-    return allEvents.filter(event => {
-      const evActs = (event.activities && event.activities.length > 0
-        ? event.activities
-        : event.activity
-        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
-        : [event.activity1, event.activity2, event.activity3].filter(Boolean)
-      ).map(a => a.toLowerCase());
-      const activityMatch = filters.activity === 'all' ||
+    return allEvents.filter((event) => {
+      const evActs = (
+        event.activities && event.activities.length > 0
+          ? event.activities
+          : event.activity
+          ? event.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [event.activity1, event.activity2, event.activity3].filter(Boolean)
+      ).map((a) => a.toLowerCase());
+
+      const activityMatch =
+        filters.activity === 'all' ||
         evActs.includes(filters.activity.toLowerCase()) ||
         event.activity1 === filters.activity ||
         event.activity2 === filters.activity ||
         event.activity3 === filters.activity;
+
       const areaMatch = filters.area === 'all' || event.area === filters.area;
-      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, "")) || 0;
+      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, '')) || 0;
       const priceMatch = numericPrice <= filters.price;
       return activityMatch && areaMatch && priceMatch;
     });
   }, [allEvents, filters]);
 
+  const currentWeekDates = useMemo(() => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon ...
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+
+    const map: Record<string, Date> = {};
+    daysOfWeek.forEach((dayName, idx) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + idx);
+      map[dayName] = d;
+    });
+    return map;
+  }, []);
+
   const eventsByDay = useMemo(() => {
     const map: Record<string, Event[]> = {};
     daysOfWeek.forEach((day) => {
-      map[day] = filteredEvents.filter((event) => matchesDay(event.dayOfWeek, day));
+      const targetDate = currentWeekDates[day] || new Date();
+      map[day] = filteredEvents.filter((event) => isEventActiveOnDate(event, targetDate));
     });
     return map;
-  }, [filteredEvents]);
+  }, [filteredEvents, currentWeekDates]);
 
   return (
     <main className={pageStyles.page}>
@@ -97,19 +118,23 @@ export default function MedellinPage() {
         <div className={pageStyles.heroText}>
           <h1>Medellin Weekly Events & Activity Guide</h1>
           <p><strong>by Someplace Social</strong></p>
-          <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
+          <p style={{ marginTop: '1rem' }}>
+            Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
+          </p>
         </div>
         <div className={pageStyles.illustrationContainer}>
           <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
+
       <FilterBar
         activities={uniqueActivities}
         areas={uniqueAreas}
         onFilterChange={setFilters}
       />
+
       <div style={{ width: '100%' }}>
-        {daysOfWeek.map(day => (
+        {daysOfWeek.map((day) => (
           eventsByDay[day] && eventsByDay[day].length > 0 ? (
             <DayAccordion key={day} title={day}>
               {eventsByDay[day].map((event, index) => (
@@ -119,11 +144,12 @@ export default function MedellinPage() {
           ) : null
         ))}
       </div>
-      <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
-        <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
+
+      <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
+        <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
         <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
-        <div style={{width: '100%', marginTop: '2rem'}}>
+        <div style={{ width: '100%', marginTop: '2rem' }}>
           <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
         </div>
       </section>

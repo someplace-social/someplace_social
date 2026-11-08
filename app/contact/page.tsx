@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 const submitEventFields = [
   { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
   { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly, Monthly (1st Tuesday), Bi-weekly', type: 'text', required: false },
+  { name: 'Frequency Notes', label: 'Frequency Notes (optional)', placeholder: 'e.g. Months, May–Sep or Months, Even/Odd', type: 'text', required: false },
   { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Tue, Thu', type: 'text', required: false },
   { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
   { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
@@ -56,11 +57,13 @@ export default function ContactPage() {
           <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
+
       <section className={styles.contentBox}>
         <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
         <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
       </section>
-      <div style={{width: '100%', marginTop: '2rem'}}>
+
+      <div style={{ width: '100%', marginTop: '2rem' }}>
         <Accordion title="Submit an Event">
           <div>
             <strong>A FEW NOTES</strong>
@@ -72,7 +75,7 @@ export default function ContactPage() {
             <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
             <p><strong>• Open:</strong> must be inclusive and open to all.</p>
             <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <hr style={{margin: '2rem 0'}} />
+            <hr style={{ margin: '2rem 0' }} />
             <ContactForm formType="Submit an Event" fields={submitEventFields} />
           </div>
         </Accordion>

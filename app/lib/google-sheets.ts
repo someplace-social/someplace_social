@@ -17,6 +17,7 @@ export type Event = {
   startTime: string;
   endTime: string;
   frequency: string;
+  frequencyNotes: string;
   price: string;
   preRegistration: string;
   map: string;
@@ -47,6 +48,7 @@ function getCandidateUrls(city: CityConfig): string[] {
   } else if (city.sheetTab.toLowerCase() === 'fort collins') {
     tabs.push('FortCollins');
   }
+
   const urls: string[] = [];
   for (const id of ids) {
     for (const tab of tabs) {
@@ -59,10 +61,12 @@ function getCandidateUrls(city: CityConfig): string[] {
       urls.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${city.sheetGid}`);
     }
   }
+
   if (city.sheetGid) {
     urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
   }
   urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
+
   return urls;
 }
 
@@ -71,6 +75,7 @@ function parseCsv(csvText: string): string[][] {
   let currentRow: string[] = [];
   let currentField = '';
   let inQuotes = false;
+
   for (let i = 0; i < csvText.length; i++) {
     const char = csvText[i];
     if (char === '"') {
@@ -151,7 +156,16 @@ const HEADER_ALIASES: Record<string, string[]> = {
   dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
   startTime: ['starttime', 'start'],
   endTime: ['endtime', 'end'],
-  frequency: ['frequency'],
+  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
+  frequencyNotes: [
+    'frequencynotes',
+    'frequencynote',
+    'frequency_notes',
+    'freqnotes',
+    'freqnote',
+    'frequencynot',
+    'recurrencenotes',
+  ],
   price: ['price', 'cost'],
   preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
   map: ['map', 'googlemap', 'googlemaplink', 'maps'],
@@ -178,14 +192,15 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   startTime: 7,
   endTime: 8,
   frequency: 9,
-  price: 10,
-  preRegistration: 11,
-  map: 12,
-  social: 13,
-  website: 14,
-  contact: 15,
-  about: 16,
-  notes: 17,
+  frequencyNotes: 10,
+  price: 11,
+  preRegistration: 12,
+  map: 13,
+  social: 14,
+  website: 15,
+  contact: 16,
+  about: 17,
+  notes: 18,
 };
 
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
@@ -204,9 +219,11 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     } else {
       cityConfig = CITIES['medellin-colombia'];
     }
+
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
     let rows: string[][] = [];
+
     for (const url of candidateUrls) {
       try {
         const response = await fetch(url, {
@@ -238,10 +255,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
       }
     }
+
     if (rows.length < 2) {
       console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
       return [];
     }
+
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
     Object.keys(HEADER_ALIASES).forEach((field) => {
@@ -251,72 +270,83 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         headerIndexMap[field] = foundIdx;
       }
     });
+
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
     };
+
     const dataRows = rows.slice(1);
-    const events = dataRows.map((row): Event | null => {
-      if (row.length === 0 || row.every(cell => cleanCell(cell) === '')) return null;
-      const getValue = (field: string): string => {
-        const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
-        if (colIdx !== undefined && colIdx < row.length) {
-          return cleanCell(row[colIdx]);
+    const events = dataRows
+      .map((row): Event | null => {
+        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
+
+        const getValue = (field: string): string => {
+          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+          if (colIdx !== undefined && colIdx < row.length) {
+            return cleanCell(row[colIdx]);
+          }
+          return '';
+        };
+
+        const venueVal = getValue('venue');
+        const orgVal = getValue('organization');
+        const locVal = getValue('location');
+        const rawActivity = getValue('activity');
+        const act1 = getValue('activity1');
+        const act2 = getValue('activity2');
+        const act3 = getValue('activity3');
+
+        let parsedActivities: string[] = [];
+        if (rawActivity) {
+          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
         }
-        return '';
-      };
-      const venueVal = getValue('venue');
-      const orgVal = getValue('organization');
-      const locVal = getValue('location');
-      const rawActivity = getValue('activity');
-      const act1 = getValue('activity1');
-      const act2 = getValue('activity2');
-      const act3 = getValue('activity3');
-      let parsedActivities: string[] = [];
-      if (rawActivity) {
-        parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
-      }
-      if (parsedActivities.length === 0) {
-        parsedActivities = [act1, act2, act3]
-          .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
-          .filter(Boolean);
-      }
-      const uniqueActs: string[] = [];
-      for (const act of parsedActivities) {
-        if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
-          uniqueActs.push(act);
+        if (parsedActivities.length === 0) {
+          parsedActivities = [act1, act2, act3]
+            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+            .filter(Boolean);
         }
-      }
-      const activityStr = uniqueActs.join(', ');
-      const rawDay = getValue('dayOfWeek');
-      const dayOfWeekStr = normalizeDayOfWeek(rawDay);
-      return {
-        id: getValue('id'),
-        title: getValue('title'),
-        venue: venueVal,
-        organization: orgVal || venueVal,
-        location: locVal || venueVal,
-        area: getValue('area'),
-        activity: activityStr,
-        activities: uniqueActs,
-        activity1: uniqueActs[0] || '',
-        activity2: uniqueActs[1] || '',
-        activity3: uniqueActs[2] || '',
-        dayOfWeek: dayOfWeekStr,
-        startTime: getValue('startTime'),
-        endTime: getValue('endTime'),
-        frequency: getValue('frequency'),
-        price: getValue('price'),
-        preRegistration: getValue('preRegistration'),
-        map: getValue('map'),
-        social: getValue('social'),
-        website: getValue('website'),
-        contact: getValue('contact'),
-        about: getValue('about'),
-        notes: getValue('notes'),
-        database: getValue('database'),
-      };
-    }).filter((event): event is Event => event !== null);
+
+        const uniqueActs: string[] = [];
+        for (const act of parsedActivities) {
+          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+            uniqueActs.push(act);
+          }
+        }
+        const activityStr = uniqueActs.join(', ');
+        const rawDay = getValue('dayOfWeek');
+        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
+
+        return {
+          id: getValue('id'),
+          title: getValue('title'),
+          venue: venueVal,
+          organization: orgVal || venueVal,
+          location: locVal || venueVal,
+          area: getValue('area'),
+          activity: activityStr,
+          activities: uniqueActs,
+          activity1: uniqueActs[0] || '',
+          activity2: uniqueActs[1] || '',
+          activity3: uniqueActs[2] || '',
+          dayOfWeek: dayOfWeekStr,
+          startTime: getValue('startTime'),
+          endTime: getValue('endTime'),
+          frequency: getValue('frequency'),
+          frequencyNotes: getValue('frequencyNotes'),
+          price: getValue('price'),
+          preRegistration: getValue('preRegistration'),
+          map: getValue('map'),
+          social: getValue('social'),
+          website: getValue('website'),
+          contact: getValue('contact'),
+          about: getValue('about'),
+          notes: getValue('notes'),
+          database: getValue('database'),
+        };
+      })
+      .filter((event): event is Event => event !== null);
+
     return events.filter((event) => Boolean(event.title));
   } catch (error) {
     console.error('Error fetching events:', error);

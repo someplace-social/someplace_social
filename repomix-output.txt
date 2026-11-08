@@ -1502,6 +1502,170 @@ export default function Accordion({ title, children }: AccordionProps) {
 }
 
 ================
+File: app/medellin-v2/page.tsx
+================
+import { redirect } from 'next/navigation';
+export default function MedellinV2Page() {
+  redirect('/events/medellin-colombia');
+}
+
+================
+File: app/medellin/DayAccordion.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './DayAccordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+export default function DayAccordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <div
+        className={styles.header}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={styles.title}>{title}</span>
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
+}
+
+================
+File: app/medellin/Medellin.module.css
+================
+.title {
+  font-size: 2.5em;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.listing {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+.listingTitle {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.listingDetails {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.listingLinks {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.listingLinks a {
+  color: inherit;
+  text-decoration: underline;
+}
+.editLink {
+  color: #cc4532 !important;
+}
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from "next";
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/medellin-v2',
+        destination: '/events/medellin-colombia',
+        permanent: false,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/events/fort-collins-colorado',
+        permanent: false,
+      },
+    ];
+  },
+};
+export default nextConfig;
+
+================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
+  );
+}
+
+================
 File: app/events/components/EventCard.tsx
 ================
 'use client';
@@ -1531,7 +1695,11 @@ export default function EventCard({
 }: EventCardProps) {
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
-  const tagList = [event.activity1, event.activity2, event.activity3].filter(Boolean);
+  const tagList = event.activities && event.activities.length > 0
+    ? event.activities
+    : (event.activity
+        ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean));
   const displayVenue = event.venue || event.location;
   return (
     <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
@@ -1729,325 +1897,6 @@ export default function EventCard({
 }
 
 ================
-File: app/medellin-v2/page.tsx
-================
-import { redirect } from 'next/navigation';
-export default function MedellinV2Page() {
-  redirect('/events/medellin-colombia');
-}
-
-================
-File: app/medellin/DayAccordion.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './DayAccordion.module.css';
-type AccordionProps = {
-  title: string;
-  children: React.ReactNode;
-};
-export default function DayAccordion({ title, children }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div>
-      <div
-        className={styles.header}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={styles.title}>{title}</span>
-        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▼
-        </span>
-      </div>
-      {isOpen && <div className={styles.content}>{children}</div>}
-    </div>
-  );
-}
-
-================
-File: app/medellin/EventListing.tsx
-================
-import { Event } from '../lib/google-sheets';
-import styles from './Medellin.module.css';
-type EventListingProps = {
-  event: Event;
-  onEdit: (content: string) => void;
-};
-const createLink = (text: string, url: string) => {
-  if (!url || url.trim() === '') return null;
-  const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
-  return <a href={fullUrl} target="_blank" rel="noopener noreferrer">{text}</a>;
-};
-export default function EventListing({ event, onEdit }: EventListingProps) {
-  const activities = [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', ');
-  const organizationText = event.organization ? ` w/ ${event.organization}` : "";
-  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
-  return (
-    <div className={styles.listing}>
-      <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
-      <p><em>{activities}</em></p>
-      <p className={styles.listingDetails}>
-        <span>⏳ {event.startTime} - {event.endTime}</span>
-        <span>💰 {event.price || 'Free or Varies'}</span>
-        {event.preRegistration && <span>📋 {event.preRegistration}</span>}
-        <span>📍 {event.location}</span>
-        <span>🗺️  {event.area}</span>
-      </p>
-      <p className={styles.listingLinks}>
-        {createLink('Map', event.map)}
-        {createLink('Social', event.social)}
-        {createLink('Website', event.website)}
-        {createLink('Contact', event.contact)}
-        <a href="#" onClick={(e) => { e.preventDefault(); onEdit(visualText); }} className={styles.editLink}>✏️ EDIT</a>
-      </p>
-    </div>
-  );
-}
-
-================
-File: app/medellin/Medellin.module.css
-================
-.title {
-  font-size: 2.5em;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-.listing {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
-}
-.listingTitle {
-  font-weight: bold;
-  font-size: 1.1em;
-}
-.listingDetails {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-}
-.listingLinks {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-}
-.listingLinks a {
-  color: inherit;
-  text-decoration: underline;
-}
-.editLink {
-  color: #cc4532 !important;
-}
-
-================
-File: next.config.ts
-================
-import type { NextConfig } from "next";
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/medellin-v2',
-        destination: '/events/medellin-colombia',
-        permanent: false,
-      },
-      {
-        source: '/events/fortcollins-colorado',
-        destination: '/events/fort-collins-colorado',
-        permanent: false,
-      },
-    ];
-  },
-};
-export default nextConfig;
-
-================
-File: app/components/ContactForm.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './ContactForm.module.css';
-type ContactFormProps = {
-  formType: string;
-  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
-};
-export default function ContactForm({ formType, fields }: ContactFormProps) {
-  const [status, setStatus] = useState('');
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('Submitting...');
-    const formData = new FormData(event.currentTarget);
-    let message = '';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
-    });
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, message }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setStatus('Message sent successfully!');
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      setStatus('An error occurred. Please try again.');
-    }
-  };
-  return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      {fields.map(field => (
-        <div key={field.name} className={styles.field}>
-          <label htmlFor={field.name}>{field.label}</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.textarea}
-            />
-          ) : (
-            <input
-              type={field.type}
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.input}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit" className={styles.button}>Send Message</button>
-      {status && <p>{status}</p>}
-    </form>
-  );
-}
-
-================
-File: app/events/utils.ts
-================
-export function parseHour(timeStr: string): number {
-  if (!timeStr) return 18;
-  const cleaned = timeStr.trim().toLowerCase();
-  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
-  if (match) {
-    let hour = parseInt(match[1], 10);
-    const minute = match[2] ? parseInt(match[2], 10) : 0;
-    const meridian = match[3];
-    if (meridian) {
-      const isPm = meridian.startsWith('p');
-      const isAm = meridian.startsWith('a');
-      if (isPm && hour < 12) hour += 12;
-      if (isAm && hour === 12) hour = 0;
-    } else {
-      if (hour >= 1 && hour <= 6) {
-        hour += 12;
-      }
-    }
-    return hour + minute / 60;
-  }
-  const numMatch = cleaned.match(/\d+/);
-  return numMatch ? parseInt(numMatch[0], 10) : 18;
-}
-export function formatTimeLabel(timeStr: string): string {
-  if (!timeStr) return '';
-  const cleaned = timeStr.trim();
-  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
-  if (match) {
-    const hour = match[1];
-    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
-    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
-    return `${hour}${minute}${meridian}`;
-  }
-  return cleaned;
-}
-export function formatTimeRange(
-  startTime: string,
-  endTime: string
-): { start: string; end?: string } {
-  const start = formatTimeLabel(startTime);
-  const end = endTime ? formatTimeLabel(endTime) : undefined;
-  return { start, end };
-}
-export function isFreePrice(price: string): boolean {
-  if (!price) return true;
-  const p = price.trim().toLowerCase();
-  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
-}
-const DAY_ALIAS_MAP: Record<string, string[]> = {
-  sunday: ['sun', 'sunday'],
-  monday: ['mon', 'monday'],
-  tuesday: ['tue', 'tues', 'tuesday'],
-  wednesday: ['wed', 'wednesday'],
-  thursday: ['thu', 'thur', 'thurs', 'thursday'],
-  friday: ['fri', 'friday'],
-  saturday: ['sat', 'saturday'],
-};
-export function matchesDay(eventDays: string, targetDayName: string): boolean {
-  if (!eventDays || !targetDayName) return false;
-  const targetKey = targetDayName.trim().toLowerCase();
-  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
-  const rawLower = eventDays.toLowerCase();
-  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
-    return true;
-  }
-  if (rawLower.includes(targetKey)) {
-    return true;
-  }
-  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
-  return tokens.some((token) => aliases.includes(token));
-}
-export function ensureExternalUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
-}
-export function getTagStyle(tag: string): { color: string; background: string } {
-  const t = (tag || '').trim().toLowerCase();
-  if (t.includes('science')) {
-    return { color: '#0f5c5c', background: '#d3efec' };
-  }
-  if (t.includes('craft')) {
-    return { color: '#8a3d0c', background: '#fde4cf' };
-  }
-  if (t.includes('food') || t.includes('drink')) {
-    return { color: '#6b5200', background: '#f4eab8' };
-  }
-  if (t.includes('community') || t.includes('social')) {
-    return { color: '#3b4a54', background: '#e1e7ea' };
-  }
-  if (t.includes('music') || t.includes('bluegrass')) {
-    return { color: '#5b2a86', background: '#ecdcf7' };
-  }
-  if (t.includes('trivia')) {
-    return { color: '#2d3f7a', background: '#dde4f7' };
-  }
-  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
-    return { color: '#8a1f4f', background: '#fbdce9' };
-  }
-  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
-    return { color: '#852b2b', background: '#f9dede' };
-  }
-  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
-    return { color: '#1f6a42', background: '#d7f0df' };
-  }
-  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
-    return { color: '#2c4f7c', background: '#dbe5f7' };
-  }
-  return { color: '#4f483e', background: '#f3ead4' };
-}
-
-================
 File: app/globals.css
 ================
 :root {
@@ -2118,6 +1967,46 @@ File: app/medellin/DayAccordion.module.css
   .title, .icon {
     font-size: 2em;
   }
+}
+
+================
+File: app/medellin/EventListing.tsx
+================
+import { Event } from '../lib/google-sheets';
+import styles from './Medellin.module.css';
+type EventListingProps = {
+  event: Event;
+  onEdit: (content: string) => void;
+};
+const createLink = (text: string, url: string) => {
+  if (!url || url.trim() === '') return null;
+  const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
+  return <a href={fullUrl} target="_blank" rel="noopener noreferrer">{text}</a>;
+};
+export default function EventListing({ event, onEdit }: EventListingProps) {
+  const activities = event.activity || (event.activities && event.activities.length > 0 ? event.activities.join(', ') : [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', '));
+  const organizationText = event.organization ? ` w/ ${event.organization}` : "";
+  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
+  return (
+    <div className={styles.listing}>
+      <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
+      <p><em>{activities}</em></p>
+      <p className={styles.listingDetails}>
+        <span>⏳ {event.startTime} - {event.endTime}</span>
+        <span>💰 {event.price || 'Free or Varies'}</span>
+        {event.preRegistration && <span>📋 {event.preRegistration}</span>}
+        <span>📍 {event.location}</span>
+        <span>🗺️  {event.area}</span>
+      </p>
+      <p className={styles.listingLinks}>
+        {createLink('Map', event.map)}
+        {createLink('Social', event.social)}
+        {createLink('Website', event.website)}
+        {createLink('Contact', event.contact)}
+        <a href="#" onClick={(e) => { e.preventDefault(); onEdit(visualText); }} className={styles.editLink}>✏️ EDIT</a>
+      </p>
+    </div>
+  );
 }
 
 ================
@@ -3259,6 +3148,165 @@ File: app/events/EventsView.module.css
 }
 
 ================
+File: app/events/utils.ts
+================
+export function parseHour(timeStr: string): number {
+  if (!timeStr) return 18;
+  const cleaned = timeStr.trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
+  if (match) {
+    let hour = parseInt(match[1], 10);
+    const minute = match[2] ? parseInt(match[2], 10) : 0;
+    const meridian = match[3];
+    if (meridian) {
+      const isPm = meridian.startsWith('p');
+      const isAm = meridian.startsWith('a');
+      if (isPm && hour < 12) hour += 12;
+      if (isAm && hour === 12) hour = 0;
+    } else {
+      if (hour >= 1 && hour <= 6) {
+        hour += 12;
+      }
+    }
+    return hour + minute / 60;
+  }
+  const numMatch = cleaned.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0], 10) : 18;
+}
+export function formatTimeLabel(timeStr: string): string {
+  if (!timeStr) return '';
+  const cleaned = timeStr.trim();
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  if (match) {
+    const hour = match[1];
+    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
+    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
+    return `${hour}${minute}${meridian}`;
+  }
+  return cleaned;
+}
+export function formatTimeRange(
+  startTime: string,
+  endTime: string
+): { start: string; end?: string } {
+  const start = formatTimeLabel(startTime);
+  const end = endTime ? formatTimeLabel(endTime) : undefined;
+  return { start, end };
+}
+export function isFreePrice(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+const DAY_ALIAS_MAP: Record<string, string[]> = {
+  sun: ['sun', 'sunday'],
+  sunday: ['sun', 'sunday'],
+  mon: ['mon', 'monday'],
+  monday: ['mon', 'monday'],
+  tue: ['tue', 'tues', 'tuesday'],
+  tuesday: ['tue', 'tues', 'tuesday'],
+  wed: ['wed', 'weds', 'wednesday'],
+  wednesday: ['wed', 'weds', 'wednesday'],
+  thu: ['thu', 'thur', 'thurs', 'thursday'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday'],
+  fri: ['fri', 'friday'],
+  friday: ['fri', 'friday'],
+  sat: ['sat', 'saturday'],
+  saturday: ['sat', 'saturday'],
+};
+export function normalizeDayOfWeek(dayStr: string): string {
+  if (!dayStr) return '';
+  const trimmed = dayStr.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
+    return 'Daily';
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
+  const DAY_TO_SHORT: Record<string, string> = {
+    sun: 'Sun',
+    sunday: 'Sun',
+    mon: 'Mon',
+    monday: 'Mon',
+    tue: 'Tue',
+    tues: 'Tue',
+    tuesday: 'Tue',
+    wed: 'Wed',
+    weds: 'Wed',
+    wednesday: 'Wed',
+    thu: 'Thu',
+    thur: 'Thu',
+    thurs: 'Thu',
+    thursday: 'Thu',
+    fri: 'Fri',
+    friday: 'Fri',
+    sat: 'Sat',
+    saturday: 'Sat',
+  };
+  const normalized: string[] = [];
+  for (const token of tokens) {
+    const short = DAY_TO_SHORT[token.toLowerCase()];
+    if (short && !normalized.includes(short)) {
+      normalized.push(short);
+    }
+  }
+  return normalized.length > 0 ? normalized.join(', ') : trimmed;
+}
+export function matchesDay(eventDays: string, targetDayName: string): boolean {
+  if (!eventDays || !targetDayName) return false;
+  const targetKey = targetDayName.trim().toLowerCase();
+  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
+  const rawLower = eventDays.toLowerCase();
+  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
+    return true;
+  }
+  if (rawLower.includes(targetKey)) {
+    return true;
+  }
+  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
+  return tokens.some((token) => aliases.includes(token));
+}
+export function ensureExternalUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+export function getTagStyle(tag: string): { color: string; background: string } {
+  const t = (tag || '').trim().toLowerCase();
+  if (t.includes('science')) {
+    return { color: '#0f5c5c', background: '#d3efec' };
+  }
+  if (t.includes('craft')) {
+    return { color: '#8a3d0c', background: '#fde4cf' };
+  }
+  if (t.includes('food') || t.includes('drink')) {
+    return { color: '#6b5200', background: '#f4eab8' };
+  }
+  if (t.includes('community') || t.includes('social')) {
+    return { color: '#3b4a54', background: '#e1e7ea' };
+  }
+  if (t.includes('music') || t.includes('bluegrass')) {
+    return { color: '#5b2a86', background: '#ecdcf7' };
+  }
+  if (t.includes('trivia')) {
+    return { color: '#2d3f7a', background: '#dde4f7' };
+  }
+  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
+    return { color: '#8a1f4f', background: '#fbdce9' };
+  }
+  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
+    return { color: '#852b2b', background: '#f9dede' };
+  }
+  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
+    return { color: '#1f6a42', background: '#d7f0df' };
+  }
+  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
+    return { color: '#2c4f7c', background: '#dbe5f7' };
+  }
+  return { color: '#4f483e', background: '#f3ead4' };
+}
+
+================
 File: app/components/FilterBar.module.css
 ================
 .wrapper {
@@ -3317,6 +3365,121 @@ File: app/components/FilterBar.module.css
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
+}
+
+================
+File: app/lib/cities.ts
+================
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+};
+const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+  'fortcollins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+  },
+};
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return ['medellin-colombia', 'fort-collins-colorado'];
+}
+
+================
+File: app/Page.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 2.4em;
+  margin-bottom: 1rem;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+.heroText {
+  flex: 1;
+  max-width: 500px;
+}
+.illustrationContainer {
+  flex: 1;
+  max-width: 400px;
+}
+.contentBox {
+  background-color: #fdf8e1;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 2rem;
+}
+.button {
+  background-color: #272626;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 1rem;
+}
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .heroText {
+    text-align: left;
+    width: 100%;
+  }
 }
 
 ================
@@ -3404,9 +3567,15 @@ export default function CityEventsView({
   const activities = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      if (ev.activity1) set.add(ev.activity1.trim());
-      if (ev.activity2) set.add(ev.activity2.trim());
-      if (ev.activity3) set.add(ev.activity3.trim());
+      const list = ev.activities && ev.activities.length > 0
+        ? ev.activities
+        : ev.activity
+        ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
+        : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
+      list.forEach((act) => {
+        const trimmed = act.trim();
+        if (trimmed) set.add(trimmed);
+      });
     });
     return Array.from(set).filter(Boolean).sort();
   }, [allEvents]);
@@ -3451,7 +3620,12 @@ export default function CityEventsView({
           if (!matchesTime) return false;
         }
         if (selectedActivities.length > 0) {
-          const acts = [ev.activity1, ev.activity2, ev.activity3]
+          const acts = (ev.activities && ev.activities.length > 0
+            ? ev.activities
+            : ev.activity
+            ? ev.activity.split(',').map((a) => a.trim())
+            : [ev.activity1, ev.activity2, ev.activity3]
+          )
             .filter(Boolean)
             .map((a) => a.trim().toLowerCase());
           const hasActivityMatch = selectedActivities.some((sa) =>
@@ -3612,121 +3786,6 @@ export default function CityEventsView({
 }
 
 ================
-File: app/lib/cities.ts
-================
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-};
-const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
-  'fortcollins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
-};
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return ['medellin-colombia', 'fort-collins-colorado'];
-}
-
-================
-File: app/Page.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: left;
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.page h1 {
-  font-size: 2.4em;
-  margin-bottom: 1rem;
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  width: 100%;
-  margin-bottom: 4rem;
-}
-.heroText {
-  flex: 1;
-  max-width: 500px;
-}
-.illustrationContainer {
-  flex: 1;
-  max-width: 400px;
-}
-.contentBox {
-  background-color: #fdf8e1;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 2rem;
-}
-.button {
-  background-color: #272626;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 1rem;
-}
-@media (max-width: 768px) {
-  .page {
-    padding: 1rem;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .heroText {
-    text-align: left;
-    width: 100%;
-  }
-}
-
-================
 File: app/components/FilterBar.tsx
 ================
 "use client";
@@ -3844,93 +3903,6 @@ File: package.json
     "tsx": "^4.19.3",
     "typescript": "^5"
   }
-}
-
-================
-File: app/contact/page.tsx
-================
-import Image from 'next/image';
-import Accordion from '../components/Accordion';
-import ContactForm from '../components/ContactForm';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
-};
-const submitEventFields = [
-  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
-  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
-  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Monday', type: 'text', required: false },
-  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
-  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
-  { name: 'Activity Type', label: 'Type of Activity', placeholder: 'e.g. Language Exchange, Dance, Social...', type: 'text', required: false },
-  { name: 'Other Activities', label: '*If you chose "Other" under "Type of Activity", list the activities here', placeholder: '', type: 'text', required: false },
-  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
-  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
-  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
-  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
-  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
-  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
-  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
-  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
-  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
-  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
-] as const;
-const editEventFields = [
-  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
-  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
-] as const;
-const askQuestionFields = [
-  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
-  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
-  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
-] as const;
-export default function ContactPage() {
-  return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>Contact Us</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
-      </section>
-      <div style={{width: '100%', marginTop: '2rem'}}>
-        <Accordion title="Submit an Event">
-          <div>
-            <strong>A FEW NOTES</strong>
-            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
-            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
-            <br/>
-            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
-            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
-            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
-            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
-            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <hr style={{margin: '2rem 0'}} />
-            <ContactForm formType="Submit an Event" fields={submitEventFields} />
-          </div>
-        </Accordion>
-        <Accordion title="Edit Event Info">
-          <ContactForm formType="Edit Event Info" fields={editEventFields} />
-        </Accordion>
-        <Accordion title="Ask a Question">
-          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
-        </Accordion>
-      </div>
-    </main>
-  );
 }
 
 ================
@@ -4075,6 +4047,93 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import Image from 'next/image';
+import Accordion from '../components/Accordion';
+import ContactForm from '../components/ContactForm';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
+};
+const submitEventFields = [
+  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
+  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
+  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Tue, Thu', type: 'text', required: false },
+  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
+  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
+  { name: 'Activity Type', label: 'Activity', placeholder: 'e.g. Language Exchange, Dance, Social', type: 'text', required: false },
+  { name: 'Other Activities', label: '*If you chose "Other" under "Activity", list the activities here', placeholder: '', type: 'text', required: false },
+  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
+  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
+  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
+  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
+  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
+  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
+  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
+  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
+  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
+  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
+] as const;
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
+] as const;
+const askQuestionFields = [
+  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
+  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
+  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
+] as const;
+export default function ContactPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroText}>
+          <h1>Contact Us</h1>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
+          </p>
+        </div>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <section className={styles.contentBox}>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
+      </section>
+      <div style={{width: '100%', marginTop: '2rem'}}>
+        <Accordion title="Submit an Event">
+          <div>
+            <strong>A FEW NOTES</strong>
+            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
+            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
+            <br/>
+            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
+            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
+            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
+            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
+            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
+            <hr style={{margin: '2rem 0'}} />
+            <ContactForm formType="Submit an Event" fields={submitEventFields} />
+          </div>
+        </Accordion>
+        <Accordion title="Edit Event Info">
+          <ContactForm formType="Edit Event Info" fields={editEventFields} />
+        </Accordion>
+        <Accordion title="Ask a Question">
+          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
+        </Accordion>
+      </div>
+    </main>
   );
 }
 
@@ -4341,6 +4400,7 @@ File: app/components/Header.module.css
 File: app/lib/google-sheets.ts
 ================
 import { CityConfig, CITIES } from './cities';
+import { normalizeDayOfWeek } from '../events/utils';
 export type Event = {
   id: string;
   title: string;
@@ -4348,6 +4408,8 @@ export type Event = {
   organization: string;
   location: string;
   area: string;
+  activity: string;
+  activities: string[];
   activity1: string;
   activity2: string;
   activity3: string;
@@ -4475,10 +4537,11 @@ const HEADER_ALIASES: Record<string, string[]> = {
   organization: ['organization', 'organizer', 'host'],
   location: ['location', 'address'],
   area: ['area', 'neighborhood'],
+  activity: ['activity', 'activities'],
   activity1: ['activity1', 'activity'],
   activity2: ['activity2'],
   activity3: ['activity3'],
-  dayOfWeek: ['dayofweek', 'day', 'days'],
+  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
   startTime: ['starttime', 'start'],
   endTime: ['endtime', 'end'],
   frequency: ['frequency'],
@@ -4499,21 +4562,22 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   organization: 2,
   location: 3,
   area: 4,
+  activity: 5,
   activity1: 5,
   activity2: 6,
   activity3: 7,
-  dayOfWeek: 8,
-  startTime: 9,
-  endTime: 10,
-  frequency: 11,
-  price: 12,
-  preRegistration: 13,
-  map: 14,
-  social: 15,
-  website: 16,
-  contact: 17,
-  about: 18,
-  notes: 19,
+  dayOfWeek: 6,
+  startTime: 7,
+  endTime: 8,
+  frequency: 9,
+  price: 10,
+  preRegistration: 11,
+  map: 12,
+  social: 13,
+  website: 14,
+  contact: 15,
+  about: 16,
+  notes: 17,
 };
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
   try {
@@ -4595,6 +4659,28 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       const venueVal = getValue('venue');
       const orgVal = getValue('organization');
       const locVal = getValue('location');
+      const rawActivity = getValue('activity');
+      const act1 = getValue('activity1');
+      const act2 = getValue('activity2');
+      const act3 = getValue('activity3');
+      let parsedActivities: string[] = [];
+      if (rawActivity) {
+        parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+      if (parsedActivities.length === 0) {
+        parsedActivities = [act1, act2, act3]
+          .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+          .filter(Boolean);
+      }
+      const uniqueActs: string[] = [];
+      for (const act of parsedActivities) {
+        if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+          uniqueActs.push(act);
+        }
+      }
+      const activityStr = uniqueActs.join(', ');
+      const rawDay = getValue('dayOfWeek');
+      const dayOfWeekStr = normalizeDayOfWeek(rawDay);
       return {
         id: getValue('id'),
         title: getValue('title'),
@@ -4602,10 +4688,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         organization: orgVal || venueVal,
         location: locVal || venueVal,
         area: getValue('area'),
-        activity1: getValue('activity1'),
-        activity2: getValue('activity2'),
-        activity3: getValue('activity3'),
-        dayOfWeek: getValue('dayOfWeek'),
+        activity: activityStr,
+        activities: uniqueActs,
+        activity1: uniqueActs[0] || '',
+        activity2: uniqueActs[1] || '',
+        activity3: uniqueActs[2] || '',
+        dayOfWeek: dayOfWeekStr,
         startTime: getValue('startTime'),
         endTime: getValue('endTime'),
         frequency: getValue('frequency'),
@@ -4634,6 +4722,7 @@ File: app/medellin/page.tsx
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { getEvents, Event } from '../lib/google-sheets';
+import { matchesDay } from '../events/utils';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import ContactForm from '../components/ContactForm';
@@ -4670,9 +4759,12 @@ export default function MedellinPage() {
   const uniqueActivities = useMemo(() => {
     const activitySet = new Set<string>();
     allEvents.forEach(event => {
-      if (event.activity1) activitySet.add(event.activity1);
-      if (event.activity2) activitySet.add(event.activity2);
-      if (event.activity3) activitySet.add(event.activity3);
+      const list = event.activities && event.activities.length > 0
+        ? event.activities
+        : event.activity
+        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+      list.forEach(a => activitySet.add(a));
     });
     return Array.from(activitySet).sort();
   }, [allEvents]);
@@ -4685,7 +4777,14 @@ export default function MedellinPage() {
   }, [allEvents]);
   const filteredEvents = useMemo(() => {
     return allEvents.filter(event => {
+      const evActs = (event.activities && event.activities.length > 0
+        ? event.activities
+        : event.activity
+        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean)
+      ).map(a => a.toLowerCase());
       const activityMatch = filters.activity === 'all' ||
+        evActs.includes(filters.activity.toLowerCase()) ||
         event.activity1 === filters.activity ||
         event.activity2 === filters.activity ||
         event.activity3 === filters.activity;
@@ -4695,12 +4794,13 @@ export default function MedellinPage() {
       return activityMatch && areaMatch && priceMatch;
     });
   }, [allEvents, filters]);
-  const eventsByDay = filteredEvents.reduce((acc, event) => {
-    const day = event.dayOfWeek;
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(event);
-    return acc;
-  }, {} as Record<string, Event[]>);
+  const eventsByDay = useMemo(() => {
+    const map: Record<string, Event[]> = {};
+    daysOfWeek.forEach((day) => {
+      map[day] = filteredEvents.filter((event) => matchesDay(event.dayOfWeek, day));
+    });
+    return map;
+  }, [filteredEvents]);
   return (
     <main className={pageStyles.page}>
       <section className={pageStyles.heroSection}>

@@ -1,3 +1,5 @@
+import { Event } from '../lib/google-sheets';
+
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -118,6 +120,188 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   }
   const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
   return tokens.some((token) => aliases.includes(token));
+}
+
+const MONTH_NAME_TO_NUM: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+
+function parseMonthIndex(str: string): number | null {
+  const cleaned = str.trim().toLowerCase();
+  return MONTH_NAME_TO_NUM[cleaned] ?? null;
+}
+
+export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean {
+  if (!frequencyNotes) return true;
+  const cleaned = frequencyNotes.trim();
+  if (!cleaned) return true;
+
+  if (/^irregular/i.test(cleaned)) {
+    return false;
+  }
+
+  const targetMonth = targetDate.getMonth() + 1; // 1-12
+
+  if (/months?,\s*even/i.test(cleaned)) {
+    return targetMonth % 2 === 0;
+  }
+  if (/months?,\s*odd/i.test(cleaned)) {
+    return targetMonth % 2 !== 0;
+  }
+
+  const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
+  if (rangeMatch) {
+    const startMonth = parseMonthIndex(rangeMatch[1]);
+    const endMonth = parseMonthIndex(rangeMatch[2]);
+    if (startMonth && endMonth) {
+      if (startMonth <= endMonth) {
+        return targetMonth >= startMonth && targetMonth <= endMonth;
+      }
+      return targetMonth >= startMonth || targetMonth <= endMonth;
+    }
+  }
+
+  return true;
+}
+
+export function getWeekdayOccurrence(targetDate: Date): {
+  occurrence: number;
+  isLast: boolean;
+} {
+  const dayOfMonth = targetDate.getDate();
+  const occurrence = Math.ceil(dayOfMonth / 7);
+  const daysInMonth = new Date(
+    targetDate.getFullYear(),
+    targetDate.getMonth() + 1,
+    0
+  ).getDate();
+  const isLast = dayOfMonth + 7 > daysInMonth;
+  return { occurrence, isLast };
+}
+
+function getWeekNumber(d: Date): number {
+  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = target.getUTCDay() || 7;
+  target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
+  const notes = (event.frequencyNotes || '').trim();
+  if (/^irregular/i.test(notes)) {
+    return false;
+  }
+
+  if (!isMonthActive(notes, targetDate)) {
+    return false;
+  }
+
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const targetDayName = DAY_NAMES[targetDate.getDay()];
+
+  const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
+  if (!matchesDay(daySpec, targetDayName)) {
+    return false;
+  }
+
+  const rawFreq = (event.frequency || '').trim();
+  if (!rawFreq) {
+    return true;
+  }
+
+  const parts = rawFreq.split(',').map((p) => p.trim());
+  const cadence = parts[0]?.toLowerCase() || 'weekly';
+  const pattern = (parts.slice(1).join(',') || '').toLowerCase();
+
+  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
+
+  const ordinalMatches: boolean[] = [];
+  if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
+  if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
+  if (/\b3rd\b/.test(pattern)) ordinalMatches.push(occurrence === 3);
+  if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
+  if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
+  if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
+
+  if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    return true;
+  }
+
+  if (cadence.includes('bi-weekly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    const weekNum = getWeekNumber(targetDate);
+    return weekNum % 2 === 0;
+  }
+
+  return true;
+}
+
+export function formatFrequencyBadge(frequency: string, frequencyNotes?: string): string {
+  const freq = (frequency || '').trim();
+  const notes = (frequencyNotes || '').trim();
+
+  if (!freq && !notes) return '';
+  if (/^irregular/i.test(notes)) {
+    return 'Irregular';
+  }
+
+  const notesParts: string[] = [];
+  if (notes) {
+    const rangeMatch = notes.match(/months?,\s*([a-zA-Z]+[\u2013\u2014\-][a-zA-Z]+)/i);
+    if (rangeMatch) {
+      notesParts.push(rangeMatch[1]);
+    } else if (/months?,\s*even/i.test(notes)) {
+      notesParts.push('Even months');
+    } else if (/months?,\s*odd/i.test(notes)) {
+      notesParts.push('Odd months');
+    }
+  }
+
+  let cadenceBadge = '';
+  if (freq) {
+    const parts = freq.split(',').map((p) => p.trim());
+    const cadence = parts[0];
+    const pattern = parts.slice(1).join(', ');
+    if (cadence.toLowerCase() !== 'weekly') {
+      cadenceBadge = pattern ? `${cadence} (${pattern})` : cadence;
+    } else if (pattern) {
+      cadenceBadge = pattern;
+    }
+  }
+
+  if (cadenceBadge && notesParts.length > 0) {
+    return `${cadenceBadge} · ${notesParts.join(', ')}`;
+  }
+  return cadenceBadge || (notesParts.length > 0 ? notesParts.join(', ') : '');
 }
 
 export function ensureExternalUrl(url: string): string {

@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { CityConfig, CITIES } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, isFreePrice, matchesDay } from './utils';
+import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
 import EventHeader from './components/EventHeader';
 import DayPicker from './components/DayPicker';
 import FilterControls from './components/FilterControls';
@@ -88,11 +88,12 @@ export default function CityEventsView({
   const activities = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      const list = ev.activities && ev.activities.length > 0
-        ? ev.activities
-        : ev.activity
-        ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
-        : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
+      const list =
+        ev.activities && ev.activities.length > 0
+          ? ev.activities
+          : ev.activity
+          ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
       list.forEach((act) => {
         const trimmed = act.trim();
         if (trimmed) set.add(trimmed);
@@ -132,11 +133,12 @@ export default function CityEventsView({
   const getFilteredEventsForDay = (dayIndex: number) => {
     const day = rollingWeek[dayIndex];
     if (!day) return [];
-    const dayName = DAY_NAMES_LONG[day.getDay()];
+
     return allEvents
       .filter((ev) => {
-        if (!matchesDay(ev.dayOfWeek, dayName)) return false;
+        if (!isEventActiveOnDate(ev, day)) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
+
         const evHour = parseHour(ev.startTime);
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
@@ -145,12 +147,14 @@ export default function CityEventsView({
           });
           if (!matchesTime) return false;
         }
+
         if (selectedActivities.length > 0) {
-          const acts = (ev.activities && ev.activities.length > 0
-            ? ev.activities
-            : ev.activity
-            ? ev.activity.split(',').map((a) => a.trim())
-            : [ev.activity1, ev.activity2, ev.activity3]
+          const acts = (
+            ev.activities && ev.activities.length > 0
+              ? ev.activities
+              : ev.activity
+              ? ev.activity.split(',').map((a) => a.trim())
+              : [ev.activity1, ev.activity2, ev.activity3]
           )
             .filter(Boolean)
             .map((a) => a.trim().toLowerCase());
@@ -159,6 +163,7 @@ export default function CityEventsView({
           );
           if (!hasActivityMatch) return false;
         }
+
         if (selectedAreas.length > 0) {
           const areaLower = (ev.area || '').trim().toLowerCase();
           const hasAreaMatch = selectedAreas.some(
@@ -166,6 +171,7 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
+
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -214,6 +220,7 @@ export default function CityEventsView({
             {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
             {currentList.length === 1 ? 'thing' : 'things'} on
           </p>
+
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -223,6 +230,7 @@ export default function CityEventsView({
             }}
             getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
+
           <FilterControls
             freeOnly={freeOnly}
             onToggleFree={() => setFreeOnly(!freeOnly)}
@@ -242,6 +250,7 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
+
         <section className={styles.contentCol}>
           <div className={styles.mobileSectionHeader}>
             <h1 className={styles.mobileHeadingTitle}>
@@ -257,6 +266,7 @@ export default function CityEventsView({
               {currentList.length === 1 ? 'thing' : 'things'} on
             </p>
           </div>
+
           {loading ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
@@ -277,6 +287,7 @@ export default function CityEventsView({
                 group.predicate(parseHour(ev.startTime))
               );
               if (groupEvents.length === 0) return null;
+
               return (
                 <div key={group.name}>
                   <div className={styles.timeGroupHeader}>
