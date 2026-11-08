@@ -31,7 +31,7 @@
   min-width: 0;
   position: sticky;
   top: 24px;
-  background-color: var(--sidebar-bg, #ebdcb9);
+  background-color: var(--topbar-bg);
   border: 1px solid var(--line);
   border-radius: 22px;
   padding: 24px 20px;

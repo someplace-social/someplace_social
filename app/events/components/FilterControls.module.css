@@ -1,7 +1,7 @@
 .filterBlockDesktop {
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid rgba(234, 223, 200, 0.9);
+  border-top: 1px solid var(--line);
 }
 .filterHeaderRow {
   display: flex;
