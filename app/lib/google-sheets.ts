@@ -25,21 +25,32 @@ export type Event = {
   database: string;
 };
 
-const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
-const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+const FALLBACK_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
 
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
-  const gid = city.sheetGid || '0';
-  const spreadsheetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
-  const tabName = encodeURIComponent(city.sheetTab);
 
-  return [
-    `${BASE_PUB_URL}?gid=${gid}&single=true&output=csv`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${tabName}`,
-  ];
+  const targetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
+  const ids = Array.from(new Set([targetId, DEFAULT_SPREADSHEET_ID, FALLBACK_SPREADSHEET_ID]));
+
+  const tabs = [city.sheetTab];
+  if (city.sheetTab.toLowerCase() === 'medellin') {
+    tabs.push('Medellín');
+  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
+    tabs.push('FortCollins');
+  }
+
+  const urls: string[] = [];
+  for (const id of ids) {
+    for (const tab of tabs) {
+      const encodedTab = encodeURIComponent(tab);
+      urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodedTab}`);
+      urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?sheet=${encodedTab}`);
+    }
+  }
+
+  return urls;
 }
 
 function parseCsv(csvText: string): string[][] {
@@ -86,6 +97,9 @@ function parseSheetData(rawText: string): string[][] {
       if (startIdx !== -1 && endIdx !== -1) {
         const jsonStr = trimmed.substring(startIdx, endIdx + 1);
         const data = JSON.parse(jsonStr);
+        if (data.status === 'error') {
+          return [];
+        }
         if (data.table) {
           const cols: { label?: string; id?: string }[] = data.table.cols || [];
           const headerRow: string[] = cols.map((col) => col.label || col.id || '');
@@ -179,7 +193,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
-    let rawText = '';
+    let rows: string[][] = [];
 
     for (const url of candidateUrls) {
       try {
@@ -191,6 +205,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
           cache: isDev ? 'no-store' : 'default',
           next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
         });
+
         if (response.ok) {
           const text = await response.text();
           const trimmed = text.trim();
@@ -198,10 +213,15 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
             trimmed &&
             !trimmed.startsWith('<!DOCTYPE html') &&
             !trimmed.startsWith('<html') &&
-            !trimmed.includes('accounts.google.com')
+            !trimmed.includes('accounts.google.com') &&
+            !trimmed.includes('"status":"error"') &&
+            !trimmed.includes('INVALID_QUERY')
           ) {
-            rawText = text;
-            break;
+            const parsed = parseSheetData(trimmed);
+            if (parsed.length >= 2) {
+              rows = parsed;
+              break;
+            }
           }
         }
       } catch (fetchErr) {
@@ -209,13 +229,10 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       }
     }
 
-    if (!rawText) {
-      console.warn(`[Someplace Social] No CSV data available for ${cityConfig.name}`);
+    if (rows.length < 2) {
+      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
       return [];
     }
-
-    const rows = parseSheetData(rawText);
-    if (rows.length < 2) return [];
 
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
@@ -275,24 +292,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       };
     }).filter((event): event is Event => event !== null);
 
-    return events.filter((event) => {
-      const db = (event.database || '').toLowerCase().trim();
-      const targetName = cityConfig.name.toLowerCase();
-      const targetTab = cityConfig.sheetTab.toLowerCase();
-      const targetSlug = cityConfig.slug.toLowerCase();
-
-      if (db) {
-        const matchesCity =
-          db === targetName ||
-          db === targetTab ||
-          db === targetSlug ||
-          targetSlug.includes(db) ||
-          db.includes(targetName);
-        if (!matchesCity) return false;
-      }
-
-      return Boolean(event.title);
-    });
+    return events.filter((event) => Boolean(event.title));
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
