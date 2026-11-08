@@ -1,8 +1,8 @@
 'use client';
-
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
+  formatRecurrenceText,
   isFreePrice,
   ensureExternalUrl,
   getTagStyle,
@@ -63,9 +63,7 @@ export default function EventCard({
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
   const displayVenue = event.venue || event.location;
-  const recurrenceText = event.frequency
-    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
-    : event.frequencyNotes || '';
+  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
 
   return (
     <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
@@ -149,7 +147,6 @@ export default function EventCard({
           </svg>
         </span>
       </button>
-
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (

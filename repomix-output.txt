@@ -374,24 +374,6 @@ export default function GoogleAnalytics({ gaId }: { gaId: string }) {
 }
 
 ================
-File: app/events/[city]/layout.tsx
-================
-import { Bricolage_Grotesque } from 'next/font/google';
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
-export default function CityLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className={bricolage.variable}>{children}</div>;
-}
-
-================
 File: app/events/components/DayPicker.tsx
 ================
 'use client';
@@ -952,6 +934,74 @@ export default function Accordion({ title, children }: AccordionProps) {
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}
     </div>
+  );
+}
+
+================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
   );
 }
 
@@ -1981,6 +2031,17 @@ export default function ContactView() {
 }
 
 ================
+File: app/events/[city]/layout.tsx
+================
+export default function CityLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}
+
+================
 File: app/events/components/FilterControls.module.css
 ================
 .filterBlockDesktop {
@@ -2780,42 +2841,6 @@ File: app/events/components/SuggestEditModal.module.css
 }
 
 ================
-File: app/globals.css
-================
-:root {
-  --bg: #fff9ec;
-  --card: #ffffff;
-  --ink: #1f1b16;
-  --muted: #6f675c;
-  --line: #eadfc8;
-  --accent: #d2432f;
-  --topbar-bg: #f3ead4;
-  --free: #1f7a4d;
-  --free-bg: #e4f4ea;
-  --price-donation: #7a4a00;
-  --chip: #f3ead4;
-}
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-a {
-  color: var(--ink);
-  text-decoration: none;
-}
-a:hover {
-  color: var(--accent);
-}
-
-================
 File: app/support/page.tsx
 ================
 import Image from 'next/image';
@@ -3115,74 +3140,6 @@ File: app/components/Accordion.module.css
 }
 
 ================
-File: app/components/ContactForm.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './ContactForm.module.css';
-type ContactFormProps = {
-  formType: string;
-  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
-};
-export default function ContactForm({ formType, fields }: ContactFormProps) {
-  const [status, setStatus] = useState('');
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('Submitting...');
-    const formData = new FormData(event.currentTarget);
-    let message = '';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
-    });
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, message }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setStatus('Message sent successfully!');
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      setStatus('An error occurred. Please try again.');
-    }
-  };
-  return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      {fields.map(field => (
-        <div key={field.name} className={styles.field}>
-          <label htmlFor={field.name}>{field.label}</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.textarea}
-            />
-          ) : (
-            <input
-              type={field.type}
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.input}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit" className={styles.button}>Send Message</button>
-      {status && <p>{status}</p>}
-    </form>
-  );
-}
-
-================
 File: app/events/[city]/page.tsx
 ================
 import { notFound } from 'next/navigation';
@@ -3436,6 +3393,44 @@ export default function CityHeroCard({
       </div>
     </section>
   );
+}
+
+================
+File: app/globals.css
+================
+:root {
+  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --topbar-bg: #f3ead4;
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent);
 }
 
 ================
@@ -4964,22 +4959,9 @@ export function getTagStyle(tag: string): { color: string; background: string } 
 File: app/layout.tsx
 ================
 import type { Metadata } from 'next';
-import { Karla, Bricolage_Grotesque } from 'next/font/google';
 import './globals.css';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import { Analytics } from '@vercel/analytics/react';
-const karla = Karla({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-karla',
-  display: 'swap',
-});
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
   title: {
@@ -4999,13 +4981,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${karla.variable} ${bricolage.variable}`}>
-      <body className={karla.className}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;700;800&family=Karla:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
         {children}
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
         <Analytics />
       </body>
     </html>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+export default function ContactPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
+      <Footer />
+    </div>
   );
 }
 
@@ -5232,30 +5250,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-================
-File: app/contact/page.tsx
-================
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ContactView from './ContactView';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
-};
-export default function ContactPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <Suspense fallback={null}>
-        <ContactView />
-      </Suspense>
-      <Footer />
-    </div>
   );
 }
 
