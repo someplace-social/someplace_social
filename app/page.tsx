@@ -1,3 +1,13 @@
+import { redirect } from 'next/navigation';
+
+export default function Home() {
+  redirect('/events/medellin-colombia');
+}
+
+/* ==========================================================================
+   Legacy Home Page Code (Preserved)
+   ==========================================================================
+
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from './components/Header';
@@ -16,7 +26,7 @@ const structuredData = {
   ]
 };
 
-export default function Home() {
+function LegacyHome() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <script
@@ -53,3 +63,4 @@ export default function Home() {
     </div>
   );
 }
+========================================================================== */
