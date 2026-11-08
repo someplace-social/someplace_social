@@ -10,6 +10,7 @@ import DayPicker from './components/DayPicker';
 import FilterControls from './components/FilterControls';
 import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
+import CityHeroCard from './components/CityHeroCard';
 import styles from './EventsView.module.css';
 
 const DAY_NAMES_LONG = [
@@ -94,16 +95,26 @@ export default function CityEventsView({
   const now = new Date();
   const nowHour = now.getHours() + now.getMinutes() / 60;
 
-  const activities = useMemo(() => {
-    const set = new Set<string>();
+  const activityFrequencies = useMemo(() => {
+    const counts = new Map<string, number>();
     allEvents.forEach((ev) => {
       ev.activities.forEach((act) => {
         const trimmed = act.trim();
-        if (trimmed) set.add(trimmed);
+        if (trimmed) {
+          counts.set(trimmed, (counts.get(trimmed) || 0) + 1);
+        }
       });
     });
-    return Array.from(set).sort();
+    return counts;
   }, [allEvents]);
+
+  const activities = useMemo(() => {
+    return Array.from(activityFrequencies.keys()).sort((a, b) => {
+      const countDiff = (activityFrequencies.get(b) || 0) - (activityFrequencies.get(a) || 0);
+      if (countDiff !== 0) return countDiff;
+      return a.localeCompare(b);
+    });
+  }, [activityFrequencies]);
 
   const areas = useMemo(() => {
     const set = new Set<string>();
@@ -127,6 +138,14 @@ export default function CityEventsView({
     );
   };
 
+  const handleSelectChip = (act: string) => {
+    if (selectedActivities.includes(act)) {
+      setSelectedActivities((prev) => prev.filter((a) => a !== act));
+    } else {
+      setSelectedActivities([act]);
+    }
+  };
+
   const toggleArea = (ar: string) => {
     setSelectedAreas((prev) =>
       prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
@@ -136,11 +155,14 @@ export default function CityEventsView({
   const getFilteredEventsForDay = (dayIndex: number) => {
     const day = rollingWeek[dayIndex];
     if (!day) return [];
+
     return allEvents
       .filter((ev) => {
         if (!isEventActiveOnDate(ev, day)) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
+
         const evHour = parseHour(ev.startTime);
+
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
             const group = TIME_GROUPS.find((g) => g.name === tgName);
@@ -148,6 +170,7 @@ export default function CityEventsView({
           });
           if (!matchesTime) return false;
         }
+
         if (selectedActivities.length > 0) {
           const acts = ev.activities.map((a) => a.trim().toLowerCase());
           const hasActivityMatch = selectedActivities.some((sa) =>
@@ -155,6 +178,7 @@ export default function CityEventsView({
           );
           if (!hasActivityMatch) return false;
         }
+
         if (selectedAreas.length > 0) {
           const areaLower = (ev.area || '').trim().toLowerCase();
           const hasAreaMatch = selectedAreas.some(
@@ -162,6 +186,7 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
+
         if (searchQuery.trim()) {
           const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
           const searchableText = [
@@ -178,9 +203,11 @@ export default function CityEventsView({
             .filter(Boolean)
             .join(' ')
             .toLowerCase();
+
           const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
           if (!matchesSearch) return false;
         }
+
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -231,10 +258,22 @@ export default function CityEventsView({
         allCityOptions={allCityOptions}
         cityCounts={cityCounts}
       />
+      <div className={styles.heroWrapper}>
+        <CityHeroCard
+          cityName={city.name}
+          introTitle={city.introTitle}
+          introDescription={city.introDescription}
+          activities={activities}
+          selectedActivities={selectedActivities}
+          onSelectChip={handleSelectChip}
+          onClearActivities={() => setSelectedActivities([])}
+        />
+      </div>
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
-          <h1 className={styles.asideTitle}>{dayHeading}</h1>
+          <h2 className={styles.asideTitle}>{dayHeading}</h2>
           <p className={styles.asideSubtitle}>{daySubheading}</p>
+
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -244,6 +283,7 @@ export default function CityEventsView({
             }}
             getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
+
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -265,11 +305,13 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
+
         <section className={styles.contentCol}>
           <div className={styles.mobileSectionHeader}>
-            <h1 className={styles.mobileHeadingTitle}>{dayHeading}</h1>
+            <h2 className={styles.mobileHeadingTitle}>{dayHeading}</h2>
             <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
           </div>
+
           {loading ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
@@ -290,6 +332,7 @@ export default function CityEventsView({
                 group.predicate(parseHour(ev.startTime))
               );
               if (groupEvents.length === 0) return null;
+
               return (
                 <div key={group.name}>
                   <div className={styles.timeGroupHeader}>
@@ -319,6 +362,7 @@ export default function CityEventsView({
         </section>
       </main>
       <Footer />
+
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

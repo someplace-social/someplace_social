@@ -7,6 +7,8 @@ export type CityConfig = {
   sheetGid?: string;
   spreadsheetId?: string;
   csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
 };
 
 export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
@@ -20,6 +22,9 @@ export const CITIES: Record<string, CityConfig> = {
     sheetTab: 'Medellin',
     sheetGid: '0',
     spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
   },
   'fort-collins-colorado': {
     slug: 'fort-collins-colorado',
@@ -29,6 +34,9 @@ export const CITIES: Record<string, CityConfig> = {
     sheetTab: 'Fort Collins',
     sheetGid: '466758538',
     spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
   },
 };
 

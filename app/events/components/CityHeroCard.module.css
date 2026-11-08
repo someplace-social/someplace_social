@@ -1,0 +1,108 @@
+.heroCard {
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 14px 40px;
+  align-items: start;
+}
+
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 6px;
+}
+
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+}
+
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #4a463b;
+}
+
+.chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  min-height: 36px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.chipActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+
+.chipActive:hover {
+  background-color: var(--ink);
+  color: #ffffff;
+}
+
+@media (max-width: 899px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px 18px;
+    border-radius: 14px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .lead {
+    font-size: 14.5px;
+  }
+
+  .chips {
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .chip {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-height: 34px;
+  }
+}
