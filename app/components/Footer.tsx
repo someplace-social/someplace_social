@@ -14,7 +14,7 @@ export default function Footer() {
             </blockquote>
             <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
             <div className={styles.footerCopyright}>
-              © 2026 Someplace Social. All rights reserved.
+              © 2026 Someplace Social.
             </div>
           </div>
           <div className={styles.footerRightSection}>
