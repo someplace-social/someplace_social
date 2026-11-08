@@ -9,6 +9,27 @@ export type IndexedEvent = Event & {
   activeDays: boolean[];
 };
 
+export type ContactInfo =
+  | {
+      type: 'email';
+      email: string;
+      mailtoUrl: string;
+      gmailUrl: string;
+    }
+  | {
+      type: 'phone';
+      displayPhone: string;
+      telUrl: string;
+      rawPhone: string;
+    }
+  | {
+      type: 'url';
+      url: string;
+    }
+  | {
+      type: 'none';
+    };
+
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -415,8 +436,98 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
+}
+
+export function formatPhoneNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  return phone;
+}
+
+export function parseContactInfo(rawContact?: string): ContactInfo {
+  if (!rawContact) return { type: 'none' };
+  const trimmed = rawContact.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'x') {
+    return { type: 'none' };
+  }
+
+  if (/^mailto:/i.test(trimmed)) {
+    const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
+    if (email) {
+      return {
+        type: 'email',
+        email,
+        mailtoUrl: `mailto:${email}`,
+        gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`,
+      };
+    }
+  }
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return {
+      type: 'email',
+      email: trimmed,
+      mailtoUrl: `mailto:${trimmed}`,
+      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(trimmed)}`,
+    };
+  }
+
+  if (/^tel:/i.test(trimmed)) {
+    const rawNumber = trimmed.replace(/^tel:/i, '').trim();
+    const displayPhone = formatPhoneNumber(rawNumber);
+    const cleanDigits = rawNumber.replace(/[^\d+]/g, '');
+    const telDigits = cleanDigits.startsWith('+')
+      ? cleanDigits
+      : cleanDigits.length === 10
+      ? `+1${cleanDigits}`
+      : cleanDigits;
+    return {
+      type: 'phone',
+      displayPhone,
+      telUrl: `tel:${telDigits}`,
+      rawPhone: rawNumber,
+    };
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return {
+      type: 'url',
+      url: trimmed,
+    };
+  }
+
+  const digitCount = (trimmed.match(/\d/g) || []).length;
+  if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
+    const displayPhone = formatPhoneNumber(trimmed);
+    const cleanDigits = trimmed.replace(/[^\d+]/g, '');
+    const telDigits = cleanDigits.startsWith('+')
+      ? cleanDigits
+      : cleanDigits.length === 10
+      ? `+1${cleanDigits}`
+      : cleanDigits;
+    return {
+      type: 'phone',
+      displayPhone,
+      telUrl: `tel:${telDigits}`,
+      rawPhone: trimmed,
+    };
+  }
+
+  if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
+    return {
+      type: 'url',
+      url: ensureExternalUrl(trimmed),
+    };
+  }
+
+  return { type: 'none' };
 }
 
 export function getTagStyle(tag: string): { color: string; background: string } {
@@ -502,26 +613,20 @@ export function filterAndCountEvents(
 ): { currentList: IndexedEvent[]; dayCounts: number[] } {
   const dayCounts = [0, 0, 0, 0, 0, 0, 0];
   const currentList: IndexedEvent[] = [];
-
   const queryTerms = searchQuery.trim()
     ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
     : null;
-
   const selectedActivitiesLower =
     selectedActivities.length > 0
       ? selectedActivities.map((a) => a.toLowerCase())
       : null;
-
   const selectedAreasLower =
     selectedAreas.length > 0
       ? selectedAreas.map((a) => a.toLowerCase())
       : null;
-
   const isPriceFiltered = maxPrice < priceConfig.maxPrice;
-
   for (let i = 0; i < indexedEvents.length; i++) {
     const ev = indexedEvents[i];
-
     if (isPriceFiltered) {
       if (maxPrice === 0) {
         if (!ev.isFreeOrDonationPrice) continue;
@@ -529,7 +634,6 @@ export function filterAndCountEvents(
         if (ev.parsedPrice === null || ev.parsedPrice > maxPrice) continue;
       }
     }
-
     if (selectedTimes.length > 0) {
       const matchesTime = selectedTimes.some((tgName) => {
         const group = timeGroups.find((g) => g.name === tgName);
@@ -537,38 +641,31 @@ export function filterAndCountEvents(
       });
       if (!matchesTime) continue;
     }
-
     if (selectedActivitiesLower) {
       const hasActivityMatch = ev.activities.some((act) =>
         selectedActivitiesLower.includes(act.trim().toLowerCase())
       );
       if (!hasActivityMatch) continue;
     }
-
     if (selectedAreasLower) {
       const evAreaLower = (ev.area || '').trim().toLowerCase();
       if (!selectedAreasLower.includes(evAreaLower)) continue;
     }
-
     if (queryTerms) {
       const matchesSearch = queryTerms.every((term) =>
         ev.searchCorpus.includes(term)
       );
       if (!matchesSearch) continue;
     }
-
     for (let d = 0; d < 7; d++) {
       if (ev.activeDays[d]) {
         dayCounts[d]++;
       }
     }
-
     if (ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
-
   currentList.sort((a, b) => a.parsedHour - b.parsedHour);
-
   return { currentList, dayCounts };
 }

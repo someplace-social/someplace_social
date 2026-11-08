@@ -177,28 +177,6 @@ Files
 ================================================================
 
 ================
-File: eslint.config.mjs
-================
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
-]);
-
-export default eslintConfig;
-
-================
 File: app/api/send-form/route.ts
 ================
 import { NextResponse } from 'next/server';
@@ -262,6 +240,161 @@ File: app/components/ContactForm.module.css
   cursor: pointer;
   font-size: 1rem;
   align-self: flex-start;
+}
+
+================
+File: eslint.config.mjs
+================
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+
+================
+File: README.md
+================
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started TEST
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+================
+File: app/components/Accordion.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './Accordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+export default function Accordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        {title}
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
+}
+
+================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
+  );
 }
 
 ================
@@ -374,160 +507,9 @@ export default function GoogleAnalytics({ gaId }: { gaId: string }) {
 }
 
 ================
-File: app/events/components/FilterDropdown.tsx
-================
-'use client';
-import styles from './FilterControls.module.css';
-interface FilterDropdownProps {
-  label: string;
-  title: string;
-  options: string[];
-  selected: string[];
-  isOpen: boolean;
-  onToggleOpen: () => void;
-  onToggleOption: (option: string) => void;
-  onClear: () => void;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
-  flexStyle?: boolean;
-}
-export default function FilterDropdown({
-  label,
-  title,
-  options,
-  selected,
-  isOpen,
-  onToggleOpen,
-  onToggleOption,
-  onClear,
-  containerRef,
-  flexStyle = false,
-}: FilterDropdownProps) {
-  return (
-    <div
-      className={styles.multiSelectWrapper}
-      ref={containerRef}
-      style={flexStyle ? { flex: 1 } : undefined}
-    >
-      <button
-        type="button"
-        className={`${styles.multiSelectTrigger} ${
-          selected.length > 0 ? styles.multiSelectTriggerActive : ''
-        }`}
-        aria-expanded={isOpen}
-        onClick={onToggleOpen}
-      >
-        <span>{label}</span>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className={styles.multiSelectMenu}>
-          <div className={styles.multiSelectMenuHeader}>
-            <span>{title}</span>
-            {selected.length > 0 && (
-              <button
-                type="button"
-                className={styles.multiSelectClearLink}
-                onClick={onClear}
-              >
-                Clear
-              </button>
-            )}
-          </div>
-          {options.map((opt) => {
-            const isChecked = selected.includes(opt);
-            return (
-              <label key={opt} className={styles.multiSelectOption}>
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() => onToggleOption(opt)}
-                  className={styles.hiddenCheckbox}
-                />
-                <span
-                  className={`${styles.customCheckbox} ${
-                    isChecked ? styles.customCheckboxChecked : ''
-                  }`}
-                >
-                  {isChecked && (
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </span>
-                <span>{opt}</span>
-              </label>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-================
 File: app/globals.d.ts
 ================
 declare module '*.css';
-
-================
-File: README.md
-================
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started TEST
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ================
 File: tsconfig.json
@@ -569,96 +551,37 @@ File: tsconfig.json
 }
 
 ================
-File: app/components/Accordion.tsx
+File: app/components/Accordion.module.css
 ================
-"use client";
-import { useState } from 'react';
-import styles from './Accordion.module.css';
-type AccordionProps = {
-  title: string;
-  children: React.ReactNode;
-};
-export default function Accordion({ title, children }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div>
-      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
-        {title}
-        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▼
-        </span>
-      </div>
-      {isOpen && <div className={styles.content}>{children}</div>}
-    </div>
-  );
+.header {
+  background-color: transparent;
+  padding: 20px 10px;
+  cursor: pointer;
+  font-size: 3em;
+  position: relative;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-================
-File: app/components/ContactForm.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './ContactForm.module.css';
-type ContactFormProps = {
-  formType: string;
-  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
-};
-export default function ContactForm({ formType, fields }: ContactFormProps) {
-  const [status, setStatus] = useState('');
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('Submitting...');
-    const formData = new FormData(event.currentTarget);
-    let message = '';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
-    });
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, message }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setStatus('Message sent successfully!');
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      setStatus('An error occurred. Please try again.');
-    }
-  };
-  return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      {fields.map(field => (
-        <div key={field.name} className={styles.field}>
-          <label htmlFor={field.name}>{field.label}</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.textarea}
-            />
-          ) : (
-            <input
-              type={field.type}
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.input}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit" className={styles.button}>Send Message</button>
-      {status && <p>{status}</p>}
-    </form>
-  );
+.icon {
+  transition: transform 0.3s;
+  font-size: 1em;
+}
+.iconOpen {
+  transform: rotate(-180deg);
+}
+.content {
+  padding: 10px;
+  background-color: #fffbee;
+}
+@media (max-width: 768px) {
+  .header {
+    font-size: 2em;
+  }
 }
 
 ================
@@ -2054,430 +1977,59 @@ File: app/events/components/EventCard.module.css
 }
 
 ================
-File: app/events/components/FilterControls.module.css
-================
-.filterBlockDesktop {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.filterHeaderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.filterTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  margin: 0;
-}
-.clearFiltersLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-.clearFiltersLink:hover {
-  text-decoration: underline;
-}
-.filterListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.searchWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.searchIcon {
-  position: absolute;
-  left: 13px;
-  color: var(--muted);
-  pointer-events: none;
-  flex-shrink: 0;
-}
-.searchInput {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 34px 0 36px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.searchInput::placeholder {
-  color: var(--muted);
-  opacity: 0.85;
-}
-.searchInput:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
-}
-.searchClearBtn {
-  position: absolute;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: var(--topbar-bg);
-  border: 0;
-  border-radius: 50%;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.searchClearBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.multiSelectWrapper {
-  position: relative;
-  width: 100%;
-}
-.multiSelectTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-}
-.multiSelectTrigger:hover {
-  background-color: #ebdcba;
-}
-.multiSelectTriggerActive {
-  background-color: #ebdcba;
-  font-weight: 700;
-}
-.multiSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  max-height: 250px;
-  overflow-y: auto;
-}
-.multiSelectMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.multiSelectClearLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-.multiSelectOption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--ink);
-  user-select: none;
-}
-.multiSelectOption:hover {
-  background-color: var(--topbar-bg);
-}
-.hiddenCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.customCheckbox {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-}
-.customCheckboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.priceMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.priceHeaderRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.priceHeaderTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.priceHeaderReadout {
-  font-size: 13px;
-  font-weight: 700;
-}
-.priceChipsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.priceChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  background: #ffffff;
-  color: var(--ink);
-  border: 1.5px solid #e6d9b8;
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-.priceChip:hover {
-  border-color: var(--ink);
-}
-.priceChipFreeActive {
-  background: #d5efe0;
-  color: #14573a;
-  border-color: #1f7a4d;
-}
-.priceChipFreeActive:hover {
-  border-color: #1f7a4d;
-}
-.priceChipUnderActive {
-  background: var(--ink);
-  color: #fff8e7;
-  border-color: var(--ink);
-}
-.priceChipUnderActive:hover {
-  border-color: var(--ink);
-}
-.sliderSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 2px 0;
-}
-.rangeSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  margin: 0;
-  outline: none;
-  cursor: pointer;
-}
-.rangeSlider::-webkit-slider-runnable-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  margin-top: -8px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #1f1a14;
-  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
-  cursor: pointer;
-}
-.rangeSlider::-moz-range-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #1f1a14;
-  cursor: pointer;
-}
-.rangeSlider:focus-visible::-webkit-slider-thumb {
-  outline: 3px solid #1f7a4d;
-  outline-offset: 2px;
-}
-.sliderLabelsRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #6b6254;
-  font-weight: 500;
-  margin-top: 4px;
-}
-.clearFiltersBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 13px;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 4px 6px;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.clearFiltersBtn:hover {
-  color: var(--accent);
-}
-.mobileFiltersSection {
-  display: none;
-}
-.mobileFiltersRow {
-  display: none;
-}
-@media (max-width: 899px) {
-  .mobileFiltersSection {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 12px;
-    width: 100%;
-  }
-  .mobileFiltersRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    width: 100%;
-    align-items: center;
-  }
-  .mobilePriceMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 290px;
-    max-width: calc(100vw - 32px);
-    z-index: 60;
-  }
-}
-
-================
-File: app/events/components/PriceFilterDropdown.tsx
+File: app/events/components/FilterDropdown.tsx
 ================
 'use client';
-import { useMemo } from 'react';
-import { CityPriceConfig } from '../../lib/cities';
-import { formatPriceTriggerLabel, formatPriceReadout } from '../utils';
 import styles from './FilterControls.module.css';
-interface PriceFilterDropdownProps {
-  priceConfig: CityPriceConfig;
-  maxPrice: number;
-  onPriceChange: (val: number) => void;
+interface FilterDropdownProps {
+  icon: React.ReactNode;
+  category: string;
+  value: string;
+  title: string;
+  options: string[];
+  selected: string[];
   isOpen: boolean;
   onToggleOpen: () => void;
+  onToggleOption: (option: string) => void;
+  onClear: () => void;
   containerRef?: React.RefObject<HTMLDivElement | null>;
   flexStyle?: boolean;
 }
-export default function PriceFilterDropdown({
-  priceConfig,
-  maxPrice,
-  onPriceChange,
+export default function FilterDropdown({
+  icon,
+  category,
+  value,
+  title,
+  options,
+  selected,
   isOpen,
   onToggleOpen,
+  onToggleOption,
+  onClear,
   containerRef,
   flexStyle = false,
-}: PriceFilterDropdownProps) {
-  const isFreeActive = maxPrice === 0;
-  const isUnderActive = maxPrice === priceConfig.underValue;
-  const isFiltered = maxPrice < priceConfig.maxPrice;
-  const triggerLabel = useMemo(() => {
-    return formatPriceTriggerLabel(maxPrice, priceConfig);
-  }, [maxPrice, priceConfig]);
-  const readoutText = useMemo(() => {
-    return formatPriceReadout(maxPrice, priceConfig);
-  }, [maxPrice, priceConfig]);
-  const readoutColor = isFreeActive ? '#1F7A4D' : '#1F1A14';
-  const trackFill = isFreeActive ? '#1F7A4D' : '#1F1A14';
-  const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
-  const handleToggleFree = () => {
-    onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
-  };
-  const handleToggleUnder = () => {
-    onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
-  };
+}: FilterDropdownProps) {
   return (
     <div
       className={styles.multiSelectWrapper}
       ref={containerRef}
-      style={flexStyle ? { flex: 1, minWidth: 120 } : undefined}
+      style={flexStyle ? { flex: 1 } : undefined}
     >
       <button
         type="button"
         className={`${styles.multiSelectTrigger} ${
-          isFiltered ? styles.multiSelectTriggerActive : ''
+          selected.length > 0 ? styles.multiSelectTriggerActive : ''
         }`}
         aria-expanded={isOpen}
         onClick={onToggleOpen}
       >
-        <span>{triggerLabel}</span>
+        <span className={styles.filterTriggerLeft}>
+          <span className={styles.filterTriggerIcon}>{icon}</span>
+          <span className={styles.filterCategory}>{category}</span>
+          <span className={styles.filterValue}>{value}</span>
+        </span>
         <svg
+          className={styles.filterChevron}
           width="14"
           height="14"
           viewBox="0 0 24 24"
@@ -2492,72 +2044,53 @@ export default function PriceFilterDropdown({
         </svg>
       </button>
       {isOpen && (
-        <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
-          <div className={styles.priceHeaderRow}>
-            <span className={styles.priceHeaderTitle}>Price</span>
-            <span
-              className={styles.priceHeaderReadout}
-              style={{ color: readoutColor }}
-            >
-              {readoutText}
-            </span>
-          </div>
-          <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
-            <button
-              type="button"
-              className={`${styles.priceChip} ${
-                isFreeActive ? styles.priceChipFreeActive : ''
-              }`}
-              onClick={handleToggleFree}
-              aria-pressed={isFreeActive}
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+        <div className={styles.multiSelectMenu}>
+          <div className={styles.multiSelectMenuHeader}>
+            <span>{title}</span>
+            {selected.length > 0 && (
+              <button
+                type="button"
+                className={styles.multiSelectClearLink}
+                onClick={onClear}
               >
-                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
-                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
-              </svg>
-              Free / donation
-            </button>
-            <button
-              type="button"
-              className={`${styles.priceChip} ${
-                isUnderActive ? styles.priceChipUnderActive : ''
-              }`}
-              onClick={handleToggleUnder}
-              aria-pressed={isUnderActive}
-            >
-              {priceConfig.underLabel}
-            </button>
+                Clear
+              </button>
+            )}
           </div>
-          <div className={styles.sliderSection}>
-            <input
-              type="range"
-              min={0}
-              max={priceConfig.maxPrice}
-              step={priceConfig.step}
-              value={maxPrice}
-              onChange={(e) => onPriceChange(Number(e.target.value))}
-              className={styles.rangeSlider}
-              aria-label="Maximum price"
-              style={{
-                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, #EADFC4 ${trackPercent}%, #EADFC4 100%)`,
-              }}
-            />
-            <div className={styles.sliderLabelsRow} aria-hidden="true">
-              <span>Free</span>
-              <span>{priceConfig.midLabel}</span>
-              <span>Any</span>
-            </div>
-          </div>
+          {options.map((opt) => {
+            const isChecked = selected.includes(opt);
+            return (
+              <label key={opt} className={styles.multiSelectOption}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => onToggleOption(opt)}
+                  className={styles.hiddenCheckbox}
+                />
+                <span
+                  className={`${styles.customCheckbox} ${
+                    isChecked ? styles.customCheckboxChecked : ''
+                  }`}
+                >
+                  {isChecked && (
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </span>
+                <span>{opt}</span>
+              </label>
+            );
+          })}
         </div>
       )}
     </div>
@@ -3118,40 +2651,6 @@ File: app/about/About.module.css
 }
 
 ================
-File: app/components/Accordion.module.css
-================
-.header {
-  background-color: transparent;
-  padding: 20px 10px;
-  cursor: pointer;
-  font-size: 3em;
-  position: relative;
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.icon {
-  transition: transform 0.3s;
-  font-size: 1em;
-}
-.iconOpen {
-  transform: rotate(-180deg);
-}
-.content {
-  padding: 10px;
-  background-color: #fffbee;
-}
-@media (max-width: 768px) {
-  .header {
-    font-size: 2em;
-  }
-}
-
-================
 File: app/events/components/CityHeroCard.module.css
 ================
 .heroCard {
@@ -3349,41 +2848,172 @@ export default function CityHeroCard({
 }
 
 ================
-File: app/globals.css
+File: app/events/components/PriceFilterDropdown.tsx
 ================
-:root {
-  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
-  --bg: #fff9ec;
-  --card: #ffffff;
-  --ink: #1f1b16;
-  --muted: #6f675c;
-  --line: #eadfc8;
-  --accent: #d2432f;
-  --topbar-bg: #f3ead4;
-  --free: #1f7a4d;
-  --free-bg: #e4f4ea;
-  --price-donation: #7a4a00;
-  --chip: #f3ead4;
+'use client';
+import { useMemo } from 'react';
+import { CityPriceConfig } from '../../lib/cities';
+import { formatPriceValue, formatPriceReadout } from '../utils';
+import styles from './FilterControls.module.css';
+interface PriceFilterDropdownProps {
+  priceConfig: CityPriceConfig;
+  maxPrice: number;
+  onPriceChange: (val: number) => void;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  flexStyle?: boolean;
 }
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla);
-  -webkit-font-smoothing: antialiased;
-}
-a {
-  color: var(--ink);
-  text-decoration: none;
-}
-a:hover {
-  color: var(--accent);
+export default function PriceFilterDropdown({
+  priceConfig,
+  maxPrice,
+  onPriceChange,
+  isOpen,
+  onToggleOpen,
+  containerRef,
+  flexStyle = false,
+}: PriceFilterDropdownProps) {
+  const isFreeActive = maxPrice === 0;
+  const isUnderActive = maxPrice === priceConfig.underValue;
+  const isFiltered = maxPrice < priceConfig.maxPrice;
+  const priceValue = useMemo(() => {
+    if (maxPrice >= priceConfig.maxPrice) return 'All';
+    if (maxPrice === 0) return 'Free';
+    if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
+    return `Up to ${formatPriceValue(maxPrice, priceConfig)}`;
+  }, [maxPrice, priceConfig]);
+  const readoutText = useMemo(() => {
+    return formatPriceReadout(maxPrice, priceConfig);
+  }, [maxPrice, priceConfig]);
+  const readoutColor = isFreeActive ? '#1F7A4D' : '#1F1A14';
+  const trackFill = isFreeActive ? '#1F7A4D' : '#1F1A14';
+  const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
+  const handleToggleFree = () => {
+    onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
+  };
+  const handleToggleUnder = () => {
+    onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
+  };
+  return (
+    <div
+      className={styles.multiSelectWrapper}
+      ref={containerRef}
+      style={flexStyle ? { flex: 1, minWidth: 120 } : undefined}
+    >
+      <button
+        type="button"
+        className={`${styles.multiSelectTrigger} ${
+          isFiltered ? styles.multiSelectTriggerActive : ''
+        }`}
+        aria-expanded={isOpen}
+        onClick={onToggleOpen}
+      >
+        <span className={styles.filterTriggerLeft}>
+          <span className={styles.filterTriggerIcon}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+              <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+            </svg>
+          </span>
+          <span className={styles.filterCategory}>Price</span>
+          <span className={styles.filterValue}>{priceValue}</span>
+        </span>
+        <svg
+          className={styles.filterChevron}
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
+          <div className={styles.priceHeaderRow}>
+            <span className={styles.priceHeaderTitle}>Price</span>
+            <span
+              className={styles.priceHeaderReadout}
+              style={{ color: readoutColor }}
+            >
+              {readoutText}
+            </span>
+          </div>
+          <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isFreeActive ? styles.priceChipFreeActive : ''
+              }`}
+              onClick={handleToggleFree}
+              aria-pressed={isFreeActive}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+              </svg>
+              Free / donation
+            </button>
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isUnderActive ? styles.priceChipUnderActive : ''
+              }`}
+              onClick={handleToggleUnder}
+              aria-pressed={isUnderActive}
+            >
+              {priceConfig.underLabel}
+            </button>
+          </div>
+          <div className={styles.sliderSection}>
+            <input
+              type="range"
+              min={0}
+              max={priceConfig.maxPrice}
+              step={priceConfig.step}
+              value={maxPrice}
+              onChange={(e) => onPriceChange(Number(e.target.value))}
+              className={styles.rangeSlider}
+              aria-label="Maximum price"
+              style={{
+                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, #EADFC4 ${trackPercent}%, #EADFC4 100%)`,
+              }}
+            />
+            <div className={styles.sliderLabelsRow} aria-hidden="true">
+              <span>Free</span>
+              <span>{priceConfig.midLabel}</span>
+              <span>Any</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 ================
@@ -3444,6 +3074,406 @@ export default async function CityEventsPage({ params }: PageProps) {
       initialCityCounts={cityCounts}
     />
   );
+}
+
+================
+File: app/events/components/FilterControls.module.css
+================
+.filterBlockDesktop {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a5247;
+  margin: 0;
+}
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 36px 0 38px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  color: var(--ink);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.multiSelectTrigger:hover {
+  background-color: #faf7f2;
+  box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
+}
+.multiSelectTriggerActive {
+  border-color: rgba(31, 27, 22, 0.2);
+}
+.filterTriggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.filterTriggerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--free, #1f7a4d);
+  flex-shrink: 0;
+}
+.filterCategory {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+}
+.filterValue {
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filterChevron {
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: var(--ink);
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.priceMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.priceHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.priceHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.priceHeaderReadout {
+  font-size: 13px;
+  font-weight: 700;
+}
+.priceChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.priceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid #e6d9b8;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.priceChip:hover {
+  border-color: var(--ink);
+}
+.priceChipFreeActive {
+  background: #d5efe0;
+  color: #14573a;
+  border-color: #1f7a4d;
+}
+.priceChipFreeActive:hover {
+  border-color: #1f7a4d;
+}
+.priceChipUnderActive {
+  background: var(--ink);
+  color: #fff8e7;
+  border-color: var(--ink);
+}
+.priceChipUnderActive:hover {
+  border-color: var(--ink);
+}
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
+  cursor: pointer;
+}
+.rangeSlider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  cursor: pointer;
+}
+.rangeSlider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid #1f7a4d;
+  outline-offset: 2px;
+}
+.sliderLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b6254;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 6px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileFiltersSection {
+  display: none;
+}
+.mobileFiltersRow {
+  display: none;
+}
+@media (max-width: 899px) {
+  .mobileFiltersSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobilePriceMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 290px;
+    max-width: calc(100vw - 32px);
+    z-index: 60;
+  }
 }
 
 ================
@@ -4018,6 +4048,108 @@ export default function SuggestEditModal({
 }
 
 ================
+File: app/globals.css
+================
+:root {
+  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --topbar-bg: #f3ead4;
+  --sidebar-bg: var(--topbar-bg);
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent);
+}
+
+================
+File: app/Page.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 2.4em;
+  margin-bottom: 1rem;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+.heroText {
+  flex: 1;
+  max-width: 500px;
+}
+.illustrationContainer {
+  flex: 1;
+  max-width: 400px;
+}
+.contentBox {
+  background-color: #fdf8e1;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 2rem;
+}
+.button {
+  background-color: #272626;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 1rem;
+}
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .heroText {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+================
 File: app/events/components/FilterControls.tsx
 ================
 'use client';
@@ -4047,6 +4179,53 @@ interface FilterControlsProps {
   hasActiveFilters: boolean;
   onClearAllFilters: () => void;
 }
+const activityIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M4 6h16M7 12h10M10 18h4" />
+  </svg>
+);
+const timeIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <polyline points="12 7 12 12 15 14" />
+  </svg>
+);
+const areaIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10z" />
+    <circle cx="12" cy="11" r="2.5" />
+  </svg>
+);
 function FilterControls({
   searchQuery,
   onSearchChange,
@@ -4100,20 +4279,20 @@ function FilterControls({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  const timeLabel = useMemo(() => {
-    if (selectedTimes.length === 0) return 'All times';
+  const timeValue = useMemo(() => {
+    if (selectedTimes.length === 0) return 'All';
     if (selectedTimes.length === 1) return selectedTimes[0];
-    return `Times (${selectedTimes.length})`;
+    return `${selectedTimes.length} selected`;
   }, [selectedTimes]);
-  const activityLabel = useMemo(() => {
-    if (selectedActivities.length === 0) return 'All activities';
+  const activityValue = useMemo(() => {
+    if (selectedActivities.length === 0) return 'All';
     if (selectedActivities.length === 1) return selectedActivities[0];
-    return `Activities (${selectedActivities.length})`;
+    return `${selectedActivities.length} selected`;
   }, [selectedActivities]);
-  const areaLabel = useMemo(() => {
-    if (selectedAreas.length === 0) return 'All areas';
+  const areaValue = useMemo(() => {
+    if (selectedAreas.length === 0) return 'All';
     if (selectedAreas.length === 1) return selectedAreas[0];
-    return `Areas (${selectedAreas.length})`;
+    return `${selectedAreas.length} selected`;
   }, [selectedAreas]);
   const renderSearchInput = () => (
     <div className={styles.searchWrapper}>
@@ -4183,7 +4362,9 @@ function FilterControls({
         <div className={styles.filterListVertical}>
           {renderSearchInput()}
           <FilterDropdown
-            label={activityLabel}
+            icon={activityIcon}
+            category="Activity"
+            value={activityValue}
             title="Select activities"
             options={activities}
             selected={selectedActivities}
@@ -4194,7 +4375,9 @@ function FilterControls({
             containerRef={actMenuRef}
           />
           <FilterDropdown
-            label={timeLabel}
+            icon={timeIcon}
+            category="Time"
+            value={timeValue}
             title="Time of day"
             options={timeSections}
             selected={selectedTimes}
@@ -4205,7 +4388,9 @@ function FilterControls({
             containerRef={timeMenuRef}
           />
           <FilterDropdown
-            label={areaLabel}
+            icon={areaIcon}
+            category="Area"
+            value={areaValue}
             title="Select areas"
             options={areas}
             selected={selectedAreas}
@@ -4238,7 +4423,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={timeLabel}
+            icon={timeIcon}
+            category="Time"
+            value={timeValue}
             title="Time of day"
             options={timeSections}
             selected={selectedTimes}
@@ -4249,7 +4436,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={activityLabel}
+            icon={activityIcon}
+            category="Activity"
+            value={activityValue}
             title="Activities"
             options={activities}
             selected={selectedActivities}
@@ -4260,7 +4449,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={areaLabel}
+            icon={areaIcon}
+            category="Area"
+            value={areaValue}
             title="Areas"
             options={areas}
             selected={selectedAreas}
@@ -4285,287 +4476,6 @@ function FilterControls({
   );
 }
 export default memo(FilterControls);
-
-================
-File: app/Page.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: left;
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.page h1 {
-  font-size: 2.4em;
-  margin-bottom: 1rem;
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  width: 100%;
-  margin-bottom: 4rem;
-}
-.heroText {
-  flex: 1;
-  max-width: 500px;
-}
-.illustrationContainer {
-  flex: 1;
-  max-width: 400px;
-}
-.contentBox {
-  background-color: #fdf8e1;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 2rem;
-}
-.button {
-  background-color: #272626;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 1rem;
-}
-@media (max-width: 768px) {
-  .page {
-    padding: 1rem;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .heroText {
-    text-align: left;
-    width: 100%;
-  }
-}
-
-================
-File: app/events/EventsView.module.css
-================
-.pageContainer {
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-.heroWrapper {
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 28px 32px 0;
-}
-.mainLayout {
-  flex: 1;
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 36px 32px 72px;
-  display: flex;
-  align-items: flex-start;
-  gap: 48px;
-}
-.aside {
-  flex: 0 0 280px;
-  min-width: 0;
-  position: sticky;
-  top: 24px;
-}
-.asideTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 56px;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  margin: 0 0 8px;
-}
-.asideSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: 0;
-}
-.dayListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 28px;
-}
-.dayBtnVertical {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 48px;
-  padding: 0 14px;
-  background: none;
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.dayBtnVertical:hover {
-  background-color: var(--topbar-bg);
-}
-.dayBtnVerticalActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  font-weight: 700;
-}
-.dayCountText {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-}
-.dayCountTextActive {
-  color: #e6dfd0;
-}
-.mobileSectionHeader {
-  display: none;
-}
-.mobileDaysGrid {
-  display: none;
-}
-.contentCol {
-  flex: 999 1 520px;
-  min-width: 0;
-}
-.timeGroupHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 24px 0 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.timeGroupHeader:first-of-type {
-  margin-top: 0;
-}
-.timeGroupLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.emptyState {
-  text-align: center;
-  color: var(--muted);
-  padding: 56px 16px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-}
-.emptyStateTitle {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-@media (max-width: 899px) {
-  .heroWrapper {
-    padding: 16px 16px 0;
-  }
-  .mainLayout {
-    padding: 16px 16px 40px;
-    flex-direction: column;
-    gap: 0;
-  }
-  .aside {
-    display: none;
-  }
-  .mobileDaysGrid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
-    margin-top: 8px;
-    width: 100%;
-  }
-  .mobileDayBtn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    padding: 8px 0 7px;
-    min-height: 66px;
-    border: 1.5px solid var(--line);
-    background: #ffffff;
-    color: var(--ink);
-    border-radius: 10px;
-    font: inherit;
-    cursor: pointer;
-  }
-  .mobileDayBtnActive {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--bg);
-  }
-  .mobileDayLabel {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayLabelActive {
-    color: #e6dfd0;
-  }
-  .mobileDayNum {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 20px;
-    line-height: 1.1;
-  }
-  .mobileDayCount {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayCountActive {
-    color: #e6dfd0;
-  }
-  .mobileSectionHeader {
-    display: block;
-    margin-top: 18px;
-    margin-bottom: 8px;
-  }
-  .mobileHeadingTitle {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 34px;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin: 0 0 3px;
-  }
-  .mobileHeadingSubtitle {
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 0;
-  }
-  .timeGroupHeader {
-    margin: 18px 0 8px;
-  }
-}
 
 ================
 File: package.json
@@ -4711,6 +4621,236 @@ export default function Home() {
       <Footer />
     </div>
   );
+}
+
+================
+File: app/events/EventsView.module.css
+================
+.pageContainer {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.heroWrapper {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 28px 32px 0;
+}
+.mainLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 36px 32px 72px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+}
+.aside {
+  flex: 0 0 300px;
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 24px 20px;
+  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
+}
+.asideTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.asideSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: #5a5247;
+  margin: 0;
+}
+.dayListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+}
+.dayBtnVertical {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  color: var(--ink);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.dayBtnVertical:hover {
+  background-color: #faf7f2;
+  box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
+}
+.dayBtnVerticalActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.15);
+}
+.dayBtnVerticalActive:hover {
+  background-color: var(--ink);
+}
+.dayCountText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.dayCountTextActive {
+  color: #e6dfd0;
+}
+.mobileSectionHeader {
+  display: none;
+}
+.mobileDaysGrid {
+  display: none;
+}
+.contentCol {
+  flex: 999 1 520px;
+  min-width: 0;
+}
+.timeGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.timeGroupHeader:first-of-type {
+  margin-top: 0;
+}
+.timeGroupLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.emptyState {
+  text-align: center;
+  color: var(--muted);
+  padding: 56px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.emptyStateTitle {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+@media (max-width: 899px) {
+  .heroWrapper {
+    padding: 16px 16px 0;
+  }
+  .mainLayout {
+    padding: 16px 16px 40px;
+    flex-direction: column;
+    gap: 0;
+  }
+  .aside {
+    display: none;
+  }
+  .mobileDaysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    width: 100%;
+  }
+  .mobileDayBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 0 7px;
+    min-height: 66px;
+    border: 1.5px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .mobileDayBtnActive {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .mobileDayLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayLabelActive {
+    color: #e6dfd0;
+  }
+  .mobileDayNum {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .mobileDayCount {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayCountActive {
+    color: #e6dfd0;
+  }
+  .mobileSectionHeader {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  .mobileHeadingTitle {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+  }
+  .mobileHeadingSubtitle {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 0;
+  }
+  .timeGroupHeader {
+    margin: 18px 0 8px;
+  }
 }
 
 ================
@@ -5404,6 +5544,14 @@ export function getAllCities(): CityConfig[] {
 }
 
 ================
+File: app/about/page.tsx
+================
+import { redirect } from 'next/navigation';
+export default function AboutPage() {
+  redirect('/');
+}
+
+================
 File: app/components/Footer.tsx
 ================
 import styles from './Footer.module.css';
@@ -5421,7 +5569,7 @@ export default function Footer() {
             </blockquote>
             <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
             <div className={styles.footerCopyright}>
-              © 2026 Someplace Social. All rights reserved.
+              © 2026 Someplace Social.
             </div>
           </div>
           <div className={styles.footerRightSection}>
@@ -5441,14 +5589,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
-
-================
-File: app/about/page.tsx
-================
-import { redirect } from 'next/navigation';
-export default function AboutPage() {
-  redirect('/');
 }
 
 ================
