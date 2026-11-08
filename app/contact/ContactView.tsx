@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -25,7 +24,6 @@ const PRE_REGISTRATION_OPTIONS = [
 export default function ContactView() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-
   const [activeTab, setActiveTab] = useState<'question' | 'submit'>(() => {
     return tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
   });
@@ -96,7 +94,6 @@ export default function ContactView() {
     setSubmitLoading(true);
     setSubmitStatus(null);
 
-    // Compute unified activity text
     const fullActivity = otherActivities.trim()
       ? activity === 'Other'
         ? otherActivities.trim()
@@ -109,7 +106,6 @@ export default function ContactView() {
 
     const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
 
-    // Build structured human-readable summary
     const summaryLines = [
       `=== EVENT SUBMISSION ===`,
       `City: ${city}`,
@@ -169,7 +165,6 @@ export default function ContactView() {
           message: summaryLines.join('\n'),
         }),
       });
-
       const result = await response.json();
       if (result.success) {
         setSubmitStatus({
@@ -237,7 +232,6 @@ export default function ContactView() {
           message: messageLines.join('\n'),
         }),
       });
-
       const result = await response.json();
       if (result.success) {
         setQuestionStatus({
@@ -266,12 +260,42 @@ export default function ContactView() {
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
-        <div>
+        <div className={styles.heroText}>
           <p className={styles.eyebrow}>CONTACT</p>
           <h1 className={styles.heroTitle}>Contact Us</h1>
           <p className={styles.heroDescription}>
             Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
           </p>
+          <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
+            <button
+              type="button"
+              role="tab"
+              id="tab-question"
+              aria-selected={activeTab === 'question'}
+              aria-controls="panel-question"
+              className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
+              onClick={() => {
+                setActiveTab('question');
+                window.history.replaceState(null, '', '/contact');
+              }}
+            >
+              Ask a question
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-submit"
+              aria-selected={activeTab === 'submit'}
+              aria-controls="panel-submit"
+              className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
+              onClick={() => {
+                setActiveTab('submit');
+                window.history.replaceState(null, '', '/contact?tab=submit');
+              }}
+            >
+              Submit an event
+            </button>
+          </div>
         </div>
         <div className={styles.heroImageContainer}>
           <Image
@@ -285,37 +309,6 @@ export default function ContactView() {
         </div>
       </section>
 
-      <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
-        <button
-          type="button"
-          role="tab"
-          id="tab-question"
-          aria-selected={activeTab === 'question'}
-          aria-controls="panel-question"
-          className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
-          onClick={() => {
-            setActiveTab('question');
-            window.history.replaceState(null, '', '/contact');
-          }}
-        >
-          Ask a question
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-submit"
-          aria-selected={activeTab === 'submit'}
-          aria-controls="panel-submit"
-          className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
-          onClick={() => {
-            setActiveTab('submit');
-            window.history.replaceState(null, '', '/contact?tab=submit');
-          }}
-        >
-          Submit an event
-        </button>
-      </div>
-
       <section className={styles.panel}>
         {activeTab === 'question' ? (
           <form
@@ -326,7 +319,6 @@ export default function ContactView() {
           >
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>Ask a question</legend>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="q-first-name" className={styles.label}>
@@ -342,7 +334,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="q-email" className={styles.label}>
                     Email address *
@@ -358,7 +349,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="q-message" className={styles.label}>
                   Message *
@@ -422,7 +412,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 Basic details about the event.
               </p>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-city" className={styles.label}>
@@ -439,7 +428,6 @@ export default function ContactView() {
                     <option value="Other / New City">Other / New City</option>
                   </select>
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-title" className={styles.label}>
                     Event Title *
@@ -472,7 +460,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-activity" className={styles.label}>
                     Activity / Category
@@ -533,7 +520,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 Help people know when to show up.
               </p>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-frequency" className={styles.label}>
@@ -551,7 +537,6 @@ export default function ContactView() {
                     <option value="Seasonal / Irregular">Seasonal / Irregular</option>
                   </select>
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-freq-notes" className={styles.label}>
                     Frequency notes
@@ -608,7 +593,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-end-time" className={styles.label}>
                     End time
@@ -631,7 +615,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 Where does the event take place?
               </p>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-venue" className={styles.label}>
@@ -648,7 +631,6 @@ export default function ContactView() {
                   />
                   <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-area" className={styles.label}>
                     Neighborhood / Area
@@ -680,7 +662,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-map" className={styles.label}>
                     Google Maps link
@@ -703,7 +684,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 Is it free, paid, or does it require signing up in advance?
               </p>
-
               <div className={styles.field}>
                 <label htmlFor="submit-price" className={styles.label}>
                   Price
@@ -767,7 +747,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 How people can find more information or reach out to the organizer.
               </p>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-website" className={styles.label}>
@@ -783,7 +762,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-social" className={styles.label}>
                     Social media / Instagram
@@ -826,7 +804,6 @@ export default function ContactView() {
               <p className={styles.sectionDescription}>
                 Let us know who is submitting in case we have a question before publishing.
               </p>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-name" className={styles.label}>
@@ -842,7 +819,6 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.field}>
                   <label htmlFor="submit-email" className={styles.label}>
                     Your email address

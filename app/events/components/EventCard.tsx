@@ -97,7 +97,7 @@ function ContactButton({ contact }: { contact?: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // ignore clipboard error
+      // Ignore clipboard write failures gracefully
     }
   }, []);
 
@@ -154,34 +154,34 @@ function ContactButton({ contact }: { contact?: string }) {
             <>
               <div className={styles.contactHeader}>
                 <span className={styles.contactHeaderLabel}>Email</span>
-                <span className={styles.contactHeaderValue} title={contactInfo.email}>
-                  {contactInfo.email}
-                </span>
-              </div>
-              <div className={styles.contactDivider} />
-              <div className={styles.contactActions}>
-                <button
-                  type="button"
-                  className={`${styles.contactActionBtn} ${copied ? styles.contactActionBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.email)}
-                >
-                  {copied ? (
-                    <>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <div className={styles.contactInlineRow}>
+                  <span className={styles.contactHeaderValue} title={contactInfo.email}>
+                    {contactInfo.email}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                    onClick={() => handleCopy(contactInfo.email)}
+                    title={copied ? 'Copied to clipboard' : 'Copy email'}
+                    aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
+                  >
+                    {copied ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
-                      Copied!
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                       </svg>
-                      Copy Email
-                    </>
-                  )}
-                </button>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.contactDivider} />
+
+              <div className={styles.contactActions}>
                 <a
                   href={contactInfo.gmailUrl}
                   target="_blank"
@@ -214,11 +214,33 @@ function ContactButton({ contact }: { contact?: string }) {
             <>
               <div className={styles.contactHeader}>
                 <span className={styles.contactHeaderLabel}>Phone</span>
-                <span className={styles.contactHeaderValue} title={contactInfo.displayPhone}>
-                  {contactInfo.displayPhone}
-                </span>
+                <div className={styles.contactInlineRow}>
+                  <span className={styles.contactHeaderValue} title={contactInfo.displayPhone}>
+                    {contactInfo.displayPhone}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                    onClick={() => handleCopy(contactInfo.displayPhone)}
+                    title={copied ? 'Copied to clipboard' : 'Copy phone number'}
+                    aria-label={copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'}
+                  >
+                    {copied ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
+
               <div className={styles.contactDivider} />
+
               <div className={styles.contactActions}>
                 <a
                   href={contactInfo.telUrl}
@@ -230,28 +252,6 @@ function ContactButton({ contact }: { contact?: string }) {
                   </svg>
                   Call {contactInfo.displayPhone}
                 </a>
-                <button
-                  type="button"
-                  className={`${styles.contactActionBtn} ${copied ? styles.contactActionBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.displayPhone)}
-                >
-                  {copied ? (
-                    <>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                      Copy Number
-                    </>
-                  )}
-                </button>
               </div>
             </>
           )}
@@ -287,6 +287,7 @@ function EventCard({
           {start}
           {end && <div className={styles.endTimeText}>to {end}</div>}
         </div>
+
         <div className={styles.infoCol}>
           {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
           <div className={styles.eventTitle}>
@@ -295,10 +296,12 @@ function EventCard({
               <span className={styles.eventHost}> w/ {event.organization}</span>
             )}
           </div>
+
           <div className={styles.eventLocation}>
             {displayVenue}
             {event.area ? ` · ${event.area}` : ''}
           </div>
+
           {event.price ? (
             <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
               <svg
@@ -317,6 +320,7 @@ function EventCard({
               {event.price}
             </div>
           ) : null}
+
           {tagList.length > 0 && (
             <div className={styles.tagList}>
               {tagList.map((tag) => {
@@ -337,6 +341,7 @@ function EventCard({
             </div>
           )}
         </div>
+
         <span
           aria-hidden="true"
           className={`${styles.chevronCircle} ${
@@ -357,11 +362,13 @@ function EventCard({
           </svg>
         </span>
       </button>
+
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
+
           {recurrenceText && (
             <p
               className={styles.eventDescription}
@@ -374,6 +381,7 @@ function EventCard({
               📅 {recurrenceText}
             </p>
           )}
+
           {event.preRegistration && (
             <p
               className={styles.eventDescription}
@@ -386,6 +394,7 @@ function EventCard({
               📝 {event.preRegistration}
             </p>
           )}
+
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>
               <a
@@ -407,6 +416,7 @@ function EventCard({
                 </svg>
                 Maps
               </a>
+
               <ActionButton
                 href={event.website}
                 label="Website"
@@ -417,6 +427,7 @@ function EventCard({
                   </svg>
                 }
               />
+
               <ActionButton
                 href={event.social}
                 label="Instagram"
@@ -428,8 +439,10 @@ function EventCard({
                   </svg>
                 }
               />
+
               <ContactButton contact={event.contact} />
             </div>
+
             <button
               type="button"
               className={styles.suggestEditBtn}

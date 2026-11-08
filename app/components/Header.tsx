@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -64,8 +63,8 @@ export default function Header({
               <Image
                 src="/images/logo.svg"
                 alt="Someplace Social"
-                width={360}
-                height={100}
+                width={540}
+                height={150}
                 priority
                 className={styles.logoImage}
               />
@@ -99,6 +98,7 @@ export default function Header({
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
+
               <div
                 className={`${styles.citiesDropdown} ${
                   citiesMenuOpen ? '' : styles.citiesDropdownHidden
@@ -162,9 +162,6 @@ export default function Header({
           </nav>
 
           <div className={styles.navMobileActions}>
-            <Link href="/contact?tab=submit" className={styles.mobileAddBtn}>
-              + Add
-            </Link>
             <button
               type="button"
               className={styles.hamburgerBtn}
@@ -258,24 +255,16 @@ export default function Header({
               >
                 Contact
               </Link>
-              <Link
-                href="/contact?tab=submit"
-                className={styles.drawerNavLink}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                + Add event
-              </Link>
             </div>
 
             <div className={styles.drawerFooter}>
-              <a
-                href="https://buymeacoffee.com/someplacesocial"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.drawerSupportBtn}
+              <Link
+                href="/contact?tab=submit"
+                className={styles.drawerAddEventBtn}
+                onClick={() => setMobileDrawerOpen(false)}
               >
-                Buy me a drink
-              </a>
+                +Add Event
+              </Link>
             </div>
           </div>
         </div>

@@ -77,6 +77,30 @@ const areaIcon = (
   </svg>
 );
 
+const filterSliderIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="4" y1="21" x2="4" y2="14" />
+    <line x1="4" y1="10" x2="4" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12" y2="3" />
+    <line x1="20" y1="21" x2="20" y2="16" />
+    <line x1="20" y1="12" x2="20" y2="3" />
+    <line x1="1" y1="14" x2="7" y2="14" />
+    <line x1="9" y1="8" x2="15" y2="8" />
+    <line x1="17" y1="16" x2="23" y2="16" />
+  </svg>
+);
+
 function FilterControls({
   searchQuery,
   onSearchChange,
@@ -98,6 +122,7 @@ function FilterControls({
   hasActiveFilters,
   onClearAllFilters,
 }: FilterControlsProps) {
+  const [mobileAccordionOpen, setMobileAccordionOpen] = useState(false);
   const [priceMenuOpen, setPriceMenuOpen] = useState(false);
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
@@ -147,6 +172,23 @@ function FilterControls({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (searchQuery.trim().length > 0) count++;
+    if (maxPrice < priceConfig.maxPrice) count++;
+    count += selectedTimes.length;
+    count += selectedActivities.length;
+    count += selectedAreas.length;
+    return count;
+  }, [
+    searchQuery,
+    maxPrice,
+    priceConfig.maxPrice,
+    selectedTimes.length,
+    selectedActivities.length,
+    selectedAreas.length,
+  ]);
 
   const timeValue = useMemo(() => {
     if (selectedTimes.length === 0) return 'All';
@@ -232,6 +274,7 @@ function FilterControls({
             </button>
           )}
         </div>
+
         <div className={styles.filterListVertical}>
           {renderSearchInput()}
           <FilterDropdown
@@ -283,70 +326,121 @@ function FilterControls({
           />
         </div>
       </div>
-      <div className={styles.mobileFiltersSection}>
-        {renderSearchInput()}
-        <div className={styles.mobileFiltersRow}>
-          <PriceFilterDropdown
-            priceConfig={priceConfig}
-            maxPrice={maxPrice}
-            onPriceChange={onPriceChange}
-            isOpen={priceMenuOpen}
-            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
-            containerRef={priceMobileMenuRef}
-            flexStyle
-          />
-          <FilterDropdown
-            icon={timeIcon}
-            category="Time"
-            value={timeValue}
-            title="Time of day"
-            options={timeSections}
-            selected={selectedTimes}
-            isOpen={timeMenuOpen}
-            onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
-            onToggleOption={onToggleTime}
-            onClear={onClearTimes}
-            containerRef={timeMobileMenuRef}
-            flexStyle
-          />
-          <FilterDropdown
-            icon={activityIcon}
-            category="Activity"
-            value={activityValue}
-            title="Activities"
-            options={activities}
-            selected={selectedActivities}
-            isOpen={actMenuOpen}
-            onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
-            onToggleOption={onToggleActivity}
-            onClear={onClearActivities}
-            containerRef={actMobileMenuRef}
-            flexStyle
-          />
-          <FilterDropdown
-            icon={areaIcon}
-            category="Area"
-            value={areaValue}
-            title="Areas"
-            options={areas}
-            selected={selectedAreas}
-            isOpen={areaMenuOpen}
-            onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
-            onToggleOption={onToggleArea}
-            onClear={onClearAreas}
-            containerRef={areaMobileMenuRef}
-            flexStyle
-          />
-          {hasActiveFilters && (
-            <button
-              type="button"
-              className={styles.clearFiltersBtn}
-              onClick={onClearAllFilters}
+
+      <div className={styles.mobileAccordionWrapper}>
+        <button
+          type="button"
+          className={`${styles.mobileAccordionTrigger} ${
+            mobileAccordionOpen ? styles.mobileAccordionTriggerOpen : ''
+          }`}
+          onClick={() => setMobileAccordionOpen((prev) => !prev)}
+          aria-expanded={mobileAccordionOpen}
+          aria-controls="mobile-filters-content"
+        >
+          <div className={styles.mobileTriggerLeft}>
+            <span className={styles.mobileTriggerIcon}>{filterSliderIcon}</span>
+            <span className={styles.mobileTriggerText}>Filters &amp; Search</span>
+            {activeFilterCount > 0 && (
+              <span className={styles.mobileActiveBadge}>
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
+
+          <div className={styles.mobileTriggerRight}>
+            <span className={styles.mobileTriggerStatus}>
+              {mobileAccordionOpen ? 'Hide' : activeFilterCount > 0 ? 'Edit' : 'Show'}
+            </span>
+            <svg
+              className={`${styles.mobileAccordionChevron} ${
+                mobileAccordionOpen ? styles.mobileAccordionChevronOpen : ''
+              }`}
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              Clear
-            </button>
-          )}
-        </div>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        </button>
+
+        {mobileAccordionOpen && (
+          <div id="mobile-filters-content" className={styles.mobileAccordionContent}>
+            {renderSearchInput()}
+
+            <div className={styles.mobileFiltersRow}>
+              <PriceFilterDropdown
+                priceConfig={priceConfig}
+                maxPrice={maxPrice}
+                onPriceChange={onPriceChange}
+                isOpen={priceMenuOpen}
+                onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+                containerRef={priceMobileMenuRef}
+                flexStyle
+              />
+              <FilterDropdown
+                icon={timeIcon}
+                category="Time"
+                value={timeValue}
+                title="Time of day"
+                options={timeSections}
+                selected={selectedTimes}
+                isOpen={timeMenuOpen}
+                onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
+                onToggleOption={onToggleTime}
+                onClear={onClearTimes}
+                containerRef={timeMobileMenuRef}
+                flexStyle
+              />
+              <FilterDropdown
+                icon={activityIcon}
+                category="Activity"
+                value={activityValue}
+                title="Activities"
+                options={activities}
+                selected={selectedActivities}
+                isOpen={actMenuOpen}
+                onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
+                onToggleOption={onToggleActivity}
+                onClear={onClearActivities}
+                containerRef={actMobileMenuRef}
+                flexStyle
+              />
+              <FilterDropdown
+                icon={areaIcon}
+                category="Area"
+                value={areaValue}
+                title="Areas"
+                options={areas}
+                selected={selectedAreas}
+                isOpen={areaMenuOpen}
+                onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
+                onToggleOption={onToggleArea}
+                onClear={onClearAreas}
+                containerRef={areaMobileMenuRef}
+                flexStyle
+              />
+            </div>
+
+            {hasActiveFilters && (
+              <div className={styles.mobileClearRow}>
+                <button
+                  type="button"
+                  className={styles.clearFiltersBtn}
+                  onClick={onClearAllFilters}
+                >
+                  Reset all filters ({activeFilterCount})
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

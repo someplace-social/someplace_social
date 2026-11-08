@@ -1,5 +1,4 @@
 'use client';
-
 import styles from './CityHeroCard.module.css';
 
 interface CityHeroCardProps {
@@ -34,16 +33,18 @@ export default function CityHeroCard({
         </h1>
         {typeof eventCount === 'number' && eventCount > 0 && (
           <div className={styles.metaSubtitle}>
-            {eventCount} {eventCount === 1 ? 'event & activity' : 'events & activities'}
+            {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
           </div>
         )}
       </div>
+
       <div className={styles.descCol}>
         <p className={styles.lead}>
           {introDescription ||
             `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
         </p>
       </div>
+
       <div className={styles.chips} role="group" aria-label="Filter by activity">
         <button
           type="button"
