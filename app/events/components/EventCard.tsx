@@ -164,7 +164,7 @@ export default function EventCard({
                 marginBottom: event.preRegistration ? 8 : 14,
               }}
             >
-              📅Recurs: {recurrenceText}
+              📅 {recurrenceText}
             </p>
           )}
           {event.preRegistration && (
@@ -176,7 +176,7 @@ export default function EventCard({
                 marginBottom: 14,
               }}
             >
-              📝Pre-Registration: {event.preRegistration}
+              📝 {event.preRegistration}
             </p>
           )}
           <div className={styles.drawerActionRow}>
