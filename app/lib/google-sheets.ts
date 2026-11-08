@@ -25,14 +25,20 @@ export type Event = {
   database: string;
 };
 
-const DEFAULT_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-const FALLBACK_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU';
+const POSSIBLE_SPREADSHEET_IDS = [
+  '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU',
+  '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU',
+  '1dI6cIB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU',
+  '1dl6clB28uxBDz9Vq6B4H912N2iu1ayTBkPDCkiWsHsU',
+];
+
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
 
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
 
-  const targetId = city.spreadsheetId || DEFAULT_SPREADSHEET_ID;
-  const ids = Array.from(new Set([targetId, DEFAULT_SPREADSHEET_ID, FALLBACK_SPREADSHEET_ID]));
+  const targetId = city.spreadsheetId || POSSIBLE_SPREADSHEET_IDS[0];
+  const ids = Array.from(new Set([targetId, ...POSSIBLE_SPREADSHEET_IDS]));
 
   const tabs = [city.sheetTab];
   if (city.sheetTab.toLowerCase() === 'medellin') {
@@ -42,13 +48,23 @@ function getCandidateUrls(city: CityConfig): string[] {
   }
 
   const urls: string[] = [];
+
   for (const id of ids) {
     for (const tab of tabs) {
       const encodedTab = encodeURIComponent(tab);
       urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodedTab}`);
       urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?sheet=${encodedTab}`);
     }
+    if (city.sheetGid) {
+      urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`);
+      urls.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${city.sheetGid}`);
+    }
   }
+
+  if (city.sheetGid) {
+    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
+  }
+  urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
 
   return urls;
 }
@@ -199,8 +215,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       try {
         const response = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/csv, application/json, text/plain, */*',
+            Accept: 'text/csv, application/json, text/plain, */*',
           },
           cache: isDev ? 'no-store' : 'default',
           next: isDev ? { revalidate: 0 } : { revalidate: 3600 },

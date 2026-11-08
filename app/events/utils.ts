@@ -50,9 +50,33 @@ export function isFreePrice(price: string): boolean {
   return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
 }
 
+const DAY_ALIAS_MAP: Record<string, string[]> = {
+  sunday: ['sun', 'sunday'],
+  monday: ['mon', 'monday'],
+  tuesday: ['tue', 'tues', 'tuesday'],
+  wednesday: ['wed', 'wednesday'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday'],
+  friday: ['fri', 'friday'],
+  saturday: ['sat', 'saturday'],
+};
+
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
-  return eventDays.toLowerCase().includes(targetDayName.toLowerCase());
+
+  const targetKey = targetDayName.trim().toLowerCase();
+  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
+  const rawLower = eventDays.toLowerCase();
+
+  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
+    return true;
+  }
+
+  if (rawLower.includes(targetKey)) {
+    return true;
+  }
+
+  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
+  return tokens.some((token) => aliases.includes(token));
 }
 
 export function ensureExternalUrl(url: string): string {
