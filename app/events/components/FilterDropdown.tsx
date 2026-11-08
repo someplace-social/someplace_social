@@ -1,9 +1,10 @@
 'use client';
-
 import styles from './FilterControls.module.css';
 
 interface FilterDropdownProps {
-  label: string;
+  icon: React.ReactNode;
+  category: string;
+  value: string;
   title: string;
   options: string[];
   selected: string[];
@@ -16,7 +17,9 @@ interface FilterDropdownProps {
 }
 
 export default function FilterDropdown({
-  label,
+  icon,
+  category,
+  value,
   title,
   options,
   selected,
@@ -41,8 +44,13 @@ export default function FilterDropdown({
         aria-expanded={isOpen}
         onClick={onToggleOpen}
       >
-        <span>{label}</span>
+        <span className={styles.filterTriggerLeft}>
+          <span className={styles.filterTriggerIcon}>{icon}</span>
+          <span className={styles.filterCategory}>{category}</span>
+          <span className={styles.filterValue}>{value}</span>
+        </span>
         <svg
+          className={styles.filterChevron}
           width="14"
           height="14"
           viewBox="0 0 24 24"
@@ -51,6 +59,7 @@ export default function FilterDropdown({
           strokeWidth="2.4"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         >
           <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
         </svg>

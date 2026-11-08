@@ -1,7 +1,7 @@
 'use client';
 import { useMemo } from 'react';
 import { CityPriceConfig } from '../../lib/cities';
-import { formatPriceTriggerLabel, formatPriceReadout } from '../utils';
+import { formatPriceValue, formatPriceReadout } from '../utils';
 import styles from './FilterControls.module.css';
 
 interface PriceFilterDropdownProps {
@@ -27,8 +27,11 @@ export default function PriceFilterDropdown({
   const isUnderActive = maxPrice === priceConfig.underValue;
   const isFiltered = maxPrice < priceConfig.maxPrice;
 
-  const triggerLabel = useMemo(() => {
-    return formatPriceTriggerLabel(maxPrice, priceConfig);
+  const priceValue = useMemo(() => {
+    if (maxPrice >= priceConfig.maxPrice) return 'All';
+    if (maxPrice === 0) return 'Free';
+    if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
+    return `Up to ${formatPriceValue(maxPrice, priceConfig)}`;
   }, [maxPrice, priceConfig]);
 
   const readoutText = useMemo(() => {
@@ -61,8 +64,28 @@ export default function PriceFilterDropdown({
         aria-expanded={isOpen}
         onClick={onToggleOpen}
       >
-        <span>{triggerLabel}</span>
+        <span className={styles.filterTriggerLeft}>
+          <span className={styles.filterTriggerIcon}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+              <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+            </svg>
+          </span>
+          <span className={styles.filterCategory}>Price</span>
+          <span className={styles.filterValue}>{priceValue}</span>
+        </span>
         <svg
+          className={styles.filterChevron}
           width="14"
           height="14"
           viewBox="0 0 24 24"
@@ -76,7 +99,6 @@ export default function PriceFilterDropdown({
           <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
         </svg>
       </button>
-
       {isOpen && (
         <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
           <div className={styles.priceHeaderRow}>
@@ -88,7 +110,6 @@ export default function PriceFilterDropdown({
               {readoutText}
             </span>
           </div>
-
           <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
             <button
               type="button"
@@ -125,7 +146,6 @@ export default function PriceFilterDropdown({
               {priceConfig.underLabel}
             </button>
           </div>
-
           <div className={styles.sliderSection}>
             <input
               type="range"

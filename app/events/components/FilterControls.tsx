@@ -27,6 +27,56 @@ interface FilterControlsProps {
   onClearAllFilters: () => void;
 }
 
+const activityIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M4 6h16M7 12h10M10 18h4" />
+  </svg>
+);
+
+const timeIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <polyline points="12 7 12 12 15 14" />
+  </svg>
+);
+
+const areaIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10z" />
+    <circle cx="12" cy="11" r="2.5" />
+  </svg>
+);
+
 function FilterControls({
   searchQuery,
   onSearchChange,
@@ -52,6 +102,7 @@ function FilterControls({
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+
   const priceMenuRef = useRef<HTMLDivElement>(null);
   const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
@@ -82,22 +133,22 @@ function FilterControls({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const timeLabel = useMemo(() => {
-    if (selectedTimes.length === 0) return 'All times';
+  const timeValue = useMemo(() => {
+    if (selectedTimes.length === 0) return 'All';
     if (selectedTimes.length === 1) return selectedTimes[0];
-    return `Times (${selectedTimes.length})`;
+    return `${selectedTimes.length} selected`;
   }, [selectedTimes]);
 
-  const activityLabel = useMemo(() => {
-    if (selectedActivities.length === 0) return 'All activities';
+  const activityValue = useMemo(() => {
+    if (selectedActivities.length === 0) return 'All';
     if (selectedActivities.length === 1) return selectedActivities[0];
-    return `Activities (${selectedActivities.length})`;
+    return `${selectedActivities.length} selected`;
   }, [selectedActivities]);
 
-  const areaLabel = useMemo(() => {
-    if (selectedAreas.length === 0) return 'All areas';
+  const areaValue = useMemo(() => {
+    if (selectedAreas.length === 0) return 'All';
     if (selectedAreas.length === 1) return selectedAreas[0];
-    return `Areas (${selectedAreas.length})`;
+    return `${selectedAreas.length} selected`;
   }, [selectedAreas]);
 
   const renderSearchInput = () => (
@@ -169,7 +220,9 @@ function FilterControls({
         <div className={styles.filterListVertical}>
           {renderSearchInput()}
           <FilterDropdown
-            label={activityLabel}
+            icon={activityIcon}
+            category="Activity"
+            value={activityValue}
             title="Select activities"
             options={activities}
             selected={selectedActivities}
@@ -180,7 +233,9 @@ function FilterControls({
             containerRef={actMenuRef}
           />
           <FilterDropdown
-            label={timeLabel}
+            icon={timeIcon}
+            category="Time"
+            value={timeValue}
             title="Time of day"
             options={timeSections}
             selected={selectedTimes}
@@ -191,7 +246,9 @@ function FilterControls({
             containerRef={timeMenuRef}
           />
           <FilterDropdown
-            label={areaLabel}
+            icon={areaIcon}
+            category="Area"
+            value={areaValue}
             title="Select areas"
             options={areas}
             selected={selectedAreas}
@@ -224,7 +281,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={timeLabel}
+            icon={timeIcon}
+            category="Time"
+            value={timeValue}
             title="Time of day"
             options={timeSections}
             selected={selectedTimes}
@@ -235,7 +294,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={activityLabel}
+            icon={activityIcon}
+            category="Activity"
+            value={activityValue}
             title="Activities"
             options={activities}
             selected={selectedActivities}
@@ -246,7 +307,9 @@ function FilterControls({
             flexStyle
           />
           <FilterDropdown
-            label={areaLabel}
+            icon={areaIcon}
+            category="Area"
+            value={areaValue}
             title="Areas"
             options={areas}
             selected={selectedAreas}
