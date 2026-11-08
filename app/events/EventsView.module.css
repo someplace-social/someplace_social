@@ -8,13 +8,11 @@
   flex-direction: column;
   position: relative;
 }
-
 .header {
   position: relative;
   border-bottom: 1px solid var(--line);
   background-color: var(--bg);
 }
-
 .headerInner {
   max-width: 1120px;
   margin: 0 auto;
@@ -25,19 +23,16 @@
   justify-content: space-between;
   gap: 16px;
 }
-
 .brandCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-
 .brandLogoLink {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
 }
-
 .logoImage {
   height: 72px;
   width: auto;
@@ -45,7 +40,6 @@
   object-fit: contain;
   filter: brightness(0);
 }
-
 .brandSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -54,17 +48,14 @@
   color: var(--muted);
   margin-top: 6px;
 }
-
 .navDesktop {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-
 .citiesWrapper {
   position: relative;
 }
-
 .citiesBtn {
   display: inline-flex;
   align-items: center;
@@ -81,17 +72,15 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-
 .citiesBtn:hover {
   background-color: #ebdcb9;
 }
-
 .citiesDropdown {
   position: absolute;
   z-index: 40;
   top: 100%;
   left: 0;
-  width: 200px;
+  min-width: 240px;
   margin-top: 6px;
   background-color: #ffffff;
   border: 1px solid var(--line);
@@ -99,7 +88,6 @@
   padding: 6px;
   box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
 }
-
 .cityOption {
   display: flex;
   align-items: center;
@@ -113,17 +101,36 @@
   font-weight: 500;
   text-decoration: none;
   background: none;
+  gap: 12px;
 }
-
+.cityName {
+  flex: 1;
+  white-space: nowrap;
+}
+.cityOptionRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cityEventCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
 .cityOption:hover {
   background-color: var(--topbar-bg);
 }
-
 .cityOptionActive {
   font-weight: 700;
   background-color: var(--topbar-bg);
 }
-
+.cityOptionActive .cityEventCount {
+  background-color: #e5d7b5;
+}
 .navLink {
   display: inline-flex;
   align-items: center;
@@ -135,11 +142,9 @@
   color: var(--ink);
   text-decoration: none;
 }
-
 .navLink:hover {
   color: var(--accent);
 }
-
 .addEventBtn {
   display: inline-flex;
   align-items: center;
@@ -156,18 +161,15 @@
   background: transparent;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-
 .addEventBtn:hover {
   background-color: var(--ink);
   color: var(--bg);
 }
-
 .navMobileActions {
   display: none;
   align-items: center;
   gap: 8px;
 }
-
 .mobileAddBtn {
   display: inline-flex;
   align-items: center;
@@ -180,7 +182,6 @@
   color: var(--ink);
   text-decoration: none;
 }
-
 .hamburgerBtn {
   display: inline-flex;
   align-items: center;
@@ -194,14 +195,12 @@
   color: var(--ink);
   cursor: pointer;
 }
-
 .drawerBackdrop {
   position: fixed;
   inset: 0;
   background-color: rgba(31, 27, 22, 0.45);
   z-index: 100;
 }
-
 .drawer {
   position: fixed;
   top: 0;
@@ -217,7 +216,6 @@
   padding: 20px 20px 28px;
   overflow-y: auto;
 }
-
 .drawerHeader {
   display: flex;
   justify-content: space-between;
@@ -225,13 +223,11 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
 }
-
 .drawerTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
   font-size: 18px;
 }
-
 .drawerCloseBtn {
   background: none;
   border: 0;
@@ -242,7 +238,6 @@
   align-items: center;
   justify-content: center;
 }
-
 .drawerSectionTitle {
   font-size: 12px;
   font-weight: 700;
@@ -251,13 +246,11 @@
   color: var(--muted);
   margin: 20px 0 8px;
 }
-
 .drawerCityList {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .drawerCityItem {
   display: flex;
   align-items: center;
@@ -269,19 +262,31 @@
   font-size: 15px;
   font-weight: 500;
   color: var(--ink);
+  gap: 10px;
 }
-
+.drawerCityItemRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.drawerCityCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
 .drawerCityItemActive {
   background-color: var(--topbar-bg);
   font-weight: 700;
 }
-
 .drawerNavLinks {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .drawerNavLink {
   display: flex;
   align-items: center;
@@ -293,17 +298,14 @@
   text-decoration: none;
   border-radius: 8px;
 }
-
 .drawerNavLink:hover {
   background-color: var(--topbar-bg);
 }
-
 .drawerFooter {
   margin-top: auto;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
-
 .drawerSupportBtn {
   display: flex;
   align-items: center;
@@ -316,7 +318,6 @@
   font-size: 14px;
   text-decoration: none;
 }
-
 .mainLayout {
   flex: 1;
   width: 100%;
@@ -328,14 +329,12 @@
   align-items: flex-start;
   gap: 48px;
 }
-
 .aside {
   flex: 0 0 280px;
   min-width: 0;
   position: sticky;
   top: 24px;
 }
-
 .asideTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
@@ -344,7 +343,6 @@
   letter-spacing: -0.03em;
   margin: 0 0 8px;
 }
-
 .asideSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 400;
@@ -353,14 +351,12 @@
   color: var(--muted);
   margin: 0;
 }
-
 .dayListVertical {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-top: 28px;
 }
-
 .dayBtnVertical {
   display: flex;
   justify-content: space-between;
@@ -377,46 +373,111 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-
 .dayBtnVertical:hover {
   background-color: var(--topbar-bg);
 }
-
 .dayBtnVerticalActive {
   background-color: var(--ink);
   color: var(--bg);
   font-weight: 700;
 }
-
 .dayCountText {
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
 }
-
 .dayCountTextActive {
   color: #e6dfd0;
 }
-
 .filterBlockDesktop {
   margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
-
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 .filterTitle {
   font-size: 13px;
   font-weight: 700;
   color: var(--muted);
-  margin-bottom: 8px;
+  margin: 0;
 }
-
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
 .filterListVertical {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 13px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 34px 0 36px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
 .filterFreeBtn {
   display: flex;
   justify-content: space-between;
@@ -432,11 +493,9 @@
   font-weight: 500;
   cursor: pointer;
 }
-
 .filterFreeBtn:hover {
   background-color: #ebdcba;
 }
-
 .checkboxSquare {
   width: 18px;
   height: 18px;
@@ -447,18 +506,15 @@
   align-items: center;
   justify-content: center;
 }
-
 .checkboxChecked {
   background-color: var(--ink);
   border-color: var(--ink);
   color: #ffffff;
 }
-
 .multiSelectWrapper {
   position: relative;
   width: 100%;
 }
-
 .multiSelectTrigger {
   width: 100%;
   display: flex;
@@ -476,16 +532,13 @@
   cursor: pointer;
   text-align: left;
 }
-
 .multiSelectTrigger:hover {
   background-color: #ebdcba;
 }
-
 .multiSelectTriggerActive {
   background-color: #ebdcba;
   font-weight: 700;
 }
-
 .multiSelectMenu {
   position: absolute;
   top: 100%;
@@ -501,7 +554,6 @@
   max-height: 250px;
   overflow-y: auto;
 }
-
 .multiSelectMenuHeader {
   display: flex;
   justify-content: space-between;
@@ -513,7 +565,6 @@
   font-weight: 700;
   color: var(--muted);
 }
-
 .multiSelectClearLink {
   background: none;
   border: 0;
@@ -523,7 +574,6 @@
   cursor: pointer;
   padding: 0;
 }
-
 .multiSelectOption {
   display: flex;
   align-items: center;
@@ -535,17 +585,14 @@
   color: var(--ink);
   user-select: none;
 }
-
 .multiSelectOption:hover {
   background-color: var(--topbar-bg);
 }
-
 .hiddenCheckbox {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
-
 .customCheckbox {
   width: 18px;
   height: 18px;
@@ -557,47 +604,43 @@
   justify-content: center;
   flex: 0 0 18px;
 }
-
 .customCheckboxChecked {
   background-color: var(--ink);
   border-color: var(--ink);
   color: #ffffff;
 }
-
 .clearFiltersBtn {
   background: none;
   border: 0;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
   text-decoration: underline;
   cursor: pointer;
   align-self: flex-start;
-  padding: 4px 0;
+  padding: 4px 6px;
   font-family: inherit;
+  white-space: nowrap;
 }
-
 .clearFiltersBtn:hover {
   color: var(--accent);
 }
-
 .mobileSectionHeader {
   display: none;
 }
-
 .mobileDaysGrid {
   display: none;
 }
-
+.mobileFiltersSection {
+  display: none;
+}
 .mobileFiltersRow {
   display: none;
 }
-
 .contentCol {
   flex: 999 1 520px;
   min-width: 0;
 }
-
 .timeGroupHeader {
   display: flex;
   align-items: center;
@@ -607,17 +650,14 @@
   font-weight: 700;
   color: var(--muted);
 }
-
 .timeGroupHeader:first-of-type {
   margin-top: 0;
 }
-
 .timeGroupLine {
   flex: 1;
   height: 1px;
   background-color: var(--line);
 }
-
 .eventCard {
   position: relative;
   overflow: hidden;
@@ -627,12 +667,10 @@
   margin-bottom: 12px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
 .eventCardOpen {
   border-color: var(--ink);
   box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
 }
-
 .cardRow {
   display: flex;
   gap: 20px;
@@ -646,7 +684,6 @@
   font: inherit;
   cursor: pointer;
 }
-
 .timeCol {
   flex: 0 0 76px;
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -654,7 +691,6 @@
   font-size: 26px;
   line-height: 1;
 }
-
 .endTimeText {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -662,13 +698,11 @@
   color: var(--muted);
   margin-top: 5px;
 }
-
 .infoCol {
   flex: 1;
   min-width: 0;
   padding-right: 48px;
 }
-
 .nextUpBadge {
   display: inline-block;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -680,25 +714,21 @@
   padding: 2px 7px;
   margin-bottom: 6px;
 }
-
 .eventTitle {
   font-weight: 700;
   font-size: 18px;
   line-height: 1.25;
 }
-
 .eventHost {
   color: var(--muted);
   font-weight: 400;
 }
-
 .eventLocation {
   font-size: 15px;
   line-height: 1.4;
   color: var(--muted);
   margin-top: 3px;
 }
-
 .priceLine {
   display: flex;
   align-items: center;
@@ -708,22 +738,18 @@
   line-height: 1.3;
   font-weight: 700;
 }
-
 .priceFree {
   color: var(--free);
 }
-
 .pricePaid {
   color: var(--price-donation);
 }
-
 .tagList {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
 }
-
 .tagChip {
   font-size: 12px;
   font-weight: 500;
@@ -731,7 +757,6 @@
   padding: 3px 9px;
   white-space: nowrap;
 }
-
 .chevronCircle {
   position: absolute;
   top: 16px;
@@ -747,18 +772,15 @@
   pointer-events: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-
 .chevronCircleOpen {
   background-color: var(--ink);
   color: var(--bg);
 }
-
 .expandedDrawer {
   border-top: 1px solid var(--line);
   padding: 16px 20px 18px 116px;
   background-color: transparent;
 }
-
 .eventDescription {
   margin: 0 0 14px;
   max-width: 580px;
@@ -766,7 +788,6 @@
   line-height: 1.5;
   color: #4f483e;
 }
-
 .preRegistration {
   margin: 0 0 14px;
   max-width: 580px;
@@ -775,7 +796,6 @@
   color: var(--ink);
   font-weight: 700;
 }
-
 .drawerActionRow {
   display: flex;
   align-items: center;
@@ -783,13 +803,11 @@
   gap: 16px;
   flex-wrap: wrap;
 }
-
 .buttonGrid4 {
   display: grid;
   grid-template-columns: repeat(4, 100px);
   gap: 8px;
 }
-
 .actionBtnPrimary {
   display: flex;
   flex-direction: column;
@@ -806,12 +824,10 @@
   text-decoration: none;
   cursor: pointer;
 }
-
 .actionBtnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
-
 .actionBtnOutline {
   display: flex;
   flex-direction: column;
@@ -829,12 +845,10 @@
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-
 .actionBtnOutline:hover {
   border-color: var(--ink);
   color: var(--ink);
 }
-
 .suggestEditBtn {
   display: inline-flex;
   align-items: center;
@@ -849,11 +863,9 @@
   cursor: pointer;
   font-family: inherit;
 }
-
 .suggestEditBtn:hover {
   color: var(--accent);
 }
-
 .emptyState {
   text-align: center;
   color: var(--muted);
@@ -862,7 +874,6 @@
   border: 1px solid var(--line);
   border-radius: 14px;
 }
-
 .emptyStateTitle {
   display: block;
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -871,20 +882,17 @@
   color: var(--ink);
   margin-bottom: 6px;
 }
-
 .footer {
   border-top: 1px solid var(--line);
   background-color: var(--bg);
   margin-top: auto;
 }
-
 .footerInner {
   max-width: 1120px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: 40px 32px 32px;
 }
-
 .footerQuoteRow {
   display: flex;
   flex-wrap: wrap;
@@ -892,12 +900,10 @@
   justify-content: space-between;
   gap: 24px 48px;
 }
-
 .footerLeftSection {
   flex: 1 1 500px;
   max-width: 580px;
 }
-
 .footerQuoteText {
   margin: 0;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -906,33 +912,28 @@
   line-height: 1.5;
   color: var(--ink);
 }
-
 .footerAuthor {
   margin-top: 8px;
   font-size: 12px;
   color: var(--muted);
 }
-
 .footerCopyright {
   margin-top: 18px;
   font-size: 11px;
   color: #8c8275;
 }
-
 .footerRightSection {
   flex: 0 0 auto;
   display: flex;
   align-items: flex-start;
   padding-top: 2px;
 }
-
 .footerSupportText {
   margin: 0;
   font-size: 13.5px;
   line-height: 1.4;
   color: #4f483e;
 }
-
 .buyDrinkLink {
   color: var(--ink);
   font-weight: 700;
@@ -940,11 +941,9 @@
   text-underline-offset: 3px;
   transition: color 0.15s ease;
 }
-
 .buyDrinkLink:hover {
   color: var(--accent);
 }
-
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -955,7 +954,6 @@
   justify-content: center;
   padding: 16px;
 }
-
 .modalContent {
   background-color: #ffffff;
   color: var(--ink);
@@ -966,28 +964,24 @@
   border: 1px solid var(--line);
   box-shadow: 0 10px 30px rgba(31, 27, 22, 0.2);
 }
-
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
 }
-
 .modalTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-size: 22px;
   font-weight: 800;
   margin: 0;
 }
-
 .modalSubtitle {
   display: block;
   color: var(--muted);
   font-size: 13px;
   margin-top: 4px;
 }
-
 .modalCloseBtn {
   background: none;
   border: none;
@@ -997,25 +991,21 @@
   cursor: pointer;
   padding: 4px 8px;
 }
-
 .modalForm {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 .modalField {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .modalField label {
   font-size: 13px;
   font-weight: 700;
   color: var(--ink);
 }
-
 .modalInput,
 .modalTextarea {
   padding: 10px 12px;
@@ -1026,19 +1016,16 @@
   font: inherit;
   font-size: 14px;
 }
-
 .modalTextarea {
   min-height: 120px;
   resize: vertical;
 }
-
 .modalActions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 10px;
 }
-
 .modalSubmitBtn {
   background-color: var(--accent);
   color: #ffffff;
@@ -1049,7 +1036,6 @@
   font-weight: 700;
   cursor: pointer;
 }
-
 .modalCancelBtn {
   background: transparent;
   color: var(--muted);
@@ -1060,46 +1046,37 @@
   font-weight: 600;
   cursor: pointer;
 }
-
 .statusMsg {
   margin-top: 8px;
   font-size: 13px;
   font-weight: 600;
 }
-
 @media (max-width: 899px) {
   .headerInner {
     padding: 14px 16px;
   }
-
   .logoImage {
     height: 50px;
     max-width: 260px;
   }
-
   .brandSubtitle {
     font-size: 12px;
     margin-top: 4px;
   }
-
   .navDesktop {
     display: none;
   }
-
   .navMobileActions {
     display: flex;
   }
-
   .mainLayout {
     padding: 16px 16px 40px;
     flex-direction: column;
     gap: 0;
   }
-
   .aside {
     display: none;
   }
-
   .mobileDaysGrid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -1107,7 +1084,6 @@
     margin-top: 8px;
     width: 100%;
   }
-
   .mobileDayBtn {
     display: flex;
     flex-direction: column;
@@ -1122,76 +1098,71 @@
     font: inherit;
     cursor: pointer;
   }
-
   .mobileDayBtnActive {
     border-color: var(--ink);
     background: var(--ink);
     color: var(--bg);
   }
-
   .mobileDayLabel {
     font-size: 11px;
     font-weight: 500;
     color: var(--muted);
   }
-
   .mobileDayLabelActive {
     color: #e6dfd0;
   }
-
   .mobileDayNum {
     font-family: var(--font-bricolage), system-ui, sans-serif;
     font-weight: 800;
     font-size: 20px;
     line-height: 1.1;
   }
-
   .mobileDayCount {
     font-size: 11px;
     font-weight: 500;
     color: var(--muted);
   }
-
   .mobileDayCountActive {
     color: #e6dfd0;
   }
-
-  .mobileFiltersRow {
+  .mobileFiltersSection {
     display: flex;
+    flex-direction: column;
     gap: 8px;
     margin-top: 12px;
     width: 100%;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    gap: 6px;
+    width: 100%;
     align-items: center;
   }
-
   .mobileFreeBtn {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding: 0 16px;
+    padding: 0 14px;
     background-color: var(--topbar-bg);
     color: var(--ink);
     border: 0;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
     flex: 0 0 auto;
   }
-
   .mobileFreeBtnActive {
     background-color: var(--ink);
     color: var(--bg);
     font-weight: 700;
   }
-
   .mobileSectionHeader {
     display: block;
     margin-top: 18px;
     margin-bottom: 8px;
   }
-
   .mobileHeadingTitle {
     font-family: var(--font-bricolage), system-ui, sans-serif;
     font-weight: 800;
@@ -1200,104 +1171,83 @@
     letter-spacing: -0.02em;
     margin: 0 0 3px;
   }
-
   .mobileHeadingSubtitle {
     font-size: 14px;
     line-height: 1.4;
     color: var(--muted);
     margin: 0;
   }
-
   .timeGroupHeader {
     margin: 18px 0 8px;
   }
-
   .cardRow {
     gap: 14px;
     padding: 14px;
   }
-
   .timeCol {
     flex: 0 0 54px;
     font-size: 22px;
   }
-
   .endTimeText {
     font-size: 12px;
     margin-top: 4px;
   }
-
   .infoCol {
     padding-right: 36px;
   }
-
   .eventTitle {
     font-size: 16px;
   }
-
   .eventLocation {
     font-size: 14px;
   }
-
   .priceLine {
     font-size: 14px;
   }
-
   .chevronCircle {
     top: 12px;
     right: 12px;
     width: 30px;
     height: 30px;
   }
-
   .expandedDrawer {
     padding: 14px 14px 8px;
   }
-
   .eventDescription {
     font-size: 14px;
     line-height: 1.45;
   }
-
   .preRegistration {
     font-size: 14px;
     line-height: 1.45;
   }
-
   .drawerActionRow {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
-
   .buttonGrid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
   }
-
   .suggestEditBtn {
     align-self: flex-end;
   }
-
   .footerInner {
     padding: 24px 16px 28px;
   }
-
   .footerQuoteRow {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
   }
-
   .footerLeftSection {
     max-width: 100%;
   }
-
   .footerQuoteText {
     font-size: 13px;
   }
-
   .footerRightSection {
     width: 100%;
   }

@@ -9,9 +9,14 @@ import styles from '../EventsView.module.css';
 interface EventHeaderProps {
   city: CityConfig;
   allCityOptions: CityConfig[];
+  cityCounts?: Record<string, number>;
 }
 
-export default function EventHeader({ city, allCityOptions }: EventHeaderProps) {
+export default function EventHeader({
+  city,
+  allCityOptions,
+  cityCounts = {},
+}: EventHeaderProps) {
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
@@ -25,6 +30,8 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const currentCityCount = cityCounts[city.slug];
 
   return (
     <>
@@ -41,9 +48,13 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                 className={styles.logoImage}
               />
             </Link>
-            <div className={styles.brandSubtitle}>{city.heroLocation}</div>
+            <div className={styles.brandSubtitle}>
+              {city.heroLocation}
+              {typeof currentCityCount === 'number' && (
+                <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'} listed</>
+              )}
+            </div>
           </div>
-
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
@@ -66,11 +77,11 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-
               {citiesMenuOpen && (
                 <div className={styles.citiesDropdown}>
                   {allCityOptions.map((c) => {
                     const isActive = c.slug === city.slug;
+                    const count = cityCounts[c.slug];
                     return (
                       <Link
                         key={c.slug}
@@ -80,28 +91,34 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                         }`}
                         onClick={() => setCitiesMenuOpen(false)}
                       >
-                        {c.name}
-                        {isActive && (
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M5 12.5l4.5 4.5L19 7.5" />
-                          </svg>
-                        )}
+                        <span className={styles.cityName}>{c.name}</span>
+                        <div className={styles.cityOptionRight}>
+                          {typeof count === 'number' && (
+                            <span className={styles.cityEventCount}>
+                              {count} {count === 1 ? 'event' : 'events'}
+                            </span>
+                          )}
+                          {isActive && (
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                          )}
+                        </div>
                       </Link>
                     );
                   })}
                 </div>
               )}
             </div>
-
             <Link href="/about" className={styles.navLink}>
               About
             </Link>
@@ -112,7 +129,6 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
               + Add event
             </Link>
           </nav>
-
           <div className={styles.navMobileActions}>
             <Link href="/contact" className={styles.mobileAddBtn}>
               + Add
@@ -138,7 +154,6 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
           </div>
         </div>
       </header>
-
       {mobileDrawerOpen && (
         <div
           className={styles.drawerBackdrop}
@@ -161,11 +176,11 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                 ✕
               </button>
             </div>
-
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
               {allCityOptions.map((c) => {
                 const isActive = c.slug === city.slug;
+                const count = cityCounts[c.slug];
                 return (
                   <Link
                     key={c.slug}
@@ -175,13 +190,19 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                     }`}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    {c.name}
-                    {isActive && <span>✓</span>}
+                    <span>{c.name}</span>
+                    <div className={styles.drawerCityItemRight}>
+                      {typeof count === 'number' && (
+                        <span className={styles.drawerCityCount}>
+                          {count} {count === 1 ? 'event' : 'events'}
+                        </span>
+                      )}
+                      {isActive && <span>✓</span>}
+                    </div>
                   </Link>
                 );
               })}
             </div>
-
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
@@ -206,7 +227,6 @@ export default function EventHeader({ city, allCityOptions }: EventHeaderProps) 
                 + Add event
               </Link>
             </div>
-
             <div className={styles.drawerFooter}>
               <a
                 href="https://buymeacoffee.com/someplacesocial"

@@ -38,5 +38,23 @@ export default async function CityEventsPage({ params }: PageProps) {
     notFound();
   }
   const events = await getEvents(city);
-  return <CityEventsView city={city} initialEvents={events} />;
+  const allSlugs = getAllCitySlugs();
+  const countEntries = await Promise.all(
+    allSlugs.map(async (slug) => {
+      const c = getCityBySlug(slug);
+      if (!c) return [slug, 0] as const;
+      if (c.slug === city.slug) return [slug, events.length] as const;
+      const otherEvents = await getEvents(c);
+      return [slug, otherEvents.length] as const;
+    })
+  );
+  const cityCounts = Object.fromEntries(countEntries);
+
+  return (
+    <CityEventsView
+      city={city}
+      initialEvents={events}
+      initialCityCounts={cityCounts}
+    />
+  );
 }

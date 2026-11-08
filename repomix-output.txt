@@ -1246,124 +1246,6 @@ export default async function CityEventsPage({ params }: PageProps) {
 }
 
 ================
-File: app/events/components/SuggestEditModal.tsx
-================
-'use client';
-import { useState } from 'react';
-import { Event } from '../../lib/google-sheets';
-import styles from '../EventsView.module.css';
-interface SuggestEditModalProps {
-  event: Event;
-  cityName: string;
-  onClose: () => void;
-}
-export default function SuggestEditModal({
-  event,
-  cityName,
-  onClose,
-}: SuggestEditModalProps) {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState(
-    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location} (${event.area})${event.preRegistration ? `\nPre-Registration: ${event.preRegistration}` : ''}\n\nRequested changes: `
-  );
-  const [status, setStatus] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setStatus('Submitting update...');
-    try {
-      const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: `Edit a Listing (${cityName})`,
-          message: fullMessage,
-        }),
-      });
-      const res = await response.json();
-      if (res.success) {
-        setStatus('Thanks! Your edit suggestion has been sent.');
-        setTimeout(onClose, 1800);
-      } else {
-        setStatus('Failed to send. Please try again.');
-      }
-    } catch {
-      setStatus('An error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div
-        className={styles.modalContent}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className={styles.modalHeader}>
-          <div>
-            <h2 className={styles.modalTitle}>Suggest Edit</h2>
-            <small className={styles.modalSubtitle}>{event.title}</small>
-          </div>
-          <button
-            type="button"
-            className={styles.modalCloseBtn}
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-          <div className={styles.modalField}>
-            <label htmlFor="editEmail">Your Email (optional)</label>
-            <input
-              id="editEmail"
-              type="email"
-              className={styles.modalInput}
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className={styles.modalField}>
-            <label htmlFor="editMessage">What needs to be changed? *</label>
-            <textarea
-              id="editMessage"
-              required
-              className={styles.modalTextarea}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-          <div className={styles.modalActions}>
-            <button
-              type="button"
-              className={styles.modalCancelBtn}
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={styles.modalSubmitBtn}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Sending...' : 'Send Edit'}
-            </button>
-          </div>
-          {status && <p className={styles.statusMsg}>{status}</p>}
-        </form>
-      </div>
-    </div>
-  );
-}
-
-================
 File: README.md
 ================
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
@@ -1497,6 +1379,124 @@ export default function Accordion({ title, children }: AccordionProps) {
         </span>
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
+}
+
+================
+File: app/events/components/SuggestEditModal.tsx
+================
+'use client';
+import { useState } from 'react';
+import { Event } from '../../lib/google-sheets';
+import styles from '../EventsView.module.css';
+interface SuggestEditModalProps {
+  event: Event;
+  cityName: string;
+  onClose: () => void;
+}
+export default function SuggestEditModal({
+  event,
+  cityName,
+  onClose,
+}: SuggestEditModalProps) {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState(
+    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nFrequency: ${event.frequency || 'Weekly'}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}\nLocation: ${event.location} (${event.area})${event.preRegistration ? `\nPre-Registration: ${event.preRegistration}` : ''}\n\nRequested changes: `
+  );
+  const [status, setStatus] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus('Submitting update...');
+    try {
+      const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Edit a Listing (${cityName})`,
+          message: fullMessage,
+        }),
+      });
+      const res = await response.json();
+      if (res.success) {
+        setStatus('Thanks! Your edit suggestion has been sent.');
+        setTimeout(onClose, 1800);
+      } else {
+        setStatus('Failed to send. Please try again.');
+      }
+    } catch {
+      setStatus('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div
+        className={styles.modalContent}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className={styles.modalHeader}>
+          <div>
+            <h2 className={styles.modalTitle}>Suggest Edit</h2>
+            <small className={styles.modalSubtitle}>{event.title}</small>
+          </div>
+          <button
+            type="button"
+            className={styles.modalCloseBtn}
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.modalField}>
+            <label htmlFor="editEmail">Your Email (optional)</label>
+            <input
+              id="editEmail"
+              type="email"
+              className={styles.modalInput}
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalField}>
+            <label htmlFor="editMessage">What needs to be changed? *</label>
+            <textarea
+              id="editMessage"
+              required
+              className={styles.modalTextarea}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalActions}>
+            <button
+              type="button"
+              className={styles.modalCancelBtn}
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.modalSubmitBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Edit'}
+            </button>
+          </div>
+          {status && <p className={styles.statusMsg}>{status}</p>}
+        </form>
+      </div>
     </div>
   );
 }
@@ -1666,237 +1666,6 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
 }
 
 ================
-File: app/events/components/EventCard.tsx
-================
-'use client';
-import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  isFreePrice,
-  ensureExternalUrl,
-  getTagStyle,
-} from '../utils';
-import styles from '../EventsView.module.css';
-interface EventCardProps {
-  event: Event;
-  isOpen: boolean;
-  isNextUp: boolean;
-  cityName: string;
-  onToggle: () => void;
-  onOpenEdit: (ev: Event) => void;
-}
-export default function EventCard({
-  event,
-  isOpen,
-  isNextUp,
-  cityName,
-  onToggle,
-  onOpenEdit,
-}: EventCardProps) {
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities && event.activities.length > 0
-    ? event.activities
-    : (event.activity
-        ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
-        : [event.activity1, event.activity2, event.activity3].filter(Boolean));
-  const displayVenue = event.venue || event.location;
-  return (
-    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
-      <button
-        type="button"
-        className={styles.cardRow}
-        aria-expanded={isOpen}
-        onClick={onToggle}
-      >
-        <div className={styles.timeCol}>
-          {start}
-          {end && <div className={styles.endTimeText}>to {end}</div>}
-        </div>
-        <div className={styles.infoCol}>
-          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
-          <div className={styles.eventTitle}>
-            {event.title}
-            {event.organization && event.organization !== displayVenue && (
-              <span className={styles.eventHost}> w/ {event.organization}</span>
-            )}
-          </div>
-          <div className={styles.eventLocation}>
-            {displayVenue}
-            {event.area ? ` · ${event.area}` : ''}
-          </div>
-          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 12V4h8l10 10-8 8L3 12z" />
-              <circle cx="7.5" cy="8.5" r="1" />
-            </svg>
-            {isFree ? 'Free' : event.price || 'Varies'}
-          </div>
-          {tagList.length > 0 && (
-            <div className={styles.tagList}>
-              {tagList.map((tag) => {
-                const customStyle = getTagStyle(tag);
-                return (
-                  <span
-                    key={tag}
-                    className={styles.tagChip}
-                    style={{
-                      color: customStyle.color,
-                      backgroundColor: customStyle.background,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <span
-          aria-hidden="true"
-          className={`${styles.chevronCircle} ${
-            isOpen ? styles.chevronCircleOpen : ''
-          }`}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-          </svg>
-        </span>
-      </button>
-      {isOpen && (
-        <div className={styles.expandedDrawer}>
-          {(event.about || event.notes) && (
-            <p className={styles.eventDescription}>{event.about || event.notes}</p>
-          )}
-          {event.preRegistration && (
-            <p className={styles.preRegistration}>{event.preRegistration}</p>
-          )}
-          <div className={styles.drawerActionRow}>
-            <div className={styles.buttonGrid4}>
-              <a
-                href={
-                  event.map
-                    ? ensureExternalUrl(event.map)
-                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${displayVenue}, ${cityName}`
-                      )}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.actionBtnPrimary}
-                aria-label="Open in Maps"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-                Maps
-              </a>
-              {event.website ? (
-                <a
-                  href={ensureExternalUrl(event.website)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                  Website
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                  Website
-                </div>
-              )}
-              {event.social ? (
-                <a
-                  href={ensureExternalUrl(event.social)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                  Instagram
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                  Instagram
-                </div>
-              )}
-              {event.contact ? (
-                <a
-                  href={ensureExternalUrl(event.contact)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                  Contact
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                  Contact
-                </div>
-              )}
-            </div>
-            <button
-              type="button"
-              className={styles.suggestEditBtn}
-              onClick={() => onOpenEdit(event)}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
-              </svg>
-              Suggest edit
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-================
 File: app/globals.css
 ================
 :root {
@@ -1967,46 +1736,6 @@ File: app/medellin/DayAccordion.module.css
   .title, .icon {
     font-size: 2em;
   }
-}
-
-================
-File: app/medellin/EventListing.tsx
-================
-import { Event } from '../lib/google-sheets';
-import styles from './Medellin.module.css';
-type EventListingProps = {
-  event: Event;
-  onEdit: (content: string) => void;
-};
-const createLink = (text: string, url: string) => {
-  if (!url || url.trim() === '') return null;
-  const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
-  return <a href={fullUrl} target="_blank" rel="noopener noreferrer">{text}</a>;
-};
-export default function EventListing({ event, onEdit }: EventListingProps) {
-  const activities = event.activity || (event.activities && event.activities.length > 0 ? event.activities.join(', ') : [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', '));
-  const organizationText = event.organization ? ` w/ ${event.organization}` : "";
-  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
-  return (
-    <div className={styles.listing}>
-      <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
-      <p><em>{activities}</em></p>
-      <p className={styles.listingDetails}>
-        <span>⏳ {event.startTime} - {event.endTime}</span>
-        <span>💰 {event.price || 'Free or Varies'}</span>
-        {event.preRegistration && <span>📋 {event.preRegistration}</span>}
-        <span>📍 {event.location}</span>
-        <span>🗺️  {event.area}</span>
-      </p>
-      <p className={styles.listingLinks}>
-        {createLink('Map', event.map)}
-        {createLink('Social', event.social)}
-        {createLink('Website', event.website)}
-        {createLink('Contact', event.contact)}
-        <a href="#" onClick={(e) => { e.preventDefault(); onEdit(visualText); }} className={styles.editLink}>✏️ EDIT</a>
-      </p>
-    </div>
-  );
 }
 
 ================
@@ -3148,162 +2877,51 @@ File: app/events/EventsView.module.css
 }
 
 ================
-File: app/events/utils.ts
+File: app/medellin/EventListing.tsx
 ================
-export function parseHour(timeStr: string): number {
-  if (!timeStr) return 18;
-  const cleaned = timeStr.trim().toLowerCase();
-  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
-  if (match) {
-    let hour = parseInt(match[1], 10);
-    const minute = match[2] ? parseInt(match[2], 10) : 0;
-    const meridian = match[3];
-    if (meridian) {
-      const isPm = meridian.startsWith('p');
-      const isAm = meridian.startsWith('a');
-      if (isPm && hour < 12) hour += 12;
-      if (isAm && hour === 12) hour = 0;
-    } else {
-      if (hour >= 1 && hour <= 6) {
-        hour += 12;
-      }
-    }
-    return hour + minute / 60;
-  }
-  const numMatch = cleaned.match(/\d+/);
-  return numMatch ? parseInt(numMatch[0], 10) : 18;
-}
-export function formatTimeLabel(timeStr: string): string {
-  if (!timeStr) return '';
-  const cleaned = timeStr.trim();
-  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
-  if (match) {
-    const hour = match[1];
-    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
-    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
-    return `${hour}${minute}${meridian}`;
-  }
-  return cleaned;
-}
-export function formatTimeRange(
-  startTime: string,
-  endTime: string
-): { start: string; end?: string } {
-  const start = formatTimeLabel(startTime);
-  const end = endTime ? formatTimeLabel(endTime) : undefined;
-  return { start, end };
-}
-export function isFreePrice(price: string): boolean {
-  if (!price) return true;
-  const p = price.trim().toLowerCase();
-  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
-}
-const DAY_ALIAS_MAP: Record<string, string[]> = {
-  sun: ['sun', 'sunday'],
-  sunday: ['sun', 'sunday'],
-  mon: ['mon', 'monday'],
-  monday: ['mon', 'monday'],
-  tue: ['tue', 'tues', 'tuesday'],
-  tuesday: ['tue', 'tues', 'tuesday'],
-  wed: ['wed', 'weds', 'wednesday'],
-  wednesday: ['wed', 'weds', 'wednesday'],
-  thu: ['thu', 'thur', 'thurs', 'thursday'],
-  thursday: ['thu', 'thur', 'thurs', 'thursday'],
-  fri: ['fri', 'friday'],
-  friday: ['fri', 'friday'],
-  sat: ['sat', 'saturday'],
-  saturday: ['sat', 'saturday'],
+import { Event } from '../lib/google-sheets';
+import styles from './Medellin.module.css';
+type EventListingProps = {
+  event: Event;
+  onEdit: (content: string) => void;
 };
-export function normalizeDayOfWeek(dayStr: string): string {
-  if (!dayStr) return '';
-  const trimmed = dayStr.trim();
-  const lower = trimmed.toLowerCase();
-  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
-    return 'Daily';
-  }
-  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
-  const DAY_TO_SHORT: Record<string, string> = {
-    sun: 'Sun',
-    sunday: 'Sun',
-    mon: 'Mon',
-    monday: 'Mon',
-    tue: 'Tue',
-    tues: 'Tue',
-    tuesday: 'Tue',
-    wed: 'Wed',
-    weds: 'Wed',
-    wednesday: 'Wed',
-    thu: 'Thu',
-    thur: 'Thu',
-    thurs: 'Thu',
-    thursday: 'Thu',
-    fri: 'Fri',
-    friday: 'Fri',
-    sat: 'Sat',
-    saturday: 'Sat',
-  };
-  const normalized: string[] = [];
-  for (const token of tokens) {
-    const short = DAY_TO_SHORT[token.toLowerCase()];
-    if (short && !normalized.includes(short)) {
-      normalized.push(short);
-    }
-  }
-  return normalized.length > 0 ? normalized.join(', ') : trimmed;
-}
-export function matchesDay(eventDays: string, targetDayName: string): boolean {
-  if (!eventDays || !targetDayName) return false;
-  const targetKey = targetDayName.trim().toLowerCase();
-  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
-  const rawLower = eventDays.toLowerCase();
-  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
-    return true;
-  }
-  if (rawLower.includes(targetKey)) {
-    return true;
-  }
-  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
-  return tokens.some((token) => aliases.includes(token));
-}
-export function ensureExternalUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
-}
-export function getTagStyle(tag: string): { color: string; background: string } {
-  const t = (tag || '').trim().toLowerCase();
-  if (t.includes('science')) {
-    return { color: '#0f5c5c', background: '#d3efec' };
-  }
-  if (t.includes('craft')) {
-    return { color: '#8a3d0c', background: '#fde4cf' };
-  }
-  if (t.includes('food') || t.includes('drink')) {
-    return { color: '#6b5200', background: '#f4eab8' };
-  }
-  if (t.includes('community') || t.includes('social')) {
-    return { color: '#3b4a54', background: '#e1e7ea' };
-  }
-  if (t.includes('music') || t.includes('bluegrass')) {
-    return { color: '#5b2a86', background: '#ecdcf7' };
-  }
-  if (t.includes('trivia')) {
-    return { color: '#2d3f7a', background: '#dde4f7' };
-  }
-  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
-    return { color: '#8a1f4f', background: '#fbdce9' };
-  }
-  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
-    return { color: '#852b2b', background: '#f9dede' };
-  }
-  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
-    return { color: '#1f6a42', background: '#d7f0df' };
-  }
-  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
-    return { color: '#2c4f7c', background: '#dbe5f7' };
-  }
-  return { color: '#4f483e', background: '#f3ead4' };
+const createLink = (text: string, url: string) => {
+  if (!url || url.trim() === '') return null;
+  const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : "https://" + url;
+  return <a href={fullUrl} target="_blank" rel="noopener noreferrer">{text}</a>;
+};
+export default function EventListing({ event, onEdit }: EventListingProps) {
+  const activities =
+    event.activity ||
+    (event.activities && event.activities.length > 0
+      ? event.activities.join(', ')
+      : [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', '));
+  const organizationText = event.organization ? ` w/ ${event.organization}` : '';
+  const recurrenceText = event.frequency
+    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
+    : '';
+  const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime}${recurrenceText ? ` 🔄 ${recurrenceText}` : ''} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
+  return (
+    <div className={styles.listing}>
+      <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
+      <p><em>{activities}</em></p>
+      <p className={styles.listingDetails}>
+        <span>⏳ {event.startTime} - {event.endTime}</span>
+        {recurrenceText && <span>🔄 {recurrenceText}</span>}
+        <span>💰 {event.price || 'Free or Varies'}</span>
+        {event.preRegistration && <span>📋 {event.preRegistration}</span>}
+        <span>📍 {event.location}</span>
+        <span>🗺️  {event.area}</span>
+      </p>
+      <p className={styles.listingLinks}>
+        {createLink('Map', event.map)}
+        {createLink('Social', event.social)}
+        {createLink('Website', event.website)}
+        {createLink('Contact', event.contact)}
+        <a href="#" onClick={(e) => { e.preventDefault(); onEdit(visualText); }} className={styles.editLink}>✏️ EDIT</a>
+      </p>
+    </div>
+  );
 }
 
 ================
@@ -3483,13 +3101,630 @@ File: app/Page.module.css
 }
 
 ================
+File: app/events/components/EventCard.tsx
+================
+'use client';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  isFreePrice,
+  ensureExternalUrl,
+  getTagStyle,
+} from '../utils';
+import styles from '../EventsView.module.css';
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
+}
+export default function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList =
+    event.activities && event.activities.length > 0
+      ? event.activities
+      : event.activity
+      ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
+      : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+  const displayVenue = event.venue || event.location;
+  const recurrenceText = event.frequency
+    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
+    : event.frequencyNotes || '';
+  return (
+    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
+      <button
+        type="button"
+        className={styles.cardRow}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <div className={styles.timeCol}>
+          {start}
+          {end && <div className={styles.endTimeText}>to {end}</div>}
+        </div>
+        <div className={styles.infoCol}>
+          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
+          <div className={styles.eventTitle}>
+            {event.title}
+            {event.organization && event.organization !== displayVenue && (
+              <span className={styles.eventHost}> w/ {event.organization}</span>
+            )}
+          </div>
+          <div className={styles.eventLocation}>
+            {displayVenue}
+            {event.area ? ` · ${event.area}` : ''}
+          </div>
+          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12V4h8l10 10-8 8L3 12z" />
+              <circle cx="7.5" cy="8.5" r="1" />
+            </svg>
+            {isFree ? 'Free' : event.price || 'Varies'}
+          </div>
+          {tagList.length > 0 && (
+            <div className={styles.tagList}>
+              {tagList.map((tag) => {
+                const customStyle = getTagStyle(tag);
+                return (
+                  <span
+                    key={tag}
+                    className={styles.tagChip}
+                    style={{
+                      color: customStyle.color,
+                      backgroundColor: customStyle.background,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <span
+          aria-hidden="true"
+          className={`${styles.chevronCircle} ${
+            isOpen ? styles.chevronCircleOpen : ''
+          }`}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className={styles.expandedDrawer}>
+          {(event.about || event.notes) && (
+            <p className={styles.eventDescription}>{event.about || event.notes}</p>
+          )}
+          {recurrenceText && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: event.preRegistration ? 8 : 14,
+              }}
+            >
+              📅Recurs: {recurrenceText}
+            </p>
+          )}
+          {event.preRegistration && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: 14,
+              }}
+            >
+              📝Pre-Registration: {event.preRegistration}
+            </p>
+          )}
+          <div className={styles.drawerActionRow}>
+            <div className={styles.buttonGrid4}>
+              <a
+                href={
+                  event.map
+                    ? ensureExternalUrl(event.map)
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${displayVenue}, ${cityName}`
+                      )}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.actionBtnPrimary}
+                aria-label="Open in Maps"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Maps
+              </a>
+              {event.website ? (
+                <a
+                  href={ensureExternalUrl(event.website)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </div>
+              )}
+              {event.social ? (
+                <a
+                  href={ensureExternalUrl(event.social)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </div>
+              )}
+              {event.contact ? (
+                <a
+                  href={ensureExternalUrl(event.contact)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              className={styles.suggestEditBtn}
+              onClick={() => onOpenEdit(event)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
+              </svg>
+              Suggest edit
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+================
+File: app/events/utils.ts
+================
+import { Event } from '../lib/google-sheets';
+export function parseHour(timeStr: string): number {
+  if (!timeStr) return 18;
+  const cleaned = timeStr.trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
+  if (match) {
+    let hour = parseInt(match[1], 10);
+    const minute = match[2] ? parseInt(match[2], 10) : 0;
+    const meridian = match[3];
+    if (meridian) {
+      const isPm = meridian.startsWith('p');
+      const isAm = meridian.startsWith('a');
+      if (isPm && hour < 12) hour += 12;
+      if (isAm && hour === 12) hour = 0;
+    } else {
+      if (hour >= 1 && hour <= 6) {
+        hour += 12;
+      }
+    }
+    return hour + minute / 60;
+  }
+  const numMatch = cleaned.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0], 10) : 18;
+}
+export function formatTimeLabel(timeStr: string): string {
+  if (!timeStr) return '';
+  const cleaned = timeStr.trim();
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  if (match) {
+    const hour = match[1];
+    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
+    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
+    return `${hour}${minute}${meridian}`;
+  }
+  return cleaned;
+}
+export function formatTimeRange(
+  startTime: string,
+  endTime: string
+): { start: string; end?: string } {
+  const start = formatTimeLabel(startTime);
+  const end = endTime ? formatTimeLabel(endTime) : undefined;
+  return { start, end };
+}
+export function isFreePrice(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+const DAY_ALIAS_MAP: Record<string, string[]> = {
+  sun: ['sun', 'sunday'],
+  sunday: ['sun', 'sunday'],
+  mon: ['mon', 'monday'],
+  monday: ['mon', 'monday'],
+  tue: ['tue', 'tues', 'tuesday'],
+  tuesday: ['tue', 'tues', 'tuesday'],
+  wed: ['wed', 'weds', 'wednesday'],
+  wednesday: ['wed', 'weds', 'wednesday'],
+  thu: ['thu', 'thur', 'thurs', 'thursday'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday'],
+  fri: ['fri', 'friday'],
+  friday: ['fri', 'friday'],
+  sat: ['sat', 'saturday'],
+  saturday: ['sat', 'saturday'],
+};
+export function normalizeDayOfWeek(dayStr: string): string {
+  if (!dayStr) return '';
+  const trimmed = dayStr.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
+    return 'Daily';
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
+  const DAY_TO_SHORT: Record<string, string> = {
+    sun: 'Sun',
+    sunday: 'Sun',
+    mon: 'Mon',
+    monday: 'Mon',
+    tue: 'Tue',
+    tues: 'Tue',
+    tuesday: 'Tue',
+    wed: 'Wed',
+    weds: 'Wed',
+    wednesday: 'Wed',
+    thu: 'Thu',
+    thur: 'Thu',
+    thurs: 'Thu',
+    thursday: 'Thu',
+    fri: 'Fri',
+    friday: 'Fri',
+    sat: 'Sat',
+    saturday: 'Sat',
+  };
+  const normalized: string[] = [];
+  for (const token of tokens) {
+    const short = DAY_TO_SHORT[token.toLowerCase()];
+    if (short && !normalized.includes(short)) {
+      normalized.push(short);
+    }
+  }
+  return normalized.length > 0 ? normalized.join(', ') : trimmed;
+}
+export function matchesDay(eventDays: string, targetDayName: string): boolean {
+  if (!eventDays || !targetDayName) return false;
+  const targetKey = targetDayName.trim().toLowerCase();
+  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
+  const rawLower = eventDays.toLowerCase();
+  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
+    return true;
+  }
+  if (rawLower.includes(targetKey)) {
+    return true;
+  }
+  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
+  return tokens.some((token) => aliases.includes(token));
+}
+const MONTH_NAME_TO_NUM: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+function parseMonthIndex(str: string): number | null {
+  const cleaned = str.trim().toLowerCase();
+  return MONTH_NAME_TO_NUM[cleaned] ?? null;
+}
+export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean {
+  if (!frequencyNotes) return true;
+  const cleaned = frequencyNotes.trim();
+  if (!cleaned) return true;
+  if (/^irregular/i.test(cleaned)) {
+    return false;
+  }
+  const targetMonth = targetDate.getMonth() + 1;
+  if (/months?,\s*even/i.test(cleaned)) {
+    return targetMonth % 2 === 0;
+  }
+  if (/months?,\s*odd/i.test(cleaned)) {
+    return targetMonth % 2 !== 0;
+  }
+  const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
+  if (rangeMatch) {
+    const startMonth = parseMonthIndex(rangeMatch[1]);
+    const endMonth = parseMonthIndex(rangeMatch[2]);
+    if (startMonth && endMonth) {
+      if (startMonth <= endMonth) {
+        return targetMonth >= startMonth && targetMonth <= endMonth;
+      }
+      return targetMonth >= startMonth || targetMonth <= endMonth;
+    }
+  }
+  return true;
+}
+export function getWeekdayOccurrence(targetDate: Date): {
+  occurrence: number;
+  isLast: boolean;
+} {
+  const dayOfMonth = targetDate.getDate();
+  const occurrence = Math.ceil(dayOfMonth / 7);
+  const daysInMonth = new Date(
+    targetDate.getFullYear(),
+    targetDate.getMonth() + 1,
+    0
+  ).getDate();
+  const isLast = dayOfMonth + 7 > daysInMonth;
+  return { occurrence, isLast };
+}
+function getWeekNumber(d: Date): number {
+  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = target.getUTCDay() || 7;
+  target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
+  const notes = (event.frequencyNotes || '').trim();
+  if (/^irregular/i.test(notes)) {
+    return false;
+  }
+  if (!isMonthActive(notes, targetDate)) {
+    return false;
+  }
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const targetDayName = DAY_NAMES[targetDate.getDay()];
+  const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
+  if (!matchesDay(daySpec, targetDayName)) {
+    return false;
+  }
+  const rawFreq = (event.frequency || '').trim();
+  if (!rawFreq) {
+    return true;
+  }
+  const parts = rawFreq.split(',').map((p) => p.trim());
+  const cadence = parts[0]?.toLowerCase() || 'weekly';
+  const pattern = (parts.slice(1).join(',') || '').toLowerCase();
+  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
+  const ordinalMatches: boolean[] = [];
+  if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
+  if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
+  if (/\b3rd\b/.test(pattern)) ordinalMatches.push(occurrence === 3);
+  if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
+  if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
+  if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
+  if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    return true;
+  }
+  if (cadence.includes('bi-weekly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    const weekNum = getWeekNumber(targetDate);
+    return weekNum % 2 === 0;
+  }
+  return true;
+}
+export function ensureExternalUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+export function getTagStyle(tag: string): { color: string; background: string } {
+  const t = (tag || '').trim().toLowerCase();
+  if (t.includes('science')) {
+    return { color: '#0f5c5c', background: '#d3efec' };
+  }
+  if (t.includes('craft')) {
+    return { color: '#8a3d0c', background: '#fde4cf' };
+  }
+  if (t.includes('food') || t.includes('drink')) {
+    return { color: '#6b5200', background: '#f4eab8' };
+  }
+  if (t.includes('community') || t.includes('social')) {
+    return { color: '#3b4a54', background: '#e1e7ea' };
+  }
+  if (t.includes('music') || t.includes('bluegrass')) {
+    return { color: '#5b2a86', background: '#ecdcf7' };
+  }
+  if (t.includes('trivia')) {
+    return { color: '#2d3f7a', background: '#dde4f7' };
+  }
+  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
+    return { color: '#8a1f4f', background: '#fbdce9' };
+  }
+  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
+    return { color: '#852b2b', background: '#f9dede' };
+  }
+  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
+    return { color: '#1f6a42', background: '#d7f0df' };
+  }
+  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
+    return { color: '#2c4f7c', background: '#dbe5f7' };
+  }
+  return { color: '#4f483e', background: '#f3ead4' };
+}
+
+================
+File: app/components/FilterBar.tsx
+================
+"use client";
+import { useState } from 'react';
+import Link from 'next/link';
+import styles from './FilterBar.module.css';
+const MAX_PRICE = 100;
+type FilterBarProps = {
+  activities: string[];
+  areas: string[];
+  onFilterChange: (filters: { activity: string; area: string; price: number }) => void;
+};
+export default function FilterBar({ activities, areas, onFilterChange }: FilterBarProps) {
+  const [activity, setActivity] = useState('all');
+  const [area, setArea] = useState('all');
+  const [price, setPrice] = useState(MAX_PRICE);
+  const handleFilterChange = (newActivity: string, newArea: string, newPrice: number) => {
+    onFilterChange({ activity: newActivity, area: newArea, price: newPrice });
+  };
+  const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newActivity = e.target.value;
+    setActivity(newActivity);
+    handleFilterChange(newActivity, area, price);
+  };
+  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newArea = e.target.value;
+    setArea(newArea);
+    handleFilterChange(activity, newArea, price);
+  };
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrice = Number(e.target.value);
+    setPrice(newPrice);
+    handleFilterChange(activity, area, newPrice);
+  };
+  const clearFilters = () => {
+    setActivity('all');
+    setArea('all');
+    setPrice(MAX_PRICE);
+    handleFilterChange('all', 'all', MAX_PRICE);
+  };
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.notesContainer}>
+        <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
+        <ol className={styles.notesList}>
+          <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
+          <li>Correct info depends on the community! Click “✏️ EDIT” if event info needs to be updated.</li>
+          <li>Know of an event or activity that should be on this list? <Link href="/contact">Submit a listing.</Link></li>
+          <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
+        </ol>
+      </div>
+      <div className={styles.filtersContainer}>
+        <select value={activity} onChange={handleActivityChange} className={styles.select}>
+          <option value="all">Activity</option>
+          {activities.map(act => <option key={act} value={act}>{act}</option>)}
+        </select>
+        <select value={area} onChange={handleAreaChange} className={styles.select}>
+          <option value="all">Area</option>
+          {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
+        </select>
+        <div className={styles.priceFilter}>
+          <label htmlFor="price">Price: {price}k</label>
+          <input
+            type="range"
+            id="price"
+            min="0"
+            max={MAX_PRICE}
+            value={price}
+            onChange={handlePriceChange}
+            className={styles.slider}
+          />
+        </div>
+        <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
+      </div>
+    </div>
+  );
+}
+
+================
 File: app/events/CityEventsView.tsx
 ================
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import { CityConfig, CITIES } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, isFreePrice, matchesDay } from './utils';
+import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
 import EventHeader from './components/EventHeader';
 import DayPicker from './components/DayPicker';
 import FilterControls from './components/FilterControls';
@@ -3567,11 +3802,12 @@ export default function CityEventsView({
   const activities = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      const list = ev.activities && ev.activities.length > 0
-        ? ev.activities
-        : ev.activity
-        ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
-        : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
+      const list =
+        ev.activities && ev.activities.length > 0
+          ? ev.activities
+          : ev.activity
+          ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
       list.forEach((act) => {
         const trimmed = act.trim();
         if (trimmed) set.add(trimmed);
@@ -3606,10 +3842,9 @@ export default function CityEventsView({
   const getFilteredEventsForDay = (dayIndex: number) => {
     const day = rollingWeek[dayIndex];
     if (!day) return [];
-    const dayName = DAY_NAMES_LONG[day.getDay()];
     return allEvents
       .filter((ev) => {
-        if (!matchesDay(ev.dayOfWeek, dayName)) return false;
+        if (!isEventActiveOnDate(ev, day)) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
         const evHour = parseHour(ev.startTime);
         if (selectedTimes.length > 0) {
@@ -3620,11 +3855,12 @@ export default function CityEventsView({
           if (!matchesTime) return false;
         }
         if (selectedActivities.length > 0) {
-          const acts = (ev.activities && ev.activities.length > 0
-            ? ev.activities
-            : ev.activity
-            ? ev.activity.split(',').map((a) => a.trim())
-            : [ev.activity1, ev.activity2, ev.activity3]
+          const acts = (
+            ev.activities && ev.activities.length > 0
+              ? ev.activities
+              : ev.activity
+              ? ev.activity.split(',').map((a) => a.trim())
+              : [ev.activity1, ev.activity2, ev.activity3]
           )
             .filter(Boolean)
             .map((a) => a.trim().toLowerCase());
@@ -3781,85 +4017,6 @@ export default function CityEventsView({
           onClose={() => setEditModalEvent(null)}
         />
       )}
-    </div>
-  );
-}
-
-================
-File: app/components/FilterBar.tsx
-================
-"use client";
-import { useState } from 'react';
-import Link from 'next/link';
-import styles from './FilterBar.module.css';
-const MAX_PRICE = 100;
-type FilterBarProps = {
-  activities: string[];
-  areas: string[];
-  onFilterChange: (filters: { activity: string; area: string; price: number }) => void;
-};
-export default function FilterBar({ activities, areas, onFilterChange }: FilterBarProps) {
-  const [activity, setActivity] = useState('all');
-  const [area, setArea] = useState('all');
-  const [price, setPrice] = useState(MAX_PRICE);
-  const handleFilterChange = (newActivity: string, newArea: string, newPrice: number) => {
-    onFilterChange({ activity: newActivity, area: newArea, price: newPrice });
-  };
-  const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newActivity = e.target.value;
-    setActivity(newActivity);
-    handleFilterChange(newActivity, area, price);
-  };
-  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newArea = e.target.value;
-    setArea(newArea);
-    handleFilterChange(activity, newArea, price);
-  };
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrice = Number(e.target.value);
-    setPrice(newPrice);
-    handleFilterChange(activity, area, newPrice);
-  };
-  const clearFilters = () => {
-    setActivity('all');
-    setArea('all');
-    setPrice(MAX_PRICE);
-    handleFilterChange('all', 'all', MAX_PRICE);
-  };
-  return (
-    <div className={styles.wrapper}>
-      <div className={styles.notesContainer}>
-        <h2 className={styles.notesTitle}>A Few Quick Notes</h2>
-        <ol className={styles.notesList}>
-          <li>Event details can change quick. Use the event’s links to <strong>confirm before you go.</strong></li>
-          <li>Correct info depends on the community! Click “✏️ EDIT” if event info needs to be updated.</li>
-          <li>Know of an event or activity that should be on this list? <Link href="/contact">Submit a listing.</Link></li>
-          <li>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer">buy me a drink.</a></li>
-        </ol>
-      </div>
-      <div className={styles.filtersContainer}>
-        <select value={activity} onChange={handleActivityChange} className={styles.select}>
-          <option value="all">Activity</option>
-          {activities.map(act => <option key={act} value={act}>{act}</option>)}
-        </select>
-        <select value={area} onChange={handleAreaChange} className={styles.select}>
-          <option value="all">Area</option>
-          {areas.map(ar => <option key={ar} value={ar}>{ar}</option>)}
-        </select>
-        <div className={styles.priceFilter}>
-          <label htmlFor="price">Price: {price}k</label>
-          <input
-            type="range"
-            id="price"
-            min="0"
-            max={MAX_PRICE}
-            value={price}
-            onChange={handlePriceChange}
-            className={styles.slider}
-          />
-        </div>
-        <button onClick={clearFilters} className={styles.button}>Clear Filters</button>
-      </div>
     </div>
   );
 }
@@ -4051,93 +4208,6 @@ export default function Footer() {
 }
 
 ================
-File: app/contact/page.tsx
-================
-import Image from 'next/image';
-import Accordion from '../components/Accordion';
-import ContactForm from '../components/ContactForm';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
-};
-const submitEventFields = [
-  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
-  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly', type: 'text', required: false },
-  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Tue, Thu', type: 'text', required: false },
-  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
-  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
-  { name: 'Activity Type', label: 'Activity', placeholder: 'e.g. Language Exchange, Dance, Social', type: 'text', required: false },
-  { name: 'Other Activities', label: '*If you chose "Other" under "Activity", list the activities here', placeholder: '', type: 'text', required: false },
-  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
-  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
-  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
-  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
-  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
-  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
-  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
-  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
-  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
-  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
-] as const;
-const editEventFields = [
-  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
-  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
-] as const;
-const askQuestionFields = [
-  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
-  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
-  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
-] as const;
-export default function ContactPage() {
-  return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>Contact Us</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
-      </section>
-      <div style={{width: '100%', marginTop: '2rem'}}>
-        <Accordion title="Submit an Event">
-          <div>
-            <strong>A FEW NOTES</strong>
-            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
-            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
-            <br/>
-            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
-            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
-            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
-            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
-            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <hr style={{margin: '2rem 0'}} />
-            <ContactForm formType="Submit an Event" fields={submitEventFields} />
-          </div>
-        </Accordion>
-        <Accordion title="Edit Event Info">
-          <ContactForm formType="Edit Event Info" fields={editEventFields} />
-        </Accordion>
-        <Accordion title="Ask a Question">
-          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
-        </Accordion>
-      </div>
-    </main>
-  );
-}
-
-================
 File: app/layout.tsx
 ================
 import type { Metadata } from 'next';
@@ -4228,6 +4298,94 @@ export default function Home() {
         </section>
       </main>
     </>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import Image from 'next/image';
+import Accordion from '../components/Accordion';
+import ContactForm from '../components/ContactForm';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
+};
+const submitEventFields = [
+  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
+  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly, Monthly (1st Tuesday), Bi-weekly', type: 'text', required: false },
+  { name: 'Frequency Notes', label: 'Frequency Notes (optional)', placeholder: 'e.g. Months, May–Sep or Months, Even/Odd', type: 'text', required: false },
+  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Tue, Thu', type: 'text', required: false },
+  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
+  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
+  { name: 'Activity Type', label: 'Activity', placeholder: 'e.g. Language Exchange, Dance, Social', type: 'text', required: false },
+  { name: 'Other Activities', label: '*If you chose "Other" under "Activity", list the activities here', placeholder: '', type: 'text', required: false },
+  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
+  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
+  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
+  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
+  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
+  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
+  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
+  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
+  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
+  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
+] as const;
+const editEventFields = [
+  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
+  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
+  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
+] as const;
+const askQuestionFields = [
+  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
+  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
+  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
+] as const;
+export default function ContactPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroText}>
+          <h1>Contact Us</h1>
+          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
+          </p>
+        </div>
+        <div className={styles.illustrationContainer}>
+          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+        </div>
+      </section>
+      <section className={styles.contentBox}>
+        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
+      </section>
+      <div style={{ width: '100%', marginTop: '2rem' }}>
+        <Accordion title="Submit an Event">
+          <div>
+            <strong>A FEW NOTES</strong>
+            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
+            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
+            <br/>
+            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
+            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
+            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
+            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
+            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
+            <hr style={{ margin: '2rem 0' }} />
+            <ContactForm formType="Submit an Event" fields={submitEventFields} />
+          </div>
+        </Accordion>
+        <Accordion title="Edit Event Info">
+          <ContactForm formType="Edit Event Info" fields={editEventFields} />
+        </Accordion>
+        <Accordion title="Ask a Question">
+          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
+        </Accordion>
+      </div>
+    </main>
   );
 }
 
@@ -4397,6 +4555,125 @@ File: app/components/Header.module.css
 }
 
 ================
+File: app/components/Header.tsx
+================
+'use client';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './Header.module.css';
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [isMobileMenuOpen]);
+  return (
+    <>
+      {isMobileMenuOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <Link href="/" className={styles.logoLink}>
+            <Image
+              src="/images/logo.svg"
+              alt="Someplace Social Logo"
+              width={190}
+              height={50}
+              priority
+              className={styles.logoImage}
+            />
+          </Link>
+          <nav className={styles.nav}>
+            <Link href="/events/fort-collins-colorado" className={styles.navLink}>
+              Fort Collins
+            </Link>
+            <Link href="/events/medellin-colombia" className={styles.navLink}>
+              Medellín
+            </Link>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
+            </Link>
+          </nav>
+          <div
+            className={styles.hamburger}
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Toggle navigation menu"
+          >
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </header>
+      <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
+        <div className={styles.mobileNavHeader}>
+          <span className={styles.mobileNavTitle}>Someplace Social</span>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <Link
+          href="/events/fort-collins-colorado"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Fort Collins
+        </Link>
+        <Link
+          href="/events/medellin-colombia"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Medellín
+        </Link>
+        <Link
+          href="/about"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          About
+        </Link>
+        <Link
+          href="/contact"
+          className={styles.mobileNavLink}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Contact
+        </Link>
+        <a
+          href="https://buymeacoffee.com/someplacesocial"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.mobileSupportBtn}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Buy me a drink
+        </a>
+      </nav>
+    </>
+  );
+}
+
+================
 File: app/lib/google-sheets.ts
 ================
 import { CityConfig, CITIES } from './cities';
@@ -4417,6 +4694,7 @@ export type Event = {
   startTime: string;
   endTime: string;
   frequency: string;
+  frequencyNotes: string;
   price: string;
   preRegistration: string;
   map: string;
@@ -4544,7 +4822,16 @@ const HEADER_ALIASES: Record<string, string[]> = {
   dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
   startTime: ['starttime', 'start'],
   endTime: ['endtime', 'end'],
-  frequency: ['frequency'],
+  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
+  frequencyNotes: [
+    'frequencynotes',
+    'frequencynote',
+    'frequency_notes',
+    'freqnotes',
+    'freqnote',
+    'frequencynot',
+    'recurrencenotes',
+  ],
   price: ['price', 'cost'],
   preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
   map: ['map', 'googlemap', 'googlemaplink', 'maps'],
@@ -4570,14 +4857,15 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   startTime: 7,
   endTime: 8,
   frequency: 9,
-  price: 10,
-  preRegistration: 11,
-  map: 12,
-  social: 13,
-  website: 14,
-  contact: 15,
-  about: 16,
-  notes: 17,
+  frequencyNotes: 10,
+  price: 11,
+  preRegistration: 12,
+  map: 13,
+  social: 14,
+  website: 15,
+  contact: 16,
+  about: 17,
+  notes: 18,
 };
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
   try {
@@ -4647,67 +4935,70 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
     };
     const dataRows = rows.slice(1);
-    const events = dataRows.map((row): Event | null => {
-      if (row.length === 0 || row.every(cell => cleanCell(cell) === '')) return null;
-      const getValue = (field: string): string => {
-        const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
-        if (colIdx !== undefined && colIdx < row.length) {
-          return cleanCell(row[colIdx]);
+    const events = dataRows
+      .map((row): Event | null => {
+        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
+        const getValue = (field: string): string => {
+          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+          if (colIdx !== undefined && colIdx < row.length) {
+            return cleanCell(row[colIdx]);
+          }
+          return '';
+        };
+        const venueVal = getValue('venue');
+        const orgVal = getValue('organization');
+        const locVal = getValue('location');
+        const rawActivity = getValue('activity');
+        const act1 = getValue('activity1');
+        const act2 = getValue('activity2');
+        const act3 = getValue('activity3');
+        let parsedActivities: string[] = [];
+        if (rawActivity) {
+          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
         }
-        return '';
-      };
-      const venueVal = getValue('venue');
-      const orgVal = getValue('organization');
-      const locVal = getValue('location');
-      const rawActivity = getValue('activity');
-      const act1 = getValue('activity1');
-      const act2 = getValue('activity2');
-      const act3 = getValue('activity3');
-      let parsedActivities: string[] = [];
-      if (rawActivity) {
-        parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
-      }
-      if (parsedActivities.length === 0) {
-        parsedActivities = [act1, act2, act3]
-          .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
-          .filter(Boolean);
-      }
-      const uniqueActs: string[] = [];
-      for (const act of parsedActivities) {
-        if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
-          uniqueActs.push(act);
+        if (parsedActivities.length === 0) {
+          parsedActivities = [act1, act2, act3]
+            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+            .filter(Boolean);
         }
-      }
-      const activityStr = uniqueActs.join(', ');
-      const rawDay = getValue('dayOfWeek');
-      const dayOfWeekStr = normalizeDayOfWeek(rawDay);
-      return {
-        id: getValue('id'),
-        title: getValue('title'),
-        venue: venueVal,
-        organization: orgVal || venueVal,
-        location: locVal || venueVal,
-        area: getValue('area'),
-        activity: activityStr,
-        activities: uniqueActs,
-        activity1: uniqueActs[0] || '',
-        activity2: uniqueActs[1] || '',
-        activity3: uniqueActs[2] || '',
-        dayOfWeek: dayOfWeekStr,
-        startTime: getValue('startTime'),
-        endTime: getValue('endTime'),
-        frequency: getValue('frequency'),
-        price: getValue('price'),
-        preRegistration: getValue('preRegistration'),
-        map: getValue('map'),
-        social: getValue('social'),
-        website: getValue('website'),
-        contact: getValue('contact'),
-        about: getValue('about'),
-        notes: getValue('notes'),
-        database: getValue('database'),
-      };
-    }).filter((event): event is Event => event !== null);
+        const uniqueActs: string[] = [];
+        for (const act of parsedActivities) {
+          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+            uniqueActs.push(act);
+          }
+        }
+        const activityStr = uniqueActs.join(', ');
+        const rawDay = getValue('dayOfWeek');
+        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
+        return {
+          id: getValue('id'),
+          title: getValue('title'),
+          venue: venueVal,
+          organization: orgVal || venueVal,
+          location: locVal || venueVal,
+          area: getValue('area'),
+          activity: activityStr,
+          activities: uniqueActs,
+          activity1: uniqueActs[0] || '',
+          activity2: uniqueActs[1] || '',
+          activity3: uniqueActs[2] || '',
+          dayOfWeek: dayOfWeekStr,
+          startTime: getValue('startTime'),
+          endTime: getValue('endTime'),
+          frequency: getValue('frequency'),
+          frequencyNotes: getValue('frequencyNotes'),
+          price: getValue('price'),
+          preRegistration: getValue('preRegistration'),
+          map: getValue('map'),
+          social: getValue('social'),
+          website: getValue('website'),
+          contact: getValue('contact'),
+          about: getValue('about'),
+          notes: getValue('notes'),
+          database: getValue('database'),
+        };
+      })
+      .filter((event): event is Event => event !== null);
     return events.filter((event) => Boolean(event.title));
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -4722,13 +5013,12 @@ File: app/medellin/page.tsx
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { getEvents, Event } from '../lib/google-sheets';
-import { matchesDay } from '../events/utils';
+import { isEventActiveOnDate } from '../events/utils';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import ContactForm from '../components/ContactForm';
 import EventListing from './EventListing';
 import pageStyles from '../Page.module.css';
-import styles from './Medellin.module.css';
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
@@ -4752,62 +5042,82 @@ export default function MedellinPage() {
   };
   useEffect(() => {
     document.title = "Weekly Events in Medellin | Someplace Social";
-    getEvents().then(fetchedEvents => {
+    getEvents().then((fetchedEvents) => {
       setAllEvents(fetchedEvents);
     });
   }, []);
   const uniqueActivities = useMemo(() => {
     const activitySet = new Set<string>();
-    allEvents.forEach(event => {
-      const list = event.activities && event.activities.length > 0
-        ? event.activities
-        : event.activity
-        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
-        : [event.activity1, event.activity2, event.activity3].filter(Boolean);
-      list.forEach(a => activitySet.add(a));
+    allEvents.forEach((event) => {
+      const list =
+        event.activities && event.activities.length > 0
+          ? event.activities
+          : event.activity
+          ? event.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+      list.forEach((a) => activitySet.add(a));
     });
     return Array.from(activitySet).sort();
   }, [allEvents]);
   const uniqueAreas = useMemo(() => {
     const areaSet = new Set<string>();
-    allEvents.forEach(event => {
+    allEvents.forEach((event) => {
       if (event.area) areaSet.add(event.area);
     });
     return Array.from(areaSet).sort();
   }, [allEvents]);
   const filteredEvents = useMemo(() => {
-    return allEvents.filter(event => {
-      const evActs = (event.activities && event.activities.length > 0
-        ? event.activities
-        : event.activity
-        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
-        : [event.activity1, event.activity2, event.activity3].filter(Boolean)
-      ).map(a => a.toLowerCase());
-      const activityMatch = filters.activity === 'all' ||
+    return allEvents.filter((event) => {
+      const evActs = (
+        event.activities && event.activities.length > 0
+          ? event.activities
+          : event.activity
+          ? event.activity.split(',').map((a) => a.trim()).filter(Boolean)
+          : [event.activity1, event.activity2, event.activity3].filter(Boolean)
+      ).map((a) => a.toLowerCase());
+      const activityMatch =
+        filters.activity === 'all' ||
         evActs.includes(filters.activity.toLowerCase()) ||
         event.activity1 === filters.activity ||
         event.activity2 === filters.activity ||
         event.activity3 === filters.activity;
       const areaMatch = filters.area === 'all' || event.area === filters.area;
-      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, "")) || 0;
+      const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, '')) || 0;
       const priceMatch = numericPrice <= filters.price;
       return activityMatch && areaMatch && priceMatch;
     });
   }, [allEvents, filters]);
+  const currentWeekDates = useMemo(() => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon ...
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    const map: Record<string, Date> = {};
+    daysOfWeek.forEach((dayName, idx) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + idx);
+      map[dayName] = d;
+    });
+    return map;
+  }, []);
   const eventsByDay = useMemo(() => {
     const map: Record<string, Event[]> = {};
     daysOfWeek.forEach((day) => {
-      map[day] = filteredEvents.filter((event) => matchesDay(event.dayOfWeek, day));
+      const targetDate = currentWeekDates[day] || new Date();
+      map[day] = filteredEvents.filter((event) => isEventActiveOnDate(event, targetDate));
     });
     return map;
-  }, [filteredEvents]);
+  }, [filteredEvents, currentWeekDates]);
   return (
     <main className={pageStyles.page}>
       <section className={pageStyles.heroSection}>
         <div className={pageStyles.heroText}>
           <h1>Medellin Weekly Events & Activity Guide</h1>
           <p><strong>by Someplace Social</strong></p>
-          <p style={{marginTop: '1rem'}}>Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.</p>
+          <p style={{ marginTop: '1rem' }}>
+            Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
+          </p>
         </div>
         <div className={pageStyles.illustrationContainer}>
           <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
@@ -4819,7 +5129,7 @@ export default function MedellinPage() {
         onFilterChange={setFilters}
       />
       <div style={{ width: '100%' }}>
-        {daysOfWeek.map(day => (
+        {daysOfWeek.map((day) => (
           eventsByDay[day] && eventsByDay[day].length > 0 ? (
             <DayAccordion key={day} title={day}>
               {eventsByDay[day].map((event, index) => (
@@ -4829,134 +5139,15 @@ export default function MedellinPage() {
           ) : null
         ))}
       </div>
-      <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
-        <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
+      <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
+        <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
         <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
-        <div style={{width: '100%', marginTop: '2rem'}}>
+        <div style={{ width: '100%', marginTop: '2rem' }}>
           <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
         </div>
       </section>
     </main>
-  );
-}
-
-================
-File: app/components/Header.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './Header.module.css';
-export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [isMobileMenuOpen]);
-  return (
-    <>
-      {isMobileMenuOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-      <header className={styles.header}>
-        <div className={styles.container}>
-          <Link href="/" className={styles.logoLink}>
-            <Image
-              src="/images/logo.svg"
-              alt="Someplace Social Logo"
-              width={190}
-              height={50}
-              priority
-              className={styles.logoImage}
-            />
-          </Link>
-          <nav className={styles.nav}>
-            <Link href="/events/fort-collins-colorado" className={styles.navLink}>
-              Fort Collins
-            </Link>
-            <Link href="/events/medellin-colombia" className={styles.navLink}>
-              Medellín
-            </Link>
-            <Link href="/about" className={styles.navLink}>
-              About
-            </Link>
-            <Link href="/contact" className={styles.navLink}>
-              Contact
-            </Link>
-            <Link href="/contact" className={styles.addEventBtn}>
-              + Add event
-            </Link>
-          </nav>
-          <div
-            className={styles.hamburger}
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Toggle navigation menu"
-          >
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        </div>
-      </header>
-      <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <div className={styles.mobileNavHeader}>
-          <span className={styles.mobileNavTitle}>Someplace Social</span>
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Close menu"
-          >
-            ✕
-          </button>
-        </div>
-        <Link
-          href="/events/fort-collins-colorado"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Fort Collins
-        </Link>
-        <Link
-          href="/events/medellin-colombia"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Medellín
-        </Link>
-        <Link
-          href="/about"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          About
-        </Link>
-        <Link
-          href="/contact"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Contact
-        </Link>
-        <a
-          href="https://buymeacoffee.com/someplacesocial"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.mobileSupportBtn}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Buy me a drink
-        </a>
-      </nav>
-    </>
   );
 }
 

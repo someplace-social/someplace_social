@@ -124,48 +124,29 @@ export default function EventCard({
           {(event.about || event.notes) && (
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
-          {(recurrenceText || event.preRegistration) && (
-            <div
+          {recurrenceText && (
+            <p
+              className={styles.eventDescription}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                marginBottom: '16px',
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: event.preRegistration ? 8 : 14,
               }}
             >
-              {recurrenceText && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '7px',
-                    fontSize: '14.5px',
-                    lineHeight: 1.5,
-                    color: 'var(--ink)',
-                    fontWeight: 400,
-                  }}
-                >
-                  <span style={{ fontSize: '14px', lineHeight: 1, userSelect: 'none' }}>📅</span>
-                  <span>Recurs: {recurrenceText}</span>
-                </div>
-              )}
-              {event.preRegistration && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '7px',
-                    fontSize: '14.5px',
-                    lineHeight: 1.5,
-                    color: 'var(--ink)',
-                    fontWeight: 400,
-                  }}
-                >
-                  <span style={{ fontSize: '14px', lineHeight: 1, userSelect: 'none' }}>📝</span>
-                  <span>Pre-Registration: {event.preRegistration}</span>
-                </div>
-              )}
-            </div>
+              📅Recurs: {recurrenceText}
+            </p>
+          )}
+          {event.preRegistration && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: 14,
+              }}
+            >
+              📝Pre-Registration: {event.preRegistration}
+            </p>
           )}
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>
