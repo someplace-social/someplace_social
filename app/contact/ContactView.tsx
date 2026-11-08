@@ -21,7 +21,6 @@ export default function ContactView() {
 
   const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
 
-  // Submit Event Form State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [eventName, setEventName] = useState('');
@@ -41,15 +40,12 @@ export default function ContactView() {
   const [social, setSocial] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [notes, setNotes] = useState('');
-
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
 
-  // Ask Question Form State
   const [questionFirstName, setQuestionFirstName] = useState('');
   const [questionEmail, setQuestionEmail] = useState('');
   const [questionMessage, setQuestionMessage] = useState('');
-
   const [questionLoading, setQuestionLoading] = useState(false);
   const [questionStatus, setQuestionStatus] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -97,6 +93,7 @@ export default function ContactView() {
       });
 
       const result = await response.json();
+
       if (result.success) {
         setSubmitStatus({
           success: true,
@@ -160,6 +157,7 @@ export default function ContactView() {
       });
 
       const result = await response.json();
+
       if (result.success) {
         setQuestionStatus({
           success: true,
@@ -206,20 +204,18 @@ export default function ContactView() {
       </section>
 
       <section className={styles.thanks}>
-        <div>
-          <h2 className={styles.thanksTitle}>Thanks for contributing</h2>
-          <p className={styles.thanksText}>
-            Free for everyone — no ads, no pop-ups. It runs 100% on donations. If you&apos;re able, buy me a drink.
-          </p>
-        </div>
-        <a
-          href="https://buymeacoffee.com/someplacesocial"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.ghostBtn}
-        >
-          Buy me a drink
-        </a>
+        <h2 className={styles.thanksTitle}>Thanks for contributing</h2>
+        <p className={styles.thanksText}>
+          Free for everyone — no ads, no pop-ups. It runs 100% on donations. If you&apos;re able,{' '}
+          <a
+            href="https://buymeacoffee.com/someplacesocial"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.drinkLink}
+          >
+            buy me a drink
+          </a>.
+        </p>
       </section>
 
       <div className={styles.labelDivider}>
@@ -344,6 +340,7 @@ export default function ContactView() {
                   />
                 </div>
               </div>
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-activity" className={styles.label}>
@@ -497,6 +494,7 @@ export default function ContactView() {
                   />
                 </div>
               </div>
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-location" className={styles.label}>
@@ -559,6 +557,7 @@ export default function ContactView() {
                   />
                 </div>
               </div>
+
               <div className={styles.field}>
                 <label htmlFor="submit-wa" className={styles.label}>
                   WhatsApp link
@@ -572,6 +571,7 @@ export default function ContactView() {
                   className={styles.input}
                 />
               </div>
+
               <div className={styles.field}>
                 <label htmlFor="submit-notes" className={styles.label}>
                   Anything else you&apos;d like to say?
@@ -639,6 +639,7 @@ export default function ContactView() {
                   />
                 </div>
               </div>
+
               <div className={styles.field}>
                 <label htmlFor="q-message" className={styles.label}>
                   Message *

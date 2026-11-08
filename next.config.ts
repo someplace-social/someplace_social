@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/medellin',
         destination: '/events/medellin-colombia',
         permanent: true,

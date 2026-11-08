@@ -27,21 +27,23 @@ export default function CityHeroCard({
 
   return (
     <section className={styles.heroCard} aria-labelledby="city-intro-heading">
-      <div>
+      <div className={styles.titleCol}>
         <p className={styles.eyebrow}>Someplace Social</p>
         <h1 id="city-intro-heading" className={styles.title}>
           {introTitle || `${cityName} Community Listings`}
         </h1>
         {typeof eventCount === 'number' && eventCount > 0 && (
           <div className={styles.metaSubtitle}>
-            {cityName} · {eventCount} {eventCount === 1 ? 'event' : 'events'}
+            {eventCount} {eventCount === 1 ? 'event & activity' : 'events & activities'}
           </div>
         )}
       </div>
-      <p className={styles.lead}>
-        {introDescription ||
-          `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
-      </p>
+      <div className={styles.descCol}>
+        <p className={styles.lead}>
+          {introDescription ||
+            `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+        </p>
+      </div>
       <div className={styles.chips} role="group" aria-label="Filter by activity">
         <button
           type="button"

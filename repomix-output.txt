@@ -1,156 +1,5 @@
 #TASK
 
-add this header to both the Fort Collins and Medellin pages. Obviously the fort collins one will say fort collins and pertain to fort collins. For each, make sure the list of things to do start with the most popular activities on the list. Then there will also be a complete list of activities in those pills which act as filters, so when clicked, it filters the whole page for only those events. by default it shows all. I'm attaching the backend so you can see what's most popular. Also make it use our theme colors. Make sure this looks nice and fits well with the pages. and make sure it all fits on mobile nicely as well.
-
-
-MULTI-STEP PROCESS:
-
-
-1) Make a plan:
-As soon as you get the files, investigate the issue at hand and find the root. 
-#RULES
-- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
-- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan. 
-- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
-- Always do whatever is standard for similar professional applications like ours. 
-- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-- In your plan, if a single response may be over 25k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response. 
-- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan. 
-
-2) Implement plan: 
-Implement the outline / plan. 
-
-
-
-
-
-
-
-#GUIDELINES
-You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
-1. PROJECT CONTEXT
-Project Name: Someplace Social
-Environment: Windows 11
-Package Manager: PNPM
-2. CORE DIRECTIVES (NON-NEGOTIABLE)
-Full File Output: When modifying a file, output the ENTIRE , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
-Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
-PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
-Response length: If your response contains more than approximately 30k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
-3. RULES
-Security: Security is very important - always keep in mind best practices.
-Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices. 
-DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
-Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
-Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
-Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
-Egress: Keep egress low whenever possible.
-Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
-Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
-Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
-Simple & Robust: The simplest and most robust solution is best. When building or fixing a problem, always start with what coild be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
-Page text: when writing text, choose simple, easy to understand,  straightforward words for page titles, page text, etc. 
-Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
-UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-
-
-4. RESPONSE FORMAT RULES
-Start with a brief explanation of what you are doing.
-Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
-End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
-Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: $targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }
-5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):
-IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow. 
-Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
-File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
-Code Output: A single, complete, full-file code block.
-Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
-Git Commands: The very last item in your response must be a single code block containing the final git commands.
-5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
-- Never provide multiple open commands in a row.
-- Never provide multiple file code blocks in a row.
-- Never list all commands first and all files afterward.
-- Never open several files before showing the first file’s contents.
-- Never skip ahead to later files.
-- Never bundle files together in one code block.
-- The command for file N+1 MUST appear immediately before the code block for file N+1.
-- The ONLY allowed pattern is:
-open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
-5.3 FORBIDDEN PATTERNS:
-- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
-- open 1 -> open 2 -> file 1 -> file 2
-- any response that shows all commands first and all files later 
-
-EXAMPLE OF CORRECT RESPONSE FORMAT:
-This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
-
-Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc… 
-
-```powershell
-pnpx supabase migration new create_example_table
-```
-
-Here is the sql code.
-
-```sql
--- supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
-create table example (
-  ...
-);
-```
-
-Next we will push to supabase.
-
-```powershell
-pnpx supabase db push
-```
-
-Now we’ll create a new file.
-
-```powershell
-New-Item 'app/index.tsx' -Force
-code 'app/index.tsx'
-```
-
-Here is the full code for our new file.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function HelloScreen() {
-  // ...
-  return <Text>hello, world</Text>;
-  // ...
-}
-```
-
-Now we’ll open page2.
-
-```powershell
-code 'app/page2.tsx'
-```
-
-Here is the updated code for page2.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function PageTwoScreen() {
-  // ...
-  return <Text>hello, world page 2</Text>;
-  // ...
-}
-```
-
-Finally, we will commit.
-
-```powershell
-git add .
-git commit -m "feat: Add example migration and pages"
-```
-
-
-
 
 
 
@@ -184,6 +33,8 @@ Project Structure Map:
 |   |   |   +--- layout.tsx
 |   |   |   \--- page.tsx
 |   |   +--- components
+|   |   |   +--- CityHeroCard.module.css
+|   |   |   +--- CityHeroCard.tsx
 |   |   |   +--- DayPicker.tsx
 |   |   |   +--- EventCard.module.css
 |   |   |   +--- EventCard.tsx
@@ -293,6 +144,8 @@ app/contact/page.tsx
 app/events/[city]/layout.tsx
 app/events/[city]/page.tsx
 app/events/CityEventsView.tsx
+app/events/components/CityHeroCard.module.css
+app/events/components/CityHeroCard.tsx
 app/events/components/DayPicker.tsx
 app/events/components/EventCard.module.css
 app/events/components/EventCard.tsx
@@ -320,6 +173,28 @@ tsconfig.json
 ================================================================
 Files
 ================================================================
+
+================
+File: eslint.config.mjs
+================
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
 
 ================
 File: app/components/ContactForm.module.css
@@ -2385,26 +2260,83 @@ File: app/globals.d.ts
 declare module '*.css';
 
 ================
-File: eslint.config.mjs
+File: README.md
 ================
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
+## Getting Started TEST
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+================
+File: tsconfig.json
+================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "types": ["node"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
     "next-env.d.ts",
-  ]),
-]);
-
-export default eslintConfig;
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
 
 ================
 File: app/api/send-form/route.ts
@@ -2435,6 +2367,188 @@ export async function POST(request: Request) {
     console.error('Error processing form:', error);
     return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
   }
+}
+
+================
+File: app/events/components/CityHeroCard.module.css
+================
+.heroCard {
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 14px 40px;
+  align-items: start;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 6px;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+}
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.35;
+}
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #4a463b;
+}
+.chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  min-height: 36px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.chip:hover {
+  border-color: var(--ink);
+}
+.chipActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.chipActive:hover {
+  background-color: var(--ink);
+  color: #ffffff;
+}
+@media (max-width: 899px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px 18px;
+    border-radius: 14px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .metaSubtitle {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .lead {
+    font-size: 14.5px;
+  }
+  .chips {
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .chip {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-height: 34px;
+  }
+}
+
+================
+File: app/events/components/CityHeroCard.tsx
+================
+'use client';
+import styles from './CityHeroCard.module.css';
+interface CityHeroCardProps {
+  cityName: string;
+  introTitle?: string;
+  introDescription?: string;
+  eventCount?: number;
+  activities: string[];
+  selectedActivities: string[];
+  onSelectChip: (activity: string) => void;
+  onClearActivities: () => void;
+}
+export default function CityHeroCard({
+  cityName,
+  introTitle,
+  introDescription,
+  eventCount,
+  activities,
+  selectedActivities,
+  onSelectChip,
+  onClearActivities,
+}: CityHeroCardProps) {
+  const isAllActive = selectedActivities.length === 0;
+  return (
+    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
+      <div>
+        <p className={styles.eyebrow}>Someplace Social</p>
+        <h1 id="city-intro-heading" className={styles.title}>
+          {introTitle || `${cityName} Community Listings`}
+        </h1>
+        {typeof eventCount === 'number' && eventCount > 0 && (
+          <div className={styles.metaSubtitle}>
+            {cityName} · {eventCount} {eventCount === 1 ? 'event' : 'events'}
+          </div>
+        )}
+      </div>
+      <p className={styles.lead}>
+        {introDescription ||
+          `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+      </p>
+      <div className={styles.chips} role="group" aria-label="Filter by activity">
+        <button
+          type="button"
+          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
+          aria-pressed={isAllActive}
+          onClick={onClearActivities}
+        >
+          All
+        </button>
+        {activities.map((act) => {
+          const isSelected = selectedActivities.includes(act);
+          return (
+            <button
+              key={act}
+              type="button"
+              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectChip(act)}
+            >
+              {act}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
 
 ================
@@ -2515,85 +2629,6 @@ export default function SupportPage() {
       <Footer />
     </div>
   );
-}
-
-================
-File: README.md
-================
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started TEST
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-================
-File: tsconfig.json
-================
-{
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "types": ["node"],
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
-  ],
-  "exclude": ["node_modules"]
 }
 
 ================
@@ -2898,6 +2933,69 @@ export default async function CityEventsPage({ params }: PageProps) {
     />
   );
 }
+
+================
+File: app/globals.css
+================
+:root {
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --line: #eadfc8;
+  --accent: #d2432f;
+  --topbar-bg: #f3ead4;
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent);
+}
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from 'next';
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/medellin',
+        destination: '/events/medellin-colombia',
+        permanent: true,
+      },
+      {
+        source: '/medellin-v2',
+        destination: '/events/medellin-colombia',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/events/fort-collins-colorado',
+        permanent: true,
+      },
+    ];
+  },
+};
+export default nextConfig;
 
 ================
 File: app/components/ContactForm.tsx
@@ -3357,69 +3455,6 @@ export default function SuggestEditModal({
 }
 
 ================
-File: app/globals.css
-================
-:root {
-  --bg: #fff9ec;
-  --card: #ffffff;
-  --ink: #1f1b16;
-  --muted: #6f675c;
-  --line: #eadfc8;
-  --accent: #d2432f;
-  --topbar-bg: #f3ead4;
-  --free: #1f7a4d;
-  --free-bg: #e4f4ea;
-  --price-donation: #7a4a00;
-  --chip: #f3ead4;
-}
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-a {
-  color: var(--ink);
-  text-decoration: none;
-}
-a:hover {
-  color: var(--accent);
-}
-
-================
-File: next.config.ts
-================
-import type { NextConfig } from 'next';
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/medellin',
-        destination: '/events/medellin-colombia',
-        permanent: true,
-      },
-      {
-        source: '/medellin-v2',
-        destination: '/events/medellin-colombia',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado',
-        destination: '/events/fort-collins-colorado',
-        permanent: true,
-      },
-    ];
-  },
-};
-export default nextConfig;
-
-================
 File: app/Page.module.css
 ================
 .page {
@@ -3479,214 +3514,6 @@ File: app/Page.module.css
   .heroText {
     text-align: left;
     width: 100%;
-  }
-}
-
-================
-File: app/events/EventsView.module.css
-================
-.pageContainer {
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-.mainLayout {
-  flex: 1;
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 32px 72px;
-  display: flex;
-  align-items: flex-start;
-  gap: 48px;
-}
-.aside {
-  flex: 0 0 280px;
-  min-width: 0;
-  position: sticky;
-  top: 24px;
-}
-.asideTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 56px;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  margin: 0 0 8px;
-}
-.asideSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: 0;
-}
-.dayListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 28px;
-}
-.dayBtnVertical {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 48px;
-  padding: 0 14px;
-  background: none;
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.dayBtnVertical:hover {
-  background-color: var(--topbar-bg);
-}
-.dayBtnVerticalActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  font-weight: 700;
-}
-.dayCountText {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-}
-.dayCountTextActive {
-  color: #e6dfd0;
-}
-.mobileSectionHeader {
-  display: none;
-}
-.mobileDaysGrid {
-  display: none;
-}
-.contentCol {
-  flex: 999 1 520px;
-  min-width: 0;
-}
-.timeGroupHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 24px 0 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.timeGroupHeader:first-of-type {
-  margin-top: 0;
-}
-.timeGroupLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.emptyState {
-  text-align: center;
-  color: var(--muted);
-  padding: 56px 16px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-}
-.emptyStateTitle {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-@media (max-width: 899px) {
-  .mainLayout {
-    padding: 16px 16px 40px;
-    flex-direction: column;
-    gap: 0;
-  }
-  .aside {
-    display: none;
-  }
-  .mobileDaysGrid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
-    margin-top: 8px;
-    width: 100%;
-  }
-  .mobileDayBtn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    padding: 8px 0 7px;
-    min-height: 66px;
-    border: 1.5px solid var(--line);
-    background: #ffffff;
-    color: var(--ink);
-    border-radius: 10px;
-    font: inherit;
-    cursor: pointer;
-  }
-  .mobileDayBtnActive {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--bg);
-  }
-  .mobileDayLabel {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayLabelActive {
-    color: #e6dfd0;
-  }
-  .mobileDayNum {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 20px;
-    line-height: 1.1;
-  }
-  .mobileDayCount {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayCountActive {
-    color: #e6dfd0;
-  }
-  .mobileSectionHeader {
-    display: block;
-    margin-top: 18px;
-    margin-bottom: 8px;
-  }
-  .mobileHeadingTitle {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 34px;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin: 0 0 3px;
-  }
-  .mobileHeadingSubtitle {
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 0;
-  }
-  .timeGroupHeader {
-    margin: 18px 0 8px;
   }
 }
 
@@ -3973,49 +3800,221 @@ export function getTagStyle(tag: string): { color: string; background: string } 
 }
 
 ================
-File: app/lib/cities.ts
+File: app/events/EventsView.module.css
 ================
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-};
-export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
-};
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
+.pageContainer {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
+.heroWrapper {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 28px 32px 0;
 }
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES);
+.mainLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 36px 32px 72px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+}
+.aside {
+  flex: 0 0 280px;
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+}
+.asideTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+.asideSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0;
+}
+.dayListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 28px;
+}
+.dayBtnVertical {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 14px;
+  background: none;
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.dayBtnVertical:hover {
+  background-color: var(--topbar-bg);
+}
+.dayBtnVerticalActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
+}
+.dayCountText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.dayCountTextActive {
+  color: #e6dfd0;
+}
+.mobileSectionHeader {
+  display: none;
+}
+.mobileDaysGrid {
+  display: none;
+}
+.contentCol {
+  flex: 999 1 520px;
+  min-width: 0;
+}
+.timeGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.timeGroupHeader:first-of-type {
+  margin-top: 0;
+}
+.timeGroupLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.emptyState {
+  text-align: center;
+  color: var(--muted);
+  padding: 56px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.emptyStateTitle {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+@media (max-width: 899px) {
+  .heroWrapper {
+    padding: 16px 16px 0;
+  }
+  .mainLayout {
+    padding: 16px 16px 40px;
+    flex-direction: column;
+    gap: 0;
+  }
+  .aside {
+    display: none;
+  }
+  .mobileDaysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    width: 100%;
+  }
+  .mobileDayBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 0 7px;
+    min-height: 66px;
+    border: 1.5px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .mobileDayBtnActive {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .mobileDayLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayLabelActive {
+    color: #e6dfd0;
+  }
+  .mobileDayNum {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .mobileDayCount {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayCountActive {
+    color: #e6dfd0;
+  }
+  .mobileSectionHeader {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  .mobileHeadingTitle {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+  }
+  .mobileHeadingSubtitle {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 0;
+  }
+  .timeGroupHeader {
+    margin: 18px 0 8px;
+  }
 }
 
 ================
@@ -4057,316 +4056,57 @@ File: package.json
 }
 
 ================
-File: app/events/CityEventsView.tsx
+File: app/lib/cities.ts
 ================
-'use client';
-import { useState, useEffect, useMemo } from 'react';
-import { CityConfig, getAllCities } from '../lib/cities';
-import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import DayPicker from './components/DayPicker';
-import FilterControls from './components/FilterControls';
-import EventCard from './components/EventCard';
-import SuggestEditModal from './components/SuggestEditModal';
-import styles from './EventsView.module.css';
-const DAY_NAMES_LONG = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-const MONTH_NAMES = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const TIME_GROUPS = [
-  { name: 'Morning', predicate: (h: number) => h < 12 },
-  { name: 'Afternoon', predicate: (h: number) => h >= 12 && h < 17 },
-  { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
-  { name: 'Night', predicate: (h: number) => h >= 20 },
-];
-export default function CityEventsView({
-  city,
-  initialEvents = [],
-  initialCityCounts = {},
-}: {
-  city: CityConfig;
-  initialEvents?: Event[];
-  initialCityCounts?: Record<string, number>;
-}) {
-  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
-  const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
-  const [loading, setLoading] = useState(initialEvents.length === 0);
-  const [activeDayIdx, setActiveDayIdx] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [freeOnly, setFreeOnly] = useState(false);
-  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
-  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [openEventId, setOpenEventId] = useState<string | null>(null);
-  const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
-  useEffect(() => {
-    if (initialEvents.length === 0) {
-      setLoading(true);
-      getEvents(city)
-        .then((data) => {
-          setAllEvents(data);
-          setCityCounts((prev) => ({ ...prev, [city.slug]: data.length }));
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setAllEvents(initialEvents);
-      setCityCounts((prev) => ({ ...prev, [city.slug]: initialEvents.length }));
-      setLoading(false);
-    }
-  }, [city, initialEvents]);
-  const rollingWeek = useMemo(() => {
-    const today = new Date();
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      return d;
-    });
-  }, []);
-  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
-  const now = new Date();
-  const nowHour = now.getHours() + now.getMinutes() / 60;
-  const activities = useMemo(() => {
-    const set = new Set<string>();
-    allEvents.forEach((ev) => {
-      ev.activities.forEach((act) => {
-        const trimmed = act.trim();
-        if (trimmed) set.add(trimmed);
-      });
-    });
-    return Array.from(set).sort();
-  }, [allEvents]);
-  const areas = useMemo(() => {
-    const set = new Set<string>();
-    allEvents.forEach((ev) => {
-      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 35) {
-        set.add(ev.area.trim());
-      }
-    });
-    return Array.from(set).sort();
-  }, [allEvents]);
-  const toggleTime = (tName: string) => {
-    setSelectedTimes((prev) =>
-      prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
-    );
-  };
-  const toggleActivity = (act: string) => {
-    setSelectedActivities((prev) =>
-      prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
-    );
-  };
-  const toggleArea = (ar: string) => {
-    setSelectedAreas((prev) =>
-      prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
-    );
-  };
-  const getFilteredEventsForDay = (dayIndex: number) => {
-    const day = rollingWeek[dayIndex];
-    if (!day) return [];
-    return allEvents
-      .filter((ev) => {
-        if (!isEventActiveOnDate(ev, day)) return false;
-        if (freeOnly && !isFreePrice(ev.price)) return false;
-        const evHour = parseHour(ev.startTime);
-        if (selectedTimes.length > 0) {
-          const matchesTime = selectedTimes.some((tgName) => {
-            const group = TIME_GROUPS.find((g) => g.name === tgName);
-            return group ? group.predicate(evHour) : false;
-          });
-          if (!matchesTime) return false;
-        }
-        if (selectedActivities.length > 0) {
-          const acts = ev.activities.map((a) => a.trim().toLowerCase());
-          const hasActivityMatch = selectedActivities.some((sa) =>
-            acts.includes(sa.toLowerCase())
-          );
-          if (!hasActivityMatch) return false;
-        }
-        if (selectedAreas.length > 0) {
-          const areaLower = (ev.area || '').trim().toLowerCase();
-          const hasAreaMatch = selectedAreas.some(
-            (sa) => sa.toLowerCase() === areaLower
-          );
-          if (!hasAreaMatch) return false;
-        }
-        if (searchQuery.trim()) {
-          const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-          const searchableText = [
-            ev.title,
-            ev.venue,
-            ev.organization,
-            ev.location,
-            ev.area,
-            ev.activity,
-            ...ev.activities,
-            ev.about,
-            ev.notes,
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-          const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
-          if (!matchesSearch) return false;
-        }
-        return true;
-      })
-      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
-  };
-  const currentList = useMemo(() => {
-    return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, searchQuery, rollingWeek]);
-  const nextUpEventId = useMemo(() => {
-    if (activeDayIdx !== 0) return null;
-    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
-    return nextEvent ? nextEvent.id || nextEvent.title : null;
-  }, [activeDayIdx, currentList, nowHour]);
-  const hasActiveFilters =
-    searchQuery.trim().length > 0 ||
-    freeOnly ||
-    selectedTimes.length > 0 ||
-    selectedActivities.length > 0 ||
-    selectedAreas.length > 0;
-  const clearAllFilters = () => {
-    setSearchQuery('');
-    setFreeOnly(false);
-    setSelectedTimes([]);
-    setSelectedActivities([]);
-    setSelectedAreas([]);
-  };
-  const allCityOptions = useMemo(() => getAllCities(), []);
-  const dayHeading =
-    activeDayIdx === 0
-      ? 'Today'
-      : activeDayIdx === 1
-      ? 'Tomorrow'
-      : DAY_NAMES_LONG[activeDate.getDay()];
-  const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
-    MONTH_NAMES[activeDate.getMonth()]
-  } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
-  return (
-    <div className={styles.pageContainer}>
-      <Header
-        city={city}
-        allCityOptions={allCityOptions}
-        cityCounts={cityCounts}
-      />
-      <main className={styles.mainLayout}>
-        <aside className={styles.aside}>
-          <h1 className={styles.asideTitle}>{dayHeading}</h1>
-          <p className={styles.asideSubtitle}>{daySubheading}</p>
-          <DayPicker
-            rollingWeek={rollingWeek}
-            activeDayIdx={activeDayIdx}
-            onSelectDay={(idx) => {
-              setActiveDayIdx(idx);
-              setOpenEventId(null);
-            }}
-            getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
-          />
-          <FilterControls
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            freeOnly={freeOnly}
-            onToggleFree={() => setFreeOnly(!freeOnly)}
-            timeSections={TIME_GROUPS.map((g) => g.name)}
-            selectedTimes={selectedTimes}
-            onToggleTime={toggleTime}
-            onClearTimes={() => setSelectedTimes([])}
-            activities={activities}
-            selectedActivities={selectedActivities}
-            onToggleActivity={toggleActivity}
-            onClearActivities={() => setSelectedActivities([])}
-            areas={areas}
-            selectedAreas={selectedAreas}
-            onToggleArea={toggleArea}
-            onClearAreas={() => setSelectedAreas([])}
-            hasActiveFilters={hasActiveFilters}
-            onClearAllFilters={clearAllFilters}
-          />
-        </aside>
-        <section className={styles.contentCol}>
-          <div className={styles.mobileSectionHeader}>
-            <h1 className={styles.mobileHeadingTitle}>{dayHeading}</h1>
-            <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
-          </div>
-          {loading ? (
-            <div className={styles.emptyState}>
-              <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
-              Gathering up-to-date weekly community activities.
-            </div>
-          ) : currentList.length === 0 ? (
-            <div className={styles.emptyState}>
-              <b className={styles.emptyStateTitle}>
-                Nothing listed{hasActiveFilters ? ' with these filters' : ''}
-              </b>
-              {hasActiveFilters
-                ? 'Try clearing your filters to see more events.'
-                : 'Know an event or group happening on this day? Submit it above.'}
-            </div>
-          ) : (
-            TIME_GROUPS.map((group) => {
-              const groupEvents = currentList.filter((ev) =>
-                group.predicate(parseHour(ev.startTime))
-              );
-              if (groupEvents.length === 0) return null;
-              return (
-                <div key={group.name}>
-                  <div className={styles.timeGroupHeader}>
-                    {group.name}
-                    <div className={styles.timeGroupLine} />
-                  </div>
-                  {groupEvents.map((ev, i) => {
-                    const uniqueId = ev.id || `${ev.title}-${i}`;
-                    return (
-                      <EventCard
-                        key={uniqueId}
-                        event={ev}
-                        isOpen={openEventId === uniqueId}
-                        isNextUp={uniqueId === nextUpEventId}
-                        cityName={city.name}
-                        onToggle={() =>
-                          setOpenEventId(openEventId === uniqueId ? null : uniqueId)
-                        }
-                        onOpenEdit={setEditModalEvent}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })
-          )}
-        </section>
-      </main>
-      <Footer />
-      {editModalEvent && (
-        <SuggestEditModal
-          event={editModalEvent}
-          cityName={city.name}
-          onClose={() => setEditModalEvent(null)}
-        />
-      )}
-    </div>
-  );
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+};
+export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+  },
+};
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 ================
@@ -4661,6 +4401,349 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
+  );
+}
+
+================
+File: app/events/CityEventsView.tsx
+================
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { CityConfig, getAllCities } from '../lib/cities';
+import { getEvents, Event } from '../lib/google-sheets';
+import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import DayPicker from './components/DayPicker';
+import FilterControls from './components/FilterControls';
+import EventCard from './components/EventCard';
+import SuggestEditModal from './components/SuggestEditModal';
+import CityHeroCard from './components/CityHeroCard';
+import styles from './EventsView.module.css';
+const DAY_NAMES_LONG = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const TIME_GROUPS = [
+  { name: 'Morning', predicate: (h: number) => h < 12 },
+  { name: 'Afternoon', predicate: (h: number) => h >= 12 && h < 17 },
+  { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
+  { name: 'Night', predicate: (h: number) => h >= 20 },
+];
+export default function CityEventsView({
+  city,
+  initialEvents = [],
+  initialCityCounts = {},
+}: {
+  city: CityConfig;
+  initialEvents?: Event[];
+  initialCityCounts?: Record<string, number>;
+}) {
+  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
+  const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
+  const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [openEventId, setOpenEventId] = useState<string | null>(null);
+  const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  useEffect(() => {
+    if (initialEvents.length === 0) {
+      setLoading(true);
+      getEvents(city)
+        .then((data) => {
+          setAllEvents(data);
+          setCityCounts((prev) => ({ ...prev, [city.slug]: data.length }));
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setAllEvents(initialEvents);
+      setCityCounts((prev) => ({ ...prev, [city.slug]: initialEvents.length }));
+      setLoading(false);
+    }
+  }, [city, initialEvents]);
+  const rollingWeek = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      return d;
+    });
+  }, []);
+  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+  const now = new Date();
+  const nowHour = now.getHours() + now.getMinutes() / 60;
+  const activityFrequencies = useMemo(() => {
+    const counts = new Map<string, number>();
+    allEvents.forEach((ev) => {
+      ev.activities.forEach((act) => {
+        const trimmed = act.trim();
+        if (trimmed) {
+          counts.set(trimmed, (counts.get(trimmed) || 0) + 1);
+        }
+      });
+    });
+    return counts;
+  }, [allEvents]);
+  const activities = useMemo(() => {
+    return Array.from(activityFrequencies.keys()).sort((a, b) => {
+      const countDiff = (activityFrequencies.get(b) || 0) - (activityFrequencies.get(a) || 0);
+      if (countDiff !== 0) return countDiff;
+      return a.localeCompare(b);
+    });
+  }, [activityFrequencies]);
+  const areas = useMemo(() => {
+    const set = new Set<string>();
+    allEvents.forEach((ev) => {
+      if (ev.area && ev.area.trim().length > 0 && ev.area.trim().length < 35) {
+        set.add(ev.area.trim());
+      }
+    });
+    return Array.from(set).sort();
+  }, [allEvents]);
+  const toggleTime = (tName: string) => {
+    setSelectedTimes((prev) =>
+      prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
+    );
+  };
+  const toggleActivity = (act: string) => {
+    setSelectedActivities((prev) =>
+      prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
+    );
+  };
+  const handleSelectChip = (act: string) => {
+    if (selectedActivities.includes(act)) {
+      setSelectedActivities((prev) => prev.filter((a) => a !== act));
+    } else {
+      setSelectedActivities([act]);
+    }
+  };
+  const toggleArea = (ar: string) => {
+    setSelectedAreas((prev) =>
+      prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
+    );
+  };
+  const getFilteredEventsForDay = (dayIndex: number) => {
+    const day = rollingWeek[dayIndex];
+    if (!day) return [];
+    return allEvents
+      .filter((ev) => {
+        if (!isEventActiveOnDate(ev, day)) return false;
+        if (freeOnly && !isFreePrice(ev.price)) return false;
+        const evHour = parseHour(ev.startTime);
+        if (selectedTimes.length > 0) {
+          const matchesTime = selectedTimes.some((tgName) => {
+            const group = TIME_GROUPS.find((g) => g.name === tgName);
+            return group ? group.predicate(evHour) : false;
+          });
+          if (!matchesTime) return false;
+        }
+        if (selectedActivities.length > 0) {
+          const acts = ev.activities.map((a) => a.trim().toLowerCase());
+          const hasActivityMatch = selectedActivities.some((sa) =>
+            acts.includes(sa.toLowerCase())
+          );
+          if (!hasActivityMatch) return false;
+        }
+        if (selectedAreas.length > 0) {
+          const areaLower = (ev.area || '').trim().toLowerCase();
+          const hasAreaMatch = selectedAreas.some(
+            (sa) => sa.toLowerCase() === areaLower
+          );
+          if (!hasAreaMatch) return false;
+        }
+        if (searchQuery.trim()) {
+          const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+          const searchableText = [
+            ev.title,
+            ev.venue,
+            ev.organization,
+            ev.location,
+            ev.area,
+            ev.activity,
+            ...ev.activities,
+            ev.about,
+            ev.notes,
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
+          if (!matchesSearch) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
+  };
+  const currentList = useMemo(() => {
+    return getFilteredEventsForDay(activeDayIdx);
+  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, searchQuery, rollingWeek]);
+  const nextUpEventId = useMemo(() => {
+    if (activeDayIdx !== 0) return null;
+    const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
+    return nextEvent ? nextEvent.id || nextEvent.title : null;
+  }, [activeDayIdx, currentList, nowHour]);
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
+    freeOnly ||
+    selectedTimes.length > 0 ||
+    selectedActivities.length > 0 ||
+    selectedAreas.length > 0;
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setFreeOnly(false);
+    setSelectedTimes([]);
+    setSelectedActivities([]);
+    setSelectedAreas([]);
+  };
+  const allCityOptions = useMemo(() => getAllCities(), []);
+  const totalEventsCount = allEvents.length || cityCounts[city.slug] || initialEvents.length;
+  const dayHeading =
+    activeDayIdx === 0
+      ? 'Today'
+      : activeDayIdx === 1
+      ? 'Tomorrow'
+      : DAY_NAMES_LONG[activeDate.getDay()];
+  const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
+    MONTH_NAMES[activeDate.getMonth()]
+  } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
+  return (
+    <div className={styles.pageContainer}>
+      <Header
+        city={city}
+        allCityOptions={allCityOptions}
+        cityCounts={cityCounts}
+      />
+      <div className={styles.heroWrapper}>
+        <CityHeroCard
+          cityName={city.name}
+          introTitle={city.introTitle}
+          introDescription={city.introDescription}
+          eventCount={totalEventsCount}
+          activities={activities}
+          selectedActivities={selectedActivities}
+          onSelectChip={handleSelectChip}
+          onClearActivities={() => setSelectedActivities([])}
+        />
+      </div>
+      <main className={styles.mainLayout}>
+        <aside className={styles.aside}>
+          <h2 className={styles.asideTitle}>{dayHeading}</h2>
+          <p className={styles.asideSubtitle}>{daySubheading}</p>
+          <DayPicker
+            rollingWeek={rollingWeek}
+            activeDayIdx={activeDayIdx}
+            onSelectDay={(idx) => {
+              setActiveDayIdx(idx);
+              setOpenEventId(null);
+            }}
+            getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
+          />
+          <FilterControls
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            freeOnly={freeOnly}
+            onToggleFree={() => setFreeOnly(!freeOnly)}
+            timeSections={TIME_GROUPS.map((g) => g.name)}
+            selectedTimes={selectedTimes}
+            onToggleTime={toggleTime}
+            onClearTimes={() => setSelectedTimes([])}
+            activities={activities}
+            selectedActivities={selectedActivities}
+            onToggleActivity={toggleActivity}
+            onClearActivities={() => setSelectedActivities([])}
+            areas={areas}
+            selectedAreas={selectedAreas}
+            onToggleArea={toggleArea}
+            onClearAreas={() => setSelectedAreas([])}
+            hasActiveFilters={hasActiveFilters}
+            onClearAllFilters={clearAllFilters}
+          />
+        </aside>
+        <section className={styles.contentCol}>
+          <div className={styles.mobileSectionHeader}>
+            <h2 className={styles.mobileHeadingTitle}>{dayHeading}</h2>
+            <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
+          </div>
+          {loading ? (
+            <div className={styles.emptyState}>
+              <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
+              Gathering up-to-date weekly community activities.
+            </div>
+          ) : currentList.length === 0 ? (
+            <div className={styles.emptyState}>
+              <b className={styles.emptyStateTitle}>
+                Nothing listed{hasActiveFilters ? ' with these filters' : ''}
+              </b>
+              {hasActiveFilters
+                ? 'Try clearing your filters to see more events.'
+                : 'Know an event or group happening on this day? Submit it above.'}
+            </div>
+          ) : (
+            TIME_GROUPS.map((group) => {
+              const groupEvents = currentList.filter((ev) =>
+                group.predicate(parseHour(ev.startTime))
+              );
+              if (groupEvents.length === 0) return null;
+              return (
+                <div key={group.name}>
+                  <div className={styles.timeGroupHeader}>
+                    {group.name}
+                    <div className={styles.timeGroupLine} />
+                  </div>
+                  {groupEvents.map((ev, i) => {
+                    const uniqueId = ev.id || `${ev.title}-${i}`;
+                    return (
+                      <EventCard
+                        key={uniqueId}
+                        event={ev}
+                        isOpen={openEventId === uniqueId}
+                        isNextUp={uniqueId === nextUpEventId}
+                        cityName={city.name}
+                        onToggle={() =>
+                          setOpenEventId(openEventId === uniqueId ? null : uniqueId)
+                        }
+                        onOpenEdit={setEditModalEvent}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })
+          )}
+        </section>
+      </main>
+      <Footer />
+      {editModalEvent && (
+        <SuggestEditModal
+          event={editModalEvent}
+          cityName={city.name}
+          onClose={() => setEditModalEvent(null)}
+        />
+      )}
+    </div>
   );
 }
 
@@ -5501,7 +5584,10 @@ export default function Header({
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
-  const citiesList = useMemo(() => allCityOptions || getAllCities(), [allCityOptions]);
+  const citiesList = useMemo(() => {
+    const list = allCityOptions || getAllCities();
+    return [...list].sort((a, b) => a.name.localeCompare(b.name));
+  }, [allCityOptions]);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
@@ -5511,7 +5597,6 @@ export default function Header({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  const currentCityCount = city ? cityCounts[city.slug] : undefined;
   const isAboutActive = pathname === '/about';
   const isContactActive = pathname === '/contact';
   return (
@@ -5535,9 +5620,6 @@ export default function Header({
             {city && (
               <div className={styles.brandSubtitle}>
                 {city.heroLocation}
-                {typeof currentCityCount === 'number' && (
-                  <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'} listed</>
-                )}
               </div>
             )}
           </div>

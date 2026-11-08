@@ -38,7 +38,7 @@ export default function Header({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isAboutActive = pathname === '/about';
+  const isAboutActive = pathname === '/' || pathname === '/about';
   const isContactActive = pathname === '/contact';
 
   return (
@@ -88,7 +88,6 @@ export default function Header({
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-
               {citiesMenuOpen && (
                 <div className={styles.citiesDropdown}>
                   {citiesList.map((c) => {
@@ -133,7 +132,7 @@ export default function Header({
             </div>
 
             <Link
-              href="/about"
+              href="/"
               className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
             >
               About
@@ -144,6 +143,7 @@ export default function Header({
             >
               Contact
             </Link>
+
             <Link href="/contact" className={styles.addEventBtn}>
               + Add event
             </Link>
@@ -229,7 +229,7 @@ export default function Header({
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
-                href="/about"
+                href="/"
                 className={`${styles.drawerNavLink} ${
                   isAboutActive ? styles.drawerNavLinkActive : ''
                 }`}
