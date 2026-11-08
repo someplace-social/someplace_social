@@ -106,8 +106,11 @@ function FilterControls({
   const priceMenuRef = useRef<HTMLDivElement>(null);
   const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
+  const timeMobileMenuRef = useRef<HTMLDivElement>(null);
   const actMenuRef = useRef<HTMLDivElement>(null);
+  const actMobileMenuRef = useRef<HTMLDivElement>(null);
   const areaMenuRef = useRef<HTMLDivElement>(null);
+  const areaMobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -119,13 +122,25 @@ function FilterControls({
       ) {
         setPriceMenuOpen(false);
       }
-      if (timeMenuRef.current && !timeMenuRef.current.contains(target)) {
+      if (
+        timeMenuRef.current &&
+        !timeMenuRef.current.contains(target) &&
+        (!timeMobileMenuRef.current || !timeMobileMenuRef.current.contains(target))
+      ) {
         setTimeMenuOpen(false);
       }
-      if (actMenuRef.current && !actMenuRef.current.contains(target)) {
+      if (
+        actMenuRef.current &&
+        !actMenuRef.current.contains(target) &&
+        (!actMobileMenuRef.current || !actMobileMenuRef.current.contains(target))
+      ) {
         setActMenuOpen(false);
       }
-      if (areaMenuRef.current && !areaMenuRef.current.contains(target)) {
+      if (
+        areaMenuRef.current &&
+        !areaMenuRef.current.contains(target) &&
+        (!areaMobileMenuRef.current || !areaMobileMenuRef.current.contains(target))
+      ) {
         setAreaMenuOpen(false);
       }
     }
@@ -291,6 +306,7 @@ function FilterControls({
             onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
             onToggleOption={onToggleTime}
             onClear={onClearTimes}
+            containerRef={timeMobileMenuRef}
             flexStyle
           />
           <FilterDropdown
@@ -304,6 +320,7 @@ function FilterControls({
             onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
             onToggleOption={onToggleActivity}
             onClear={onClearActivities}
+            containerRef={actMobileMenuRef}
             flexStyle
           />
           <FilterDropdown
@@ -317,6 +334,7 @@ function FilterControls({
             onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
             onToggleOption={onToggleArea}
             onClear={onClearAreas}
+            containerRef={areaMobileMenuRef}
             flexStyle
           />
           {hasActiveFilters && (

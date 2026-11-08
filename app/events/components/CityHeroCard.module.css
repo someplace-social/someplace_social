@@ -8,15 +8,18 @@
   gap: 14px 40px;
   align-items: start;
 }
+
 .titleCol {
   display: flex;
   flex-direction: column;
 }
+
 .descCol {
   display: flex;
   flex-direction: column;
   padding-top: 22px;
 }
+
 .eyebrow {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-size: 12px;
@@ -27,6 +30,7 @@
   color: var(--free);
   margin: 0 0 10px;
 }
+
 .title {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-size: 32px;
@@ -36,6 +40,7 @@
   margin: 0;
   color: var(--ink);
 }
+
 .metaSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-size: 13.5px;
@@ -44,6 +49,7 @@
   margin-top: 8px;
   line-height: 1.35;
 }
+
 .lead {
   margin: 0;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -51,6 +57,7 @@
   line-height: 1.55;
   color: #4a463b;
 }
+
 .chips {
   grid-column: 1 / -1;
   display: flex;
@@ -58,6 +65,7 @@
   gap: 8px;
   margin-top: 6px;
 }
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -76,44 +84,60 @@
   min-height: 36px;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
+
 .chip:hover {
   border-color: var(--ink);
 }
+
 .chipActive {
   background-color: var(--ink);
   color: #ffffff;
   border-color: var(--ink);
 }
+
 .chipActive:hover {
   background-color: var(--ink);
   color: #ffffff;
 }
+
 @media (max-width: 899px) {
   .heroCard {
     grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 20px 18px;
+    gap: 12px;
+    padding: 18px 16px;
     border-radius: 14px;
   }
   .descCol {
     padding-top: 0;
   }
   .title {
-    font-size: 26px;
+    font-size: 24px;
   }
   .metaSubtitle {
     font-size: 13px;
-    margin-top: 6px;
-  }
-  .lead {
-    font-size: 14.5px;
-  }
-  .chips {
-    gap: 6px;
     margin-top: 4px;
   }
+  .lead {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+    margin-top: 4px;
+    padding-bottom: 2px;
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
   .chip {
-    padding: 6px 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 6px 13px;
     font-size: 13px;
     min-height: 34px;
   }

@@ -8,6 +8,7 @@
   flex-direction: column;
   position: relative;
 }
+
 .heroWrapper {
   width: 100%;
   max-width: 1120px;
@@ -15,6 +16,7 @@
   box-sizing: border-box;
   padding: 28px 32px 0;
 }
+
 .mainLayout {
   flex: 1;
   width: 100%;
@@ -26,6 +28,7 @@
   align-items: flex-start;
   gap: 48px;
 }
+
 .aside {
   flex: 0 0 300px;
   min-width: 0;
@@ -37,6 +40,7 @@
   padding: 24px 20px;
   box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
 }
+
 .asideTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
@@ -46,6 +50,7 @@
   margin: 0 0 6px;
   color: var(--ink);
 }
+
 .asideSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -54,12 +59,14 @@
   color: #5a5247;
   margin: 0;
 }
+
 .dayListVertical {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 20px;
 }
+
 .dayBtnVertical {
   display: flex;
   justify-content: space-between;
@@ -77,37 +84,42 @@
   box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
   transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
+
 .dayBtnVertical:hover {
   background-color: #faf7f2;
   box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
 }
+
 .dayBtnVerticalActive {
   background-color: var(--ink);
   color: #ffffff;
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(31, 27, 22, 0.15);
 }
+
 .dayBtnVerticalActive:hover {
   background-color: var(--ink);
 }
+
 .dayCountText {
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
 }
+
 .dayCountTextActive {
   color: #e6dfd0;
 }
-.mobileSectionHeader {
-  display: none;
-}
+
 .mobileDaysGrid {
   display: none;
 }
+
 .contentCol {
   flex: 999 1 520px;
   min-width: 0;
 }
+
 .timeGroupHeader {
   display: flex;
   align-items: center;
@@ -117,62 +129,98 @@
   font-weight: 700;
   color: var(--muted);
 }
+
 .timeGroupHeader:first-of-type {
   margin-top: 0;
 }
+
 .timeGroupLine {
   flex: 1;
   height: 1px;
   background-color: var(--line);
 }
+
 .emptyState {
   text-align: center;
   color: var(--muted);
-  padding: 56px 16px;
+  padding: 48px 16px;
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: 14px;
 }
+
 .emptyStateTitle {
   display: block;
   font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--ink);
   margin-bottom: 6px;
 }
+
 @media (max-width: 899px) {
   .heroWrapper {
-    padding: 16px 16px 0;
+    padding: 14px 16px 0;
   }
   .mainLayout {
     padding: 16px 16px 40px;
     flex-direction: column;
-    gap: 0;
+    gap: 16px;
   }
   .aside {
+    display: flex;
+    flex-direction: column;
+    position: static;
+    width: 100%;
+    flex: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .asideTitle {
+    font-size: 28px;
+    margin: 0 0 2px;
+  }
+  .asideSubtitle {
+    font-size: 13.5px;
+    margin: 0 0 6px;
+  }
+  .dayListVertical {
     display: none;
   }
   .mobileDaysGrid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 6px;
-    margin-top: 8px;
+    margin-top: 6px;
     width: 100%;
+    padding-bottom: 2px;
+  }
+  .mobileDaysGrid::-webkit-scrollbar {
+    display: none;
   }
   .mobileDayBtn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1px;
-    padding: 8px 0 7px;
-    min-height: 66px;
+    justify-content: center;
+    gap: 2px;
+    flex: 1 0 calc((100% - 36px) / 7);
+    min-width: 48px;
+    min-height: 60px;
+    padding: 6px 2px;
     border: 1.5px solid var(--line);
     background: #ffffff;
     color: var(--ink);
     border-radius: 10px;
     font: inherit;
     cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .mobileDayBtnActive {
     border-color: var(--ink);
@@ -181,8 +229,9 @@
   }
   .mobileDayLabel {
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--muted);
+    line-height: 1;
   }
   .mobileDayLabelActive {
     color: #e6dfd0;
@@ -190,35 +239,21 @@
   .mobileDayNum {
     font-family: var(--font-bricolage), system-ui, sans-serif;
     font-weight: 800;
-    font-size: 20px;
+    font-size: 19px;
     line-height: 1.1;
   }
   .mobileDayCount {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 500;
     color: var(--muted);
+    line-height: 1;
   }
   .mobileDayCountActive {
     color: #e6dfd0;
   }
-  .mobileSectionHeader {
-    display: block;
-    margin-top: 18px;
-    margin-bottom: 8px;
-  }
-  .mobileHeadingTitle {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 34px;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin: 0 0 3px;
-  }
-  .mobileHeadingSubtitle {
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 0;
+  .contentCol {
+    width: 100%;
+    flex: none;
   }
   .timeGroupHeader {
     margin: 18px 0 8px;

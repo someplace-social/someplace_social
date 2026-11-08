@@ -3,18 +3,21 @@
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
+
 .filterHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
+
 .filterTitle {
   font-size: 13px;
   font-weight: 700;
   color: #5a5247;
   margin: 0;
 }
+
 .clearFiltersLink {
   background: none;
   border: 0;
@@ -25,20 +28,24 @@
   padding: 0;
   font-family: inherit;
 }
+
 .clearFiltersLink:hover {
   text-decoration: underline;
 }
+
 .filterListVertical {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .searchWrapper {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
+
 .searchIcon {
   position: absolute;
   left: 14px;
@@ -46,6 +53,7 @@
   pointer-events: none;
   flex-shrink: 0;
 }
+
 .searchInput {
   width: 100%;
   min-height: 46px;
@@ -60,14 +68,17 @@
   box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+
 .searchInput::placeholder {
   color: var(--muted);
   opacity: 0.9;
 }
+
 .searchInput:focus {
   border-color: var(--ink);
   box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
 }
+
 .searchClearBtn {
   position: absolute;
   right: 10px;
@@ -84,14 +95,17 @@
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .searchClearBtn:hover {
   background-color: var(--ink);
   color: var(--bg);
 }
+
 .multiSelectWrapper {
   position: relative;
   width: 100%;
 }
+
 .multiSelectTrigger {
   width: 100%;
   display: flex;
@@ -110,13 +124,16 @@
   box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
+
 .multiSelectTrigger:hover {
   background-color: #faf7f2;
   box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
 }
+
 .multiSelectTriggerActive {
   border-color: rgba(31, 27, 22, 0.2);
 }
+
 .filterTriggerLeft {
   display: flex;
   align-items: center;
@@ -124,6 +141,7 @@
   min-width: 0;
   flex: 1;
 }
+
 .filterTriggerIcon {
   display: flex;
   align-items: center;
@@ -131,12 +149,14 @@
   color: var(--free, #1f7a4d);
   flex-shrink: 0;
 }
+
 .filterCategory {
   font-weight: 700;
   color: var(--ink);
   font-size: 14.5px;
   white-space: nowrap;
 }
+
 .filterValue {
   font-weight: 500;
   color: var(--ink);
@@ -145,11 +165,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .filterChevron {
   flex-shrink: 0;
   margin-left: 8px;
   color: var(--ink);
 }
+
 .multiSelectMenu {
   position: absolute;
   top: 100%;
@@ -165,6 +187,7 @@
   max-height: 250px;
   overflow-y: auto;
 }
+
 .multiSelectMenuHeader {
   display: flex;
   justify-content: space-between;
@@ -176,6 +199,7 @@
   font-weight: 700;
   color: var(--muted);
 }
+
 .multiSelectClearLink {
   background: none;
   border: 0;
@@ -185,6 +209,7 @@
   cursor: pointer;
   padding: 0;
 }
+
 .multiSelectOption {
   display: flex;
   align-items: center;
@@ -196,14 +221,17 @@
   color: var(--ink);
   user-select: none;
 }
+
 .multiSelectOption:hover {
   background-color: var(--topbar-bg);
 }
+
 .hiddenCheckbox {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
+
 .customCheckbox {
   width: 18px;
   height: 18px;
@@ -215,11 +243,13 @@
   justify-content: center;
   flex: 0 0 18px;
 }
+
 .customCheckboxChecked {
   background-color: var(--ink);
   border-color: var(--ink);
   color: #ffffff;
 }
+
 .priceMenu {
   position: absolute;
   top: 100%;
@@ -236,25 +266,30 @@
   flex-direction: column;
   gap: 14px;
 }
+
 .priceHeaderRow {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
+
 .priceHeaderTitle {
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
 }
+
 .priceHeaderReadout {
   font-size: 13px;
   font-weight: 700;
 }
+
 .priceChipsRow {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
+
 .priceChip {
   display: inline-flex;
   align-items: center;
@@ -271,31 +306,38 @@
   border: 1.5px solid #e6d9b8;
   transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
+
 .priceChip:hover {
   border-color: var(--ink);
 }
+
 .priceChipFreeActive {
   background: #d5efe0;
   color: #14573a;
   border-color: #1f7a4d;
 }
+
 .priceChipFreeActive:hover {
   border-color: #1f7a4d;
 }
+
 .priceChipUnderActive {
   background: var(--ink);
   color: #fff8e7;
   border-color: var(--ink);
 }
+
 .priceChipUnderActive:hover {
   border-color: var(--ink);
 }
+
 .sliderSection {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 4px 2px 0;
 }
+
 .rangeSlider {
   -webkit-appearance: none;
   appearance: none;
@@ -306,11 +348,13 @@
   outline: none;
   cursor: pointer;
 }
+
 .rangeSlider::-webkit-slider-runnable-track {
   height: 6px;
   background: transparent;
   border-radius: 999px;
 }
+
 .rangeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -323,11 +367,13 @@
   box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
   cursor: pointer;
 }
+
 .rangeSlider::-moz-range-track {
   height: 6px;
   background: transparent;
   border-radius: 999px;
 }
+
 .rangeSlider::-moz-range-thumb {
   width: 18px;
   height: 18px;
@@ -336,10 +382,12 @@
   border: 2px solid #1f1a14;
   cursor: pointer;
 }
+
 .rangeSlider:focus-visible::-webkit-slider-thumb {
   outline: 3px solid #1f7a4d;
   outline-offset: 2px;
 }
+
 .sliderLabelsRow {
   display: flex;
   justify-content: space-between;
@@ -348,6 +396,7 @@
   font-weight: 500;
   margin-top: 4px;
 }
+
 .clearFiltersBtn {
   background: none;
   border: 0;
@@ -361,21 +410,25 @@
   font-family: inherit;
   white-space: nowrap;
 }
+
 .clearFiltersBtn:hover {
   color: var(--accent);
 }
+
 .mobileFiltersSection {
   display: none;
 }
+
 .mobileFiltersRow {
   display: none;
 }
+
 @media (max-width: 899px) {
   .mobileFiltersSection {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 10px;
     width: 100%;
   }
   .mobileFiltersRow {
@@ -385,12 +438,42 @@
     width: 100%;
     align-items: center;
   }
+  .mobileFiltersRow .multiSelectWrapper {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 130px;
+  }
+  .multiSelectTrigger {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 13.5px;
+  }
+  .filterCategory {
+    font-size: 13.5px;
+  }
+  .filterValue {
+    font-size: 13.5px;
+  }
+  .multiSelectMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 270px;
+    max-width: calc(100vw - 32px);
+    right: auto;
+    z-index: 60;
+  }
   .mobilePriceMenu {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 290px;
+    width: 280px;
     max-width: calc(100vw - 32px);
+    right: auto;
     z-index: 60;
+  }
+  .clearFiltersBtn {
+    font-size: 12.5px;
+    padding: 4px 6px;
+    margin-left: auto;
   }
 }

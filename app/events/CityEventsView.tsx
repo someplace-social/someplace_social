@@ -280,10 +280,6 @@ export default function CityEventsView({
           />
         </aside>
         <section className={styles.contentCol}>
-          <div className={styles.mobileSectionHeader}>
-            <h2 className={styles.mobileHeadingTitle}>{dayHeading}</h2>
-            <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
-          </div>
           {loading ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>

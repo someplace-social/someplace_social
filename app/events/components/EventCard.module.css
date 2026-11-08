@@ -9,12 +9,14 @@
   contain-intrinsic-size: 0 110px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+
 .eventCardOpen {
   border-color: var(--ink);
   box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
   overflow: visible;
   z-index: 10;
 }
+
 .cardRow {
   display: flex;
   gap: 20px;
@@ -28,6 +30,7 @@
   font: inherit;
   cursor: pointer;
 }
+
 .timeCol {
   flex: 0 0 76px;
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -35,6 +38,7 @@
   font-size: 26px;
   line-height: 1;
 }
+
 .endTimeText {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -42,11 +46,13 @@
   color: var(--muted);
   margin-top: 5px;
 }
+
 .infoCol {
   flex: 1;
   min-width: 0;
   padding-right: 48px;
 }
+
 .nextUpBadge {
   display: inline-block;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -58,21 +64,25 @@
   padding: 2px 7px;
   margin-bottom: 6px;
 }
+
 .eventTitle {
   font-weight: 700;
   font-size: 18px;
   line-height: 1.25;
 }
+
 .eventHost {
   color: var(--muted);
   font-weight: 400;
 }
+
 .eventLocation {
   font-size: 15px;
   line-height: 1.4;
   color: var(--muted);
   margin-top: 3px;
 }
+
 .priceLine {
   display: flex;
   align-items: center;
@@ -82,18 +92,22 @@
   line-height: 1.3;
   font-weight: 700;
 }
+
 .priceFree {
   color: var(--free);
 }
+
 .pricePaid {
   color: var(--price-donation);
 }
+
 .tagList {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
 }
+
 .tagChip {
   font-size: 12px;
   font-weight: 500;
@@ -101,6 +115,7 @@
   padding: 3px 9px;
   white-space: nowrap;
 }
+
 .chevronCircle {
   position: absolute;
   top: 16px;
@@ -116,16 +131,19 @@
   pointer-events: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .chevronCircleOpen {
   background-color: var(--ink);
   color: var(--bg);
 }
+
 .expandedDrawer {
   border-top: 1px solid var(--line);
   padding: 16px 20px 18px 116px;
   background-color: transparent;
   position: relative;
 }
+
 .eventDescription {
   margin: 0 0 14px;
   max-width: 580px;
@@ -133,6 +151,7 @@
   line-height: 1.5;
   color: #4f483e;
 }
+
 .drawerActionRow {
   display: flex;
   align-items: center;
@@ -140,11 +159,13 @@
   gap: 16px;
   flex-wrap: wrap;
 }
+
 .buttonGrid4 {
   display: grid;
   grid-template-columns: repeat(4, 100px);
   gap: 8px;
 }
+
 .actionBtnPrimary {
   display: flex;
   flex-direction: column;
@@ -161,10 +182,12 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 .actionBtnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
+
 .actionBtnOutline {
   display: flex;
   flex-direction: column;
@@ -183,14 +206,17 @@
   font-family: inherit;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
+
 .actionBtnOutline:hover {
   border-color: var(--ink);
   color: var(--ink);
 }
+
 .actionBtnOutlineActive {
   border-color: var(--ink);
   background-color: var(--topbar-bg);
 }
+
 .suggestEditBtn {
   display: inline-flex;
   align-items: center;
@@ -205,16 +231,20 @@
   cursor: pointer;
   font-family: inherit;
 }
+
 .suggestEditBtn:hover {
   color: var(--accent);
 }
+
 .contactWrapper {
   position: relative;
   display: flex;
 }
+
 .contactWrapper > button {
   width: 100%;
 }
+
 .contactPopover {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -231,12 +261,14 @@
   flex-direction: column;
   gap: 6px;
 }
+
 .contactHeader {
   display: flex;
   flex-direction: column;
   gap: 2px;
   padding: 2px 4px 4px;
 }
+
 .contactHeaderLabel {
   font-size: 11px;
   font-weight: 700;
@@ -244,6 +276,7 @@
   letter-spacing: 0.05em;
   color: var(--muted);
 }
+
 .contactHeaderValue {
   font-size: 13.5px;
   font-weight: 600;
@@ -252,16 +285,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .contactDivider {
   height: 1px;
   background-color: var(--line);
   margin: 2px 0 4px;
 }
+
 .contactActions {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .contactActionBtn,
 .contactActionLink,
 .contactActionLinkPrimary {
@@ -281,60 +317,67 @@
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .contactActionBtn:hover,
 .contactActionLink:hover {
   background-color: var(--topbar-bg);
   color: var(--ink);
 }
+
 .contactActionBtnCopied {
   background-color: #eaf7ee;
   color: var(--free);
 }
+
 .contactActionBtnCopied:hover {
   background-color: #eaf7ee;
   color: var(--free);
 }
+
 .contactActionLinkPrimary {
   background-color: var(--ink);
   color: #ffffff;
 }
+
 .contactActionLinkPrimary:hover {
   background-color: #332d25;
   color: #ffffff;
 }
+
 @media (max-width: 899px) {
   .cardRow {
-    gap: 14px;
+    gap: 12px;
     padding: 14px;
   }
   .timeCol {
-    flex: 0 0 54px;
-    font-size: 22px;
+    flex: 0 0 58px;
+    font-size: 20px;
+    line-height: 1.1;
   }
   .endTimeText {
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: 11.5px;
+    margin-top: 3px;
   }
   .infoCol {
-    padding-right: 36px;
+    padding-right: 32px;
   }
   .eventTitle {
     font-size: 16px;
   }
   .eventLocation {
-    font-size: 14px;
+    font-size: 13.5px;
   }
   .priceLine {
-    font-size: 14px;
+    font-size: 13.5px;
   }
   .chevronCircle {
     top: 12px;
     right: 12px;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
   }
   .expandedDrawer {
-    padding: 14px 14px 8px;
+    padding: 14px 14px 12px;
   }
   .eventDescription {
     font-size: 14px;
@@ -350,7 +393,33 @@
     gap: 6px;
     width: 100%;
   }
+  .actionBtnPrimary,
+  .actionBtnOutline {
+    min-height: 52px;
+    padding: 6px 2px;
+    font-size: 11.5px;
+    gap: 4px;
+  }
+  .actionBtnPrimary svg,
+  .actionBtnOutline svg {
+    width: 18px;
+    height: 18px;
+  }
   .suggestEditBtn {
-    align-self: flex-end;
+    align-self: center;
+    min-height: 38px;
+    font-size: 13px;
+  }
+  .contactPopover {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    z-index: 100;
+    border-radius: 16px;
+    box-shadow: 0 12px 36px rgba(31, 27, 22, 0.25);
   }
 }
