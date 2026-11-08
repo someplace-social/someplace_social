@@ -1,17 +1,22 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/medellin',
+        destination: '/events/medellin-colombia',
+        permanent: true,
+      },
+      {
         source: '/medellin-v2',
         destination: '/events/medellin-colombia',
-        permanent: false,
+        permanent: true,
       },
       {
         source: '/events/fortcollins-colorado',
         destination: '/events/fort-collins-colorado',
-        permanent: false,
+        permanent: true,
       },
     ];
   },

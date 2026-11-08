@@ -18,6 +18,39 @@ interface EventCardProps {
   onOpenEdit: (ev: Event) => void;
 }
 
+function ActionButton({
+  href,
+  label,
+  icon,
+}: {
+  href?: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  if (href) {
+    return (
+      <a
+        href={ensureExternalUrl(href)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.actionBtnOutline}
+      >
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <div
+      className={styles.actionBtnOutline}
+      style={{ opacity: 0.45, cursor: 'not-allowed' }}
+    >
+      {icon}
+      {label}
+    </div>
+  );
+}
+
 export default function EventCard({
   event,
   isOpen,
@@ -28,13 +61,7 @@ export default function EventCard({
 }: EventCardProps) {
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
-  const tagList =
-    event.activities && event.activities.length > 0
-      ? event.activities
-      : event.activity
-      ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
-      : [event.activity1, event.activity2, event.activity3].filter(Boolean);
-
+  const tagList = event.activities || [];
   const displayVenue = event.venue || event.location;
   const recurrenceText = event.frequency
     ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
@@ -170,74 +197,37 @@ export default function EventCard({
                 </svg>
                 Maps
               </a>
-              {event.website ? (
-                <a
-                  href={ensureExternalUrl(event.website)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
+              <ActionButton
+                href={event.website}
+                label="Website"
+                icon={
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="9" />
                     <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
                   </svg>
-                  Website
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                  Website
-                </div>
-              )}
-              {event.social ? (
-                <a
-                  href={ensureExternalUrl(event.social)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
+                }
+              />
+              <ActionButton
+                href={event.social}
+                label="Instagram"
+                icon={
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
                     <circle cx="12" cy="12" r="4" />
                     <circle cx="17.2" cy="6.8" r=".6" />
                   </svg>
-                  Instagram
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                  Instagram
-                </div>
-              )}
-              {event.contact ? (
-                <a
-                  href={ensureExternalUrl(event.contact)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
+                }
+              />
+              <ActionButton
+                href={event.contact}
+                label="Contact"
+                icon={
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
                   </svg>
-                  Contact
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                  Contact
-                </div>
-              )}
+                }
+              />
             </div>
             <button
               type="button"

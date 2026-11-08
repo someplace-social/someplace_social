@@ -48,7 +48,6 @@ export default function FilterControls({
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-
   const timeMenuRef = useRef<HTMLDivElement>(null);
   const actMenuRef = useRef<HTMLDivElement>(null);
   const areaMenuRef = useRef<HTMLDivElement>(null);
@@ -87,6 +86,57 @@ export default function FilterControls({
     return `Areas (${selectedAreas.length})`;
   }, [selectedAreas]);
 
+  const renderSearchInput = () => (
+    <div className={styles.searchWrapper}>
+      <svg
+        className={styles.searchIcon}
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Search events, places, tags..."
+        className={styles.searchInput}
+        aria-label="Search events"
+        autoComplete="off"
+        spellCheck={false}
+      />
+      {searchQuery && (
+        <button
+          type="button"
+          className={styles.searchClearBtn}
+          onClick={() => onSearchChange('')}
+          aria-label="Clear search query"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <>
       <div className={styles.filterBlockDesktop}>
@@ -102,57 +152,8 @@ export default function FilterControls({
             </button>
           )}
         </div>
-
         <div className={styles.filterListVertical}>
-          <div className={styles.searchWrapper}>
-            <svg
-              className={styles.searchIcon}
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="M21 21l-4.35-4.35" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search events, places, tags..."
-              className={styles.searchInput}
-              aria-label="Search events"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                className={styles.searchClearBtn}
-                onClick={() => onSearchChange('')}
-                aria-label="Clear search query"
-              >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-
+          {renderSearchInput()}
           <FilterDropdown
             label={activityLabel}
             title="Select activities"
@@ -164,7 +165,6 @@ export default function FilterControls({
             onClear={onClearActivities}
             containerRef={actMenuRef}
           />
-
           <FilterDropdown
             label={timeLabel}
             title="Time of day"
@@ -176,7 +176,6 @@ export default function FilterControls({
             onClear={onClearTimes}
             containerRef={timeMenuRef}
           />
-
           <FilterDropdown
             label={areaLabel}
             title="Select areas"
@@ -188,7 +187,6 @@ export default function FilterControls({
             onClear={onClearAreas}
             containerRef={areaMenuRef}
           />
-
           <button
             type="button"
             className={styles.filterFreeBtn}
@@ -219,57 +217,8 @@ export default function FilterControls({
           </button>
         </div>
       </div>
-
       <div className={styles.mobileFiltersSection}>
-        <div className={styles.searchWrapper}>
-          <svg
-            className={styles.searchIcon}
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search events, places, tags..."
-            className={styles.searchInput}
-            aria-label="Search events"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              className={styles.searchClearBtn}
-              onClick={() => onSearchChange('')}
-              aria-label="Clear search query"
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
-
+        {renderSearchInput()}
         <div className={styles.mobileFiltersRow}>
           <button
             type="button"

@@ -9,7 +9,7 @@ export type CityConfig = {
   csvUrl?: string;
 };
 
-const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
 
 export const CITIES: Record<string, CityConfig> = {
   'medellin-colombia': {
@@ -30,15 +30,6 @@ export const CITIES: Record<string, CityConfig> = {
     sheetGid: '466758538',
     spreadsheetId: MAIN_SPREADSHEET_ID,
   },
-  'fortcollins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-  },
 };
 
 export function getCityBySlug(slug: string): CityConfig | undefined {
@@ -48,5 +39,9 @@ export function getCityBySlug(slug: string): CityConfig | undefined {
 }
 
 export function getAllCitySlugs(): string[] {
-  return ['medellin-colombia', 'fort-collins-colorado'];
+  return Object.keys(CITIES);
+}
+
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES);
 }

@@ -22,6 +22,7 @@ Project Structure Map:
 |   |   +--- ContactForm.tsx
 |   |   +--- FilterBar.module.css
 |   |   +--- FilterBar.tsx
+|   |   +--- Footer.module.css
 |   |   +--- Footer.tsx
 |   |   +--- GoogleAnalytics.tsx
 |   |   +--- Header.module.css
@@ -34,10 +35,16 @@ Project Structure Map:
 |   |   |   \--- page.tsx
 |   |   +--- components
 |   |   |   +--- DayPicker.tsx
+|   |   |   +--- EventCard.module.css
 |   |   |   +--- EventCard.tsx
+|   |   |   +--- EventFooter.module.css
 |   |   |   +--- EventFooter.tsx
+|   |   |   +--- EventHeader.module.css
 |   |   |   +--- EventHeader.tsx
+|   |   |   +--- FilterControls.module.css
 |   |   |   +--- FilterControls.tsx
+|   |   |   +--- FilterDropdown.tsx
+|   |   |   +--- SuggestEditModal.module.css
 |   |   |   \--- SuggestEditModal.tsx
 |   |   +--- CityEventsView.tsx
 |   |   +--- EventsView.module.css
@@ -142,6 +149,7 @@ app/components/ContactForm.module.css
 app/components/ContactForm.tsx
 app/components/FilterBar.module.css
 app/components/FilterBar.tsx
+app/components/Footer.module.css
 app/components/Footer.tsx
 app/components/GoogleAnalytics.tsx
 app/components/Header.module.css
@@ -151,10 +159,16 @@ app/events/[city]/layout.tsx
 app/events/[city]/page.tsx
 app/events/CityEventsView.tsx
 app/events/components/DayPicker.tsx
+app/events/components/EventCard.module.css
 app/events/components/EventCard.tsx
+app/events/components/EventFooter.module.css
 app/events/components/EventFooter.tsx
+app/events/components/EventHeader.module.css
 app/events/components/EventHeader.tsx
+app/events/components/FilterControls.module.css
 app/events/components/FilterControls.tsx
+app/events/components/FilterDropdown.tsx
+app/events/components/SuggestEditModal.module.css
 app/events/components/SuggestEditModal.tsx
 app/events/EventsView.module.css
 app/events/utils.ts
@@ -217,6 +231,91 @@ File: app/components/ContactForm.module.css
   cursor: pointer;
   font-size: 1rem;
   align-self: flex-start;
+}
+
+================
+File: app/components/Footer.module.css
+================
+.footer {
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  margin-top: auto;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 32px 32px;
+}
+.footerQuoteRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px 48px;
+}
+.footerLeftSection {
+  flex: 1 1 500px;
+  max-width: 580px;
+}
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.footerAuthor {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footerCopyright {
+  margin-top: 18px;
+  font-size: 11px;
+  color: #8c8275;
+}
+.footerRightSection {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+.footerSupportText {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #4f483e;
+}
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+@media (max-width: 899px) {
+  .footerInner {
+    padding: 24px 16px 28px;
+  }
+  .footerQuoteRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .footerLeftSection {
+    max-width: 100%;
+  }
+  .footerQuoteText {
+    font-size: 13px;
+  }
+  .footerRightSection {
+    width: 100%;
+  }
 }
 
 ================
@@ -350,686 +449,1180 @@ export default function DayPicker({
 }
 
 ================
-File: app/events/components/EventFooter.tsx
+File: app/events/components/EventCard.module.css
 ================
-import styles from '../EventsView.module.css';
-export default function EventFooter() {
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerInner}>
-        <div className={styles.footerQuoteRow}>
-          <div className={styles.footerLeftSection}>
-            <blockquote className={styles.footerQuoteText}>
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
-            <div className={styles.footerCopyright}>
-              © 2026 Someplace Social. All rights reserved.
-            </div>
-          </div>
-          <div className={styles.footerRightSection}>
-            <div className={styles.footerSupportText}>
-              Free for everyone, no ads.{' '}
-              <a
-                href="https://buymeacoffee.com/someplacesocial"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.buyDrinkLink}
-              >
-                Buy me a drink
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+.eventCard {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.eventCardOpen {
+  border-color: var(--ink);
+  box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
+}
+.cardRow {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.timeCol {
+  flex: 0 0 76px;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1;
+}
+.endTimeText {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.infoCol {
+  flex: 1;
+  min-width: 0;
+  padding-right: 48px;
+}
+.nextUpBadge {
+  display: inline-block;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  background-color: var(--accent);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-bottom: 6px;
+}
+.eventTitle {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.eventHost {
+  color: var(--muted);
+  font-weight: 400;
+}
+.eventLocation {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.priceLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.priceFree {
+  color: var(--free);
+}
+.pricePaid {
+  color: var(--price-donation);
+}
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.tagChip {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.chevronCircle {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  pointer-events: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.chevronCircleOpen {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.expandedDrawer {
+  border-top: 1px solid var(--line);
+  padding: 16px 20px 18px 116px;
+  background-color: transparent;
+}
+.eventDescription {
+  margin: 0 0 14px;
+  max-width: 580px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4f483e;
+}
+.drawerActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.buttonGrid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  gap: 8px;
+}
+.actionBtnPrimary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 60px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.actionBtnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+.actionBtnOutline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 60px;
+  border: 1.5px solid #e0d4b8;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  text-decoration: none;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.actionBtnOutline:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.suggestEditBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.suggestEditBtn:hover {
+  color: var(--accent);
+}
+@media (max-width: 899px) {
+  .cardRow {
+    gap: 14px;
+    padding: 14px;
+  }
+  .timeCol {
+    flex: 0 0 54px;
+    font-size: 22px;
+  }
+  .endTimeText {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .infoCol {
+    padding-right: 36px;
+  }
+  .eventTitle {
+    font-size: 16px;
+  }
+  .eventLocation {
+    font-size: 14px;
+  }
+  .priceLine {
+    font-size: 14px;
+  }
+  .chevronCircle {
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+  }
+  .expandedDrawer {
+    padding: 14px 14px 8px;
+  }
+  .eventDescription {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .drawerActionRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .buttonGrid4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+  .suggestEditBtn {
+    align-self: flex-end;
+  }
 }
 
 ================
-File: app/events/components/EventHeader.tsx
+File: app/events/components/EventFooter.module.css
+================
+.footer {
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  margin-top: auto;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 32px 32px;
+}
+.footerQuoteRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px 48px;
+}
+.footerLeftSection {
+  flex: 1 1 500px;
+  max-width: 580px;
+}
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.footerAuthor {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footerCopyright {
+  margin-top: 18px;
+  font-size: 11px;
+  color: #8c8275;
+}
+.footerRightSection {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+.footerSupportText {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #4f483e;
+}
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+@media (max-width: 899px) {
+  .footerInner {
+    padding: 24px 16px 28px;
+  }
+  .footerQuoteRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .footerLeftSection {
+    max-width: 100%;
+  }
+  .footerQuoteText {
+    font-size: 13px;
+  }
+  .footerRightSection {
+    width: 100%;
+  }
+}
+
+================
+File: app/events/components/EventHeader.module.css
+================
+.header {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
+}
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.brandLogoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 72px;
+  width: auto;
+  max-width: 380px;
+  object-fit: contain;
+  filter: brightness(0);
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.navDesktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.citiesWrapper {
+  position: relative;
+}
+.citiesBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.citiesBtn:hover {
+  background-color: #ebdcb9;
+}
+.citiesDropdown {
+  position: absolute;
+  z-index: 40;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.cityOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  gap: 12px;
+}
+.cityName {
+  flex: 1;
+  white-space: nowrap;
+}
+.cityOptionRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cityEventCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.cityOption:hover {
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive {
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive .cityEventCount {
+  background-color: #e5d7b5;
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+}
+.navLink:hover {
+  color: var(--accent);
+}
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  margin-left: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.addEventBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.mobileAddBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 27, 22, 0.45);
+  z-index: 100;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background-color: var(--bg);
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.drawerTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.drawerCloseBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerCityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerCityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  gap: 10px;
+}
+.drawerCityItemRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.drawerCityCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.drawerCityItemActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
+}
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerFooter {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.drawerSupportBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+@media (max-width: 899px) {
+  .headerInner {
+    padding: 14px 16px;
+  }
+  .logoImage {
+    height: 50px;
+    max-width: 260px;
+  }
+  .brandSubtitle {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .navDesktop {
+    display: none;
+  }
+  .navMobileActions {
+    display: flex;
+  }
+}
+
+================
+File: app/events/components/FilterControls.module.css
+================
+.filterBlockDesktop {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 13px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 34px 0 36px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.filterFreeBtn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filterFreeBtn:hover {
+  background-color: #ebdcba;
+}
+.checkboxSquare {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checkboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+.multiSelectTrigger:hover {
+  background-color: #ebdcba;
+}
+.multiSelectTriggerActive {
+  background-color: #ebdcba;
+  font-weight: 700;
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 6px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileFiltersSection {
+  display: none;
+}
+.mobileFiltersRow {
+  display: none;
+}
+@media (max-width: 899px) {
+  .mobileFiltersSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobileFreeBtn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+    background-color: var(--topbar-bg);
+    color: var(--ink);
+    border: 0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  .mobileFreeBtnActive {
+    background-color: var(--ink);
+    color: var(--bg);
+    font-weight: 700;
+  }
+}
+
+================
+File: app/events/components/FilterDropdown.tsx
 ================
 'use client';
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { CityConfig } from '../../lib/cities';
-import styles from '../EventsView.module.css';
-interface EventHeaderProps {
-  city: CityConfig;
-  allCityOptions: CityConfig[];
+import styles from './FilterControls.module.css';
+interface FilterDropdownProps {
+  label: string;
+  title: string;
+  options: string[];
+  selected: string[];
+  isOpen: boolean;
+  onToggleOpen: () => void;
+  onToggleOption: (option: string) => void;
+  onClear: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  flexStyle?: boolean;
 }
-export default function EventHeader({ city, allCityOptions }: EventHeaderProps) {
-  const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const citiesMenuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
-        setCitiesMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+export default function FilterDropdown({
+  label,
+  title,
+  options,
+  selected,
+  isOpen,
+  onToggleOpen,
+  onToggleOption,
+  onClear,
+  containerRef,
+  flexStyle = false,
+}: FilterDropdownProps) {
   return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.brandCol}>
-            <Link href={`/events/${city.slug}`} className={styles.brandLogoLink}>
-              <Image
-                src="/images/logo.svg"
-                alt="Someplace Social"
-                width={360}
-                height={100}
-                priority
-                className={styles.logoImage}
-              />
-            </Link>
-            <div className={styles.brandSubtitle}>{city.heroLocation}</div>
-          </div>
-          <nav className={styles.navDesktop}>
-            <div className={styles.citiesWrapper} ref={citiesMenuRef}>
-              <button
-                type="button"
-                className={styles.citiesBtn}
-                aria-expanded={citiesMenuOpen}
-                onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
-              >
-                Cities
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              {citiesMenuOpen && (
-                <div className={styles.citiesDropdown}>
-                  {allCityOptions.map((c) => {
-                    const isActive = c.slug === city.slug;
-                    return (
-                      <Link
-                        key={c.slug}
-                        href={`/events/${c.slug}`}
-                        className={`${styles.cityOption} ${
-                          isActive ? styles.cityOptionActive : ''
-                        }`}
-                        onClick={() => setCitiesMenuOpen(false)}
-                      >
-                        {c.name}
-                        {isActive && (
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M5 12.5l4.5 4.5L19 7.5" />
-                          </svg>
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-            <Link href="/about" className={styles.navLink}>
-              About
-            </Link>
-            <Link href="/contact" className={styles.navLink}>
-              Contact
-            </Link>
-            <Link href="/contact" className={styles.addEventBtn}>
-              + Add event
-            </Link>
-          </nav>
-          <div className={styles.navMobileActions}>
-            <Link href="/contact" className={styles.mobileAddBtn}>
-              + Add
-            </Link>
-            <button
-              type="button"
-              className={styles.hamburgerBtn}
-              aria-label="Open menu"
-              onClick={() => setMobileDrawerOpen(true)}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              >
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-      {mobileDrawerOpen && (
-        <div
-          className={styles.drawerBackdrop}
-          onClick={() => setMobileDrawerOpen(false)}
+    <div
+      className={styles.multiSelectWrapper}
+      ref={containerRef}
+      style={flexStyle ? { flex: 1 } : undefined}
+    >
+      <button
+        type="button"
+        className={`${styles.multiSelectTrigger} ${
+          selected.length > 0 ? styles.multiSelectTriggerActive : ''
+        }`}
+        aria-expanded={isOpen}
+        onClick={onToggleOpen}
+      >
+        <span>{label}</span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <div
-            className={styles.drawer}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className={styles.drawerHeader}>
-              <div className={styles.drawerTitle}>Someplace Social</div>
+          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className={styles.multiSelectMenu}>
+          <div className={styles.multiSelectMenuHeader}>
+            <span>{title}</span>
+            {selected.length > 0 && (
               <button
                 type="button"
-                className={styles.drawerCloseBtn}
-                aria-label="Close menu"
-                onClick={() => setMobileDrawerOpen(false)}
+                className={styles.multiSelectClearLink}
+                onClick={onClear}
               >
-                ✕
+                Clear
               </button>
-            </div>
-            <div className={styles.drawerSectionTitle}>Choose City</div>
-            <div className={styles.drawerCityList}>
-              {allCityOptions.map((c) => {
-                const isActive = c.slug === city.slug;
-                return (
-                  <Link
-                    key={c.slug}
-                    href={`/events/${c.slug}`}
-                    className={`${styles.drawerCityItem} ${
-                      isActive ? styles.drawerCityItemActive : ''
-                    }`}
-                    onClick={() => setMobileDrawerOpen(false)}
-                  >
-                    {c.name}
-                    {isActive && <span>✓</span>}
-                  </Link>
-                );
-              })}
-            </div>
-            <div className={styles.drawerSectionTitle}>Navigation</div>
-            <div className={styles.drawerNavLinks}>
-              <Link
-                href="/about"
-                className={styles.drawerNavLink}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className={styles.drawerNavLink}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                Contact
-              </Link>
-              <Link
-                href="/contact"
-                className={styles.drawerNavLink}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                + Add event
-              </Link>
-            </div>
-            <div className={styles.drawerFooter}>
-              <a
-                href="https://buymeacoffee.com/someplacesocial"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.drawerSupportBtn}
-              >
-                Buy me a drink
-              </a>
-            </div>
+            )}
           </div>
+          {options.map((opt) => {
+            const isChecked = selected.includes(opt);
+            return (
+              <label key={opt} className={styles.multiSelectOption}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => onToggleOption(opt)}
+                  className={styles.hiddenCheckbox}
+                />
+                <span
+                  className={`${styles.customCheckbox} ${
+                    isChecked ? styles.customCheckboxChecked : ''
+                  }`}
+                >
+                  {isChecked && (
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </span>
+                <span>{opt}</span>
+              </label>
+            );
+          })}
         </div>
       )}
-    </>
+    </div>
   );
 }
 
 ================
-File: app/events/components/FilterControls.tsx
+File: app/events/components/SuggestEditModal.module.css
 ================
-'use client';
-import { useState, useRef, useEffect, useMemo } from 'react';
-import styles from '../EventsView.module.css';
-interface FilterControlsProps {
-  freeOnly: boolean;
-  onToggleFree: () => void;
-  timeSections: string[];
-  selectedTimes: string[];
-  onToggleTime: (timeName: string) => void;
-  onClearTimes: () => void;
-  activities: string[];
-  selectedActivities: string[];
-  onToggleActivity: (act: string) => void;
-  onClearActivities: () => void;
-  areas: string[];
-  selectedAreas: string[];
-  onToggleArea: (ar: string) => void;
-  onClearAreas: () => void;
-  hasActiveFilters: boolean;
-  onClearAllFilters: () => void;
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 27, 22, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
-export default function FilterControls({
-  freeOnly,
-  onToggleFree,
-  timeSections,
-  selectedTimes,
-  onToggleTime,
-  onClearTimes,
-  activities,
-  selectedActivities,
-  onToggleActivity,
-  onClearActivities,
-  areas,
-  selectedAreas,
-  onToggleArea,
-  onClearAreas,
-  hasActiveFilters,
-  onClearAllFilters,
-}: FilterControlsProps) {
-  const [timeMenuOpen, setTimeMenuOpen] = useState(false);
-  const [actMenuOpen, setActMenuOpen] = useState(false);
-  const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-  const timeMenuRef = useRef<HTMLDivElement>(null);
-  const actMenuRef = useRef<HTMLDivElement>(null);
-  const areaMenuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (timeMenuRef.current && !timeMenuRef.current.contains(e.target as Node)) {
-        setTimeMenuOpen(false);
-      }
-      if (actMenuRef.current && !actMenuRef.current.contains(e.target as Node)) {
-        setActMenuOpen(false);
-      }
-      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
-        setAreaMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  const timeLabel = useMemo(() => {
-    if (selectedTimes.length === 0) return 'All times';
-    if (selectedTimes.length === 1) return selectedTimes[0];
-    return `Times (${selectedTimes.length})`;
-  }, [selectedTimes]);
-  const activityLabel = useMemo(() => {
-    if (selectedActivities.length === 0) return 'All activities';
-    if (selectedActivities.length === 1) return selectedActivities[0];
-    return `Activities (${selectedActivities.length})`;
-  }, [selectedActivities]);
-  const areaLabel = useMemo(() => {
-    if (selectedAreas.length === 0) return 'All areas';
-    if (selectedAreas.length === 1) return selectedAreas[0];
-    return `Areas (${selectedAreas.length})`;
-  }, [selectedAreas]);
-  return (
-    <>
-      <div className={styles.filterBlockDesktop}>
-        <div className={styles.filterTitle}>Filter</div>
-        <div className={styles.filterListVertical}>
-          <button
-            type="button"
-            className={styles.filterFreeBtn}
-            aria-pressed={freeOnly}
-            onClick={onToggleFree}
-          >
-            Free only
-            <span
-              className={`${styles.checkboxSquare} ${
-                freeOnly ? styles.checkboxChecked : ''
-              }`}
-            >
-              {freeOnly && (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </span>
-          </button>
-          {}
-          <div className={styles.multiSelectWrapper} ref={timeMenuRef}>
-            <button
-              type="button"
-              className={`${styles.multiSelectTrigger} ${
-                selectedTimes.length > 0 ? styles.multiSelectTriggerActive : ''
-              }`}
-              aria-expanded={timeMenuOpen}
-              onClick={() => setTimeMenuOpen(!timeMenuOpen)}
-            >
-              <span>{timeLabel}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d={timeMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-              </svg>
-            </button>
-            {timeMenuOpen && (
-              <div className={styles.multiSelectMenu}>
-                <div className={styles.multiSelectMenuHeader}>
-                  <span>Time of day</span>
-                  {selectedTimes.length > 0 && (
-                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearTimes}>
-                      Clear
-                    </button>
-                  )}
-                </div>
-                {timeSections.map((tName) => {
-                  const isChecked = selectedTimes.includes(tName);
-                  return (
-                    <label key={tName} className={styles.multiSelectOption}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => onToggleTime(tName)}
-                        className={styles.hiddenCheckbox}
-                      />
-                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                        {isChecked && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </span>
-                      <span>{tName}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          {}
-          <div className={styles.multiSelectWrapper} ref={actMenuRef}>
-            <button
-              type="button"
-              className={`${styles.multiSelectTrigger} ${
-                selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''
-              }`}
-              aria-expanded={actMenuOpen}
-              onClick={() => setActMenuOpen(!actMenuOpen)}
-            >
-              <span>{activityLabel}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d={actMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-              </svg>
-            </button>
-            {actMenuOpen && (
-              <div className={styles.multiSelectMenu}>
-                <div className={styles.multiSelectMenuHeader}>
-                  <span>Select activities</span>
-                  {selectedActivities.length > 0 && (
-                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearActivities}>
-                      Clear
-                    </button>
-                  )}
-                </div>
-                {activities.map((act) => {
-                  const isChecked = selectedActivities.includes(act);
-                  return (
-                    <label key={act} className={styles.multiSelectOption}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => onToggleActivity(act)}
-                        className={styles.hiddenCheckbox}
-                      />
-                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                        {isChecked && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </span>
-                      <span>{act}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          {}
-          <div className={styles.multiSelectWrapper} ref={areaMenuRef}>
-            <button
-              type="button"
-              className={`${styles.multiSelectTrigger} ${
-                selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''
-              }`}
-              aria-expanded={areaMenuOpen}
-              onClick={() => setAreaMenuOpen(!areaMenuOpen)}
-            >
-              <span>{areaLabel}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d={areaMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-              </svg>
-            </button>
-            {areaMenuOpen && (
-              <div className={styles.multiSelectMenu}>
-                <div className={styles.multiSelectMenuHeader}>
-                  <span>Select areas</span>
-                  {selectedAreas.length > 0 && (
-                    <button type="button" className={styles.multiSelectClearLink} onClick={onClearAreas}>
-                      Clear
-                    </button>
-                  )}
-                </div>
-                {areas.map((ar) => {
-                  const isChecked = selectedAreas.includes(ar);
-                  return (
-                    <label key={ar} className={styles.multiSelectOption}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => onToggleArea(ar)}
-                        className={styles.hiddenCheckbox}
-                      />
-                      <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                        {isChecked && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </span>
-                      <span>{ar}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              className={styles.clearFiltersBtn}
-              onClick={onClearAllFilters}
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
-      </div>
-      {}
-      <div className={styles.mobileFiltersRow}>
-        <button
-          type="button"
-          className={`${styles.mobileFreeBtn} ${freeOnly ? styles.mobileFreeBtnActive : ''}`}
-          onClick={onToggleFree}
-        >
-          Free only
-        </button>
-        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
-          <button
-            type="button"
-            className={`${styles.multiSelectTrigger} ${selectedTimes.length > 0 ? styles.multiSelectTriggerActive : ''}`}
-            onClick={() => setTimeMenuOpen(!timeMenuOpen)}
-          >
-            <span>{timeLabel}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d={timeMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-            </svg>
-          </button>
-          {timeMenuOpen && (
-            <div className={styles.multiSelectMenu}>
-              <div className={styles.multiSelectMenuHeader}>
-                <span>Time of day</span>
-                {selectedTimes.length > 0 && (
-                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearTimes}>
-                    Clear
-                  </button>
-                )}
-              </div>
-              {timeSections.map((tName) => {
-                const isChecked = selectedTimes.includes(tName);
-                return (
-                  <label key={tName} className={styles.multiSelectOption}>
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => onToggleTime(tName)}
-                      className={styles.hiddenCheckbox}
-                    />
-                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                      {isChecked && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </span>
-                    <span>{tName}</span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
-          <button
-            type="button"
-            className={`${styles.multiSelectTrigger} ${selectedActivities.length > 0 ? styles.multiSelectTriggerActive : ''}`}
-            onClick={() => setActMenuOpen(!actMenuOpen)}
-          >
-            <span>{activityLabel}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d={actMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-            </svg>
-          </button>
-          {actMenuOpen && (
-            <div className={styles.multiSelectMenu}>
-              <div className={styles.multiSelectMenuHeader}>
-                <span>Activities</span>
-                {selectedActivities.length > 0 && (
-                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearActivities}>
-                    Clear
-                  </button>
-                )}
-              </div>
-              {activities.map((act) => {
-                const isChecked = selectedActivities.includes(act);
-                return (
-                  <label key={act} className={styles.multiSelectOption}>
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => onToggleActivity(act)}
-                      className={styles.hiddenCheckbox}
-                    />
-                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                      {isChecked && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </span>
-                    <span>{act}</span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <div className={styles.multiSelectWrapper} style={{ flex: 1 }}>
-          <button
-            type="button"
-            className={`${styles.multiSelectTrigger} ${selectedAreas.length > 0 ? styles.multiSelectTriggerActive : ''}`}
-            onClick={() => setAreaMenuOpen(!areaMenuOpen)}
-          >
-            <span>{areaLabel}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d={areaMenuOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-            </svg>
-          </button>
-          {areaMenuOpen && (
-            <div className={styles.multiSelectMenu}>
-              <div className={styles.multiSelectMenuHeader}>
-                <span>Areas</span>
-                {selectedAreas.length > 0 && (
-                  <button type="button" className={styles.multiSelectClearLink} onClick={onClearAreas}>
-                    Clear
-                  </button>
-                )}
-              </div>
-              {areas.map((ar) => {
-                const isChecked = selectedAreas.includes(ar);
-                return (
-                  <label key={ar} className={styles.multiSelectOption}>
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => onToggleArea(ar)}
-                      className={styles.hiddenCheckbox}
-                    />
-                    <span className={`${styles.customCheckbox} ${isChecked ? styles.customCheckboxChecked : ''}`}>
-                      {isChecked && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </span>
-                    <span>{ar}</span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        {hasActiveFilters && (
-          <button
-            type="button"
-            className={styles.clearFiltersBtn}
-            onClick={onClearAllFilters}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-    </>
-  );
+.modalContent {
+  background-color: #ffffff;
+  color: var(--ink);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.2);
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.modalTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+.modalSubtitle {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.modalField label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.modalInput,
+.modalTextarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background-color: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.modalTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.modalSubmitBtn {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 99px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.modalCancelBtn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.statusMsg {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 ================
@@ -1046,58 +1639,6 @@ export default function Loading() {
     <main className={styles.page}>
       <h1>Medellin Weekly Events & Activity Guide</h1>
       <p>Loading listings...</p>
-    </main>
-  );
-}
-
-================
-File: app/support/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Support Us',
-  description: 'Learn how you can support Someplace Social and keep the community going.',
-};
-export default function SupportPage() {
-  return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>Support Someplace Social</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-        <div>
-          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
-          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-            The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
-          </p>
-          <Link href="/contact" className={styles.button}>Submit or Edit Events</Link>
-        </div>
-        <div>
-          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
-          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-            If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
-          </p>
-          <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" className={styles.button}>Buy Me a Drink</a>
-        </div>
-        <div>
-          <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
-          <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-            Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
-          </p>
-          <a href="https://sites.google.com/view/starlink-referral-link" target="_blank" rel="noopener noreferrer" className={styles.button}>Get Starlink Referral</a>
-        </div>
-      </section>
     </main>
   );
 }
@@ -1204,45 +1745,123 @@ export default function Banner() {
 }
 
 ================
-File: app/events/[city]/page.tsx
+File: app/events/components/EventFooter.tsx
 ================
-import { notFound } from 'next/navigation';
+import styles from './EventFooter.module.css';
+export default function EventFooter() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerQuoteRow}>
+          <div className={styles.footerLeftSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
+          <div className={styles.footerRightSection}>
+            <div className={styles.footerSupportText}>
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.buyDrinkLink}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
+File: app/support/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from '../Page.module.css';
 import type { Metadata } from 'next';
-import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
-import { getEvents } from '../../lib/google-sheets';
-import CityEventsView from '../CityEventsView';
-type PageProps = {
-  params: Promise<{ city: string }>;
+export const metadata: Metadata = {
+  title: 'Support Us',
+  description: 'Learn how you can support Someplace Social and keep the community going.',
 };
-export async function generateStaticParams() {
-  return getAllCitySlugs().map((city) => ({ city }));
-}
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    return {
-      title: 'City Not Found · Someplace Social',
-      robots: { index: false, follow: false },
-    };
-  }
-  return {
-    title: `${city.name} this week · Someplace Social`,
-    description: `Weekly events, classes, and activities in ${city.heroLocation}.`,
-    robots: {
-      index: false,
-      follow: false,
-    },
-  };
-}
-export default async function CityEventsPage({ params }: PageProps) {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    notFound();
-  }
-  const events = await getEvents(city);
-  return <CityEventsView city={city} initialEvents={events} />;
+export default function SupportPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Support Someplace Social</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
+            </p>
+            <Link href="/contact" className={styles.button}>
+              Submit or Edit Events
+            </Link>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+            </p>
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Buy Me a Drink
+            </a>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
+            </p>
+            <a
+              href="https://sites.google.com/view/starlink-referral-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Get Starlink Referral
+            </a>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 ================
@@ -1384,120 +2003,619 @@ export default function Accordion({ title, children }: AccordionProps) {
 }
 
 ================
-File: app/events/components/SuggestEditModal.tsx
+File: app/events/[city]/page.tsx
+================
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getEvents } from '../../lib/google-sheets';
+import CityEventsView from '../CityEventsView';
+type PageProps = {
+  params: Promise<{ city: string }>;
+};
+export async function generateStaticParams() {
+  return getAllCitySlugs().map((city) => ({ city }));
+}
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    return {
+      title: 'City Not Found · Someplace Social',
+      robots: { index: false, follow: false },
+    };
+  }
+  return {
+    title: `${city.name} this week · Someplace Social`,
+    description: `Weekly events, classes, and activities in ${city.heroLocation}.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
+export default async function CityEventsPage({ params }: PageProps) {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    notFound();
+  }
+  const events = await getEvents(city);
+  const allSlugs = getAllCitySlugs();
+  const countEntries = await Promise.all(
+    allSlugs.map(async (slug) => {
+      const c = getCityBySlug(slug);
+      if (!c) return [slug, 0] as const;
+      if (c.slug === city.slug) return [slug, events.length] as const;
+      const otherEvents = await getEvents(c);
+      return [slug, otherEvents.length] as const;
+    })
+  );
+  const cityCounts = Object.fromEntries(countEntries);
+  return (
+    <CityEventsView
+      city={city}
+      initialEvents={events}
+      initialCityCounts={cityCounts}
+    />
+  );
+}
+
+================
+File: app/events/components/EventHeader.tsx
 ================
 'use client';
-import { useState } from 'react';
-import { Event } from '../../lib/google-sheets';
-import styles from '../EventsView.module.css';
-interface SuggestEditModalProps {
-  event: Event;
-  cityName: string;
-  onClose: () => void;
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { CityConfig } from '../../lib/cities';
+import styles from './EventHeader.module.css';
+interface EventHeaderProps {
+  city: CityConfig;
+  allCityOptions: CityConfig[];
+  cityCounts?: Record<string, number>;
 }
-export default function SuggestEditModal({
-  event,
-  cityName,
-  onClose,
-}: SuggestEditModalProps) {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState(
-    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nFrequency: ${event.frequency || 'Weekly'}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}\nLocation: ${event.location} (${event.area})${event.preRegistration ? `\nPre-Registration: ${event.preRegistration}` : ''}\n\nRequested changes: `
-  );
-  const [status, setStatus] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setStatus('Submitting update...');
-    try {
-      const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: `Edit a Listing (${cityName})`,
-          message: fullMessage,
-        }),
-      });
-      const res = await response.json();
-      if (res.success) {
-        setStatus('Thanks! Your edit suggestion has been sent.');
-        setTimeout(onClose, 1800);
-      } else {
-        setStatus('Failed to send. Please try again.');
+export default function EventHeader({
+  city,
+  allCityOptions,
+  cityCounts = {},
+}: EventHeaderProps) {
+  const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const citiesMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
+        setCitiesMenuOpen(false);
       }
-    } catch {
-      setStatus('An error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  const currentCityCount = cityCounts[city.slug];
   return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div
-        className={styles.modalContent}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className={styles.modalHeader}>
-          <div>
-            <h2 className={styles.modalTitle}>Suggest Edit</h2>
-            <small className={styles.modalSubtitle}>{event.title}</small>
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandCol}>
+            <Link href={`/events/${city.slug}`} className={styles.brandLogoLink}>
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={360}
+                height={100}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            <div className={styles.brandSubtitle}>
+              {city.heroLocation}
+              {typeof currentCityCount === 'number' && (
+                <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'} listed</>
+              )}
+            </div>
           </div>
-          <button
-            type="button"
-            className={styles.modalCloseBtn}
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-          <div className={styles.modalField}>
-            <label htmlFor="editEmail">Your Email (optional)</label>
-            <input
-              id="editEmail"
-              type="email"
-              className={styles.modalInput}
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className={styles.modalField}>
-            <label htmlFor="editMessage">What needs to be changed? *</label>
-            <textarea
-              id="editMessage"
-              required
-              className={styles.modalTextarea}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-          <div className={styles.modalActions}>
+          <nav className={styles.navDesktop}>
+            <div className={styles.citiesWrapper} ref={citiesMenuRef}>
+              <button
+                type="button"
+                className={styles.citiesBtn}
+                aria-expanded={citiesMenuOpen}
+                onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
+              >
+                Cities
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {citiesMenuOpen && (
+                <div className={styles.citiesDropdown}>
+                  {allCityOptions.map((c) => {
+                    const isActive = c.slug === city.slug;
+                    const count = cityCounts[c.slug];
+                    return (
+                      <Link
+                        key={c.slug}
+                        href={`/events/${c.slug}`}
+                        className={`${styles.cityOption} ${
+                          isActive ? styles.cityOptionActive : ''
+                        }`}
+                        onClick={() => setCitiesMenuOpen(false)}
+                      >
+                        <span className={styles.cityName}>{c.name}</span>
+                        <div className={styles.cityOptionRight}>
+                          {typeof count === 'number' && (
+                            <span className={styles.cityEventCount}>
+                              {count} {count === 1 ? 'event' : 'events'}
+                            </span>
+                          )}
+                          {isActive && (
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
+            </Link>
+          </nav>
+          <div className={styles.navMobileActions}>
+            <Link href="/contact" className={styles.mobileAddBtn}>
+              + Add
+            </Link>
             <button
               type="button"
-              className={styles.modalCancelBtn}
-              onClick={onClose}
-              disabled={isSubmitting}
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={styles.modalSubmitBtn}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Sending...' : 'Send Edit'}
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
             </button>
           </div>
-          {status && <p className={styles.statusMsg}>{status}</p>}
-        </form>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Choose City</div>
+            <div className={styles.drawerCityList}>
+              {allCityOptions.map((c) => {
+                const isActive = c.slug === city.slug;
+                const count = cityCounts[c.slug];
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/events/${c.slug}`}
+                    className={`${styles.drawerCityItem} ${
+                      isActive ? styles.drawerCityItemActive : ''
+                    }`}
+                    onClick={() => setMobileDrawerOpen(false)}
+                  >
+                    <span>{c.name}</span>
+                    <div className={styles.drawerCityItemRight}>
+                      {typeof count === 'number' && (
+                        <span className={styles.drawerCityCount}>
+                          {count} {count === 1 ? 'event' : 'events'}
+                        </span>
+                      )}
+                      {isActive && <span>✓</span>}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              <Link
+                href="/about"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                + Add event
+              </Link>
+            </div>
+            <div className={styles.drawerFooter}>
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.drawerSupportBtn}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+================
+File: app/events/components/FilterControls.tsx
+================
+'use client';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import FilterDropdown from './FilterDropdown';
+import styles from './FilterControls.module.css';
+interface FilterControlsProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  freeOnly: boolean;
+  onToggleFree: () => void;
+  timeSections: string[];
+  selectedTimes: string[];
+  onToggleTime: (timeName: string) => void;
+  onClearTimes: () => void;
+  activities: string[];
+  selectedActivities: string[];
+  onToggleActivity: (act: string) => void;
+  onClearActivities: () => void;
+  areas: string[];
+  selectedAreas: string[];
+  onToggleArea: (ar: string) => void;
+  onClearAreas: () => void;
+  hasActiveFilters: boolean;
+  onClearAllFilters: () => void;
+}
+export default function FilterControls({
+  searchQuery,
+  onSearchChange,
+  freeOnly,
+  onToggleFree,
+  timeSections,
+  selectedTimes,
+  onToggleTime,
+  onClearTimes,
+  activities,
+  selectedActivities,
+  onToggleActivity,
+  onClearActivities,
+  areas,
+  selectedAreas,
+  onToggleArea,
+  onClearAreas,
+  hasActiveFilters,
+  onClearAllFilters,
+}: FilterControlsProps) {
+  const [timeMenuOpen, setTimeMenuOpen] = useState(false);
+  const [actMenuOpen, setActMenuOpen] = useState(false);
+  const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+  const timeMenuRef = useRef<HTMLDivElement>(null);
+  const actMenuRef = useRef<HTMLDivElement>(null);
+  const areaMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (timeMenuRef.current && !timeMenuRef.current.contains(e.target as Node)) {
+        setTimeMenuOpen(false);
+      }
+      if (actMenuRef.current && !actMenuRef.current.contains(e.target as Node)) {
+        setActMenuOpen(false);
+      }
+      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
+        setAreaMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  const timeLabel = useMemo(() => {
+    if (selectedTimes.length === 0) return 'All times';
+    if (selectedTimes.length === 1) return selectedTimes[0];
+    return `Times (${selectedTimes.length})`;
+  }, [selectedTimes]);
+  const activityLabel = useMemo(() => {
+    if (selectedActivities.length === 0) return 'All activities';
+    if (selectedActivities.length === 1) return selectedActivities[0];
+    return `Activities (${selectedActivities.length})`;
+  }, [selectedActivities]);
+  const areaLabel = useMemo(() => {
+    if (selectedAreas.length === 0) return 'All areas';
+    if (selectedAreas.length === 1) return selectedAreas[0];
+    return `Areas (${selectedAreas.length})`;
+  }, [selectedAreas]);
+  return (
+    <>
+      <div className={styles.filterBlockDesktop}>
+        <div className={styles.filterHeaderRow}>
+          <span className={styles.filterTitle}>Filters</span>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              className={styles.clearFiltersLink}
+              onClick={onClearAllFilters}
+            >
+              Reset all
+            </button>
+          )}
+        </div>
+        <div className={styles.filterListVertical}>
+          <div className={styles.searchWrapper}>
+            <svg
+              className={styles.searchIcon}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search events, places, tags..."
+              className={styles.searchInput}
+              aria-label="Search events"
+              autoComplete="off"
+              spellCheck={false}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className={styles.searchClearBtn}
+                onClick={() => onSearchChange('')}
+                aria-label="Clear search query"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          <FilterDropdown
+            label={activityLabel}
+            title="Select activities"
+            options={activities}
+            selected={selectedActivities}
+            isOpen={actMenuOpen}
+            onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
+            onToggleOption={onToggleActivity}
+            onClear={onClearActivities}
+            containerRef={actMenuRef}
+          />
+          <FilterDropdown
+            label={timeLabel}
+            title="Time of day"
+            options={timeSections}
+            selected={selectedTimes}
+            isOpen={timeMenuOpen}
+            onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
+            onToggleOption={onToggleTime}
+            onClear={onClearTimes}
+            containerRef={timeMenuRef}
+          />
+          <FilterDropdown
+            label={areaLabel}
+            title="Select areas"
+            options={areas}
+            selected={selectedAreas}
+            isOpen={areaMenuOpen}
+            onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
+            onToggleOption={onToggleArea}
+            onClear={onClearAreas}
+            containerRef={areaMenuRef}
+          />
+          <button
+            type="button"
+            className={styles.filterFreeBtn}
+            aria-pressed={freeOnly}
+            onClick={onToggleFree}
+          >
+            Free only
+            <span
+              className={`${styles.checkboxSquare} ${
+                freeOnly ? styles.checkboxChecked : ''
+              }`}
+            >
+              {freeOnly && (
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
+      <div className={styles.mobileFiltersSection}>
+        <div className={styles.searchWrapper}>
+          <svg
+            className={styles.searchIcon}
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search events, places, tags..."
+            className={styles.searchInput}
+            aria-label="Search events"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              className={styles.searchClearBtn}
+              onClick={() => onSearchChange('')}
+              aria-label="Clear search query"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <div className={styles.mobileFiltersRow}>
+          <button
+            type="button"
+            className={`${styles.mobileFreeBtn} ${freeOnly ? styles.mobileFreeBtnActive : ''}`}
+            onClick={onToggleFree}
+          >
+            Free only
+          </button>
+          <FilterDropdown
+            label={timeLabel}
+            title="Time of day"
+            options={timeSections}
+            selected={selectedTimes}
+            isOpen={timeMenuOpen}
+            onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
+            onToggleOption={onToggleTime}
+            onClear={onClearTimes}
+            flexStyle
+          />
+          <FilterDropdown
+            label={activityLabel}
+            title="Activities"
+            options={activities}
+            selected={selectedActivities}
+            isOpen={actMenuOpen}
+            onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
+            onToggleOption={onToggleActivity}
+            onClear={onClearActivities}
+            flexStyle
+          />
+          <FilterDropdown
+            label={areaLabel}
+            title="Areas"
+            options={areas}
+            selected={selectedAreas}
+            isOpen={areaMenuOpen}
+            onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
+            onToggleOption={onToggleArea}
+            onClear={onClearAreas}
+            flexStyle
+          />
+          {hasActiveFilters && (
+            <button
+              type="button"
+              className={styles.clearFiltersBtn}
+              onClick={onClearAllFilters}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -1666,6 +2784,124 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
 }
 
 ================
+File: app/events/components/SuggestEditModal.tsx
+================
+'use client';
+import { useState } from 'react';
+import { Event } from '../../lib/google-sheets';
+import styles from './SuggestEditModal.module.css';
+interface SuggestEditModalProps {
+  event: Event;
+  cityName: string;
+  onClose: () => void;
+}
+export default function SuggestEditModal({
+  event,
+  cityName,
+  onClose,
+}: SuggestEditModalProps) {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState(
+    `City: ${cityName}\nEvent: ${event.title}\nVenue: ${event.venue || event.location}\nTime: ${event.startTime} - ${event.endTime}\nFrequency: ${event.frequency || 'Weekly'}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}\nLocation: ${event.location} (${event.area})${event.preRegistration ? `\nPre-Registration: ${event.preRegistration}` : ''}\n\nRequested changes: `
+  );
+  const [status, setStatus] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus('Submitting update...');
+    try {
+      const fullMessage = `Sender Email: ${email || 'Not provided'}\n\n${message}`;
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Edit a Listing (${cityName})`,
+          message: fullMessage,
+        }),
+      });
+      const res = await response.json();
+      if (res.success) {
+        setStatus('Thanks! Your edit suggestion has been sent.');
+        setTimeout(onClose, 1800);
+      } else {
+        setStatus('Failed to send. Please try again.');
+      }
+    } catch {
+      setStatus('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div
+        className={styles.modalContent}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className={styles.modalHeader}>
+          <div>
+            <h2 className={styles.modalTitle}>Suggest Edit</h2>
+            <small className={styles.modalSubtitle}>{event.title}</small>
+          </div>
+          <button
+            type="button"
+            className={styles.modalCloseBtn}
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.modalField}>
+            <label htmlFor="editEmail">Your Email (optional)</label>
+            <input
+              id="editEmail"
+              type="email"
+              className={styles.modalInput}
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalField}>
+            <label htmlFor="editMessage">What needs to be changed? *</label>
+            <textarea
+              id="editMessage"
+              required
+              className={styles.modalTextarea}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+          <div className={styles.modalActions}>
+            <button
+              type="button"
+              className={styles.modalCancelBtn}
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.modalSubmitBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Edit'}
+            </button>
+          </div>
+          {status && <p className={styles.statusMsg}>{status}</p>}
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================
 File: app/globals.css
 ================
 :root {
@@ -1735,1144 +2971,6 @@ File: app/medellin/DayAccordion.module.css
 @media (max-width: 768px) {
   .title, .icon {
     font-size: 2em;
-  }
-}
-
-================
-File: app/events/EventsView.module.css
-================
-.pageContainer {
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-.header {
-  position: relative;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--bg);
-}
-.headerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.brandCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.brandLogoLink {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.logoImage {
-  height: 72px;
-  width: auto;
-  max-width: 380px;
-  object-fit: contain;
-  filter: brightness(0);
-}
-.brandSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--muted);
-  margin-top: 6px;
-}
-.navDesktop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.citiesWrapper {
-  position: relative;
-}
-.citiesBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.citiesBtn:hover {
-  background-color: #ebdcb9;
-}
-.citiesDropdown {
-  position: absolute;
-  z-index: 40;
-  top: 100%;
-  left: 0;
-  width: 200px;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
-}
-.cityOption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 8px;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  text-decoration: none;
-  background: none;
-}
-.cityOption:hover {
-  background-color: var(--topbar-bg);
-}
-.cityOptionActive {
-  font-weight: 700;
-  background-color: var(--topbar-bg);
-}
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
-}
-.navLink:hover {
-  color: var(--accent);
-}
-.addEventBtn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 16px;
-  margin-left: 6px;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  background: transparent;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.addEventBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.navMobileActions {
-  display: none;
-  align-items: center;
-  gap: 8px;
-}
-.mobileAddBtn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-}
-.hamburgerBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 10px;
-  color: var(--ink);
-  cursor: pointer;
-}
-.drawerBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(31, 27, 22, 0.45);
-  z-index: 100;
-}
-.drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 290px;
-  max-width: 85vw;
-  background-color: var(--bg);
-  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 20px 28px;
-  overflow-y: auto;
-}
-.drawerHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.drawerTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-}
-.drawerCloseBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.drawerSectionTitle {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin: 20px 0 8px;
-}
-.drawerCityList {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerCityItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 42px;
-  padding: 0 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-}
-.drawerCityItemActive {
-  background-color: var(--topbar-bg);
-  font-weight: 700;
-}
-.drawerNavLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerNavLink {
-  display: flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 8px;
-}
-.drawerNavLink:hover {
-  background-color: var(--topbar-bg);
-}
-.drawerFooter {
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.drawerSupportBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-}
-.mainLayout {
-  flex: 1;
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 32px 72px;
-  display: flex;
-  align-items: flex-start;
-  gap: 48px;
-}
-.aside {
-  flex: 0 0 280px;
-  min-width: 0;
-  position: sticky;
-  top: 24px;
-}
-.asideTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 56px;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  margin: 0 0 8px;
-}
-.asideSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: 0;
-}
-.dayListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 28px;
-}
-.dayBtnVertical {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 48px;
-  padding: 0 14px;
-  background: none;
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.dayBtnVertical:hover {
-  background-color: var(--topbar-bg);
-}
-.dayBtnVerticalActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  font-weight: 700;
-}
-.dayCountText {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-}
-.dayCountTextActive {
-  color: #e6dfd0;
-}
-.filterBlockDesktop {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.filterTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.filterListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.filterFreeBtn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.filterFreeBtn:hover {
-  background-color: #ebdcba;
-}
-.checkboxSquare {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.checkboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.multiSelectWrapper {
-  position: relative;
-  width: 100%;
-}
-.multiSelectTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-}
-.multiSelectTrigger:hover {
-  background-color: #ebdcba;
-}
-.multiSelectTriggerActive {
-  background-color: #ebdcba;
-  font-weight: 700;
-}
-.multiSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  max-height: 250px;
-  overflow-y: auto;
-}
-.multiSelectMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.multiSelectClearLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-.multiSelectOption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--ink);
-  user-select: none;
-}
-.multiSelectOption:hover {
-  background-color: var(--topbar-bg);
-}
-.hiddenCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.customCheckbox {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-}
-.customCheckboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.clearFiltersBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 13px;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 4px 0;
-  font-family: inherit;
-}
-.clearFiltersBtn:hover {
-  color: var(--accent);
-}
-.mobileSectionHeader {
-  display: none;
-}
-.mobileDaysGrid {
-  display: none;
-}
-.mobileFiltersRow {
-  display: none;
-}
-.contentCol {
-  flex: 999 1 520px;
-  min-width: 0;
-}
-.timeGroupHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 24px 0 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.timeGroupHeader:first-of-type {
-  margin-top: 0;
-}
-.timeGroupLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.eventCard {
-  position: relative;
-  overflow: hidden;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  margin-bottom: 12px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.eventCardOpen {
-  border-color: var(--ink);
-  box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
-}
-.cardRow {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  padding: 18px 20px;
-  width: 100%;
-  background: none;
-  border: 0;
-  text-align: left;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.timeCol {
-  flex: 0 0 76px;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 26px;
-  line-height: 1;
-}
-.endTimeText {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 5px;
-}
-.infoCol {
-  flex: 1;
-  min-width: 0;
-  padding-right: 48px;
-}
-.nextUpBadge {
-  display: inline-block;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 11px;
-  background-color: var(--accent);
-  color: #ffffff;
-  border-radius: 6px;
-  padding: 2px 7px;
-  margin-bottom: 6px;
-}
-.eventTitle {
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1.25;
-}
-.eventHost {
-  color: var(--muted);
-  font-weight: 400;
-}
-.eventLocation {
-  font-size: 15px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin-top: 3px;
-}
-.priceLine {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  font-size: 15px;
-  line-height: 1.3;
-  font-weight: 700;
-}
-.priceFree {
-  color: var(--free);
-}
-.pricePaid {
-  color: var(--price-donation);
-}
-.tagList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-.tagChip {
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 6px;
-  padding: 3px 9px;
-  white-space: nowrap;
-}
-.chevronCircle {
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  pointer-events: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.chevronCircleOpen {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.expandedDrawer {
-  border-top: 1px solid var(--line);
-  padding: 16px 20px 18px 116px;
-  background-color: transparent;
-}
-.eventDescription {
-  margin: 0 0 14px;
-  max-width: 580px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #4f483e;
-}
-.preRegistration {
-  margin: 0 0 14px;
-  max-width: 580px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--ink);
-  font-weight: 700;
-}
-.drawerActionRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.buttonGrid4 {
-  display: grid;
-  grid-template-columns: repeat(4, 100px);
-  gap: 8px;
-}
-.actionBtnPrimary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 60px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 13px;
-  text-decoration: none;
-  cursor: pointer;
-}
-.actionBtnPrimary:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-.actionBtnOutline {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 60px;
-  border: 1.5px solid #e0d4b8;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--ink);
-  text-decoration: none;
-  background: #ffffff;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-.actionBtnOutline:hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-.suggestEditBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--muted);
-  text-decoration: underline;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  font-family: inherit;
-}
-.suggestEditBtn:hover {
-  color: var(--accent);
-}
-.emptyState {
-  text-align: center;
-  color: var(--muted);
-  padding: 56px 16px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-}
-.emptyStateTitle {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-.footer {
-  border-top: 1px solid var(--line);
-  background-color: var(--bg);
-  margin-top: auto;
-}
-.footerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 40px 32px 32px;
-}
-.footerQuoteRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px 48px;
-}
-.footerLeftSection {
-  flex: 1 1 500px;
-  max-width: 580px;
-}
-.footerQuoteText {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ink);
-}
-.footerAuthor {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.footerCopyright {
-  margin-top: 18px;
-  font-size: 11px;
-  color: #8c8275;
-}
-.footerRightSection {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-start;
-  padding-top: 2px;
-}
-.footerSupportText {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: #4f483e;
-}
-.buyDrinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.15s ease;
-}
-.buyDrinkLink:hover {
-  color: var(--accent);
-}
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(31, 27, 22, 0.6);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.modalContent {
-  background-color: #ffffff;
-  color: var(--ink);
-  border-radius: 20px;
-  max-width: 480px;
-  width: 100%;
-  padding: 24px;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.2);
-}
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-.modalTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-}
-.modalSubtitle {
-  display: block;
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 4px;
-}
-.modalCloseBtn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.modalForm {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.modalField {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.modalField label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.modalInput,
-.modalTextarea {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background-color: var(--bg);
-  color: var(--ink);
-  font: inherit;
-  font-size: 14px;
-}
-.modalTextarea {
-  min-height: 120px;
-  resize: vertical;
-}
-.modalActions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 10px;
-}
-.modalSubmitBtn {
-  background-color: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 99px;
-  padding: 9px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.modalCancelBtn {
-  background: transparent;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
-  border-radius: 99px;
-  padding: 9px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.statusMsg {
-  margin-top: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-@media (max-width: 899px) {
-  .headerInner {
-    padding: 14px 16px;
-  }
-  .logoImage {
-    height: 50px;
-    max-width: 260px;
-  }
-  .brandSubtitle {
-    font-size: 12px;
-    margin-top: 4px;
-  }
-  .navDesktop {
-    display: none;
-  }
-  .navMobileActions {
-    display: flex;
-  }
-  .mainLayout {
-    padding: 16px 16px 40px;
-    flex-direction: column;
-    gap: 0;
-  }
-  .aside {
-    display: none;
-  }
-  .mobileDaysGrid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
-    margin-top: 8px;
-    width: 100%;
-  }
-  .mobileDayBtn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    padding: 8px 0 7px;
-    min-height: 66px;
-    border: 1.5px solid var(--line);
-    background: #ffffff;
-    color: var(--ink);
-    border-radius: 10px;
-    font: inherit;
-    cursor: pointer;
-  }
-  .mobileDayBtnActive {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--bg);
-  }
-  .mobileDayLabel {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayLabelActive {
-    color: #e6dfd0;
-  }
-  .mobileDayNum {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 20px;
-    line-height: 1.1;
-  }
-  .mobileDayCount {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .mobileDayCountActive {
-    color: #e6dfd0;
-  }
-  .mobileFiltersRow {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    width: 100%;
-    align-items: center;
-  }
-  .mobileFreeBtn {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 16px;
-    background-color: var(--topbar-bg);
-    color: var(--ink);
-    border: 0;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
-  .mobileFreeBtnActive {
-    background-color: var(--ink);
-    color: var(--bg);
-    font-weight: 700;
-  }
-  .mobileSectionHeader {
-    display: block;
-    margin-top: 18px;
-    margin-bottom: 8px;
-  }
-  .mobileHeadingTitle {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 34px;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin: 0 0 3px;
-  }
-  .mobileHeadingSubtitle {
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 0;
-  }
-  .timeGroupHeader {
-    margin: 18px 0 8px;
-  }
-  .cardRow {
-    gap: 14px;
-    padding: 14px;
-  }
-  .timeCol {
-    flex: 0 0 54px;
-    font-size: 22px;
-  }
-  .endTimeText {
-    font-size: 12px;
-    margin-top: 4px;
-  }
-  .infoCol {
-    padding-right: 36px;
-  }
-  .eventTitle {
-    font-size: 16px;
-  }
-  .eventLocation {
-    font-size: 14px;
-  }
-  .priceLine {
-    font-size: 14px;
-  }
-  .chevronCircle {
-    top: 12px;
-    right: 12px;
-    width: 30px;
-    height: 30px;
-  }
-  .expandedDrawer {
-    padding: 14px 14px 8px;
-  }
-  .eventDescription {
-    font-size: 14px;
-    line-height: 1.45;
-  }
-  .preRegistration {
-    font-size: 14px;
-    line-height: 1.45;
-  }
-  .drawerActionRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .buttonGrid4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-    width: 100%;
-  }
-  .suggestEditBtn {
-    align-self: flex-end;
-  }
-  .footerInner {
-    padding: 24px 16px 28px;
-  }
-  .footerQuoteRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-  .footerLeftSection {
-    max-width: 100%;
-  }
-  .footerQuoteText {
-    font-size: 13px;
-  }
-  .footerRightSection {
-    width: 100%;
   }
 }
 
@@ -3101,259 +3199,211 @@ File: app/Page.module.css
 }
 
 ================
-File: app/events/components/EventCard.tsx
+File: app/events/EventsView.module.css
 ================
-'use client';
-import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  isFreePrice,
-  ensureExternalUrl,
-  getTagStyle,
-} from '../utils';
-import styles from '../EventsView.module.css';
-interface EventCardProps {
-  event: Event;
-  isOpen: boolean;
-  isNextUp: boolean;
-  cityName: string;
-  onToggle: () => void;
-  onOpenEdit: (ev: Event) => void;
+.pageContainer {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
-export default function EventCard({
-  event,
-  isOpen,
-  isNextUp,
-  cityName,
-  onToggle,
-  onOpenEdit,
-}: EventCardProps) {
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList =
-    event.activities && event.activities.length > 0
-      ? event.activities
-      : event.activity
-      ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
-      : [event.activity1, event.activity2, event.activity3].filter(Boolean);
-  const displayVenue = event.venue || event.location;
-  const recurrenceText = event.frequency
-    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
-    : event.frequencyNotes || '';
-  return (
-    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
-      <button
-        type="button"
-        className={styles.cardRow}
-        aria-expanded={isOpen}
-        onClick={onToggle}
-      >
-        <div className={styles.timeCol}>
-          {start}
-          {end && <div className={styles.endTimeText}>to {end}</div>}
-        </div>
-        <div className={styles.infoCol}>
-          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
-          <div className={styles.eventTitle}>
-            {event.title}
-            {event.organization && event.organization !== displayVenue && (
-              <span className={styles.eventHost}> w/ {event.organization}</span>
-            )}
-          </div>
-          <div className={styles.eventLocation}>
-            {displayVenue}
-            {event.area ? ` · ${event.area}` : ''}
-          </div>
-          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 12V4h8l10 10-8 8L3 12z" />
-              <circle cx="7.5" cy="8.5" r="1" />
-            </svg>
-            {isFree ? 'Free' : event.price || 'Varies'}
-          </div>
-          {tagList.length > 0 && (
-            <div className={styles.tagList}>
-              {tagList.map((tag) => {
-                const customStyle = getTagStyle(tag);
-                return (
-                  <span
-                    key={tag}
-                    className={styles.tagChip}
-                    style={{
-                      color: customStyle.color,
-                      backgroundColor: customStyle.background,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <span
-          aria-hidden="true"
-          className={`${styles.chevronCircle} ${
-            isOpen ? styles.chevronCircleOpen : ''
-          }`}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-          </svg>
-        </span>
-      </button>
-      {isOpen && (
-        <div className={styles.expandedDrawer}>
-          {(event.about || event.notes) && (
-            <p className={styles.eventDescription}>{event.about || event.notes}</p>
-          )}
-          {recurrenceText && (
-            <p
-              className={styles.eventDescription}
-              style={{
-                fontWeight: 600,
-                color: 'var(--ink)',
-                marginBottom: event.preRegistration ? 8 : 14,
-              }}
-            >
-              📅Recurs: {recurrenceText}
-            </p>
-          )}
-          {event.preRegistration && (
-            <p
-              className={styles.eventDescription}
-              style={{
-                fontWeight: 600,
-                color: 'var(--ink)',
-                marginBottom: 14,
-              }}
-            >
-              📝Pre-Registration: {event.preRegistration}
-            </p>
-          )}
-          <div className={styles.drawerActionRow}>
-            <div className={styles.buttonGrid4}>
-              <a
-                href={
-                  event.map
-                    ? ensureExternalUrl(event.map)
-                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${displayVenue}, ${cityName}`
-                      )}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.actionBtnPrimary}
-                aria-label="Open in Maps"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-                Maps
-              </a>
-              {event.website ? (
-                <a
-                  href={ensureExternalUrl(event.website)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                  Website
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
-                  </svg>
-                  Website
-                </div>
-              )}
-              {event.social ? (
-                <a
-                  href={ensureExternalUrl(event.social)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                  Instagram
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.2" cy="6.8" r=".6" />
-                  </svg>
-                  Instagram
-                </div>
-              )}
-              {event.contact ? (
-                <a
-                  href={ensureExternalUrl(event.contact)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.actionBtnOutline}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                  Contact
-                </a>
-              ) : (
-                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
-                  </svg>
-                  Contact
-                </div>
-              )}
-            </div>
-            <button
-              type="button"
-              className={styles.suggestEditBtn}
-              onClick={() => onOpenEdit(event)}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
-              </svg>
-              Suggest edit
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+.mainLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 32px 72px;
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+}
+.aside {
+  flex: 0 0 280px;
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+}
+.asideTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+.asideSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0;
+}
+.dayListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 28px;
+}
+.dayBtnVertical {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 14px;
+  background: none;
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.dayBtnVertical:hover {
+  background-color: var(--topbar-bg);
+}
+.dayBtnVerticalActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
+}
+.dayCountText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.dayCountTextActive {
+  color: #e6dfd0;
+}
+.mobileSectionHeader {
+  display: none;
+}
+.mobileDaysGrid {
+  display: none;
+}
+.contentCol {
+  flex: 999 1 520px;
+  min-width: 0;
+}
+.timeGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.timeGroupHeader:first-of-type {
+  margin-top: 0;
+}
+.timeGroupLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.emptyState {
+  text-align: center;
+  color: var(--muted);
+  padding: 56px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.emptyStateTitle {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+@media (max-width: 899px) {
+  .mainLayout {
+    padding: 16px 16px 40px;
+    flex-direction: column;
+    gap: 0;
+  }
+  .aside {
+    display: none;
+  }
+  .mobileDaysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    width: 100%;
+  }
+  .mobileDayBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 0 7px;
+    min-height: 66px;
+    border: 1.5px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .mobileDayBtnActive {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .mobileDayLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayLabelActive {
+    color: #e6dfd0;
+  }
+  .mobileDayNum {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .mobileDayCount {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .mobileDayCountActive {
+    color: #e6dfd0;
+  }
+  .mobileSectionHeader {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  .mobileHeadingTitle {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 3px;
+  }
+  .mobileHeadingSubtitle {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 0;
+  }
+  .timeGroupHeader {
+    margin: 18px 0 8px;
+  }
 }
 
 ================
@@ -3718,6 +3768,47 @@ export default function FilterBar({ activities, areas, onFilterChange }: FilterB
 }
 
 ================
+File: package.json
+================
+{
+  "name": "someplace-social",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
+    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
+    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
+    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
+    "repomix": "repomix"
+  },
+  "dependencies": {
+    "@next/third-parties": "^16.0.7",
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.0.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "resend": "^6.4.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.0.4",
+    "repomix": "^0.2.32",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
+}
+
+================
 File: app/events/CityEventsView.tsx
 ================
 'use client';
@@ -3764,13 +3855,17 @@ const TIME_GROUPS = [
 export default function CityEventsView({
   city,
   initialEvents = [],
+  initialCityCounts = {},
 }: {
   city: CityConfig;
   initialEvents?: Event[];
+  initialCityCounts?: Record<string, number>;
 }) {
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
+  const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const [freeOnly, setFreeOnly] = useState(false);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
@@ -3781,10 +3876,14 @@ export default function CityEventsView({
     if (initialEvents.length === 0) {
       setLoading(true);
       getEvents(city)
-        .then((data) => setAllEvents(data))
+        .then((data) => {
+          setAllEvents(data);
+          setCityCounts((prev) => ({ ...prev, [city.slug]: data.length }));
+        })
         .finally(() => setLoading(false));
     } else {
       setAllEvents(initialEvents);
+      setCityCounts((prev) => ({ ...prev, [city.slug]: initialEvents.length }));
       setLoading(false);
     }
   }, [city, initialEvents]);
@@ -3876,21 +3975,45 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
+        if (searchQuery.trim()) {
+          const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+          const searchableText = [
+            ev.title,
+            ev.venue,
+            ev.organization,
+            ev.location,
+            ev.area,
+            ev.activity,
+            ...(ev.activities || []),
+            ev.about,
+            ev.notes,
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
+          if (!matchesSearch) return false;
+        }
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
   };
   const currentList = useMemo(() => {
     return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, rollingWeek]);
+  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, searchQuery, rollingWeek]);
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
     const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
     return nextEvent ? nextEvent.id || nextEvent.title : null;
   }, [activeDayIdx, currentList, nowHour]);
   const hasActiveFilters =
-    freeOnly || selectedTimes.length > 0 || selectedActivities.length > 0 || selectedAreas.length > 0;
+    searchQuery.trim().length > 0 ||
+    freeOnly ||
+    selectedTimes.length > 0 ||
+    selectedActivities.length > 0 ||
+    selectedAreas.length > 0;
   const clearAllFilters = () => {
+    setSearchQuery('');
     setFreeOnly(false);
     setSelectedTimes([]);
     setSelectedActivities([]);
@@ -3903,7 +4026,11 @@ export default function CityEventsView({
   }, []);
   return (
     <div className={styles.pageContainer}>
-      <EventHeader city={city} allCityOptions={allCityOptions} />
+      <EventHeader
+        city={city}
+        allCityOptions={allCityOptions}
+        cityCounts={cityCounts}
+      />
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
           <h1 className={styles.asideTitle}>
@@ -3928,6 +4055,8 @@ export default function CityEventsView({
             getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
           <FilterControls
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
             freeOnly={freeOnly}
             onToggleFree={() => setFreeOnly(!freeOnly)}
             timeSections={TIME_GROUPS.map((g) => g.name)}
@@ -4022,188 +4151,258 @@ export default function CityEventsView({
 }
 
 ================
-File: package.json
+File: app/events/components/EventCard.tsx
 ================
-{
-  "name": "someplace-social",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "pnpm@9.15.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
-    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
-    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
-    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
-    "repomix": "repomix"
-  },
-  "dependencies": {
-    "@next/third-parties": "^16.0.7",
-    "@vercel/analytics": "^1.6.1",
-    "next": "^16.0.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "resend": "^6.4.2"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.0.4",
-    "repomix": "^0.2.32",
-    "tailwindcss": "^4",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
-  }
+'use client';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  isFreePrice,
+  ensureExternalUrl,
+  getTagStyle,
+} from '../utils';
+import styles from './EventCard.module.css';
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
 }
-
-================
-File: app/about/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'About Us',
-  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
-};
-export default function AboutPage() {
+export default function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList =
+    event.activities && event.activities.length > 0
+      ? event.activities
+      : event.activity
+      ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
+      : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+  const displayVenue = event.venue || event.location;
+  const recurrenceText = event.frequency
+    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
+    : event.frequencyNotes || '';
   return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>About The Guides</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-guides.png" alt="Illustration of capybaras sitting around a table" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Why Our Listings Are Different</h2>
-        <ul>
-          <li><strong>More listings</strong> because we don't rely on the organization hosting the events to add. Anyone from the community can submit and spread the word.</li>
-          <li><strong>Better organized</strong> events listed in order of date and time rather than by who pays the most.</li>
-          <li><strong>Better quality</strong> events because they are vetted by real humans.</li>
-        </ul>
-        <h2 style={{ fontSize: '2.5em', marginTop: '2.5rem', marginBottom: '1rem' }}>Event Listings Criteria</h2>
-        <ul>
-          <li><strong>Regularly Occurring:</strong> must happen weekly or biweekly.</li>
-          <li><strong>Group Event:</strong> must be open to multiple people. No one-on-one sessions.</li>
-          <li><strong>Open:</strong> must be inclusive and open to all.</li>
-          <li><strong>Affordable:</strong> must be relatively affordable.</li>
-        </ul>
-      </section>
-      <section className={styles.heroSection} style={{ marginTop: '4rem' }}>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-about.png" alt="Illustration of a person relaxing in a hammock" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-        <div className={styles.heroText}>
-          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
-          </p>
-          <div style={{ marginTop: '1rem' }}>
-             <Link href="/support" className={styles.button}>
-              Support
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
-}
-
-================
-File: app/components/Footer.tsx
-================
-import pageStyles from '../Page.module.css';
-export default function Footer() {
-  return (
-    <footer
-      style={{
-        borderTop: '1px solid #eadfc8',
-        backgroundColor: '#FFF9EC',
-        marginTop: 'auto',
-      }}
-    >
-      <div
-        className={pageStyles.page}
-        style={{
-          maxWidth: '1120px',
-          margin: '0 auto',
-          padding: '40px 32px 32px',
-          alignItems: 'stretch',
-        }}
+    <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
+      <button
+        type="button"
+        className={styles.cardRow}
+        aria-expanded={isOpen}
+        onClick={onToggle}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: '24px 48px',
-          }}
-        >
-          <div style={{ flex: '1 1 500px', maxWidth: '580px' }}>
-            <blockquote
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-karla), system-ui, sans-serif',
-                fontWeight: 500,
-                fontSize: '13px',
-                lineHeight: 1.5,
-                color: '#1f1b16',
-              }}
-            >
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div style={{ marginTop: '8px', fontSize: '12px', color: '#6f675c' }}>
-              - Kurt Vonnegut
-            </div>
-            <div style={{ marginTop: '18px', fontSize: '11px', color: '#8c8275' }}>
-              © 2026 Someplace Social. All rights reserved.
-            </div>
+        <div className={styles.timeCol}>
+          {start}
+          {end && <div className={styles.endTimeText}>to {end}</div>}
+        </div>
+        <div className={styles.infoCol}>
+          {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
+          <div className={styles.eventTitle}>
+            {event.title}
+            {event.organization && event.organization !== displayVenue && (
+              <span className={styles.eventHost}> w/ {event.organization}</span>
+            )}
           </div>
-          <div style={{ flex: '0 0 auto', paddingTop: '2px' }}>
+          <div className={styles.eventLocation}>
+            {displayVenue}
+            {event.area ? ` · ${event.area}` : ''}
+          </div>
+          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12V4h8l10 10-8 8L3 12z" />
+              <circle cx="7.5" cy="8.5" r="1" />
+            </svg>
+            {isFree ? 'Free' : event.price || 'Varies'}
+          </div>
+          {tagList.length > 0 && (
+            <div className={styles.tagList}>
+              {tagList.map((tag) => {
+                const customStyle = getTagStyle(tag);
+                return (
+                  <span
+                    key={tag}
+                    className={styles.tagChip}
+                    style={{
+                      color: customStyle.color,
+                      backgroundColor: customStyle.background,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <span
+          aria-hidden="true"
+          className={`${styles.chevronCircle} ${
+            isOpen ? styles.chevronCircleOpen : ''
+          }`}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className={styles.expandedDrawer}>
+          {(event.about || event.notes) && (
+            <p className={styles.eventDescription}>{event.about || event.notes}</p>
+          )}
+          {recurrenceText && (
             <p
+              className={styles.eventDescription}
               style={{
-                margin: 0,
-                fontSize: '13.5px',
-                lineHeight: 1.4,
-                color: '#4f483e',
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: event.preRegistration ? 8 : 14,
               }}
             >
-              Free for everyone, no ads.{' '}
+              📅Recurs: {recurrenceText}
+            </p>
+          )}
+          {event.preRegistration && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: 14,
+              }}
+            >
+              📝Pre-Registration: {event.preRegistration}
+            </p>
+          )}
+          <div className={styles.drawerActionRow}>
+            <div className={styles.buttonGrid4}>
               <a
-                href="https://buymeacoffee.com/someplacesocial"
+                href={
+                  event.map
+                    ? ensureExternalUrl(event.map)
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${displayVenue}, ${cityName}`
+                      )}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  color: '#1f1b16',
-                  fontWeight: 700,
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '3px',
-                }}
+                className={styles.actionBtnPrimary}
+                aria-label="Open in Maps"
               >
-                Buy me a drink
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Maps
               </a>
-            </p>
+              {event.website ? (
+                <a
+                  href={ensureExternalUrl(event.website)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" />
+                  </svg>
+                  Website
+                </div>
+              )}
+              {event.social ? (
+                <a
+                  href={ensureExternalUrl(event.social)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.2" cy="6.8" r=".6" />
+                  </svg>
+                  Instagram
+                </div>
+              )}
+              {event.contact ? (
+                <a
+                  href={ensureExternalUrl(event.contact)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.actionBtnOutline}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </a>
+              ) : (
+                <div className={styles.actionBtnOutline} style={{ opacity: 0.45, cursor: 'not-allowed' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
+                  </svg>
+                  Contact
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              className={styles.suggestEditBtn}
+              onClick={() => onOpenEdit(event)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19l-4 1z" />
+              </svg>
+              Suggest edit
+            </button>
           </div>
         </div>
-      </div>
-    </footer>
+      )}
+    </div>
   );
 }
 
@@ -4257,10 +4456,130 @@ export default function RootLayout({
 }
 
 ================
+File: app/about/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
+};
+export default function AboutPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>About The Guides</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox}>
+          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Why Our Listings Are Different</h2>
+          <ul>
+            <li><strong>More listings</strong> because we don't rely on the organization hosting the events to add. Anyone from the community can submit and spread the word.</li>
+            <li><strong>Better organized</strong> events listed in order of date and time rather than by who pays the most.</li>
+            <li><strong>Better quality</strong> events because they are vetted by real humans.</li>
+          </ul>
+          <h2 style={{ fontSize: '2.5em', marginTop: '2.5rem', marginBottom: '1rem' }}>Event Listings Criteria</h2>
+          <ul>
+            <li><strong>Regularly Occurring:</strong> must happen weekly or biweekly.</li>
+            <li><strong>Group Event:</strong> must be open to multiple people. No one-on-one sessions.</li>
+            <li><strong>Open:</strong> must be inclusive and open to all.</li>
+            <li><strong>Affordable:</strong> must be relatively affordable.</li>
+          </ul>
+        </section>
+        <section className={styles.heroSection} style={{ marginTop: '4rem' }}>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-about.png"
+              alt="Illustration of a person relaxing in a hammock"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+          <div className={styles.heroText}>
+            <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
+            </p>
+            <div style={{ marginTop: '1rem' }}>
+              <Link href="/support" className={styles.button}>
+                Support
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+================
+File: app/components/Footer.tsx
+================
+import styles from './Footer.module.css';
+export default function Footer() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerQuoteRow}>
+          <div className={styles.footerLeftSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social. All rights reserved.
+            </div>
+          </div>
+          <div className={styles.footerRightSection}>
+            <div className={styles.footerSupportText}>
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.buyDrinkLink}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
 File: app/page.tsx
 ================
 import Link from 'next/link';
 import Image from 'next/image';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import styles from './Page.module.css';
 const structuredData = {
   "@context": "https://schema.org",
@@ -4275,12 +4594,13 @@ const structuredData = {
 };
 export default function Home() {
   return (
-    <>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className={styles.page}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
             <h1>Someplace Social</h1>
@@ -4290,14 +4610,23 @@ export default function Home() {
             <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
               Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin.
             </p>
-            <Link href="/medellin" className={styles.button}>Medellin Weekly Events</Link>
+            <Link href="/events/medellin-colombia" className={styles.button}>
+              Medellin Weekly Events
+            </Link>
           </div>
           <div className={styles.illustrationContainer}>
-            <Image src="/images/hero-home.png" alt="Illustration of a capybara with a backpack looking at a signpost" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
+            <Image
+              src="/images/hero-home.png"
+              alt="Illustration of a capybara with a backpack looking at a signpost"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
           </div>
         </section>
       </main>
-    </>
+      <Footer />
+    </div>
   );
 }
 
@@ -4307,6 +4636,8 @@ File: app/contact/page.tsx
 import Image from 'next/image';
 import Accordion from '../components/Accordion';
 import ContactForm from '../components/ContactForm';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import styles from '../Page.module.css';
 import type { Metadata } from 'next';
 export const metadata: Metadata = {
@@ -4346,46 +4677,66 @@ const askQuestionFields = [
 ] as const;
 export default function ContactPage() {
   return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>Contact Us</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
-      </section>
-      <div style={{ width: '100%', marginTop: '2rem' }}>
-        <Accordion title="Submit an Event">
-          <div>
-            <strong>A FEW NOTES</strong>
-            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
-            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
-            <br/>
-            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
-            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
-            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
-            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
-            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <hr style={{ margin: '2rem 0' }} />
-            <ContactForm formType="Submit an Event" fields={submitEventFields} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Contact Us</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
+            </p>
           </div>
-        </Accordion>
-        <Accordion title="Edit Event Info">
-          <ContactForm formType="Edit Event Info" fields={editEventFields} />
-        </Accordion>
-        <Accordion title="Ask a Question">
-          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
-        </Accordion>
-      </div>
-    </main>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox}>
+          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+          <p>
+            This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able,{' '}
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'inherit' }}
+            >
+              buy me a drink.
+            </a>
+          </p>
+        </section>
+        <div style={{ width: '100%', marginTop: '2rem' }}>
+          <Accordion title="Submit an Event">
+            <div>
+              <strong>A FEW NOTES</strong>
+              <p>• Anyone can submit an event as long as it meets the criteria below.</p>
+              <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
+              <br/>
+              <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
+              <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
+              <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
+              <p><strong>• Open:</strong> must be inclusive and open to all.</p>
+              <p><strong>• Affordable:</strong> must be relatively affordable.</p>
+              <hr style={{ margin: '2rem 0' }} />
+              <ContactForm formType="Submit an Event" fields={submitEventFields} />
+            </div>
+          </Accordion>
+          <Accordion title="Edit Event Info">
+            <ContactForm formType="Edit Event Info" fields={editEventFields} />
+          </Accordion>
+          <Accordion title="Ask a Question">
+            <ContactForm formType="Ask a Question" fields={askQuestionFields} />
+          </Accordion>
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }
 
@@ -4393,21 +4744,22 @@ export default function ContactPage() {
 File: app/components/Header.module.css
 ================
 .header {
-  padding: 18px 0;
-  background-color: var(--bg);
-  border-bottom: 1px solid var(--line);
   position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
   z-index: 50;
 }
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.headerInner {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 0 32px;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
-.logoLink {
+.brandLogoLink {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
@@ -4419,17 +4771,73 @@ File: app/components/Header.module.css
   object-fit: contain;
   filter: brightness(0);
 }
-.nav {
+.navDesktop {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 6px;
 }
-.navLink {
-  text-decoration: none;
+.citiesWrapper {
+  position: relative;
+}
+.citiesBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
   color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
   font-size: 15px;
   font-weight: 500;
-  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.citiesBtn:hover {
+  background-color: #ebdcb9;
+}
+.citiesDropdown {
+  position: absolute;
+  z-index: 40;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.cityOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+}
+.cityOption:hover {
+  background-color: var(--topbar-bg);
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
 }
 .navLink:hover {
   color: var(--accent);
@@ -4439,94 +4847,147 @@ File: app/components/Header.module.css
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
+  margin-left: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.addEventBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.mobileAddBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
   border: 1.5px solid var(--ink);
   border-radius: 10px;
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
   text-decoration: none;
-  background: transparent;
 }
-.addEventBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
   cursor: pointer;
-  padding: 8px;
 }
-.hamburger div {
-  width: 24px;
-  height: 2.5px;
-  background-color: var(--ink);
-  border-radius: 4px;
-}
-.backdrop {
+.drawerBackdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-color: rgba(31, 27, 22, 0.45);
-  z-index: 110;
+  z-index: 100;
 }
-.mobileNav {
+.drawer {
   position: fixed;
   top: 0;
   right: 0;
-  height: 100vh;
-  width: 280px;
+  bottom: 0;
+  width: 290px;
   max-width: 85vw;
   background-color: var(--bg);
-  z-index: 120;
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  z-index: 101;
   display: flex;
   flex-direction: column;
-  padding: 24px 20px;
-  gap: 12px;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
-  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  padding: 20px 20px 28px;
+  overflow-y: auto;
 }
-.mobileNav.open {
-  transform: translateX(0);
-}
-.mobileNavHeader {
+.drawerHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 8px;
 }
-.mobileNavTitle {
+.drawerTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
   font-size: 18px;
 }
-.closeBtn {
+.drawerCloseBtn {
   background: none;
-  border: none;
-  font-size: 20px;
+  border: 0;
   color: var(--muted);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.mobileNavLink {
-  text-decoration: none;
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 600;
-  padding: 8px 12px;
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerCityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerCityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
   border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
 }
-.mobileNavLink:hover {
+.drawerCityItem:hover {
   background-color: var(--topbar-bg);
 }
-.mobileSupportBtn {
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerFooter {
   margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.drawerSupportBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4539,138 +5000,19 @@ File: app/components/Header.module.css
   text-decoration: none;
 }
 @media (max-width: 899px) {
-  .container {
-    padding: 0 16px;
+  .headerInner {
+    padding: 14px 16px;
   }
   .logoImage {
     height: 50px;
     max-width: 260px;
   }
-  .nav {
+  .navDesktop {
     display: none;
   }
-  .hamburger {
+  .navMobileActions {
     display: flex;
   }
-}
-
-================
-File: app/components/Header.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './Header.module.css';
-export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [isMobileMenuOpen]);
-  return (
-    <>
-      {isMobileMenuOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-      <header className={styles.header}>
-        <div className={styles.container}>
-          <Link href="/" className={styles.logoLink}>
-            <Image
-              src="/images/logo.svg"
-              alt="Someplace Social Logo"
-              width={190}
-              height={50}
-              priority
-              className={styles.logoImage}
-            />
-          </Link>
-          <nav className={styles.nav}>
-            <Link href="/events/fort-collins-colorado" className={styles.navLink}>
-              Fort Collins
-            </Link>
-            <Link href="/events/medellin-colombia" className={styles.navLink}>
-              Medellín
-            </Link>
-            <Link href="/about" className={styles.navLink}>
-              About
-            </Link>
-            <Link href="/contact" className={styles.navLink}>
-              Contact
-            </Link>
-            <Link href="/contact" className={styles.addEventBtn}>
-              + Add event
-            </Link>
-          </nav>
-          <div
-            className={styles.hamburger}
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Toggle navigation menu"
-          >
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        </div>
-      </header>
-      <nav className={`${styles.mobileNav} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <div className={styles.mobileNavHeader}>
-          <span className={styles.mobileNavTitle}>Someplace Social</span>
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Close menu"
-          >
-            ✕
-          </button>
-        </div>
-        <Link
-          href="/events/fort-collins-colorado"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Fort Collins
-        </Link>
-        <Link
-          href="/events/medellin-colombia"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Medellín
-        </Link>
-        <Link
-          href="/about"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          About
-        </Link>
-        <Link
-          href="/contact"
-          className={styles.mobileNavLink}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Contact
-        </Link>
-        <a
-          href="https://buymeacoffee.com/someplacesocial"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.mobileSupportBtn}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Buy me a drink
-        </a>
-      </nav>
-    </>
-  );
 }
 
 ================
@@ -5007,11 +5349,200 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 }
 
 ================
+File: app/components/Header.tsx
+================
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './Header.module.css';
+const CITIES = [
+  { name: 'Medellín', slug: 'medellin-colombia' },
+  { name: 'Fort Collins', slug: 'fort-collins-colorado' },
+];
+export default function Header() {
+  const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const citiesMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
+        setCitiesMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href="/" className={styles.brandLogoLink}>
+            <Image
+              src="/images/logo.svg"
+              alt="Someplace Social"
+              width={360}
+              height={100}
+              priority
+              className={styles.logoImage}
+            />
+          </Link>
+          <nav className={styles.navDesktop}>
+            <div className={styles.citiesWrapper} ref={citiesMenuRef}>
+              <button
+                type="button"
+                className={styles.citiesBtn}
+                aria-expanded={citiesMenuOpen}
+                onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
+              >
+                Cities
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {citiesMenuOpen && (
+                <div className={styles.citiesDropdown}>
+                  {CITIES.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/events/${c.slug}`}
+                      className={styles.cityOption}
+                      onClick={() => setCitiesMenuOpen(false)}
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Link href="/about" className={styles.navLink}>
+              About
+            </Link>
+            <Link href="/contact" className={styles.navLink}>
+              Contact
+            </Link>
+            <Link href="/contact" className={styles.addEventBtn}>
+              + Add event
+            </Link>
+          </nav>
+          <div className={styles.navMobileActions}>
+            <Link href="/contact" className={styles.mobileAddBtn}>
+              + Add
+            </Link>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Choose City</div>
+            <div className={styles.drawerCityList}>
+              {CITIES.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/events/${c.slug}`}
+                  className={styles.drawerCityItem}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              <Link
+                href="/about"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link
+                href="/contact"
+                className={styles.drawerNavLink}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                + Add event
+              </Link>
+            </div>
+            <div className={styles.drawerFooter}>
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.drawerSupportBtn}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+================
 File: app/medellin/page.tsx
 ================
 "use client";
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { getEvents, Event } from '../lib/google-sheets';
 import { isEventActiveOnDate } from '../events/utils';
 import DayAccordion from './DayAccordion';
@@ -5089,7 +5620,7 @@ export default function MedellinPage() {
   }, [allEvents, filters]);
   const currentWeekDates = useMemo(() => {
     const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon ...
+    const currentDay = today.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     const monday = new Date(today);
     monday.setDate(today.getDate() + mondayOffset);
@@ -5110,44 +5641,54 @@ export default function MedellinPage() {
     return map;
   }, [filteredEvents, currentWeekDates]);
   return (
-    <main className={pageStyles.page}>
-      <section className={pageStyles.heroSection}>
-        <div className={pageStyles.heroText}>
-          <h1>Medellin Weekly Events & Activity Guide</h1>
-          <p><strong>by Someplace Social</strong></p>
-          <p style={{ marginTop: '1rem' }}>
-            Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
-          </p>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={pageStyles.page} style={{ flex: 1 }}>
+        <section className={pageStyles.heroSection}>
+          <div className={pageStyles.heroText}>
+            <h1>Medellin Weekly Events & Activity Guide</h1>
+            <p><strong>by Someplace Social</strong></p>
+            <p style={{ marginTop: '1rem' }}>
+              Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
+            </p>
+          </div>
+          <div className={pageStyles.illustrationContainer}>
+            <Image
+              src="/images/hero-medellin.png"
+              alt="Illustration of two capybaras dancing"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <FilterBar
+          activities={uniqueActivities}
+          areas={uniqueAreas}
+          onFilterChange={setFilters}
+        />
+        <div style={{ width: '100%' }}>
+          {daysOfWeek.map((day) => (
+            eventsByDay[day] && eventsByDay[day].length > 0 ? (
+              <DayAccordion key={day} title={day}>
+                {eventsByDay[day].map((event, index) => (
+                  <EventListing key={index} event={event} onEdit={handleEditClick} />
+                ))}
+              </DayAccordion>
+            ) : null
+          ))}
         </div>
-        <div className={pageStyles.illustrationContainer}>
-          <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-      <FilterBar
-        activities={uniqueActivities}
-        areas={uniqueAreas}
-        onFilterChange={setFilters}
-      />
-      <div style={{ width: '100%' }}>
-        {daysOfWeek.map((day) => (
-          eventsByDay[day] && eventsByDay[day].length > 0 ? (
-            <DayAccordion key={day} title={day}>
-              {eventsByDay[day].map((event, index) => (
-                <EventListing key={index} event={event} onEdit={handleEditClick} />
-              ))}
-            </DayAccordion>
-          ) : null
-        ))}
-      </div>
-      <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
-        <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
-        <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
-        <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
-        <div style={{ width: '100%', marginTop: '2rem' }}>
-          <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
-        </div>
-      </section>
-    </main>
+        <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
+          <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
+          <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
+          <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
+          <div style={{ width: '100%', marginTop: '2rem' }}>
+            <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

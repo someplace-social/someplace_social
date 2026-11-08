@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { CityConfig, CITIES } from '../lib/cities';
+import { CityConfig, getAllCities } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
 import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
-import EventHeader from './components/EventHeader';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
 import FilterControls from './components/FilterControls';
 import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
-import EventFooter from './components/EventFooter';
 import styles from './EventsView.module.css';
 
 const DAY_NAMES_LONG = [
@@ -97,18 +97,12 @@ export default function CityEventsView({
   const activities = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      const list =
-        ev.activities && ev.activities.length > 0
-          ? ev.activities
-          : ev.activity
-          ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
-          : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
-      list.forEach((act) => {
+      ev.activities.forEach((act) => {
         const trimmed = act.trim();
         if (trimmed) set.add(trimmed);
       });
     });
-    return Array.from(set).filter(Boolean).sort();
+    return Array.from(set).sort();
   }, [allEvents]);
 
   const areas = useMemo(() => {
@@ -146,7 +140,6 @@ export default function CityEventsView({
       .filter((ev) => {
         if (!isEventActiveOnDate(ev, day)) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
-
         const evHour = parseHour(ev.startTime);
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
@@ -155,23 +148,13 @@ export default function CityEventsView({
           });
           if (!matchesTime) return false;
         }
-
         if (selectedActivities.length > 0) {
-          const acts = (
-            ev.activities && ev.activities.length > 0
-              ? ev.activities
-              : ev.activity
-              ? ev.activity.split(',').map((a) => a.trim())
-              : [ev.activity1, ev.activity2, ev.activity3]
-          )
-            .filter(Boolean)
-            .map((a) => a.trim().toLowerCase());
+          const acts = ev.activities.map((a) => a.trim().toLowerCase());
           const hasActivityMatch = selectedActivities.some((sa) =>
             acts.includes(sa.toLowerCase())
           );
           if (!hasActivityMatch) return false;
         }
-
         if (selectedAreas.length > 0) {
           const areaLower = (ev.area || '').trim().toLowerCase();
           const hasAreaMatch = selectedAreas.some(
@@ -179,7 +162,6 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
-
         if (searchQuery.trim()) {
           const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
           const searchableText = [
@@ -189,18 +171,16 @@ export default function CityEventsView({
             ev.location,
             ev.area,
             ev.activity,
-            ...(ev.activities || []),
+            ...ev.activities,
             ev.about,
             ev.notes,
           ]
             .filter(Boolean)
             .join(' ')
             .toLowerCase();
-
           const matchesSearch = queryTerms.every((term) => searchableText.includes(term));
           if (!matchesSearch) return false;
         }
-
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -231,33 +211,30 @@ export default function CityEventsView({
     setSelectedAreas([]);
   };
 
-  const allCityOptions = useMemo(() => {
-    return Object.values(CITIES).filter(
-      (c, index, arr) => arr.findIndex((x) => x.slug === c.slug) === index
-    );
-  }, []);
+  const allCityOptions = useMemo(() => getAllCities(), []);
+
+  const dayHeading =
+    activeDayIdx === 0
+      ? 'Today'
+      : activeDayIdx === 1
+      ? 'Tomorrow'
+      : DAY_NAMES_LONG[activeDate.getDay()];
+
+  const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
+    MONTH_NAMES[activeDate.getMonth()]
+  } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
 
   return (
     <div className={styles.pageContainer}>
-      <EventHeader
+      <Header
         city={city}
         allCityOptions={allCityOptions}
         cityCounts={cityCounts}
       />
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
-          <h1 className={styles.asideTitle}>
-            {activeDayIdx === 0
-              ? 'Today'
-              : activeDayIdx === 1
-              ? 'Tomorrow'
-              : DAY_NAMES_LONG[activeDate.getDay()]}
-          </h1>
-          <p className={styles.asideSubtitle}>
-            {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
-            {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
-            {currentList.length === 1 ? 'thing' : 'things'} on
-          </p>
+          <h1 className={styles.asideTitle}>{dayHeading}</h1>
+          <p className={styles.asideSubtitle}>{daySubheading}</p>
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -290,18 +267,8 @@ export default function CityEventsView({
         </aside>
         <section className={styles.contentCol}>
           <div className={styles.mobileSectionHeader}>
-            <h1 className={styles.mobileHeadingTitle}>
-              {activeDayIdx === 0
-                ? 'Today'
-                : activeDayIdx === 1
-                ? 'Tomorrow'
-                : DAY_NAMES_LONG[activeDate.getDay()]}
-            </h1>
-            <p className={styles.mobileHeadingSubtitle}>
-              {DAY_NAMES_LONG[activeDate.getDay()]}, {activeDate.getDate()}{' '}
-              {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
-              {currentList.length === 1 ? 'thing' : 'things'} on
-            </p>
+            <h1 className={styles.mobileHeadingTitle}>{dayHeading}</h1>
+            <p className={styles.mobileHeadingSubtitle}>{daySubheading}</p>
           </div>
           {loading ? (
             <div className={styles.emptyState}>
@@ -351,7 +318,7 @@ export default function CityEventsView({
           )}
         </section>
       </main>
-      <EventFooter />
+      <Footer />
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

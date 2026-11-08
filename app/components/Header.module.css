@@ -14,6 +14,11 @@
   justify-content: space-between;
   gap: 16px;
 }
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .brandLogoLink {
   display: inline-flex;
   align-items: center;
@@ -25,6 +30,14 @@
   max-width: 380px;
   object-fit: contain;
   filter: brightness(0);
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
 }
 .navDesktop {
   display: flex;
@@ -58,7 +71,7 @@
   z-index: 40;
   top: 100%;
   left: 0;
-  min-width: 200px;
+  min-width: 240px;
   margin-top: 6px;
   background-color: #ffffff;
   border: 1px solid var(--line);
@@ -79,9 +92,35 @@
   font-weight: 500;
   text-decoration: none;
   background: none;
+  gap: 12px;
+}
+.cityName {
+  flex: 1;
+  white-space: nowrap;
+}
+.cityOptionRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cityEventCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
 }
 .cityOption:hover {
   background-color: var(--topbar-bg);
+}
+.cityOptionActive {
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive .cityEventCount {
+  background-color: #e5d7b5;
 }
 .navLink {
   display: inline-flex;
@@ -214,9 +253,25 @@
   font-size: 15px;
   font-weight: 500;
   color: var(--ink);
+  gap: 10px;
 }
-.drawerCityItem:hover {
+.drawerCityItemRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.drawerCityCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
   background-color: var(--topbar-bg);
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.drawerCityItemActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
 }
 .drawerNavLinks {
   display: flex;
@@ -261,6 +316,10 @@
   .logoImage {
     height: 50px;
     max-width: 260px;
+  }
+  .brandSubtitle {
+    font-size: 12px;
+    margin-top: 4px;
   }
   .navDesktop {
     display: none;

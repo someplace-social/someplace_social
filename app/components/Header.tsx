@@ -1,19 +1,27 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CityConfig, getAllCities } from '../lib/cities';
 import styles from './Header.module.css';
 
-const CITIES = [
-  { name: 'Medellín', slug: 'medellin-colombia' },
-  { name: 'Fort Collins', slug: 'fort-collins-colorado' },
-];
+interface HeaderProps {
+  city?: CityConfig;
+  allCityOptions?: CityConfig[];
+  cityCounts?: Record<string, number>;
+}
 
-export default function Header() {
+export default function Header({
+  city,
+  allCityOptions,
+  cityCounts = {},
+}: HeaderProps) {
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
+
+  const citiesList = useMemo(() => allCityOptions || getAllCities(), [allCityOptions]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -25,20 +33,35 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const currentCityCount = city ? cityCounts[city.slug] : undefined;
+
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Link href="/" className={styles.brandLogoLink}>
-            <Image
-              src="/images/logo.svg"
-              alt="Someplace Social"
-              width={360}
-              height={100}
-              priority
-              className={styles.logoImage}
-            />
-          </Link>
+          <div className={styles.brandCol}>
+            <Link
+              href={city ? `/events/${city.slug}` : '/'}
+              className={styles.brandLogoLink}
+            >
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={360}
+                height={100}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            {city && (
+              <div className={styles.brandSubtitle}>
+                {city.heroLocation}
+                {typeof currentCityCount === 'number' && (
+                  <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'} listed</>
+                )}
+              </div>
+            )}
+          </div>
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
@@ -63,16 +86,43 @@ export default function Header() {
               </button>
               {citiesMenuOpen && (
                 <div className={styles.citiesDropdown}>
-                  {CITIES.map((c) => (
-                    <Link
-                      key={c.slug}
-                      href={`/events/${c.slug}`}
-                      className={styles.cityOption}
-                      onClick={() => setCitiesMenuOpen(false)}
-                    >
-                      {c.name}
-                    </Link>
-                  ))}
+                  {citiesList.map((c) => {
+                    const isActive = city?.slug === c.slug;
+                    const count = cityCounts[c.slug];
+                    return (
+                      <Link
+                        key={c.slug}
+                        href={`/events/${c.slug}`}
+                        className={`${styles.cityOption} ${
+                          isActive ? styles.cityOptionActive : ''
+                        }`}
+                        onClick={() => setCitiesMenuOpen(false)}
+                      >
+                        <span className={styles.cityName}>{c.name}</span>
+                        <div className={styles.cityOptionRight}>
+                          {typeof count === 'number' && (
+                            <span className={styles.cityEventCount}>
+                              {count} {count === 1 ? 'event' : 'events'}
+                            </span>
+                          )}
+                          {isActive && (
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -135,16 +185,30 @@ export default function Header() {
             </div>
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
-              {CITIES.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/events/${c.slug}`}
-                  className={styles.drawerCityItem}
-                  onClick={() => setMobileDrawerOpen(false)}
-                >
-                  {c.name}
-                </Link>
-              ))}
+              {citiesList.map((c) => {
+                const isActive = city?.slug === c.slug;
+                const count = cityCounts[c.slug];
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/events/${c.slug}`}
+                    className={`${styles.drawerCityItem} ${
+                      isActive ? styles.drawerCityItemActive : ''
+                    }`}
+                    onClick={() => setMobileDrawerOpen(false)}
+                  >
+                    <span>{c.name}</span>
+                    <div className={styles.drawerCityItemRight}>
+                      {typeof count === 'number' && (
+                        <span className={styles.drawerCityCount}>
+                          {count} {count === 1 ? 'event' : 'events'}
+                        </span>
+                      )}
+                      {isActive && <span>✓</span>}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
