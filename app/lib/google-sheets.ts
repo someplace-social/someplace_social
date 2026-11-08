@@ -228,14 +228,19 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       }
     });
 
+    const cleanCell = (cell: string): string => {
+      const trimmed = (cell || '').trim();
+      return trimmed.toLowerCase() === 'x' ? '' : trimmed;
+    };
+
     const dataRows = rows.slice(1);
     const events = dataRows.map((row): Event | null => {
-      if (row.length === 0 || row.every(cell => cell.trim() === '')) return null;
+      if (row.length === 0 || row.every(cell => cleanCell(cell) === '')) return null;
 
       const getValue = (field: string): string => {
         const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
         if (colIdx !== undefined && colIdx < row.length) {
-          return (row[colIdx] || '').trim();
+          return cleanCell(row[colIdx]);
         }
         return '';
       };
