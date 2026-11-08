@@ -1,11 +1,11 @@
 'use client';
+
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
   isFreePrice,
   ensureExternalUrl,
   getTagStyle,
-  formatFrequencyBadge,
 } from '../utils';
 import styles from '../EventsView.module.css';
 
@@ -35,7 +35,9 @@ export default function EventCard({
       ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
       : [event.activity1, event.activity2, event.activity3].filter(Boolean);
   const displayVenue = event.venue || event.location;
-  const frequencyLabel = formatFrequencyBadge(event.frequency, event.frequencyNotes);
+  const recurrenceText = event.frequency
+    ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`
+    : event.frequencyNotes || '';
 
   return (
     <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
@@ -77,20 +79,8 @@ export default function EventCard({
             </svg>
             {isFree ? 'Free' : event.price || 'Varies'}
           </div>
-          {(tagList.length > 0 || frequencyLabel) && (
+          {tagList.length > 0 && (
             <div className={styles.tagList}>
-              {frequencyLabel && (
-                <span
-                  className={styles.tagChip}
-                  style={{
-                    color: '#7a3e00',
-                    backgroundColor: '#faeed6',
-                    fontWeight: 700,
-                  }}
-                >
-                  📅 {frequencyLabel}
-                </span>
-              )}
               {tagList.map((tag) => {
                 const customStyle = getTagStyle(tag);
                 return (
@@ -129,20 +119,34 @@ export default function EventCard({
           </svg>
         </span>
       </button>
-
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
-          {event.frequency && (
-            <p className={styles.eventDescription} style={{ fontWeight: 600 }}>
-              Recurrence: {event.frequency}
-              {event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}
+          {recurrenceText && (
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: event.preRegistration ? 8 : 14,
+              }}
+            >
+              📅Recurs: {recurrenceText}
             </p>
           )}
           {event.preRegistration && (
-            <p className={styles.preRegistration}>{event.preRegistration}</p>
+            <p
+              className={styles.eventDescription}
+              style={{
+                fontWeight: 600,
+                color: 'var(--ink)',
+                marginBottom: 14,
+              }}
+            >
+              📝Pre-Registration: {event.preRegistration}
+            </p>
           )}
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>

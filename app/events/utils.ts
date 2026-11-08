@@ -158,20 +158,16 @@ export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
   if (!cleaned) return true;
-
   if (/^irregular/i.test(cleaned)) {
     return false;
   }
-
-  const targetMonth = targetDate.getMonth() + 1; // 1-12
-
+  const targetMonth = targetDate.getMonth() + 1;
   if (/months?,\s*even/i.test(cleaned)) {
     return targetMonth % 2 === 0;
   }
   if (/months?,\s*odd/i.test(cleaned)) {
     return targetMonth % 2 !== 0;
   }
-
   const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
   if (rangeMatch) {
     const startMonth = parseMonthIndex(rangeMatch[1]);
@@ -183,7 +179,6 @@ export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean
       return targetMonth >= startMonth || targetMonth <= endMonth;
     }
   }
-
   return true;
 }
 
@@ -215,30 +210,23 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   if (/^irregular/i.test(notes)) {
     return false;
   }
-
   if (!isMonthActive(notes, targetDate)) {
     return false;
   }
-
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const targetDayName = DAY_NAMES[targetDate.getDay()];
-
   const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
-
   const rawFreq = (event.frequency || '').trim();
   if (!rawFreq) {
     return true;
   }
-
   const parts = rawFreq.split(',').map((p) => p.trim());
   const cadence = parts[0]?.toLowerCase() || 'weekly';
   const pattern = (parts.slice(1).join(',') || '').toLowerCase();
-
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-
   const ordinalMatches: boolean[] = [];
   if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
   if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
@@ -246,14 +234,12 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
   if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
   if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
-
   if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
     if (ordinalMatches.length > 0) {
       return ordinalMatches.some(Boolean);
     }
     return true;
   }
-
   if (cadence.includes('bi-weekly')) {
     if (ordinalMatches.length > 0) {
       return ordinalMatches.some(Boolean);
@@ -261,47 +247,7 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
   }
-
   return true;
-}
-
-export function formatFrequencyBadge(frequency: string, frequencyNotes?: string): string {
-  const freq = (frequency || '').trim();
-  const notes = (frequencyNotes || '').trim();
-
-  if (!freq && !notes) return '';
-  if (/^irregular/i.test(notes)) {
-    return 'Irregular';
-  }
-
-  const notesParts: string[] = [];
-  if (notes) {
-    const rangeMatch = notes.match(/months?,\s*([a-zA-Z]+[\u2013\u2014\-][a-zA-Z]+)/i);
-    if (rangeMatch) {
-      notesParts.push(rangeMatch[1]);
-    } else if (/months?,\s*even/i.test(notes)) {
-      notesParts.push('Even months');
-    } else if (/months?,\s*odd/i.test(notes)) {
-      notesParts.push('Odd months');
-    }
-  }
-
-  let cadenceBadge = '';
-  if (freq) {
-    const parts = freq.split(',').map((p) => p.trim());
-    const cadence = parts[0];
-    const pattern = parts.slice(1).join(', ');
-    if (cadence.toLowerCase() !== 'weekly') {
-      cadenceBadge = pattern ? `${cadence} (${pattern})` : cadence;
-    } else if (pattern) {
-      cadenceBadge = pattern;
-    }
-  }
-
-  if (cadenceBadge && notesParts.length > 0) {
-    return `${cadenceBadge} · ${notesParts.join(', ')}`;
-  }
-  return cadenceBadge || (notesParts.length > 0 ? notesParts.join(', ') : '');
 }
 
 export function ensureExternalUrl(url: string): string {
