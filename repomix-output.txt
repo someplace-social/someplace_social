@@ -1,7 +1,47 @@
 #TASK
 
 
-add text just like the green "someplace social" text on the about and contact page. It will say "ABOUT" and "CONTACT". it will be this same color green. make sure it matches and is balanced and looks nice.
+YOU MUST BREAK UP YOUR RESPONSE INTO 2 NEAR EQUAL SIZE BATCHES. THIS WILL BE OVER 25K TOKENS - SO SEE INSTRUCTIONS BELOW ON HOW TO HANDLE THAT.
+
+Contact buttons ask a question and submit an event - line these up under the contact us text in the same style is the about page. Right now they are too far down. Have the form stay where it is, and the button move up. 
+
+Add the standard dark beige color to the background of the active page on the menu. 
+
+Contact button in listings: instead of showing the email and then having a separate copy email button, just put a nice looking copy clipboard to the right side of the email. Make it look nice, standard, balanced. 
+
+Make “# Events & Activities” capitalized. 
+
+
+MOBILE:
+For all the changes, make sure they reflect on mobile nicely.
+On mobile, make the filters an accordion of sorts that is by default rolled up. Make this look nice and modern and use your best judgment. 
+Get rid of th “Add” button that’s outside the menu.
+Make the logo 50% bigger.
+Get rid of buy me a drink button from mobile menu. Replace that black button with “+Add Event”. 
+
+
+
+MULTI-STEP PROCESS:
+
+
+1) Make a plan:
+As soon as you get the files, investigate the issue at hand and find the root. 
+#RULES
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan. 
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours. 
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 25k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response. 
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan. 
+
+2) Implement plan: 
+Implement the outline / plan. 
+
+
+
+
+
 
 
 #GUIDELINES
@@ -126,6 +166,7 @@ Finally, we will commit.
 git add .
 git commit -m "feat: Add example migration and pages"
 ```
+
 
 
 
@@ -997,941 +1038,6 @@ export default function FilterDropdown({
 }
 
 ================
-File: app/support/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Support Us',
-  description: 'Learn how you can support Someplace Social and keep the community going.',
-};
-export default function SupportPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>Support Someplace Social</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-contact.png"
-              alt="Illustration of a capybara drinking a coffee"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
-            </p>
-            <Link href="/contact" className={styles.button}>
-              Submit or Edit Events
-            </Link>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
-            </p>
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Buy Me a Drink
-            </a>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
-            </p>
-            <a
-              href="https://sites.google.com/view/starlink-referral-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Get Starlink Referral
-            </a>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
-File: app/contact/ContactView.tsx
-================
-'use client';
-import { useState } from 'react';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import styles from './Contact.module.css';
-const DAYS_OF_WEEK = [
-  { id: 'mon', label: 'Mon' },
-  { id: 'tue', label: 'Tue' },
-  { id: 'wed', label: 'Wed' },
-  { id: 'thu', label: 'Thu' },
-  { id: 'fri', label: 'Fri' },
-  { id: 'sat', label: 'Sat' },
-  { id: 'sun', label: 'Sun' },
-] as const;
-const PRE_REGISTRATION_OPTIONS = [
-  'Drop-in (no RSVP needed)',
-  'RSVP recommended',
-  'RSVP required',
-  'Ticketed / pre-pay',
-] as const;
-export default function ContactView() {
-  const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') === 'question' ? 'question' : 'submit';
-  const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
-  const [city, setCity] = useState('Medellín, Colombia');
-  const [title, setTitle] = useState('');
-  const [organizer, setOrganizer] = useState('');
-  const [activity, setActivity] = useState('');
-  const [otherActivities, setOtherActivities] = useState('');
-  const [about, setAbout] = useState('');
-  // Section 2: When & Schedule
-  const [frequency, setFrequency] = useState('Weekly');
-  const [frequencyNotes, setFrequencyNotes] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  // Section 3: Where / Location
-  const [venue, setVenue] = useState('');
-  const [location, setLocation] = useState('');
-  const [area, setArea] = useState('');
-  const [map, setMap] = useState('');
-  // Section 4: Cost & Pre-Registration
-  const [price, setPrice] = useState('');
-  const [preRegistrationType, setPreRegistrationType] = useState('Drop-in (no RSVP needed)');
-  const [preRegistrationDetails, setPreRegistrationDetails] = useState('');
-  // Section 5: Links & Contact
-  const [website, setWebsite] = useState('');
-  const [social, setSocial] = useState('');
-  const [contact, setContact] = useState('');
-  // Section 6: Submitter Info & Notes
-  const [submitterName, setSubmitterName] = useState('');
-  const [submitterEmail, setSubmitterEmail] = useState('');
-  const [isOrganizer, setIsOrganizer] = useState(false);
-  const [adminNotes, setAdminNotes] = useState('');
-  // Status states
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
-  // Ask a question tab states
-  const [questionFirstName, setQuestionFirstName] = useState('');
-  const [questionEmail, setQuestionEmail] = useState('');
-  const [questionMessage, setQuestionMessage] = useState('');
-  const [questionLoading, setQuestionLoading] = useState(false);
-  const [questionStatus, setQuestionStatus] = useState<{ success: boolean; message: string } | null>(null);
-  const toggleDay = (dayLabel: string) => {
-    setSelectedDays((prev) =>
-      prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
-    );
-  };
-  const handleEventSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitLoading(true);
-    setSubmitStatus(null);
-    // Compute unified activity text
-    const fullActivity = otherActivities.trim()
-      ? activity === 'Other'
-        ? otherActivities.trim()
-        : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
-      : activity || 'Not specified';
-    const fullPreRegistration = preRegistrationDetails.trim()
-      ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
-      : preRegistrationType;
-    const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
-    // Build structured human-readable summary
-    const summaryLines = [
-      `=== EVENT SUBMISSION ===`,
-      `City: ${city}`,
-      `Title: ${title}`,
-      `Venue: ${venue || 'Not specified'}`,
-      `Location / Address: ${location || 'Not specified'}`,
-      `Area / Neighborhood: ${area || 'Not specified'}`,
-      `Activity: ${fullActivity}`,
-      `Day of Week: ${daysText || 'Not specified'}`,
-      `Start Time: ${startTime || 'Not specified'}`,
-      `End Time: ${endTime || 'Not specified'}`,
-      `Frequency: ${frequency}`,
-      frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
-      `Price: ${price || 'Not specified'}`,
-      `Pre-Registration: ${fullPreRegistration}`,
-      map ? `Google Maps Link: ${map}` : null,
-      social ? `Social Media: ${social}` : null,
-      website ? `Website: ${website}` : null,
-      contact ? `Contact (Email / Phone / WhatsApp / Form): ${contact}` : null,
-      about ? `About / Description:\n${about}` : null,
-      ``,
-      `=== SUBMITTER INFO ===`,
-      `Submitter Name: ${submitterName || 'Anonymous / Not provided'}`,
-      `Submitter Email: ${submitterEmail || 'Not provided'}`,
-      `Is Event Host/Organizer: ${isOrganizer ? 'Yes' : 'No (Community member)'}`,
-      adminNotes ? `Notes for Admin:\n${adminNotes}` : null,
-      ``,
-      `=== COPY-PASTE GOOGLE SHEET ROW (TSV) ===`,
-      `Title\tVenue\tLocation\tArea\tActivity\tDay of Week\tStart Time\tEnd Time\tFrequency\tFrequency Notes\tPrice\tPre-Registration\tMap\tSocial\tWebsite\tContact\tAbout`,
-      [
-        title.replace(/[\t\r\n]+/g, ' '),
-        venue.replace(/[\t\r\n]+/g, ' '),
-        location.replace(/[\t\r\n]+/g, ' '),
-        area.replace(/[\t\r\n]+/g, ' '),
-        fullActivity.replace(/[\t\r\n]+/g, ' '),
-        daysText.replace(/[\t\r\n]+/g, ' '),
-        startTime.replace(/[\t\r\n]+/g, ' '),
-        endTime.replace(/[\t\r\n]+/g, ' '),
-        frequency.replace(/[\t\r\n]+/g, ' '),
-        frequencyNotes.replace(/[\t\r\n]+/g, ' '),
-        price.replace(/[\t\r\n]+/g, ' '),
-        fullPreRegistration.replace(/[\t\r\n]+/g, ' '),
-        map.replace(/[\t\r\n]+/g, ' '),
-        social.replace(/[\t\r\n]+/g, ' '),
-        website.replace(/[\t\r\n]+/g, ' '),
-        contact.replace(/[\t\r\n]+/g, ' '),
-        about.replace(/[\t\r\n]+/g, ' '),
-      ].join('\t'),
-    ].filter(Boolean);
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: `Submit an Event (${city})`,
-          message: summaryLines.join('\n'),
-        }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setSubmitStatus({
-          success: true,
-          message: 'Thank you! Your event submission has been sent. We will review and add it shortly.',
-        });
-        setTitle('');
-        setOrganizer('');
-        setActivity('');
-        setOtherActivities('');
-        setAbout('');
-        setFrequency('Weekly');
-        setFrequencyNotes('');
-        setSelectedDays([]);
-        setStartTime('');
-        setEndTime('');
-        setVenue('');
-        setLocation('');
-        setArea('');
-        setMap('');
-        setPrice('');
-        setPreRegistrationType('Drop-in (no RSVP needed)');
-        setPreRegistrationDetails('');
-        setWebsite('');
-        setSocial('');
-        setContact('');
-        setSubmitterName('');
-        setSubmitterEmail('');
-        setIsOrganizer(false);
-        setAdminNotes('');
-      } else {
-        setSubmitStatus({
-          success: false,
-          message: 'Failed to submit event. Please try again.',
-        });
-      }
-    } catch {
-      setSubmitStatus({
-        success: false,
-        message: 'A connection error occurred. Please try again.',
-      });
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
-  const handleQuestionSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setQuestionLoading(true);
-    setQuestionStatus(null);
-    const messageLines = [
-      `First Name: ${questionFirstName}`,
-      `Email Address: ${questionEmail}`,
-      `Message:`,
-      questionMessage,
-    ];
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: 'Ask a Question',
-          message: messageLines.join('\n'),
-        }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setQuestionStatus({
-          success: true,
-          message: 'Thank you! Your message has been sent. We will get back to you soon.',
-        });
-        setQuestionFirstName('');
-        setQuestionEmail('');
-        setQuestionMessage('');
-      } else {
-        setQuestionStatus({
-          success: false,
-          message: 'Failed to send message. Please try again.',
-        });
-      }
-    } catch {
-      setQuestionStatus({
-        success: false,
-        message: 'A connection error occurred. Please try again.',
-      });
-    } finally {
-      setQuestionLoading(false);
-    }
-  };
-  return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div>
-          <h1 className={styles.heroTitle}>Contact Us</h1>
-          <p className={styles.heroDescription}>
-            Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
-          </p>
-        </div>
-        <div className={styles.heroImageContainer}>
-          <Image
-            src="/images/hero-contact.png"
-            alt="Illustration of a capybara drinking coffee"
-            width={340}
-            height={260}
-            priority
-            className={styles.heroImage}
-          />
-        </div>
-      </section>
-      <section className={styles.thanks}>
-        <h2 className={styles.thanksTitle}>Thanks for contributing</h2>
-        <p className={styles.thanksText}>
-          Free for everyone — no ads, no pop-ups. It runs 100% on donations. If you&apos;re able,{' '}
-          <a
-            href="https://buymeacoffee.com/someplacesocial"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.drinkLink}
-          >
-            buy me a drink
-          </a>.
-        </p>
-      </section>
-      <div className={styles.labelDivider}>
-        <span>Get in touch</span>
-        <div className={styles.labelLine} aria-hidden="true" />
-      </div>
-      <section className={styles.panel}>
-        <div className={styles.tabs} role="tablist" aria-label="Contact options">
-          <button
-            type="button"
-            role="tab"
-            id="tab-submit"
-            aria-selected={activeTab === 'submit'}
-            aria-controls="panel-submit"
-            className={`${styles.tabBtn} ${activeTab === 'submit' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('submit')}
-          >
-            Submit an event
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-question"
-            aria-selected={activeTab === 'question'}
-            aria-controls="panel-question"
-            className={`${styles.tabBtn} ${activeTab === 'question' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('question')}
-          >
-            Ask a question
-          </button>
-        </div>
-        {activeTab === 'submit' ? (
-          <form
-            id="panel-submit"
-            role="tabpanel"
-            aria-labelledby="tab-submit"
-            onSubmit={handleEventSubmit}
-          >
-            <div className={styles.criteria}>
-              <h3 className={styles.criteriaHeading}>Event listing criteria</h3>
-              <ul className={styles.criteriaGrid}>
-                <li className={styles.criteriaItem}>
-                  <strong>Regularly occurring:</strong> weekly, bi-weekly, or monthly.
-                </li>
-                <li className={styles.criteriaItem}>
-                  <strong>Group event:</strong> open to multiple people, no one-on-one.
-                </li>
-                <li className={styles.criteriaItem}>
-                  <strong>Open:</strong> inclusive and open to all.
-                </li>
-                <li className={styles.criteriaItem}>
-                  <strong>Affordable:</strong> free, donation, or reasonably priced.
-                </li>
-              </ul>
-              <p className={styles.criteriaFootnote}>
-                Only the <strong>event title</strong> is required. Don&apos;t worry if you don&apos;t know all details — share whatever you know!
-              </p>
-            </div>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>The Event</legend>
-              <p className={styles.sectionDescription}>
-                Basic details about the event.
-              </p>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-city" className={styles.label}>
-                    City / Region
-                  </label>
-                  <select
-                    id="submit-city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className={styles.select}
-                  >
-                    <option value="Medellín, Colombia">Medellín, Colombia</option>
-                    <option value="Fort Collins, Colorado">Fort Collins, Colorado</option>
-                    <option value="Other / New City">Other / New City</option>
-                  </select>
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-title" className={styles.label}>
-                    Event Title *
-                  </label>
-                  <input
-                    id="submit-title"
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Verb &amp; Vibe Game Nite"
-                    className={styles.input}
-                  />
-                  <span className={styles.helperText}>The only required field!</span>
-                </div>
-              </div>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-organizer" className={styles.label}>
-                    Organizer / Host
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-organizer"
-                    type="text"
-                    value={organizer}
-                    onChange={(e) => setOrganizer(e.target.value)}
-                    placeholder="e.g. Life Dance Studios, English Club"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-activity" className={styles.label}>
-                    Activity / Category
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <select
-                    id="submit-activity"
-                    value={activity}
-                    onChange={(e) => setActivity(e.target.value)}
-                    className={styles.select}
-                  >
-                    <option value="">Select an activity…</option>
-                    <option value="Language exchange">Language exchange</option>
-                    <option value="Dance">Dance (Salsa, Bachata, etc.)</option>
-                    <option value="Games">Games &amp; Trivia</option>
-                    <option value="Music">Live Music &amp; Jam</option>
-                    <option value="Social">Social &amp; Drinks</option>
-                    <option value="Fitness">Fitness, Sports &amp; Yoga</option>
-                    <option value="Art & Craft">Art &amp; Crafts</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-              {activity === 'Other' && (
-                <div className={styles.field}>
-                  <label htmlFor="submit-other-act" className={styles.label}>
-                    Describe the activity
-                  </label>
-                  <input
-                    id="submit-other-act"
-                    type="text"
-                    value={otherActivities}
-                    onChange={(e) => setOtherActivities(e.target.value)}
-                    placeholder="e.g. Book club, Coding meetup, Chess"
-                    className={styles.input}
-                  />
-                </div>
-              )}
-              <div className={styles.field}>
-                <label htmlFor="submit-about" className={styles.label}>
-                  About the event
-                  <span className={styles.labelSub}>(optional)</span>
-                </label>
-                <textarea
-                  id="submit-about"
-                  value={about}
-                  onChange={(e) => setAbout(e.target.value)}
-                  placeholder="What is this event about? What can people expect when they arrive?"
-                  className={styles.textarea}
-                />
-              </div>
-            </fieldset>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>When &amp; Schedule</legend>
-              <p className={styles.sectionDescription}>
-                Help people know when to show up.
-              </p>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-frequency" className={styles.label}>
-                    How often does it happen?
-                  </label>
-                  <select
-                    id="submit-frequency"
-                    value={frequency}
-                    onChange={(e) => setFrequency(e.target.value)}
-                    className={styles.select}
-                  >
-                    <option value="Weekly">Weekly</option>
-                    <option value="Bi-weekly">Bi-weekly (every two weeks)</option>
-                    <option value="Monthly (1st Tuesday…)">Monthly (e.g. 1st Tuesday)</option>
-                    <option value="Seasonal / Irregular">Seasonal / Irregular</option>
-                  </select>
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-freq-notes" className={styles.label}>
-                    Frequency notes
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-freq-notes"
-                    type="text"
-                    value={frequencyNotes}
-                    onChange={(e) => setFrequencyNotes(e.target.value)}
-                    placeholder="e.g. 1st &amp; 3rd Friday of each month, May–Sep only"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-              <div className={styles.field}>
-                <span className={styles.label}>
-                  Day of week <span className={styles.labelSub}>(select all that apply)</span>
-                </span>
-                <div className={styles.days}>
-                  {DAYS_OF_WEEK.map((day) => {
-                    const isChecked = selectedDays.includes(day.label);
-                    return (
-                      <label
-                        key={day.id}
-                        className={`${styles.dayPill} ${isChecked ? styles.dayPillActive : ''}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => toggleDay(day.label)}
-                          className={styles.dayCheckbox}
-                        />
-                        {day.label}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-start-time" className={styles.label}>
-                    Start time
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-start-time"
-                    type="text"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    placeholder="e.g. 7:00 PM"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-end-time" className={styles.label}>
-                    End time
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-end-time"
-                    type="text"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    placeholder="e.g. 9:30 PM"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-            </fieldset>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Where / Location</legend>
-              <p className={styles.sectionDescription}>
-                Where does the event take place?
-              </p>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-venue" className={styles.label}>
-                    Venue name
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-venue"
-                    type="text"
-                    value={venue}
-                    onChange={(e) => setVenue(e.target.value)}
-                    placeholder="e.g. Café Revolución, Washington Park"
-                    className={styles.input}
-                  />
-                  <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-area" className={styles.label}>
-                    Neighborhood / Area
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-area"
-                    type="text"
-                    value={area}
-                    onChange={(e) => setArea(e.target.value)}
-                    placeholder="e.g. Laureles, Poblado, Old Town"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-location" className={styles.label}>
-                    Address / Specific location
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-location"
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Cra. 37 #8A-37, 2nd floor"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-map" className={styles.label}>
-                    Google Maps link
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-map"
-                    type="text"
-                    value={map}
-                    onChange={(e) => setMap(e.target.value)}
-                    placeholder="e.g. maps.app.goo.gl/…"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-            </fieldset>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Cost &amp; Pre-Registration</legend>
-              <p className={styles.sectionDescription}>
-                Is it free, paid, or does it require signing up in advance?
-              </p>
-              <div className={styles.field}>
-                <label htmlFor="submit-price" className={styles.label}>
-                  Price
-                  <span className={styles.labelSub}>(optional)</span>
-                </label>
-                <input
-                  id="submit-price"
-                  type="text"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="e.g. Free, Donation, $10, or 15k COP"
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.field}>
-                <span className={styles.label}>Pre-Registration / RSVP</span>
-                <div className={styles.radioGroup}>
-                  {PRE_REGISTRATION_OPTIONS.map((opt) => {
-                    const isSelected = preRegistrationType === opt;
-                    return (
-                      <label
-                        key={opt}
-                        className={`${styles.radioPill} ${isSelected ? styles.radioPillActive : ''}`}
-                      >
-                        <input
-                          type="radio"
-                          name="preRegistrationType"
-                          value={opt}
-                          checked={isSelected}
-                          onChange={(e) => setPreRegistrationType(e.target.value)}
-                          className={styles.radioInput}
-                        />
-                        {opt}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="submit-prereg-details" className={styles.label}>
-                  Registration link or instructions
-                  <span className={styles.labelSub}>(optional)</span>
-                </label>
-                <input
-                  id="submit-prereg-details"
-                  type="text"
-                  value={preRegistrationDetails}
-                  onChange={(e) => setPreRegistrationDetails(e.target.value)}
-                  placeholder="e.g. eventbrite.com/... or DM @account on Instagram"
-                  className={styles.input}
-                />
-              </div>
-            </fieldset>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>
-                Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
-              </legend>
-              <p className={styles.sectionDescription}>
-                How people can find more information or reach out to the organizer.
-              </p>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-website" className={styles.label}>
-                    Website link
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-website"
-                    type="text"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    placeholder="e.g. somedomain.com/event"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-social" className={styles.label}>
-                    Social media / Instagram
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-social"
-                    type="text"
-                    value={social}
-                    onChange={(e) => setSocial(e.target.value)}
-                    placeholder="e.g. instagram.com/ourgroup or @ourgroup"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="submit-contact" className={styles.label}>
-                  Organizer contact
-                  <span className={styles.labelSub}>(optional)</span>
-                </label>
-                <input
-                  id="submit-contact"
-                  type="text"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder="e.g. organizer@gmail.com, +57 300 123 4567, or WhatsApp / form link"
-                  className={styles.input}
-                />
-                <span className={styles.helperText}>
-                  Can be an email address, phone number, WhatsApp link, or web contact form.
-                </span>
-              </div>
-            </fieldset>
-            {}
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>
-                About You <span className={styles.legendOptional}>(optional)</span>
-              </legend>
-              <p className={styles.sectionDescription}>
-                Let us know who is submitting in case we have a question before publishing.
-              </p>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-name" className={styles.label}>
-                    Your name
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-name"
-                    type="text"
-                    value={submitterName}
-                    onChange={(e) => setSubmitterName(e.target.value)}
-                    placeholder="e.g. Alex Rivera"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-email" className={styles.label}>
-                    Your email address
-                    <span className={styles.labelSub}>(optional)</span>
-                  </label>
-                  <input
-                    id="submit-email"
-                    type="email"
-                    value={submitterEmail}
-                    onChange={(e) => setSubmitterEmail(e.target.value)}
-                    placeholder="e.g. alex@gmail.com"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-              <div className={styles.field}>
-                <label className={styles.checkboxContainer}>
-                  <input
-                    type="checkbox"
-                    checked={isOrganizer}
-                    onChange={(e) => setIsOrganizer(e.target.checked)}
-                    className={styles.checkboxCustom}
-                  />
-                  <span className={styles.checkboxLabelText}>
-                    I am the organizer or host of this event
-                  </span>
-                </label>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="submit-admin-notes" className={styles.label}>
-                  Note for administrator
-                  <span className={styles.labelSub}>(optional)</span>
-                </label>
-                <textarea
-                  id="submit-admin-notes"
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  placeholder="Any extra context or private notes for us (e.g., 'Venue might change next month', 'Found this on Instagram')."
-                  className={styles.textarea}
-                />
-              </div>
-            </fieldset>
-            <button type="submit" className={styles.submitBtn} disabled={submitLoading}>
-              {submitLoading ? 'Submitting event...' : 'Submit event'}
-            </button>
-            {submitStatus && (
-              <div
-                className={`${styles.statusAlert} ${
-                  submitStatus.success ? styles.statusSuccess : styles.statusError
-                }`}
-                role="status"
-              >
-                {submitStatus.message}
-              </div>
-            )}
-          </form>
-        ) : (
-          <form
-            id="panel-question"
-            role="tabpanel"
-            aria-labelledby="tab-question"
-            onSubmit={handleQuestionSubmit}
-          >
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Ask a question</legend>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="q-first-name" className={styles.label}>
-                    First name *
-                  </label>
-                  <input
-                    id="q-first-name"
-                    type="text"
-                    required
-                    value={questionFirstName}
-                    onChange={(e) => setQuestionFirstName(e.target.value)}
-                    placeholder="e.g. John"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="q-email" className={styles.label}>
-                    Email address *
-                  </label>
-                  <input
-                    id="q-email"
-                    type="email"
-                    required
-                    value={questionEmail}
-                    onChange={(e) => setQuestionEmail(e.target.value)}
-                    placeholder="e.g. john@doe.com"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="q-message" className={styles.label}>
-                  Message *
-                </label>
-                <textarea
-                  id="q-message"
-                  required
-                  value={questionMessage}
-                  onChange={(e) => setQuestionMessage(e.target.value)}
-                  placeholder="Enter your message…"
-                  className={styles.textarea}
-                />
-              </div>
-            </fieldset>
-            <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
-              {questionLoading ? 'Sending message...' : 'Send message'}
-            </button>
-            {questionStatus && (
-              <div
-                className={`${styles.statusAlert} ${
-                  questionStatus.success ? styles.statusSuccess : styles.statusError
-                }`}
-                role="status"
-              >
-                {questionStatus.message}
-              </div>
-            )}
-          </form>
-        )}
-      </section>
-    </main>
-  );
-}
-
-================
 File: app/events/components/CityHeroCard.tsx
 ================
 'use client';
@@ -2470,812 +1576,83 @@ File: app/events/components/SuggestEditModal.module.css
 }
 
 ================
-File: app/about/About.module.css
+File: app/support/page.tsx
 ================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 24px 80px;
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-  width: 100%;
-  margin-bottom: 56px;
-}
-.heroText {
-  flex: 1 1 500px;
-  max-width: 540px;
-}
-.heroTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 0 0 16px;
-  color: var(--ink);
-}
-.heroDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  color: #4f483e;
-  margin: 0;
-}
-.heroCityLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-}
-.cityPill {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  background-color: var(--topbar-bg);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-.cityPill:hover {
-  background-color: #ebdcb9;
-  border-color: var(--ink);
-  color: var(--ink);
-}
-.illustrationContainer {
-  flex: 0 0 340px;
-  max-width: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.heroImage {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-.criteriaHeader {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.criteriaTitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-  margin: 0;
-  white-space: nowrap;
-}
-.criteriaLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.criteriaList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.criteriaCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.criteriaCard:hover {
-  border-color: #d6c8ad;
-  box-shadow: 0 4px 12px rgba(31, 27, 22, 0.06);
-}
-.badgeCircle {
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: var(--topbar-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--ink);
-  margin-top: 1px;
-}
-.criteriaContent {
-  flex: 1;
-  min-width: 0;
-}
-.criteriaCardTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 19px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 0;
-  line-height: 1.3;
-}
-.criteriaCardDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
-  color: var(--muted);
-  margin: 5px 0 0;
-  line-height: 1.45;
-}
-@media (max-width: 899px) {
-  .page {
-    padding: 24px 16px 56px;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 36px;
-  }
-  .heroText {
-    max-width: 100%;
-  }
-  .heroTitle {
-    font-size: 32px;
-  }
-  .heroDescription {
-    font-size: 15px;
-  }
-  .illustrationContainer {
-    width: 100%;
-    max-width: 280px;
-    align-self: center;
-  }
-  .criteriaCard {
-    padding: 16px;
-    gap: 14px;
-    border-radius: 14px;
-  }
-  .badgeCircle {
-    flex: 0 0 34px;
-    width: 34px;
-    height: 34px;
-    font-size: 15px;
-  }
-  .criteriaCardTitle {
-    font-size: 17px;
-  }
-  .criteriaCardDescription {
-    font-size: 14px;
-  }
-}
-@media (max-width: 480px) {
-  .badgeCircle {
-    flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
-  }
-  .criteriaCard {
-    padding: 14px 14px;
-    gap: 12px;
-  }
-  .heroTitle {
-    font-size: 28px;
-  }
-}
-
-================
-File: app/contact/Contact.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 24px 80px;
-}
-.hero {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 48px;
-  align-items: center;
-  margin-bottom: 40px;
-}
-.heroTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 52px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 0 0 16px;
-  color: var(--ink);
-}
-.heroDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 18px;
-  line-height: 1.5;
-  color: var(--muted);
-  max-width: 480px;
-  margin: 0;
-}
-.heroImageContainer {
-  width: 100%;
-  max-width: 340px;
-  border-radius: 18px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.heroImage {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-}
-.thanks {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 22px 26px;
-  margin-bottom: 40px;
-  box-shadow: 0 1px 4px rgba(31, 27, 22, 0.04);
-}
-.thanksTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0 0 6px;
-  color: var(--ink);
-}
-.thanksText {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.5;
-}
-.drinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
-}
-.drinkLink:hover {
-  color: var(--accent);
-  text-decoration-color: var(--accent);
-}
-.labelDivider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin: 0 0 24px;
-}
-.labelLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.panel {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 32px;
-  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
-}
-.tabs {
-  display: inline-flex;
-  background-color: var(--chip);
-  border-radius: 14px;
-  padding: 4px;
-  margin-bottom: 28px;
-  gap: 4px;
-}
-.tabBtn {
-  border: 0;
-  background: transparent;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--muted);
-  min-height: 44px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.tabBtnActive {
-  background-color: var(--ink);
-  color: #ffffff;
-}
-.criteria {
-  background-color: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px 20px;
-  margin-bottom: 28px;
-  font-size: 14.5px;
-  color: var(--muted);
-}
-.criteriaHeading {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink);
-  margin: 0 0 10px;
-}
-.criteriaGrid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 24px;
-}
-.criteriaItem {
-  line-height: 1.45;
-}
-.criteriaItem strong {
-  color: var(--ink);
-  font-weight: 700;
-}
-.criteriaFootnote {
-  margin: 12px 0 0;
-  padding-top: 10px;
-  border-top: 1px dashed var(--line);
-  font-size: 13.5px;
-  color: var(--muted);
-}
-.fieldset {
-  border: 0;
-  padding: 0 0 24px;
-  margin: 0 0 28px;
-  border-bottom: 1px solid var(--line);
-}
-.fieldset:last-of-type {
-  border-bottom: 0;
-  padding-bottom: 0;
-  margin-bottom: 28px;
-}
-.legend {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  padding: 0;
-  margin-bottom: 6px;
-  color: var(--ink);
-}
-.legendOptional {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  color: #8a8174;
-  margin-left: 6px;
-}
-.sectionDescription {
-  font-size: 13.5px;
-  color: var(--muted);
-  margin: 0 0 16px;
-  line-height: 1.4;
-}
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-.label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.labelSub {
-  font-weight: 400;
-  color: #8a8174;
-  font-size: 13px;
-  margin-left: 4px;
-}
-.helperText {
-  font-size: 12.5px;
-  color: #8a8174;
-  line-height: 1.35;
-  margin-top: 2px;
-}
-.input,
-.select,
-.textarea {
-  font-family: inherit;
-  font-size: 15px;
-  padding: 12px 14px;
-  border: 1.5px solid #e0d4b6;
-  border-radius: 12px;
-  background-color: #fffdf7;
-  color: var(--ink);
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-.input::placeholder,
-.textarea::placeholder {
-  color: #a79d8b;
-}
-.input:focus,
-.select:focus,
-.textarea:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  background-color: #ffffff;
-  border-color: var(--ink);
-}
-.textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-.select {
-  cursor: pointer;
-  appearance: auto;
-}
-.days {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-}
-.dayCheckbox {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-.dayPill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  border: 1.5px solid #e0d4b6;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  background-color: #fffdf7;
-  color: var(--ink);
-  user-select: none;
-  min-height: 40px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.dayPillActive {
-  background-color: var(--ink);
-  color: #ffffff;
-  border-color: var(--ink);
-}
-.radioGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-}
-.radioInput {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-.radioPill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
-  border: 1.5px solid #e0d4b6;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 13.5px;
-  cursor: pointer;
-  background-color: #fffdf7;
-  color: var(--ink);
-  user-select: none;
-  min-height: 40px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.radioPillActive {
-  background-color: var(--ink);
-  color: #ffffff;
-  border-color: var(--ink);
-}
-.checkboxContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 4px;
-  cursor: pointer;
-  min-height: 36px;
-}
-.checkboxCustom {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--ink);
-  cursor: pointer;
-}
-.checkboxLabelText {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.submitBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--ink);
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 28px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  min-height: 48px;
-  transition: opacity 0.15s ease, transform 0.1s ease;
-}
-.submitBtn:hover {
-  opacity: 0.9;
-}
-.submitBtn:active {
-  transform: scale(0.99);
-}
-.submitBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.statusAlert {
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 14.5px;
-  font-weight: 600;
-  margin-top: 18px;
-  line-height: 1.4;
-}
-.statusSuccess {
-  background-color: #eaf7ee;
-  border: 1px solid #b7e4c7;
-  color: #155724;
-}
-.statusError {
-  background-color: #fde8e8;
-  border: 1px solid #f8b4b4;
-  color: #9b1c1c;
-}
-@media (max-width: 899px) {
-  .page {
-    padding: 20px 16px 48px;
-  }
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-  .heroTitle {
-    font-size: 34px;
-  }
-  .heroDescription {
-    font-size: 16px;
-  }
-  .heroImageContainer {
-    max-width: 260px;
-    margin: 0 auto;
-  }
-  .thanks {
-    padding: 16px 18px;
-    margin-bottom: 28px;
-  }
-  .panel {
-    padding: 20px 16px;
-    border-radius: 18px;
-  }
-  .tabs {
-    width: 100%;
-    display: flex;
-  }
-  .tabBtn {
-    flex: 1;
-    text-align: center;
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-  .criteriaGrid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  .days {
-    gap: 6px;
-  }
-  .dayPill {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  .radioGroup {
-    gap: 6px;
-  }
-  .radioPill {
-    padding: 7px 11px;
-    font-size: 12.5px;
-  }
-  .submitBtn {
-    width: 100%;
-  }
-}
-
-================
-File: app/events/components/CityHeroCard.module.css
-================
-.heroCard {
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 26px 30px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  gap: 14px 40px;
-  align-items: start;
-}
-.titleCol {
-  display: flex;
-  flex-direction: column;
-}
-.descCol {
-  display: flex;
-  flex-direction: column;
-  padding-top: 22px;
-}
-.eyebrow {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 10px;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 32px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-}
-.metaSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--muted);
-  margin-top: 8px;
-  line-height: 1.35;
-}
-.lead {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
-  color: #4a463b;
-}
-.chips {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-  min-height: 36px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.chip:hover {
-  border-color: var(--ink);
-}
-.chipActive {
-  background-color: var(--ink);
-  color: #ffffff;
-  border-color: var(--ink);
-}
-.chipActive:hover {
-  background-color: var(--ink);
-  color: #ffffff;
-}
-@media (max-width: 899px) {
-  .heroCard {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 18px 16px;
-    border-radius: 14px;
-  }
-  .descCol {
-    padding-top: 0;
-  }
-  .title {
-    font-size: 24px;
-  }
-  .metaSubtitle {
-    font-size: 13px;
-    margin-top: 4px;
-  }
-  .lead {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .chips {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 6px;
-    margin-top: 4px;
-    padding-bottom: 2px;
-  }
-  .chips::-webkit-scrollbar {
-    display: none;
-  }
-  .chip {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 6px 13px;
-    font-size: 13px;
-    min-height: 34px;
-  }
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Support Us',
+  description: 'Learn how you can support Someplace Social and keep the community going.',
+};
+export default function SupportPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Support Someplace Social</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
+            </p>
+            <Link href="/contact?tab=submit" className={styles.button}>
+              Submit or Edit Events
+            </Link>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+            </p>
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Buy Me a Drink
+            </a>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
+            </p>
+            <a
+              href="https://sites.google.com/view/starlink-referral-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Get Starlink Referral
+            </a>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 ================
@@ -3698,6 +2075,853 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 
 ================
+File: app/contact/ContactView.tsx
+================
+'use client';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import styles from './Contact.module.css';
+const DAYS_OF_WEEK = [
+  { id: 'mon', label: 'Mon' },
+  { id: 'tue', label: 'Tue' },
+  { id: 'wed', label: 'Wed' },
+  { id: 'thu', label: 'Thu' },
+  { id: 'fri', label: 'Fri' },
+  { id: 'sat', label: 'Sat' },
+  { id: 'sun', label: 'Sun' },
+] as const;
+const PRE_REGISTRATION_OPTIONS = [
+  'Drop-in (no RSVP needed)',
+  'RSVP recommended',
+  'RSVP required',
+  'Ticketed / pre-pay',
+] as const;
+export default function ContactView() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<'question' | 'submit'>(() => {
+    return tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
+  });
+  useEffect(() => {
+    if (tabParam === 'submit' || tabParam === 'event') {
+      setActiveTab('submit');
+    } else {
+      setActiveTab('question');
+    }
+  }, [tabParam]);
+  const [city, setCity] = useState('Medellín, Colombia');
+  const [title, setTitle] = useState('');
+  const [organizer, setOrganizer] = useState('');
+  const [activity, setActivity] = useState('');
+  const [otherActivities, setOtherActivities] = useState('');
+  const [about, setAbout] = useState('');
+  // Section 2: When & Schedule
+  const [frequency, setFrequency] = useState('Weekly');
+  const [frequencyNotes, setFrequencyNotes] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  // Section 3: Where / Location
+  const [venue, setVenue] = useState('');
+  const [location, setLocation] = useState('');
+  const [area, setArea] = useState('');
+  const [map, setMap] = useState('');
+  // Section 4: Cost & Pre-Registration
+  const [price, setPrice] = useState('');
+  const [preRegistrationType, setPreRegistrationType] = useState('Drop-in (no RSVP needed)');
+  const [preRegistrationDetails, setPreRegistrationDetails] = useState('');
+  // Section 5: Links & Contact
+  const [website, setWebsite] = useState('');
+  const [social, setSocial] = useState('');
+  const [contact, setContact] = useState('');
+  // Section 6: Submitter Info & Notes
+  const [submitterName, setSubmitterName] = useState('');
+  const [submitterEmail, setSubmitterEmail] = useState('');
+  const [isOrganizer, setIsOrganizer] = useState(false);
+  const [adminNotes, setAdminNotes] = useState('');
+  // Status states
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
+  // Ask a question tab states
+  const [questionFirstName, setQuestionFirstName] = useState('');
+  const [questionEmail, setQuestionEmail] = useState('');
+  const [questionMessage, setQuestionMessage] = useState('');
+  const [questionLoading, setQuestionLoading] = useState(false);
+  const [questionStatus, setQuestionStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const toggleDay = (dayLabel: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
+    );
+  };
+  const handleEventSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+    setSubmitStatus(null);
+    // Compute unified activity text
+    const fullActivity = otherActivities.trim()
+      ? activity === 'Other'
+        ? otherActivities.trim()
+        : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
+      : activity || 'Not specified';
+    const fullPreRegistration = preRegistrationDetails.trim()
+      ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
+      : preRegistrationType;
+    const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
+    // Build structured human-readable summary
+    const summaryLines = [
+      `=== EVENT SUBMISSION ===`,
+      `City: ${city}`,
+      `Title: ${title}`,
+      `Venue: ${venue || 'Not specified'}`,
+      `Location / Address: ${location || 'Not specified'}`,
+      `Area / Neighborhood: ${area || 'Not specified'}`,
+      `Activity: ${fullActivity}`,
+      `Day of Week: ${daysText || 'Not specified'}`,
+      `Start Time: ${startTime || 'Not specified'}`,
+      `End Time: ${endTime || 'Not specified'}`,
+      `Frequency: ${frequency}`,
+      frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
+      `Price: ${price || 'Not specified'}`,
+      `Pre-Registration: ${fullPreRegistration}`,
+      map ? `Google Maps Link: ${map}` : null,
+      social ? `Social Media: ${social}` : null,
+      website ? `Website: ${website}` : null,
+      contact ? `Contact (Email / Phone / WhatsApp / Form): ${contact}` : null,
+      about ? `About / Description:\n${about}` : null,
+      ``,
+      `=== SUBMITTER INFO ===`,
+      `Submitter Name: ${submitterName || 'Anonymous / Not provided'}`,
+      `Submitter Email: ${submitterEmail || 'Not provided'}`,
+      `Is Event Host/Organizer: ${isOrganizer ? 'Yes' : 'No (Community member)'}`,
+      adminNotes ? `Notes for Admin:\n${adminNotes}` : null,
+      ``,
+      `=== COPY-PASTE GOOGLE SHEET ROW (TSV) ===`,
+      `Title\tVenue\tLocation\tArea\tActivity\tDay of Week\tStart Time\tEnd Time\tFrequency\tFrequency Notes\tPrice\tPre-Registration\tMap\tSocial\tWebsite\tContact\tAbout`,
+      [
+        title.replace(/[\t\r\n]+/g, ' '),
+        venue.replace(/[\t\r\n]+/g, ' '),
+        location.replace(/[\t\r\n]+/g, ' '),
+        area.replace(/[\t\r\n]+/g, ' '),
+        fullActivity.replace(/[\t\r\n]+/g, ' '),
+        daysText.replace(/[\t\r\n]+/g, ' '),
+        startTime.replace(/[\t\r\n]+/g, ' '),
+        endTime.replace(/[\t\r\n]+/g, ' '),
+        frequency.replace(/[\t\r\n]+/g, ' '),
+        frequencyNotes.replace(/[\t\r\n]+/g, ' '),
+        price.replace(/[\t\r\n]+/g, ' '),
+        fullPreRegistration.replace(/[\t\r\n]+/g, ' '),
+        map.replace(/[\t\r\n]+/g, ' '),
+        social.replace(/[\t\r\n]+/g, ' '),
+        website.replace(/[\t\r\n]+/g, ' '),
+        contact.replace(/[\t\r\n]+/g, ' '),
+        about.replace(/[\t\r\n]+/g, ' '),
+      ].join('\t'),
+    ].filter(Boolean);
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Submit an Event (${city})`,
+          message: summaryLines.join('\n'),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus({
+          success: true,
+          message: 'Thank you! Your event submission has been sent. We will review and add it shortly.',
+        });
+        setTitle('');
+        setOrganizer('');
+        setActivity('');
+        setOtherActivities('');
+        setAbout('');
+        setFrequency('Weekly');
+        setFrequencyNotes('');
+        setSelectedDays([]);
+        setStartTime('');
+        setEndTime('');
+        setVenue('');
+        setLocation('');
+        setArea('');
+        setMap('');
+        setPrice('');
+        setPreRegistrationType('Drop-in (no RSVP needed)');
+        setPreRegistrationDetails('');
+        setWebsite('');
+        setSocial('');
+        setContact('');
+        setSubmitterName('');
+        setSubmitterEmail('');
+        setIsOrganizer(false);
+        setAdminNotes('');
+      } else {
+        setSubmitStatus({
+          success: false,
+          message: 'Failed to submit event. Please try again.',
+        });
+      }
+    } catch {
+      setSubmitStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+  const handleQuestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuestionLoading(true);
+    setQuestionStatus(null);
+    const messageLines = [
+      `First Name: ${questionFirstName}`,
+      `Email Address: ${questionEmail}`,
+      `Message:`,
+      questionMessage,
+    ];
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'Ask a Question',
+          message: messageLines.join('\n'),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setQuestionStatus({
+          success: true,
+          message: 'Thank you! Your message has been sent. We will get back to you soon.',
+        });
+        setQuestionFirstName('');
+        setQuestionEmail('');
+        setQuestionMessage('');
+      } else {
+        setQuestionStatus({
+          success: false,
+          message: 'Failed to send message. Please try again.',
+        });
+      }
+    } catch {
+      setQuestionStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setQuestionLoading(false);
+    }
+  };
+  return (
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <div>
+          <p className={styles.eyebrow}>CONTACT</p>
+          <h1 className={styles.heroTitle}>Contact Us</h1>
+          <p className={styles.heroDescription}>
+            Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
+          </p>
+        </div>
+        <div className={styles.heroImageContainer}>
+          <Image
+            src="/images/hero-contact.png"
+            alt="Illustration of a capybara drinking coffee"
+            width={340}
+            height={260}
+            priority
+            className={styles.heroImage}
+          />
+        </div>
+      </section>
+      <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
+        <button
+          type="button"
+          role="tab"
+          id="tab-question"
+          aria-selected={activeTab === 'question'}
+          aria-controls="panel-question"
+          className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
+          onClick={() => {
+            setActiveTab('question');
+            window.history.replaceState(null, '', '/contact');
+          }}
+        >
+          Ask a question
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-submit"
+          aria-selected={activeTab === 'submit'}
+          aria-controls="panel-submit"
+          className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
+          onClick={() => {
+            setActiveTab('submit');
+            window.history.replaceState(null, '', '/contact?tab=submit');
+          }}
+        >
+          Submit an event
+        </button>
+      </div>
+      <section className={styles.panel}>
+        {activeTab === 'question' ? (
+          <form
+            id="panel-question"
+            role="tabpanel"
+            aria-labelledby="tab-question"
+            onSubmit={handleQuestionSubmit}
+          >
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Ask a question</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="q-first-name" className={styles.label}>
+                    First name *
+                  </label>
+                  <input
+                    id="q-first-name"
+                    type="text"
+                    required
+                    value={questionFirstName}
+                    onChange={(e) => setQuestionFirstName(e.target.value)}
+                    placeholder="e.g. John"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="q-email" className={styles.label}>
+                    Email address *
+                  </label>
+                  <input
+                    id="q-email"
+                    type="email"
+                    required
+                    value={questionEmail}
+                    onChange={(e) => setQuestionEmail(e.target.value)}
+                    placeholder="e.g. john@doe.com"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="q-message" className={styles.label}>
+                  Message *
+                </label>
+                <textarea
+                  id="q-message"
+                  required
+                  value={questionMessage}
+                  onChange={(e) => setQuestionMessage(e.target.value)}
+                  placeholder="Enter your message…"
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+            <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
+              {questionLoading ? 'Sending message...' : 'Send message'}
+            </button>
+            {questionStatus && (
+              <div
+                className={`${styles.statusAlert} ${
+                  questionStatus.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {questionStatus.message}
+              </div>
+            )}
+          </form>
+        ) : (
+          <form
+            id="panel-submit"
+            role="tabpanel"
+            aria-labelledby="tab-submit"
+            onSubmit={handleEventSubmit}
+          >
+            <div className={styles.criteria}>
+              <h3 className={styles.criteriaHeading}>Event listing criteria</h3>
+              <ul className={styles.criteriaGrid}>
+                <li className={styles.criteriaItem}>
+                  <strong>Regularly occurring:</strong> weekly, bi-weekly, or monthly.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Group event:</strong> open to multiple people, no one-on-one.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Open:</strong> inclusive and open to all.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Affordable:</strong> free, donation, or reasonably priced.
+                </li>
+              </ul>
+              <p className={styles.criteriaFootnote}>
+                Only the <strong>event title</strong> is required. Don&apos;t worry if you don&apos;t know all details — share whatever you know!
+              </p>
+            </div>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>The Event</legend>
+              <p className={styles.sectionDescription}>
+                Basic details about the event.
+              </p>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-city" className={styles.label}>
+                    City / Region
+                  </label>
+                  <select
+                    id="submit-city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="Medellín, Colombia">Medellín, Colombia</option>
+                    <option value="Fort Collins, Colorado">Fort Collins, Colorado</option>
+                    <option value="Other / New City">Other / New City</option>
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-title" className={styles.label}>
+                    Event Title *
+                  </label>
+                  <input
+                    id="submit-title"
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. Verb &amp; Vibe Game Nite"
+                    className={styles.input}
+                  />
+                  <span className={styles.helperText}>The only required field!</span>
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-organizer" className={styles.label}>
+                    Organizer / Host
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-organizer"
+                    type="text"
+                    value={organizer}
+                    onChange={(e) => setOrganizer(e.target.value)}
+                    placeholder="e.g. Life Dance Studios, English Club"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-activity" className={styles.label}>
+                    Activity / Category
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <select
+                    id="submit-activity"
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="">Select an activity…</option>
+                    <option value="Language exchange">Language exchange</option>
+                    <option value="Dance">Dance (Salsa, Bachata, etc.)</option>
+                    <option value="Games">Games &amp; Trivia</option>
+                    <option value="Music">Live Music &amp; Jam</option>
+                    <option value="Social">Social &amp; Drinks</option>
+                    <option value="Fitness">Fitness, Sports &amp; Yoga</option>
+                    <option value="Art & Craft">Art &amp; Crafts</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              {activity === 'Other' && (
+                <div className={styles.field}>
+                  <label htmlFor="submit-other-act" className={styles.label}>
+                    Describe the activity
+                  </label>
+                  <input
+                    id="submit-other-act"
+                    type="text"
+                    value={otherActivities}
+                    onChange={(e) => setOtherActivities(e.target.value)}
+                    placeholder="e.g. Book club, Coding meetup, Chess"
+                    className={styles.input}
+                  />
+                </div>
+              )}
+              <div className={styles.field}>
+                <label htmlFor="submit-about" className={styles.label}>
+                  About the event
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <textarea
+                  id="submit-about"
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  placeholder="What is this event about? What can people expect when they arrive?"
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>When &amp; Schedule</legend>
+              <p className={styles.sectionDescription}>
+                Help people know when to show up.
+              </p>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-frequency" className={styles.label}>
+                    How often does it happen?
+                  </label>
+                  <select
+                    id="submit-frequency"
+                    value={frequency}
+                    onChange={(e) => setFrequency(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="Weekly">Weekly</option>
+                    <option value="Bi-weekly (every two weeks)">Bi-weekly (every two weeks)</option>
+                    <option value="Monthly (1st Tuesday…)">Monthly (e.g. 1st Tuesday)</option>
+                    <option value="Seasonal / Irregular">Seasonal / Irregular</option>
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-freq-notes" className={styles.label}>
+                    Frequency notes
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-freq-notes"
+                    type="text"
+                    value={frequencyNotes}
+                    onChange={(e) => setFrequencyNotes(e.target.value)}
+                    placeholder="e.g. 1st &amp; 3rd Friday of each month, May–Sep only"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <span className={styles.label}>
+                  Day of week <span className={styles.labelSub}>(select all that apply)</span>
+                </span>
+                <div className={styles.days}>
+                  {DAYS_OF_WEEK.map((day) => {
+                    const isChecked = selectedDays.includes(day.label);
+                    return (
+                      <label
+                        key={day.id}
+                        className={`${styles.dayPill} ${isChecked ? styles.dayPillActive : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleDay(day.label)}
+                          className={styles.dayCheckbox}
+                        />
+                        {day.label}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-start-time" className={styles.label}>
+                    Start time
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-start-time"
+                    type="text"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    placeholder="e.g. 7:00 PM"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-end-time" className={styles.label}>
+                    End time
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-end-time"
+                    type="text"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    placeholder="e.g. 9:30 PM"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Where / Location</legend>
+              <p className={styles.sectionDescription}>
+                Where does the event take place?
+              </p>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-venue" className={styles.label}>
+                    Venue name
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-venue"
+                    type="text"
+                    value={venue}
+                    onChange={(e) => setVenue(e.target.value)}
+                    placeholder="e.g. Café Revolución, Washington Park"
+                    className={styles.input}
+                  />
+                  <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-area" className={styles.label}>
+                    Neighborhood / Area
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-area"
+                    type="text"
+                    value={area}
+                    onChange={(e) => setArea(e.target.value)}
+                    placeholder="e.g. Laureles, Poblado, Old Town"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-location" className={styles.label}>
+                    Address / Specific location
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-location"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g. Cra. 37 #8A-37, 2nd floor"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-map" className={styles.label}>
+                    Google Maps link
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-map"
+                    type="text"
+                    value={map}
+                    onChange={(e) => setMap(e.target.value)}
+                    placeholder="e.g. maps.app.goo.gl/…"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Cost &amp; Pre-Registration</legend>
+              <p className={styles.sectionDescription}>
+                Is it free, paid, or does it require signing up in advance?
+              </p>
+              <div className={styles.field}>
+                <label htmlFor="submit-price" className={styles.label}>
+                  Price
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <input
+                  id="submit-price"
+                  type="text"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="e.g. Free, Donation, $10, or 15k COP"
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.field}>
+                <span className={styles.label}>Pre-Registration / RSVP</span>
+                <div className={styles.radioGroup}>
+                  {PRE_REGISTRATION_OPTIONS.map((opt) => {
+                    const isSelected = preRegistrationType === opt;
+                    return (
+                      <label
+                        key={opt}
+                        className={`${styles.radioPill} ${isSelected ? styles.radioPillActive : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="preRegistrationType"
+                          value={opt}
+                          checked={isSelected}
+                          onChange={(e) => setPreRegistrationType(e.target.value)}
+                          className={styles.radioInput}
+                        />
+                        {opt}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="submit-prereg-details" className={styles.label}>
+                  Registration link or instructions
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <input
+                  id="submit-prereg-details"
+                  type="text"
+                  value={preRegistrationDetails}
+                  onChange={(e) => setPreRegistrationDetails(e.target.value)}
+                  placeholder="e.g. eventbrite.com/... or DM @account on Instagram"
+                  className={styles.input}
+                />
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>
+                Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
+              </legend>
+              <p className={styles.sectionDescription}>
+                How people can find more information or reach out to the organizer.
+              </p>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-website" className={styles.label}>
+                    Website link
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-website"
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="e.g. somedomain.com/event"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-social" className={styles.label}>
+                    Social media / Instagram
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-social"
+                    type="text"
+                    value={social}
+                    onChange={(e) => setSocial(e.target.value)}
+                    placeholder="e.g. instagram.com/ourgroup or @ourgroup"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="submit-contact" className={styles.label}>
+                  Organizer contact
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <input
+                  id="submit-contact"
+                  type="text"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  placeholder="e.g. organizer@gmail.com, +57 300 123 4567, or WhatsApp / form link"
+                  className={styles.input}
+                />
+                <span className={styles.helperText}>
+                  Can be an email address, phone number, WhatsApp link, or web contact form.
+                </span>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>
+                About You <span className={styles.legendOptional}>(optional)</span>
+              </legend>
+              <p className={styles.sectionDescription}>
+                Let us know who is submitting in case we have a question before publishing.
+              </p>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-name" className={styles.label}>
+                    Your name
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-name"
+                    type="text"
+                    value={submitterName}
+                    onChange={(e) => setSubmitterName(e.target.value)}
+                    placeholder="e.g. Alex Rivera"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-email" className={styles.label}>
+                    Your email address
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-email"
+                    type="email"
+                    value={submitterEmail}
+                    onChange={(e) => setSubmitterEmail(e.target.value)}
+                    placeholder="e.g. alex@gmail.com"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.checkboxContainer}>
+                  <input
+                    type="checkbox"
+                    checked={isOrganizer}
+                    onChange={(e) => setIsOrganizer(e.target.checked)}
+                    className={styles.checkboxCustom}
+                  />
+                  <span className={styles.checkboxLabelText}>
+                    I am the organizer or host of this event
+                  </span>
+                </label>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="submit-admin-notes" className={styles.label}>
+                  Note for administrator
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <textarea
+                  id="submit-admin-notes"
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                  placeholder="Any extra context or private notes for us (e.g., 'Venue might change next month', 'Found this on Instagram')."
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+            <button type="submit" className={styles.submitBtn} disabled={submitLoading}>
+              {submitLoading ? 'Submitting event...' : 'Submit event'}
+            </button>
+            {submitStatus && (
+              <div
+                className={`${styles.statusAlert} ${
+                  submitStatus.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {submitStatus.message}
+              </div>
+            )}
+          </form>
+        )}
+      </section>
+    </main>
+  );
+}
+
+================
 File: app/events/[city]/page.tsx
 ================
 import { notFound } from 'next/navigation';
@@ -3774,432 +2998,144 @@ export default async function CityEventsPage({ params }: PageProps) {
 }
 
 ================
-File: app/events/components/FilterControls.module.css
+File: app/events/components/CityHeroCard.module.css
 ================
-.filterBlockDesktop {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+.heroCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
+  gap: 16px 48px;
+  align-items: start;
 }
-.filterHeaderRow {
+.titleCol {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  flex-direction: column;
 }
-.filterTitle {
-  font-size: 13px;
+.descCol {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
   font-weight: 700;
-  color: #5a5247;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 12px;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 800;
   margin: 0;
-}
-.clearFiltersLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-.clearFiltersLink:hover {
-  text-decoration: underline;
-}
-.filterListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.searchWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.searchIcon {
-  position: absolute;
-  left: 14px;
-  color: var(--muted);
-  pointer-events: none;
-  flex-shrink: 0;
-}
-.searchInput {
-  width: 100%;
-  min-height: 46px;
-  padding: 0 36px 0 38px;
-  background-color: #ffffff;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 14.5px;
-  color: var(--ink);
-  outline: none;
-  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.searchInput::placeholder {
-  color: var(--muted);
-  opacity: 0.9;
-}
-.searchInput:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
-}
-.searchClearBtn {
-  position: absolute;
-  right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: var(--topbar-bg);
-  border: 0;
-  border-radius: 50%;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.searchClearBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.multiSelectWrapper {
-  position: relative;
-  width: 100%;
-}
-.multiSelectTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 0 16px;
-  background-color: #ffffff;
-  color: var(--ink);
-  border: 1px solid transparent;
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 14.5px;
-  cursor: pointer;
-  text-align: left;
-  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.multiSelectTrigger:hover {
-  background-color: #faf7f2;
-  box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
-}
-.multiSelectTriggerActive {
-  border-color: rgba(31, 27, 22, 0.2);
-}
-.filterTriggerLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  flex: 1;
-}
-.filterTriggerIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--free, #1f7a4d);
-  flex-shrink: 0;
-}
-.filterCategory {
-  font-weight: 700;
-  color: var(--ink);
-  font-size: 14.5px;
-  white-space: nowrap;
-}
-.filterValue {
-  font-weight: 500;
-  color: var(--ink);
-  font-size: 14.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.filterChevron {
-  flex-shrink: 0;
-  margin-left: 8px;
   color: var(--ink);
 }
-.multiSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  max-height: 250px;
-  overflow-y: auto;
-}
-.multiSelectMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.multiSelectClearLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  padding: 0;
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.35;
 }
-.multiSelectOption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--ink);
-  user-select: none;
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #4f483e;
 }
-.multiSelectOption:hover {
-  background-color: var(--topbar-bg);
-}
-.hiddenCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.customCheckbox {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-}
-.customCheckboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.priceMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.priceHeaderRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.priceHeaderTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.priceHeaderReadout {
-  font-size: 13px;
-  font-weight: 700;
-}
-.priceChipsRow {
+.chips {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 12px;
 }
-.priceChip {
+.chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 36px;
-  padding: 0 14px;
+  justify-content: center;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
   border-radius: 999px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  background: #ffffff;
+  padding: 8px 16px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--ink);
-  border: 1.5px solid #e6d9b8;
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  min-height: 38px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.priceChip:hover {
+.chip:hover {
+  background-color: #ebdcb9;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.chipActive {
+  background-color: var(--ink);
+  color: #ffffff;
   border-color: var(--ink);
 }
-.priceChipFreeActive {
-  background: #d5efe0;
-  color: #14573a;
-  border-color: #1f7a4d;
-}
-.priceChipFreeActive:hover {
-  border-color: #1f7a4d;
-}
-.priceChipUnderActive {
-  background: var(--ink);
-  color: #fff8e7;
-  border-color: var(--ink);
-}
-.priceChipUnderActive:hover {
-  border-color: var(--ink);
-}
-.sliderSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 2px 0;
-}
-.rangeSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  margin: 0;
-  outline: none;
-  cursor: pointer;
-}
-.rangeSlider::-webkit-slider-runnable-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  margin-top: -8px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #1f1a14;
-  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
-  cursor: pointer;
-}
-.rangeSlider::-moz-range-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #1f1a14;
-  cursor: pointer;
-}
-.rangeSlider:focus-visible::-webkit-slider-thumb {
-  outline: 3px solid #1f7a4d;
-  outline-offset: 2px;
-}
-.sliderLabelsRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #6b6254;
-  font-weight: 500;
-  margin-top: 4px;
-}
-.clearFiltersBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 13px;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 4px 6px;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.clearFiltersBtn:hover {
-  color: var(--accent);
-}
-.mobileFiltersSection {
-  display: none;
-}
-.mobileFiltersRow {
-  display: none;
+.chipActive:hover {
+  background-color: var(--ink);
+  color: #ffffff;
 }
 @media (max-width: 899px) {
-  .mobileFiltersSection {
+  .heroCard {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 8px 0 0;
+  }
+  .descCol {
+    padding-top: 0;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .metaSubtitle {
+    font-size: 13.5px;
+    margin-top: 6px;
+  }
+  .lead {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .chips {
     display: flex;
-    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 8px;
-    margin-top: 10px;
-    width: 100%;
+    margin-top: 4px;
+    padding-bottom: 4px;
   }
-  .mobileFiltersRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    width: 100%;
-    align-items: center;
+  .chips::-webkit-scrollbar {
+    display: none;
   }
-  .mobileFiltersRow .multiSelectWrapper {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 130px;
-  }
-  .multiSelectTrigger {
-    min-height: 42px;
-    padding: 0 12px;
+  .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 14px;
     font-size: 13.5px;
+    min-height: 36px;
   }
-  .filterCategory {
-    font-size: 13.5px;
-  }
-  .filterValue {
-    font-size: 13.5px;
-  }
-  .multiSelectMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 270px;
-    max-width: calc(100vw - 32px);
-    right: auto;
-    z-index: 60;
-  }
-  .mobilePriceMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 280px;
-    max-width: calc(100vw - 32px);
-    right: auto;
-    z-index: 60;
-  }
-  .clearFiltersBtn {
-    font-size: 12.5px;
-    padding: 4px 6px;
-    margin-left: auto;
+}
+@media (max-width: 480px) {
+  .title {
+    font-size: 28px;
   }
 }
 
@@ -4795,6 +3731,1089 @@ a:hover {
 }
 
 ================
+File: app/about/About.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  margin-bottom: 56px;
+}
+.heroText {
+  flex: 1 1 500px;
+  max-width: 540px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #4f483e;
+  margin: 0;
+}
+.heroCityLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.cityPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.cityPill:hover {
+  background-color: #ebdcb9;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.illustrationContainer {
+  flex: 0 0 340px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.criteriaHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.criteriaTitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin: 0;
+  white-space: nowrap;
+}
+.criteriaLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.criteriaList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.criteriaCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.criteriaCard:hover {
+  border-color: #d6c8ad;
+  box-shadow: 0 4px 12px rgba(31, 27, 22, 0.06);
+}
+.badgeCircle {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--free);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+  margin-top: 1px;
+}
+.criteriaContent {
+  flex: 1;
+  min-width: 0;
+}
+.criteriaCardTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+.criteriaCardDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--muted);
+  margin: 5px 0 0;
+  line-height: 1.45;
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 24px 16px 56px;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  .heroText {
+    max-width: 100%;
+  }
+  .heroTitle {
+    font-size: 32px;
+  }
+  .heroDescription {
+    font-size: 15px;
+  }
+  .illustrationContainer {
+    width: 100%;
+    max-width: 280px;
+    align-self: center;
+  }
+  .criteriaCard {
+    padding: 16px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+  .badgeCircle {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+  .criteriaCardTitle {
+    font-size: 17px;
+  }
+  .criteriaCardDescription {
+    font-size: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .badgeCircle {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  .criteriaCard {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+  .heroTitle {
+    font-size: 28px;
+  }
+}
+
+================
+File: app/contact/Contact.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 36px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0;
+}
+.heroImageContainer {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.pillGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pillBtn:hover {
+  background-color: #ebdcb9;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.pillBtnActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.pillBtnActive:hover {
+  background-color: var(--ink);
+  color: #ffffff;
+}
+.panel {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
+}
+.criteria {
+  background-color: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.criteriaHeading {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.criteriaGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+}
+.criteriaItem {
+  line-height: 1.45;
+}
+.criteriaItem strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.criteriaFootnote {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.fieldset {
+  border: 0;
+  padding: 0 0 24px;
+  margin: 0 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+.fieldset:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 28px;
+}
+.legend {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 0;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.legendOptional {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #8a8174;
+  margin-left: 6px;
+}
+.sectionDescription {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.labelSub {
+  font-weight: 400;
+  color: #8a8174;
+  font-size: 13px;
+  margin-left: 4px;
+}
+.helperText {
+  font-size: 12.5px;
+  color: #8a8174;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+.input,
+.select,
+.textarea {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1.5px solid #e0d4b6;
+  border-radius: 12px;
+  background-color: #fffdf7;
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: #a79d8b;
+}
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  background-color: #ffffff;
+  border-color: var(--ink);
+}
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.select {
+  cursor: pointer;
+  appearance: auto;
+}
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.dayCheckbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.dayPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1.5px solid #e0d4b6;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #fffdf7;
+  color: var(--ink);
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.dayPillActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.radioPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1.5px solid #e0d4b6;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  background-color: #fffdf7;
+  color: var(--ink);
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.radioPillActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  cursor: pointer;
+  min-height: 36px;
+}
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+.checkboxLabelText {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ink);
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.submitBtn:hover {
+  opacity: 0.9;
+}
+.submitBtn:active {
+  transform: scale(0.99);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.statusAlert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  margin-top: 18px;
+  line-height: 1.4;
+}
+.statusSuccess {
+  background-color: #eaf7ee;
+  border: 1px solid #b7e4c7;
+  color: #155724;
+}
+.statusError {
+  background-color: #fde8e8;
+  border: 1px solid #f8b4b4;
+  color: #9b1c1c;
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 20px 16px 48px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .heroTitle {
+    font-size: 34px;
+  }
+  .heroDescription {
+    font-size: 16px;
+  }
+  .heroImageContainer {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+  .pillGroup {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .pillBtn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 13.5px;
+  }
+  .panel {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+  .criteriaGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .days {
+    gap: 6px;
+  }
+  .dayPill {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .radioGroup {
+    gap: 6px;
+  }
+  .radioPill {
+    padding: 7px 11px;
+    font-size: 12.5px;
+  }
+  .submitBtn {
+    width: 100%;
+  }
+}
+
+================
+File: app/events/components/FilterControls.module.css
+================
+.filterBlockDesktop {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a5247;
+  margin: 0;
+}
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 36px 0 38px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.multiSelectTrigger:hover {
+  background-color: #faf7f2;
+  border-color: var(--ink);
+  box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
+}
+.multiSelectTriggerActive {
+  border-color: var(--ink);
+}
+.filterTriggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.filterTriggerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--free, #1f7a4d);
+  flex-shrink: 0;
+}
+.filterCategory {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+}
+.filterValue {
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filterChevron {
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: var(--ink);
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.priceMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.priceHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.priceHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.priceHeaderReadout {
+  font-size: 13px;
+  font-weight: 700;
+}
+.priceChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.priceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid #e6d9b8;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.priceChip:hover {
+  border-color: var(--ink);
+}
+.priceChipFreeActive {
+  background: #d5efe0;
+  color: #14573a;
+  border-color: #1f7a4d;
+}
+.priceChipFreeActive:hover {
+  border-color: #1f7a4d;
+}
+.priceChipUnderActive {
+  background: var(--ink);
+  color: #fff8e7;
+  border-color: var(--ink);
+}
+.priceChipUnderActive:hover {
+  border-color: var(--ink);
+}
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
+  cursor: pointer;
+}
+.rangeSlider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  cursor: pointer;
+}
+.rangeSlider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid #1f7a4d;
+  outline-offset: 2px;
+}
+.sliderLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b6254;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 6px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileFiltersSection {
+  display: none;
+}
+.mobileFiltersRow {
+  display: none;
+}
+@media (max-width: 899px) {
+  .mobileFiltersSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobileFiltersRow .multiSelectWrapper {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 130px;
+  }
+  .multiSelectTrigger {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 13.5px;
+  }
+  .filterCategory {
+    font-size: 13.5px;
+  }
+  .filterValue {
+    font-size: 13.5px;
+  }
+  .multiSelectMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 270px;
+    max-width: calc(100vw - 32px);
+    right: auto;
+    z-index: 60;
+  }
+  .mobilePriceMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    right: auto;
+    z-index: 60;
+  }
+  .clearFiltersBtn {
+    font-size: 12.5px;
+    padding: 4px 6px;
+    margin-left: auto;
+  }
+}
+
+================
 File: app/Page.module.css
 ================
 .page {
@@ -5288,6 +5307,156 @@ export default function ContactPage() {
 }
 
 ================
+File: app/about/page.tsx
+================
+import { redirect } from 'next/navigation';
+export default function AboutPage() {
+  redirect('/');
+}
+
+================
+File: app/components/Footer.tsx
+================
+import styles from './Footer.module.css';
+export default function Footer() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerQuoteRow}>
+          <div className={styles.footerLeftSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social.
+            </div>
+          </div>
+          <div className={styles.footerRightSection}>
+            <div className={styles.footerSupportText}>
+              Free for everyone, no ads.{' '}
+              <a
+                href="https://buymeacoffee.com/someplacesocial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.buyDrinkLink}
+              >
+                Buy me a drink
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+};
+export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
+  }
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+================
 File: app/page.tsx
 ================
 import Image from 'next/image';
@@ -5330,6 +5499,7 @@ export default function Home() {
       <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
             <h1 className={styles.heroTitle}>About Someplace Social</h1>
             <p className={styles.heroDescription}>
               We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
@@ -5382,46 +5552,6 @@ export default function Home() {
 }
 
 ================
-File: app/components/Footer.tsx
-================
-import styles from './Footer.module.css';
-export default function Footer() {
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerInner}>
-        <div className={styles.footerQuoteRow}>
-          <div className={styles.footerLeftSection}>
-            <blockquote className={styles.footerQuoteText}>
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
-            <div className={styles.footerCopyright}>
-              © 2026 Someplace Social.
-            </div>
-          </div>
-          <div className={styles.footerRightSection}>
-            <div className={styles.footerSupportText}>
-              Free for everyone, no ads.{' '}
-              <a
-                href="https://buymeacoffee.com/someplacesocial"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.buyDrinkLink}
-              >
-                Buy me a drink
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-================
 File: app/events/EventsView.module.css
 ================
 .pageContainer {
@@ -5457,11 +5587,11 @@ File: app/events/EventsView.module.css
   min-width: 0;
   position: sticky;
   top: 24px;
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 24px 20px;
-  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 .asideTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -5494,7 +5624,7 @@ File: app/events/EventsView.module.css
   padding: 0 16px;
   background-color: #ffffff;
   color: var(--ink);
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: 12px;
   font-family: inherit;
   font-size: 15px;
@@ -5505,16 +5635,19 @@ File: app/events/EventsView.module.css
 }
 .dayBtnVertical:hover {
   background-color: #faf7f2;
+  border-color: var(--ink);
   box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
 }
 .dayBtnVerticalActive {
   background-color: var(--ink);
   color: #ffffff;
+  border-color: var(--ink);
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(31, 27, 22, 0.15);
 }
 .dayBtnVerticalActive:hover {
   background-color: var(--ink);
+  border-color: var(--ink);
 }
 .dayCountText {
   font-size: 13px;
@@ -5664,116 +5797,6 @@ File: app/events/EventsView.module.css
   .timeGroupHeader {
     margin: 18px 0 8px;
   }
-}
-
-================
-File: app/lib/cities.ts
-================
-export type CityPriceConfig = {
-  currencyCode: string;
-  currencySymbol: string;
-  unitSuffix: string;
-  maxPrice: number;
-  step: number;
-  underValue: number;
-  underLabel: string;
-  midLabel: string;
-};
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-  priceConfig?: CityPriceConfig;
-};
-export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-    priceConfig: {
-      currencyCode: 'COP',
-      currencySymbol: '$',
-      unitSuffix: 'k',
-      maxPrice: 100,
-      step: 5,
-      underValue: 40,
-      underLabel: 'Under 40k',
-      midLabel: '50k',
-    },
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-    priceConfig: {
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      unitSuffix: '',
-      maxPrice: 50,
-      step: 5,
-      underValue: 10,
-      underLabel: 'Under $10',
-      midLabel: '$25',
-    },
-  },
-};
-export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
-  currencyCode: 'USD',
-  currencySymbol: '$',
-  unitSuffix: '',
-  maxPrice: 50,
-  step: 5,
-  underValue: 10,
-  underLabel: 'Under $10',
-  midLabel: '$25',
-};
-export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
-  if (city?.priceConfig) return city.priceConfig;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return CITIES['medellin-colombia'].priceConfig!;
-  }
-  return DEFAULT_USD_PRICE_CONFIG;
-}
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-================
-File: app/about/page.tsx
-================
-import { redirect } from 'next/navigation';
-export default function AboutPage() {
-  redirect('/');
 }
 
 ================
@@ -7251,382 +7274,6 @@ function EventCard({
 export default memo(EventCard);
 
 ================
-File: app/components/Header.module.css
-================
-.header {
-  position: relative;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--bg);
-  z-index: 50;
-}
-.headerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.brandCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-.brandLogoLink {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.logoImage {
-  height: 72px;
-  width: auto;
-  max-width: 380px;
-  object-fit: contain;
-  filter: brightness(0);
-}
-.brandSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--muted);
-  margin-top: 6px;
-}
-.navDesktop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.citiesWrapper {
-  position: relative;
-}
-.citiesBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.citiesBtn:hover {
-  background-color: #ebdcb9;
-}
-.citiesDropdown {
-  position: absolute;
-  z-index: 40;
-  top: 100%;
-  left: 0;
-  min-width: 240px;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
-}
-.citiesDropdownHidden {
-  display: none;
-}
-.cityOption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 8px;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  text-decoration: none;
-  background: none;
-  gap: 12px;
-}
-.cityName {
-  flex: 1;
-  white-space: nowrap;
-}
-.cityOptionRight {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.cityEventCount {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  background-color: var(--topbar-bg);
-  padding: 2px 7px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-.cityOption:hover {
-  background-color: var(--topbar-bg);
-}
-.cityOptionActive {
-  font-weight: 700;
-  background-color: var(--topbar-bg);
-}
-.cityOptionActive .cityEventCount {
-  background-color: #e5d7b5;
-}
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 8px;
-}
-.navLink:hover {
-  color: var(--accent);
-}
-.navLinkActive {
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 6px;
-}
-.addEventBtn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 16px;
-  margin-left: 6px;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  background: transparent;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.addEventBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.navMobileActions {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.mobileAddBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 12px;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.hamburgerBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 10px;
-  color: var(--ink);
-  cursor: pointer;
-}
-.drawerBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(31, 27, 22, 0.45);
-  z-index: 100;
-}
-.drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 290px;
-  max-width: 85vw;
-  background-color: var(--bg);
-  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 20px 28px;
-  overflow-y: auto;
-}
-.drawerHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.drawerTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-}
-.drawerCloseBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-.drawerSectionTitle {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin: 20px 0 8px;
-}
-.drawerCityList {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerCityItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  gap: 10px;
-}
-.drawerCityItemRight {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.drawerCityCount {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  background-color: var(--topbar-bg);
-  padding: 2px 6px;
-  border-radius: 5px;
-  white-space: nowrap;
-}
-.drawerCityItemActive {
-  background-color: var(--topbar-bg);
-  font-weight: 700;
-}
-.drawerNavLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerNavLink {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 8px;
-}
-.drawerNavLink:hover {
-  background-color: var(--topbar-bg);
-}
-.drawerNavLinkActive {
-  background-color: var(--topbar-bg);
-  font-weight: 700;
-}
-.drawerFooter {
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.drawerSupportBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-}
-@media (max-width: 899px) {
-  .headerInner {
-    padding: 12px 16px;
-    gap: 12px;
-  }
-  .brandCol {
-    flex: 1;
-  }
-  .logoImage {
-    height: 38px;
-    max-width: 190px;
-  }
-  .brandSubtitle {
-    font-size: 11.5px;
-    margin-top: 2px;
-  }
-  .navDesktop {
-    display: none;
-  }
-  .navMobileActions {
-    display: flex;
-  }
-}
-@media (max-width: 360px) {
-  .headerInner {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .logoImage {
-    height: 32px;
-    max-width: 150px;
-  }
-  .mobileAddBtn {
-    padding: 0 8px;
-    font-size: 12.5px;
-  }
-  .hamburgerBtn {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-================
 File: app/components/Header.tsx
 ================
 'use client';
@@ -7674,6 +7321,7 @@ export default function Header({
   }, [mobileDrawerOpen]);
   const isAboutActive = pathname === '/' || pathname === '/about';
   const isContactActive = pathname === '/contact';
+  const isCityActive = Boolean(city);
   return (
     <>
       <header className={styles.header}>
@@ -7702,7 +7350,7 @@ export default function Header({
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
                 type="button"
-                className={styles.citiesBtn}
+                className={`${styles.citiesBtn} ${isCityActive ? styles.citiesBtnActive : ''}`}
                 aria-expanded={citiesMenuOpen}
                 onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
               >
@@ -7776,12 +7424,12 @@ export default function Header({
             >
               Contact
             </Link>
-            <Link href="/contact" className={styles.addEventBtn}>
+            <Link href="/contact?tab=submit" className={styles.addEventBtn}>
               + Add event
             </Link>
           </nav>
           <div className={styles.navMobileActions}>
-            <Link href="/contact" className={styles.mobileAddBtn}>
+            <Link href="/contact?tab=submit" className={styles.mobileAddBtn}>
               + Add
             </Link>
             <button
@@ -7875,7 +7523,7 @@ export default function Header({
                 Contact
               </Link>
               <Link
-                href="/contact"
+                href="/contact?tab=submit"
                 className={styles.drawerNavLink}
                 onClick={() => setMobileDrawerOpen(false)}
               >
@@ -8235,6 +7883,397 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
+  }
+}
+
+================
+File: app/components/Header.module.css
+================
+.header {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
+  z-index: 50;
+}
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.brandLogoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 72px;
+  width: auto;
+  max-width: 380px;
+  object-fit: contain;
+  filter: brightness(0);
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.navDesktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.citiesWrapper {
+  position: relative;
+}
+.citiesBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  background-color: transparent;
+  color: var(--ink);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.citiesBtn:hover {
+  color: var(--accent);
+}
+.citiesBtnActive {
+  font-weight: 700;
+  border-color: #d6c8ad;
+}
+.citiesDropdown {
+  position: absolute;
+  z-index: 40;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+}
+.citiesDropdownHidden {
+  display: none;
+}
+.cityOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  gap: 12px;
+}
+.cityName {
+  flex: 1;
+  white-space: nowrap;
+}
+.cityOptionRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cityEventCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.cityOption:hover {
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive {
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive .cityEventCount {
+  background-color: #e5d7b5;
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.navLink:hover {
+  color: var(--accent);
+}
+.navLinkActive {
+  font-weight: 700;
+  text-decoration: none;
+  border-color: #d6c8ad;
+}
+.navLinkActive:hover {
+  color: var(--ink);
+}
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  margin-left: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  background-color: var(--ink);
+  transition: opacity 0.15s ease;
+}
+.addEventBtn:hover {
+  opacity: 0.88;
+  color: #ffffff;
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mobileAddBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+.mobileAddBtn:hover {
+  opacity: 0.88;
+  color: #ffffff;
+}
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 27, 22, 0.45);
+  z-index: 100;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background-color: var(--bg);
+  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.drawerTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.drawerCloseBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerCityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerCityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  gap: 10px;
+}
+.drawerCityItemRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.drawerCityCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--topbar-bg);
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.drawerCityItemActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
+}
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerNavLinkActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
+}
+.drawerFooter {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.drawerSupportBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+@media (max-width: 899px) {
+  .headerInner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .brandCol {
+    flex: 1;
+  }
+  .logoImage {
+    height: 38px;
+    max-width: 190px;
+  }
+  .brandSubtitle {
+    font-size: 11.5px;
+    margin-top: 2px;
+  }
+  .navDesktop {
+    display: none;
+  }
+  .navMobileActions {
+    display: flex;
+  }
+}
+@media (max-width: 360px) {
+  .headerInner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .logoImage {
+    height: 32px;
+    max-width: 150px;
+  }
+  .mobileAddBtn {
+    padding: 0 8px;
+    font-size: 12.5px;
+  }
+  .hamburgerBtn {
+    width: 36px;
+    height: 36px;
   }
 }
 
