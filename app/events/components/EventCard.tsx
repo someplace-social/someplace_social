@@ -91,22 +91,24 @@ export default function EventCard({
             {displayVenue}
             {event.area ? ` · ${event.area}` : ''}
           </div>
-          <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 12V4h8l10 10-8 8L3 12z" />
-              <circle cx="7.5" cy="8.5" r="1" />
-            </svg>
-            {isFree ? 'Free' : event.price || 'Varies'}
-          </div>
+          {event.price ? (
+            <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 12V4h8l10 10-8 8L3 12z" />
+                <circle cx="7.5" cy="8.5" r="1" />
+              </svg>
+              {event.price}
+            </div>
+          ) : null}
           {tagList.length > 0 && (
             <div className={styles.tagList}>
               {tagList.map((tag) => {
@@ -147,6 +149,7 @@ export default function EventCard({
           </svg>
         </span>
       </button>
+
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (
