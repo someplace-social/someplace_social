@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { CityConfig, getAllCities } from '../lib/cities';
 import styles from './Header.module.css';
 
@@ -17,10 +18,10 @@ export default function Header({
   allCityOptions,
   cityCounts = {},
 }: HeaderProps) {
+  const pathname = usePathname();
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
-
   const citiesList = useMemo(() => allCityOptions || getAllCities(), [allCityOptions]);
 
   useEffect(() => {
@@ -34,6 +35,8 @@ export default function Header({
   }, []);
 
   const currentCityCount = city ? cityCounts[city.slug] : undefined;
+  const isAboutActive = pathname === '/about';
+  const isContactActive = pathname === '/contact';
 
   return (
     <>
@@ -126,10 +129,16 @@ export default function Header({
                 </div>
               )}
             </div>
-            <Link href="/about" className={styles.navLink}>
+            <Link
+              href="/about"
+              className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
+            >
               About
             </Link>
-            <Link href="/contact" className={styles.navLink}>
+            <Link
+              href="/contact"
+              className={`${styles.navLink} ${isContactActive ? styles.navLinkActive : ''}`}
+            >
               Contact
             </Link>
             <Link href="/contact" className={styles.addEventBtn}>
@@ -214,14 +223,18 @@ export default function Header({
             <div className={styles.drawerNavLinks}>
               <Link
                 href="/about"
-                className={styles.drawerNavLink}
+                className={`${styles.drawerNavLink} ${
+                  isAboutActive ? styles.drawerNavLinkActive : ''
+                }`}
                 onClick={() => setMobileDrawerOpen(false)}
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className={styles.drawerNavLink}
+                className={`${styles.drawerNavLink} ${
+                  isContactActive ? styles.drawerNavLinkActive : ''
+                }`}
                 onClick={() => setMobileDrawerOpen(false)}
               >
                 Contact

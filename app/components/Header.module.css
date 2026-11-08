@@ -4,6 +4,7 @@
   background-color: var(--bg);
   z-index: 50;
 }
+
 .headerInner {
   max-width: 1120px;
   margin: 0 auto;
@@ -14,16 +15,19 @@
   justify-content: space-between;
   gap: 16px;
 }
+
 .brandCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .brandLogoLink {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
 }
+
 .logoImage {
   height: 72px;
   width: auto;
@@ -31,6 +35,7 @@
   object-fit: contain;
   filter: brightness(0);
 }
+
 .brandSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -39,14 +44,17 @@
   color: var(--muted);
   margin-top: 6px;
 }
+
 .navDesktop {
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .citiesWrapper {
   position: relative;
 }
+
 .citiesBtn {
   display: inline-flex;
   align-items: center;
@@ -63,9 +71,11 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
+
 .citiesBtn:hover {
   background-color: #ebdcb9;
 }
+
 .citiesDropdown {
   position: absolute;
   z-index: 40;
@@ -79,6 +89,7 @@
   padding: 6px;
   box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
 }
+
 .cityOption {
   display: flex;
   align-items: center;
@@ -94,15 +105,18 @@
   background: none;
   gap: 12px;
 }
+
 .cityName {
   flex: 1;
   white-space: nowrap;
 }
+
 .cityOptionRight {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .cityEventCount {
   font-size: 12px;
   font-weight: 600;
@@ -112,16 +126,20 @@
   border-radius: 6px;
   white-space: nowrap;
 }
+
 .cityOption:hover {
   background-color: var(--topbar-bg);
 }
+
 .cityOptionActive {
   font-weight: 700;
   background-color: var(--topbar-bg);
 }
+
 .cityOptionActive .cityEventCount {
   background-color: #e5d7b5;
 }
+
 .navLink {
   display: inline-flex;
   align-items: center;
@@ -132,10 +150,19 @@
   font-weight: 500;
   color: var(--ink);
   text-decoration: none;
+  border-radius: 8px;
 }
+
 .navLink:hover {
   color: var(--accent);
 }
+
+.navLinkActive {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
 .addEventBtn {
   display: inline-flex;
   align-items: center;
@@ -152,15 +179,18 @@
   background: transparent;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .addEventBtn:hover {
   background-color: var(--ink);
   color: var(--bg);
 }
+
 .navMobileActions {
   display: none;
   align-items: center;
   gap: 8px;
 }
+
 .mobileAddBtn {
   display: inline-flex;
   align-items: center;
@@ -173,6 +203,7 @@
   color: var(--ink);
   text-decoration: none;
 }
+
 .hamburgerBtn {
   display: inline-flex;
   align-items: center;
@@ -186,12 +217,14 @@
   color: var(--ink);
   cursor: pointer;
 }
+
 .drawerBackdrop {
   position: fixed;
   inset: 0;
   background-color: rgba(31, 27, 22, 0.45);
   z-index: 100;
 }
+
 .drawer {
   position: fixed;
   top: 0;
@@ -207,6 +240,7 @@
   padding: 20px 20px 28px;
   overflow-y: auto;
 }
+
 .drawerHeader {
   display: flex;
   justify-content: space-between;
@@ -214,11 +248,13 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
 }
+
 .drawerTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
   font-size: 18px;
 }
+
 .drawerCloseBtn {
   background: none;
   border: 0;
@@ -229,6 +265,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .drawerSectionTitle {
   font-size: 12px;
   font-weight: 700;
@@ -237,11 +274,13 @@
   color: var(--muted);
   margin: 20px 0 8px;
 }
+
 .drawerCityList {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .drawerCityItem {
   display: flex;
   align-items: center;
@@ -255,11 +294,13 @@
   color: var(--ink);
   gap: 10px;
 }
+
 .drawerCityItemRight {
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .drawerCityCount {
   font-size: 11px;
   font-weight: 600;
@@ -269,15 +310,18 @@
   border-radius: 5px;
   white-space: nowrap;
 }
+
 .drawerCityItemActive {
   background-color: var(--topbar-bg);
   font-weight: 700;
 }
+
 .drawerNavLinks {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .drawerNavLink {
   display: flex;
   align-items: center;
@@ -289,14 +333,22 @@
   text-decoration: none;
   border-radius: 8px;
 }
+
 .drawerNavLink:hover {
   background-color: var(--topbar-bg);
 }
+
+.drawerNavLinkActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
+}
+
 .drawerFooter {
   margin-top: auto;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
+
 .drawerSupportBtn {
   display: flex;
   align-items: center;
@@ -309,21 +361,26 @@
   font-size: 14px;
   text-decoration: none;
 }
+
 @media (max-width: 899px) {
   .headerInner {
     padding: 14px 16px;
   }
+
   .logoImage {
     height: 50px;
     max-width: 260px;
   }
+
   .brandSubtitle {
     font-size: 12px;
     margin-top: 4px;
   }
+
   .navDesktop {
     display: none;
   }
+
   .navMobileActions {
     display: flex;
   }

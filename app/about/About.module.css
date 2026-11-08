@@ -139,7 +139,7 @@
   line-height: 1.45;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 899px) {
   .page {
     padding: 24px 16px 56px;
   }
@@ -172,6 +172,7 @@
   .criteriaCard {
     padding: 16px;
     gap: 14px;
+    border-radius: 14px;
   }
 
   .badgeCircle {
@@ -187,5 +188,23 @@
 
   .criteriaCardDescription {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .badgeCircle {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .criteriaCard {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+
+  .heroTitle {
+    font-size: 28px;
   }
 }

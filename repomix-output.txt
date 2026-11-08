@@ -9,6 +9,7 @@ Project Structure Map:
 +--- root
 +--- app
 |   +--- about
+|   |   +--- About.module.css
 |   |   \--- page.tsx
 |   +--- api
 |   |   \--- send-form
@@ -121,6 +122,7 @@ Additional Info:
 ================================================================
 Directory Structure
 ================================================================
+app/about/About.module.css
 app/about/page.tsx
 app/api/send-form/route.ts
 app/components/Accordion.module.css
@@ -1199,6 +1201,175 @@ const eslintConfig = defineConfig([
 ]);
 
 export default eslintConfig;
+
+================
+File: app/about/About.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  margin-bottom: 56px;
+}
+.heroText {
+  flex: 1 1 500px;
+  max-width: 540px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #4f483e;
+  margin: 0;
+}
+.illustrationContainer {
+  flex: 0 0 340px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.criteriaHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.criteriaTitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin: 0;
+  white-space: nowrap;
+}
+.criteriaLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.criteriaList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.criteriaCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.criteriaCard:hover {
+  border-color: #d6c8ad;
+  box-shadow: 0 4px 12px rgba(31, 27, 22, 0.06);
+}
+.badgeCircle {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--topbar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  margin-top: 1px;
+}
+.criteriaContent {
+  flex: 1;
+  min-width: 0;
+}
+.criteriaCardTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+.criteriaCardDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--muted);
+  margin: 5px 0 0;
+  line-height: 1.45;
+}
+@media (max-width: 768px) {
+  .page {
+    padding: 24px 16px 56px;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  .heroText {
+    max-width: 100%;
+  }
+  .heroTitle {
+    font-size: 32px;
+  }
+  .heroDescription {
+    font-size: 15px;
+  }
+  .illustrationContainer {
+    width: 100%;
+    max-width: 280px;
+    align-self: center;
+  }
+  .criteriaCard {
+    padding: 16px;
+    gap: 14px;
+  }
+  .badgeCircle {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+  .criteriaCardTitle {
+    font-size: 17px;
+  }
+  .criteriaCardDescription {
+    font-size: 14px;
+  }
+}
 
 ================
 File: app/api/send-form/route.ts
@@ -3274,84 +3445,6 @@ export default function RootLayout({
 }
 
 ================
-File: app/about/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'About Us',
-  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
-};
-export default function AboutPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>About The Guides</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-        <section className={styles.contentBox}>
-          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Why Our Listings Are Different</h2>
-          <ul>
-            <li><strong>More listings</strong> because we don't rely on the organization hosting the events to add. Anyone from the community can submit and spread the word.</li>
-            <li><strong>Better organized</strong> events listed in order of date and time rather than by who pays the most.</li>
-            <li><strong>Better quality</strong> events because they are vetted by real humans.</li>
-          </ul>
-          <h2 style={{ fontSize: '2.5em', marginTop: '2.5rem', marginBottom: '1rem' }}>Event Listings Criteria</h2>
-          <ul>
-            <li><strong>Regularly Occurring:</strong> must happen weekly or biweekly.</li>
-            <li><strong>Group Event:</strong> must be open to multiple people. No one-on-one sessions.</li>
-            <li><strong>Open:</strong> must be inclusive and open to all.</li>
-            <li><strong>Affordable:</strong> must be relatively affordable.</li>
-          </ul>
-        </section>
-        <section className={styles.heroSection} style={{ marginTop: '4rem' }}>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-about.png"
-              alt="Illustration of a person relaxing in a hammock"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-          <div className={styles.heroText}>
-            <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
-            </p>
-            <div style={{ marginTop: '1rem' }}>
-              <Link href="/support" className={styles.button}>
-                Support
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
 File: app/components/Footer.tsx
 ================
 import styles from './Footer.module.css';
@@ -3388,63 +3481,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-================
-File: app/page.tsx
-================
-import Link from 'next/link';
-import Image from 'next/image';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import styles from './Page.module.css';
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Someplace Social",
-  "url": "https://www.someplacesocial.org",
-  "logo": "https://www.someplacesocial.org/images/logo.svg",
-  "description": "Community supported events, group activities, and weekly classes all in one place.",
-  "sameAs": [
-    "https://www.instagram.com/someplace.social/"
-  ]
-};
-export default function Home() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>Someplace Social</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              <strong>Medellin Community Listings</strong>
-            </p>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin.
-            </p>
-            <Link href="/events/medellin-colombia" className={styles.button}>
-              Medellin Weekly Events
-            </Link>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-home.png"
-              alt="Illustration of a capybara with a backpack looking at a signpost"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
   );
 }
 
@@ -3552,6 +3588,98 @@ export default function ContactPage() {
             <ContactForm formType="Ask a Question" fields={askQuestionFields} />
           </Accordion>
         </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+================
+File: app/page.tsx
+================
+import { redirect } from 'next/navigation';
+export default function Home() {
+  redirect('/events/medellin-colombia');
+}
+
+================
+File: app/about/page.tsx
+================
+import Image from 'next/image';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from './About.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
+};
+const CRITERIA_ITEMS = [
+  {
+    number: '1',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly.',
+  },
+  {
+    number: '2',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No one-on-one sessions.',
+  },
+  {
+    number: '3',
+    title: 'Open',
+    description: 'Must be inclusive and open to all.',
+  },
+  {
+    number: '4',
+    title: 'Affordable',
+    description: 'Must be relatively affordable.',
+  },
+] as const;
+export default function AboutPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We leverage technology to find existing communities, encourage new spaces, and go someplace social.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section aria-labelledby="criteria-heading">
+          <div className={styles.criteriaHeader}>
+            <h2 id="criteria-heading" className={styles.criteriaTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.criteriaLine} aria-hidden="true" />
+          </div>
+          <div className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <div key={item.number} className={styles.criteriaCard}>
+                <div className={styles.badgeCircle} aria-hidden="true">
+                  {item.number}
+                </div>
+                <div className={styles.criteriaContent}>
+                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
+                  <p className={styles.criteriaCardDescription}>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
