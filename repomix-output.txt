@@ -1,10 +1,7 @@
 #TASK
 
 
-
-Update the price filter so it’s a drop down with slider. I’m attaching the html it will look like (but edit as needed to fit / work). 
-Use the local currency, and always have quick filters free/donation and another that’s under $10 (or the local currency equivalent - and that will be of buying power - meaning if it’s colombia, $10 is more expensive, so use whatever their $10 is). 
-
+Make the listing on UI use exactly what’s written in the sheet cell for price. Simplify the code as needed. 
 
 
 
@@ -135,12 +132,6 @@ git commit -m "feat: Add example migration and pages"
 
 
 
-
-
-
-
-
-
 #PROJECT FILES
 
 Project Structure Map:
@@ -179,6 +170,7 @@ Project Structure Map:
 |   |   |   +--- FilterControls.module.css
 |   |   |   +--- FilterControls.tsx
 |   |   |   +--- FilterDropdown.tsx
+|   |   |   +--- PriceFilterDropdown.tsx
 |   |   |   +--- SuggestEditModal.module.css
 |   |   |   \--- SuggestEditModal.tsx
 |   |   +--- CityEventsView.tsx
@@ -290,6 +282,7 @@ app/events/components/EventCard.tsx
 app/events/components/FilterControls.module.css
 app/events/components/FilterControls.tsx
 app/events/components/FilterDropdown.tsx
+app/events/components/PriceFilterDropdown.tsx
 app/events/components/SuggestEditModal.module.css
 app/events/components/SuggestEditModal.tsx
 app/events/EventsView.module.css
@@ -841,287 +834,6 @@ File: app/events/components/EventCard.module.css
 }
 
 ================
-File: app/events/components/FilterControls.module.css
-================
-.filterBlockDesktop {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.filterHeaderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.filterTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  margin: 0;
-}
-.clearFiltersLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-.clearFiltersLink:hover {
-  text-decoration: underline;
-}
-.filterListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.searchWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.searchIcon {
-  position: absolute;
-  left: 13px;
-  color: var(--muted);
-  pointer-events: none;
-  flex-shrink: 0;
-}
-.searchInput {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 34px 0 36px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.searchInput::placeholder {
-  color: var(--muted);
-  opacity: 0.85;
-}
-.searchInput:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
-}
-.searchClearBtn {
-  position: absolute;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: var(--topbar-bg);
-  border: 0;
-  border-radius: 50%;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.searchClearBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.filterFreeBtn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.filterFreeBtn:hover {
-  background-color: #ebdcba;
-}
-.checkboxSquare {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.checkboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.multiSelectWrapper {
-  position: relative;
-  width: 100%;
-}
-.multiSelectTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 14px;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-}
-.multiSelectTrigger:hover {
-  background-color: #ebdcba;
-}
-.multiSelectTriggerActive {
-  background-color: #ebdcba;
-  font-weight: 700;
-}
-.multiSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
-  max-height: 250px;
-  overflow-y: auto;
-}
-.multiSelectMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.multiSelectClearLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-.multiSelectOption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--ink);
-  user-select: none;
-}
-.multiSelectOption:hover {
-  background-color: var(--topbar-bg);
-}
-.hiddenCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.customCheckbox {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-}
-.customCheckboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-.clearFiltersBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 13px;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 4px 6px;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.clearFiltersBtn:hover {
-  color: var(--accent);
-}
-.mobileFiltersSection {
-  display: none;
-}
-.mobileFiltersRow {
-  display: none;
-}
-@media (max-width: 899px) {
-  .mobileFiltersSection {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 12px;
-    width: 100%;
-  }
-  .mobileFiltersRow {
-    display: flex;
-    gap: 6px;
-    width: 100%;
-    align-items: center;
-  }
-  .mobileFreeBtn {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 14px;
-    background-color: var(--topbar-bg);
-    color: var(--ink);
-    border: 0;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
-  .mobileFreeBtnActive {
-    background-color: var(--ink);
-    color: var(--bg);
-    font-weight: 700;
-  }
-}
-
-================
 File: app/events/components/FilterDropdown.tsx
 ================
 'use client';
@@ -1345,6 +1057,31 @@ export async function POST(request: Request) {
     console.error('Error processing form:', error);
     return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
   }
+}
+
+================
+File: app/components/Accordion.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './Accordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+export default function Accordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        {title}
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
+  );
 }
 
 ================
@@ -2373,6 +2110,517 @@ export default function ContactView() {
 }
 
 ================
+File: app/events/components/FilterControls.module.css
+================
+.filterBlockDesktop {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 13px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 34px 0 36px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(31, 27, 22, 0.08);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 14px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+.multiSelectTrigger:hover {
+  background-color: #ebdcba;
+}
+.multiSelectTriggerActive {
+  background-color: #ebdcba;
+  font-weight: 700;
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+.priceMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.priceHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.priceHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.priceHeaderReadout {
+  font-size: 13px;
+  font-weight: 700;
+}
+.priceChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.priceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid #e6d9b8;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.priceChip:hover {
+  border-color: var(--ink);
+}
+.priceChipFreeActive {
+  background: #d5efe0;
+  color: #14573a;
+  border-color: #1f7a4d;
+}
+.priceChipFreeActive:hover {
+  border-color: #1f7a4d;
+}
+.priceChipUnderActive {
+  background: var(--ink);
+  color: #fff8e7;
+  border-color: var(--ink);
+}
+.priceChipUnderActive:hover {
+  border-color: var(--ink);
+}
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  box-shadow: 0 1px 3px rgba(31, 26, 20, 0.25);
+  cursor: pointer;
+}
+.rangeSlider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1f1a14;
+  cursor: pointer;
+}
+.rangeSlider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid #1f7a4d;
+  outline-offset: 2px;
+}
+.sliderLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b6254;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 6px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileFiltersSection {
+  display: none;
+}
+.mobileFiltersRow {
+  display: none;
+}
+@media (max-width: 899px) {
+  .mobileFiltersSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+  }
+  .mobileFiltersRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobilePriceMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 290px;
+    max-width: calc(100vw - 32px);
+    z-index: 60;
+  }
+}
+
+================
+File: app/events/components/PriceFilterDropdown.tsx
+================
+'use client';
+import { useMemo } from 'react';
+import { CityPriceConfig } from '../../lib/cities';
+import { formatPriceTriggerLabel, formatPriceReadout } from '../utils';
+import styles from './FilterControls.module.css';
+interface PriceFilterDropdownProps {
+  priceConfig: CityPriceConfig;
+  maxPrice: number;
+  onPriceChange: (val: number) => void;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  flexStyle?: boolean;
+}
+export default function PriceFilterDropdown({
+  priceConfig,
+  maxPrice,
+  onPriceChange,
+  isOpen,
+  onToggleOpen,
+  containerRef,
+  flexStyle = false,
+}: PriceFilterDropdownProps) {
+  const isFreeActive = maxPrice === 0;
+  const isUnderActive = maxPrice === priceConfig.underValue;
+  const isFiltered = maxPrice < priceConfig.maxPrice;
+  const triggerLabel = useMemo(() => {
+    return formatPriceTriggerLabel(maxPrice, priceConfig);
+  }, [maxPrice, priceConfig]);
+  const readoutText = useMemo(() => {
+    return formatPriceReadout(maxPrice, priceConfig);
+  }, [maxPrice, priceConfig]);
+  const readoutColor = isFreeActive ? '#1F7A4D' : '#1F1A14';
+  const trackFill = isFreeActive ? '#1F7A4D' : '#1F1A14';
+  const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
+  const handleToggleFree = () => {
+    onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
+  };
+  const handleToggleUnder = () => {
+    onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
+  };
+  return (
+    <div
+      className={styles.multiSelectWrapper}
+      ref={containerRef}
+      style={flexStyle ? { flex: 1, minWidth: 120 } : undefined}
+    >
+      <button
+        type="button"
+        className={`${styles.multiSelectTrigger} ${
+          isFiltered ? styles.multiSelectTriggerActive : ''
+        }`}
+        aria-expanded={isOpen}
+        onClick={onToggleOpen}
+      >
+        <span>{triggerLabel}</span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
+          <div className={styles.priceHeaderRow}>
+            <span className={styles.priceHeaderTitle}>Price</span>
+            <span
+              className={styles.priceHeaderReadout}
+              style={{ color: readoutColor }}
+            >
+              {readoutText}
+            </span>
+          </div>
+          <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isFreeActive ? styles.priceChipFreeActive : ''
+              }`}
+              onClick={handleToggleFree}
+              aria-pressed={isFreeActive}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+              </svg>
+              Free / donation
+            </button>
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isUnderActive ? styles.priceChipUnderActive : ''
+              }`}
+              onClick={handleToggleUnder}
+              aria-pressed={isUnderActive}
+            >
+              {priceConfig.underLabel}
+            </button>
+          </div>
+          <div className={styles.sliderSection}>
+            <input
+              type="range"
+              min={0}
+              max={priceConfig.maxPrice}
+              step={priceConfig.step}
+              value={maxPrice}
+              onChange={(e) => onPriceChange(Number(e.target.value))}
+              className={styles.rangeSlider}
+              aria-label="Maximum price"
+              style={{
+                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, #EADFC4 ${trackPercent}%, #EADFC4 100%)`,
+              }}
+            />
+            <div className={styles.sliderLabelsRow} aria-hidden="true">
+              <span>Free</span>
+              <span>{priceConfig.midLabel}</span>
+              <span>Any</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+================
 File: app/events/components/SuggestEditModal.module.css
 ================
 .modalBackdrop {
@@ -2996,31 +3244,6 @@ File: app/components/Accordion.module.css
 }
 
 ================
-File: app/components/Accordion.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './Accordion.module.css';
-type AccordionProps = {
-  title: string;
-  children: React.ReactNode;
-};
-export default function Accordion({ title, children }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div>
-      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
-        {title}
-        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▼
-        </span>
-      </div>
-      {isOpen && <div className={styles.content}>{children}</div>}
-    </div>
-  );
-}
-
-================
 File: app/events/[city]/page.tsx
 ================
 import { notFound } from 'next/navigation';
@@ -3345,17 +3568,52 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
 }
 
 ================
+File: next.config.ts
+================
+import type { NextConfig } from 'next';
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/medellin',
+        destination: '/events/medellin-colombia',
+        permanent: true,
+      },
+      {
+        source: '/medellin-v2',
+        destination: '/events/medellin-colombia',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/events/fort-collins-colorado',
+        permanent: true,
+      },
+    ];
+  },
+};
+export default nextConfig;
+
+================
 File: app/events/components/FilterControls.tsx
 ================
 'use client';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import FilterDropdown from './FilterDropdown';
+import PriceFilterDropdown from './PriceFilterDropdown';
+import { CityPriceConfig } from '../../lib/cities';
 import styles from './FilterControls.module.css';
 interface FilterControlsProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  freeOnly: boolean;
-  onToggleFree: () => void;
+  priceConfig: CityPriceConfig;
+  maxPrice: number;
+  onPriceChange: (val: number) => void;
   timeSections: string[];
   selectedTimes: string[];
   onToggleTime: (timeName: string) => void;
@@ -3374,8 +3632,9 @@ interface FilterControlsProps {
 export default function FilterControls({
   searchQuery,
   onSearchChange,
-  freeOnly,
-  onToggleFree,
+  priceConfig,
+  maxPrice,
+  onPriceChange,
   timeSections,
   selectedTimes,
   onToggleTime,
@@ -3391,21 +3650,32 @@ export default function FilterControls({
   hasActiveFilters,
   onClearAllFilters,
 }: FilterControlsProps) {
+  const [priceMenuOpen, setPriceMenuOpen] = useState(false);
   const [timeMenuOpen, setTimeMenuOpen] = useState(false);
   const [actMenuOpen, setActMenuOpen] = useState(false);
   const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+  const priceMenuRef = useRef<HTMLDivElement>(null);
+  const priceMobileMenuRef = useRef<HTMLDivElement>(null);
   const timeMenuRef = useRef<HTMLDivElement>(null);
   const actMenuRef = useRef<HTMLDivElement>(null);
   const areaMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (timeMenuRef.current && !timeMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        priceMenuRef.current &&
+        !priceMenuRef.current.contains(target) &&
+        (!priceMobileMenuRef.current || !priceMobileMenuRef.current.contains(target))
+      ) {
+        setPriceMenuOpen(false);
+      }
+      if (timeMenuRef.current && !timeMenuRef.current.contains(target)) {
         setTimeMenuOpen(false);
       }
-      if (actMenuRef.current && !actMenuRef.current.contains(e.target as Node)) {
+      if (actMenuRef.current && !actMenuRef.current.contains(target)) {
         setActMenuOpen(false);
       }
-      if (areaMenuRef.current && !areaMenuRef.current.contains(e.target as Node)) {
+      if (areaMenuRef.current && !areaMenuRef.current.contains(target)) {
         setAreaMenuOpen(false);
       }
     }
@@ -3527,46 +3797,28 @@ export default function FilterControls({
             onClear={onClearAreas}
             containerRef={areaMenuRef}
           />
-          <button
-            type="button"
-            className={styles.filterFreeBtn}
-            aria-pressed={freeOnly}
-            onClick={onToggleFree}
-          >
-            Free only
-            <span
-              className={`${styles.checkboxSquare} ${
-                freeOnly ? styles.checkboxChecked : ''
-              }`}
-            >
-              {freeOnly && (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </span>
-          </button>
+          <PriceFilterDropdown
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={onPriceChange}
+            isOpen={priceMenuOpen}
+            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+            containerRef={priceMenuRef}
+          />
         </div>
       </div>
       <div className={styles.mobileFiltersSection}>
         {renderSearchInput()}
         <div className={styles.mobileFiltersRow}>
-          <button
-            type="button"
-            className={`${styles.mobileFreeBtn} ${freeOnly ? styles.mobileFreeBtnActive : ''}`}
-            onClick={onToggleFree}
-          >
-            Free only
-          </button>
+          <PriceFilterDropdown
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={onPriceChange}
+            isOpen={priceMenuOpen}
+            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
+            containerRef={priceMobileMenuRef}
+            flexStyle
+          />
           <FilterDropdown
             label={timeLabel}
             title="Time of day"
@@ -3614,38 +3866,6 @@ export default function FilterControls({
     </>
   );
 }
-
-================
-File: next.config.ts
-================
-import type { NextConfig } from 'next';
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/about',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/medellin',
-        destination: '/events/medellin-colombia',
-        permanent: true,
-      },
-      {
-        source: '/medellin-v2',
-        destination: '/events/medellin-colombia',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado',
-        destination: '/events/fort-collins-colorado',
-        permanent: true,
-      },
-    ];
-  },
-};
-export default nextConfig;
 
 ================
 File: app/events/components/SuggestEditModal.tsx
@@ -4250,288 +4470,6 @@ File: app/Page.module.css
 }
 
 ================
-File: app/events/utils.ts
-================
-import { Event } from '../lib/google-sheets';
-export function parseHour(timeStr: string): number {
-  if (!timeStr) return 18;
-  const cleaned = timeStr.trim().toLowerCase();
-  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
-  if (match) {
-    let hour = parseInt(match[1], 10);
-    const minute = match[2] ? parseInt(match[2], 10) : 0;
-    const meridian = match[3];
-    if (meridian) {
-      const isPm = meridian.startsWith('p');
-      const isAm = meridian.startsWith('a');
-      if (isPm && hour < 12) hour += 12;
-      if (isAm && hour === 12) hour = 0;
-    } else {
-      if (hour >= 1 && hour <= 6) {
-        hour += 12;
-      }
-    }
-    return hour + minute / 60;
-  }
-  const numMatch = cleaned.match(/\d+/);
-  return numMatch ? parseInt(numMatch[0], 10) : 18;
-}
-export function formatTimeLabel(timeStr: string): string {
-  if (!timeStr) return '';
-  const cleaned = timeStr.trim();
-  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
-  if (match) {
-    const hour = match[1];
-    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
-    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
-    return `${hour}${minute}${meridian}`;
-  }
-  return cleaned;
-}
-export function formatTimeRange(
-  startTime: string,
-  endTime: string
-): { start: string; end?: string } {
-  const start = formatTimeLabel(startTime);
-  const end = endTime ? formatTimeLabel(endTime) : undefined;
-  return { start, end };
-}
-export function isFreePrice(price: string): boolean {
-  if (!price) return true;
-  const p = price.trim().toLowerCase();
-  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
-}
-const DAY_ALIAS_MAP: Record<string, string[]> = {
-  sun: ['sun', 'sunday'],
-  sunday: ['sun', 'sunday'],
-  mon: ['mon', 'monday'],
-  monday: ['mon', 'monday'],
-  tue: ['tue', 'tues', 'tuesday'],
-  tuesday: ['tue', 'tues', 'tuesday'],
-  wed: ['wed', 'weds', 'wednesday'],
-  wednesday: ['wed', 'weds', 'wednesday'],
-  thu: ['thu', 'thur', 'thurs', 'thursday'],
-  thursday: ['thu', 'thur', 'thurs', 'thursday'],
-  fri: ['fri', 'friday'],
-  friday: ['fri', 'friday'],
-  sat: ['sat', 'saturday'],
-  saturday: ['sat', 'saturday'],
-};
-export function normalizeDayOfWeek(dayStr: string): string {
-  if (!dayStr) return '';
-  const trimmed = dayStr.trim();
-  const lower = trimmed.toLowerCase();
-  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
-    return 'Daily';
-  }
-  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
-  const DAY_TO_SHORT: Record<string, string> = {
-    sun: 'Sun',
-    sunday: 'Sun',
-    mon: 'Mon',
-    monday: 'Mon',
-    tue: 'Tue',
-    tues: 'Tue',
-    tuesday: 'Tue',
-    wed: 'Wed',
-    weds: 'Wed',
-    wednesday: 'Wed',
-    thu: 'Thu',
-    thur: 'Thu',
-    thurs: 'Thu',
-    thursday: 'Thu',
-    fri: 'Fri',
-    friday: 'Fri',
-    sat: 'Sat',
-    saturday: 'Sat',
-  };
-  const normalized: string[] = [];
-  for (const token of tokens) {
-    const short = DAY_TO_SHORT[token.toLowerCase()];
-    if (short && !normalized.includes(short)) {
-      normalized.push(short);
-    }
-  }
-  return normalized.length > 0 ? normalized.join(', ') : trimmed;
-}
-export function matchesDay(eventDays: string, targetDayName: string): boolean {
-  if (!eventDays || !targetDayName) return false;
-  const targetKey = targetDayName.trim().toLowerCase();
-  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
-  const rawLower = eventDays.toLowerCase();
-  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
-    return true;
-  }
-  if (rawLower.includes(targetKey)) {
-    return true;
-  }
-  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
-  return tokens.some((token) => aliases.includes(token));
-}
-const MONTH_NAME_TO_NUM: Record<string, number> = {
-  jan: 1,
-  january: 1,
-  feb: 2,
-  february: 2,
-  mar: 3,
-  march: 3,
-  apr: 4,
-  april: 4,
-  may: 5,
-  jun: 6,
-  june: 6,
-  jul: 7,
-  july: 7,
-  aug: 8,
-  august: 8,
-  sep: 9,
-  sept: 9,
-  september: 9,
-  oct: 10,
-  october: 10,
-  nov: 11,
-  november: 11,
-  dec: 12,
-  december: 12,
-};
-function parseMonthIndex(str: string): number | null {
-  const cleaned = str.trim().toLowerCase();
-  return MONTH_NAME_TO_NUM[cleaned] ?? null;
-}
-export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean {
-  if (!frequencyNotes) return true;
-  const cleaned = frequencyNotes.trim();
-  if (!cleaned) return true;
-  if (/^irregular/i.test(cleaned)) {
-    return false;
-  }
-  const targetMonth = targetDate.getMonth() + 1;
-  if (/months?,\s*even/i.test(cleaned)) {
-    return targetMonth % 2 === 0;
-  }
-  if (/months?,\s*odd/i.test(cleaned)) {
-    return targetMonth % 2 !== 0;
-  }
-  const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
-  if (rangeMatch) {
-    const startMonth = parseMonthIndex(rangeMatch[1]);
-    const endMonth = parseMonthIndex(rangeMatch[2]);
-    if (startMonth && endMonth) {
-      if (startMonth <= endMonth) {
-        return targetMonth >= startMonth && targetMonth <= endMonth;
-      }
-      return targetMonth >= startMonth || targetMonth <= endMonth;
-    }
-  }
-  return true;
-}
-export function getWeekdayOccurrence(targetDate: Date): {
-  occurrence: number;
-  isLast: boolean;
-} {
-  const dayOfMonth = targetDate.getDate();
-  const occurrence = Math.ceil(dayOfMonth / 7);
-  const daysInMonth = new Date(
-    targetDate.getFullYear(),
-    targetDate.getMonth() + 1,
-    0
-  ).getDate();
-  const isLast = dayOfMonth + 7 > daysInMonth;
-  return { occurrence, isLast };
-}
-function getWeekNumber(d: Date): number {
-  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = target.getUTCDay() || 7;
-  target.setUTCDate(target.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
-  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-}
-export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
-  const notes = (event.frequencyNotes || '').trim();
-  if (/^irregular/i.test(notes)) {
-    return false;
-  }
-  if (!isMonthActive(notes, targetDate)) {
-    return false;
-  }
-  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const targetDayName = DAY_NAMES[targetDate.getDay()];
-  const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
-  if (!matchesDay(daySpec, targetDayName)) {
-    return false;
-  }
-  const rawFreq = (event.frequency || '').trim();
-  if (!rawFreq) {
-    return true;
-  }
-  const parts = rawFreq.split(',').map((p) => p.trim());
-  const cadence = parts[0]?.toLowerCase() || 'weekly';
-  const pattern = (parts.slice(1).join(',') || '').toLowerCase();
-  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-  const ordinalMatches: boolean[] = [];
-  if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
-  if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
-  if (/\b3rd\b/.test(pattern)) ordinalMatches.push(occurrence === 3);
-  if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
-  if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
-  if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
-  if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
-    if (ordinalMatches.length > 0) {
-      return ordinalMatches.some(Boolean);
-    }
-    return true;
-  }
-  if (cadence.includes('bi-weekly')) {
-    if (ordinalMatches.length > 0) {
-      return ordinalMatches.some(Boolean);
-    }
-    const weekNum = getWeekNumber(targetDate);
-    return weekNum % 2 === 0;
-  }
-  return true;
-}
-export function ensureExternalUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
-}
-export function getTagStyle(tag: string): { color: string; background: string } {
-  const t = (tag || '').trim().toLowerCase();
-  if (t.includes('science')) {
-    return { color: '#0f5c5c', background: '#d3efec' };
-  }
-  if (t.includes('craft')) {
-    return { color: '#8a3d0c', background: '#fde4cf' };
-  }
-  if (t.includes('food') || t.includes('drink')) {
-    return { color: '#6b5200', background: '#f4eab8' };
-  }
-  if (t.includes('community') || t.includes('social')) {
-    return { color: '#3b4a54', background: '#e1e7ea' };
-  }
-  if (t.includes('music') || t.includes('bluegrass')) {
-    return { color: '#5b2a86', background: '#ecdcf7' };
-  }
-  if (t.includes('trivia')) {
-    return { color: '#2d3f7a', background: '#dde4f7' };
-  }
-  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
-    return { color: '#8a1f4f', background: '#fbdce9' };
-  }
-  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
-    return { color: '#852b2b', background: '#f9dede' };
-  }
-  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
-    return { color: '#1f6a42', background: '#d7f0df' };
-  }
-  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
-    return { color: '#2c4f7c', background: '#dbe5f7' };
-  }
-  return { color: '#4f483e', background: '#f3ead4' };
-}
-
-================
 File: app/events/EventsView.module.css
 ================
 .pageContainer {
@@ -4788,6 +4726,370 @@ File: package.json
 }
 
 ================
+File: app/events/utils.ts
+================
+import { Event } from '../lib/google-sheets';
+import { CityPriceConfig } from '../lib/cities';
+export function parseHour(timeStr: string): number {
+  if (!timeStr) return 18;
+  const cleaned = timeStr.trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);
+  if (match) {
+    let hour = parseInt(match[1], 10);
+    const minute = match[2] ? parseInt(match[2], 10) : 0;
+    const meridian = match[3];
+    if (meridian) {
+      const isPm = meridian.startsWith('p');
+      const isAm = meridian.startsWith('a');
+      if (isPm && hour < 12) hour += 12;
+      if (isAm && hour === 12) hour = 0;
+    } else {
+      if (hour >= 1 && hour <= 6) {
+        hour += 12;
+      }
+    }
+    return hour + minute / 60;
+  }
+  const numMatch = cleaned.match(/\d+/);
+  return numMatch ? parseInt(numMatch[0], 10) : 18;
+}
+export function formatTimeLabel(timeStr: string): string {
+  if (!timeStr) return '';
+  const cleaned = timeStr.trim();
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?$/i);
+  if (match) {
+    const hour = match[1];
+    const minute = match[2] && match[2] !== '00' ? `:${match[2]}` : '';
+    const meridian = (match[3] || 'p').toLowerCase().startsWith('a') ? 'a' : 'p';
+    return `${hour}${minute}${meridian}`;
+  }
+  return cleaned;
+}
+export function formatTimeRange(
+  startTime: string,
+  endTime: string
+): { start: string; end?: string } {
+  const start = formatTimeLabel(startTime);
+  const end = endTime ? formatTimeLabel(endTime) : undefined;
+  return { start, end };
+}
+export function isFreePrice(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
+}
+export function isFreeOrDonation(price: string): boolean {
+  if (!price) return true;
+  const p = price.trim().toLowerCase();
+  return (
+    isFreePrice(p) ||
+    p.includes('donation') ||
+    p.includes('aporte') ||
+    p.includes('voluntari') ||
+    p === '0k'
+  );
+}
+export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'): number | null {
+  if (!priceStr) return 0;
+  const cleaned = priceStr.trim().toLowerCase();
+  if (isFreeOrDonation(cleaned)) return 0;
+  if (currencyCode === 'COP') {
+    const kMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*k/i);
+    if (kMatch) {
+      return parseFloat(kMatch[1]);
+    }
+    const thousandSepMatch = cleaned.match(/(\d{1,3})[.,](\d{3})/);
+    if (thousandSepMatch) {
+      const whole = parseInt(thousandSepMatch[1], 10);
+      const frac = parseInt(thousandSepMatch[2], 10) / 1000;
+      return whole + frac;
+    }
+    const bigNumMatch = cleaned.match(/\b(\d{4,6})\b/);
+    if (bigNumMatch) {
+      return parseInt(bigNumMatch[1], 10) / 1000;
+    }
+    const smallNumMatch = cleaned.match(/\b(\d{1,3})\b/);
+    if (smallNumMatch) {
+      return parseInt(smallNumMatch[1], 10);
+    }
+    return null;
+  }
+  const usdMatch = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)/);
+  if (usdMatch) {
+    return parseFloat(usdMatch[1]);
+  }
+  return null;
+}
+export function matchesPriceFilter(
+  eventPrice: string,
+  maxPriceFilter: number,
+  priceConfig: CityPriceConfig
+): boolean {
+  if (maxPriceFilter >= priceConfig.maxPrice) {
+    return true;
+  }
+  if (isFreeOrDonation(eventPrice)) {
+    return true;
+  }
+  if (maxPriceFilter === 0) {
+    return isFreeOrDonation(eventPrice);
+  }
+  const num = parseEventPrice(eventPrice, priceConfig.currencyCode);
+  if (num === null) {
+    return false;
+  }
+  return num <= maxPriceFilter;
+}
+export function formatPriceValue(val: number, config: CityPriceConfig): string {
+  if (val === 0) return 'Free';
+  if (config.unitSuffix) {
+    return `${val}${config.unitSuffix}`;
+  }
+  return `${config.currencySymbol}${val}`;
+}
+export function formatPriceReadout(val: number, config: CityPriceConfig): string {
+  if (val === 0) return 'Free / donation';
+  if (val === config.underValue) return config.underLabel;
+  if (val >= config.maxPrice) return 'Any price';
+  return `Up to ${formatPriceValue(val, config)}`;
+}
+export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
+  if (val >= config.maxPrice) return 'All prices';
+  if (val === 0) return 'Free / donation';
+  if (val === config.underValue) return config.underLabel;
+  return `Up to ${formatPriceValue(val, config)}`;
+}
+const DAY_ALIAS_MAP: Record<string, string[]> = {
+  sun: ['sun', 'sunday'],
+  sunday: ['sun', 'sunday'],
+  mon: ['mon', 'monday'],
+  monday: ['mon', 'monday'],
+  tue: ['tue', 'tues', 'tuesday'],
+  tuesday: ['tue', 'tues', 'tuesday'],
+  wed: ['wed', 'weds', 'wednesday'],
+  wednesday: ['wed', 'weds', 'wednesday'],
+  thu: ['thu', 'thur', 'thurs', 'thursday'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday'],
+  fri: ['fri', 'friday'],
+  friday: ['fri', 'friday'],
+  sat: ['sat', 'saturday'],
+  saturday: ['sat', 'saturday'],
+};
+export function normalizeDayOfWeek(dayStr: string): string {
+  if (!dayStr) return '';
+  const trimmed = dayStr.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
+    return 'Daily';
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
+  const DAY_TO_SHORT: Record<string, string> = {
+    sun: 'Sun',
+    sunday: 'Sun',
+    mon: 'Mon',
+    monday: 'Mon',
+    tue: 'Tue',
+    tues: 'Tue',
+    tuesday: 'Tue',
+    wed: 'Wed',
+    weds: 'Wed',
+    wednesday: 'Wed',
+    thu: 'Thu',
+    thur: 'Thu',
+    thurs: 'Thu',
+    thursday: 'Thu',
+    fri: 'Fri',
+    friday: 'Fri',
+    sat: 'Sat',
+    saturday: 'Sat',
+  };
+  const normalized: string[] = [];
+  for (const token of tokens) {
+    const short = DAY_TO_SHORT[token.toLowerCase()];
+    if (short && !normalized.includes(short)) {
+      normalized.push(short);
+    }
+  }
+  return normalized.length > 0 ? normalized.join(', ') : trimmed;
+}
+export function matchesDay(eventDays: string, targetDayName: string): boolean {
+  if (!eventDays || !targetDayName) return false;
+  const targetKey = targetDayName.trim().toLowerCase();
+  const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
+  const rawLower = eventDays.toLowerCase();
+  if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
+    return true;
+  }
+  if (rawLower.includes(targetKey)) {
+    return true;
+  }
+  const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
+  return tokens.some((token) => aliases.includes(token));
+}
+const MONTH_NAME_TO_NUM: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+function parseMonthIndex(str: string): number | null {
+  const cleaned = str.trim().toLowerCase();
+  return MONTH_NAME_TO_NUM[cleaned] ?? null;
+}
+export function isMonthActive(frequencyNotes: string, targetDate: Date): boolean {
+  if (!frequencyNotes) return true;
+  const cleaned = frequencyNotes.trim();
+  if (!cleaned) return true;
+  if (/^irregular/i.test(cleaned)) {
+    return false;
+  }
+  const targetMonth = targetDate.getMonth() + 1;
+  if (/months?,\s*even/i.test(cleaned)) {
+    return targetMonth % 2 === 0;
+  }
+  if (/months?,\s*odd/i.test(cleaned)) {
+    return targetMonth % 2 !== 0;
+  }
+  const rangeMatch = cleaned.match(/months?,\s*([a-zA-Z]+)\s*[\u2013\u2014\-]\s*([a-zA-Z]+)/i);
+  if (rangeMatch) {
+    const startMonth = parseMonthIndex(rangeMatch[1]);
+    const endMonth = parseMonthIndex(rangeMatch[2]);
+    if (startMonth && endMonth) {
+      if (startMonth <= endMonth) {
+        return targetMonth >= startMonth && targetMonth <= endMonth;
+      }
+      return targetMonth >= startMonth || targetMonth <= endMonth;
+    }
+  }
+  return true;
+}
+export function getWeekdayOccurrence(targetDate: Date): {
+  occurrence: number;
+  isLast: boolean;
+} {
+  const dayOfMonth = targetDate.getDate();
+  const occurrence = Math.ceil(dayOfMonth / 7);
+  const daysInMonth = new Date(
+    targetDate.getFullYear(),
+    targetDate.getMonth() + 1,
+    0
+  ).getDate();
+  const isLast = dayOfMonth + 7 > daysInMonth;
+  return { occurrence, isLast };
+}
+function getWeekNumber(d: Date): number {
+  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = target.getUTCDay() || 7;
+  target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
+  const notes = (event.frequencyNotes || '').trim();
+  if (/^irregular/i.test(notes)) {
+    return false;
+  }
+  if (!isMonthActive(notes, targetDate)) {
+    return false;
+  }
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const targetDayName = DAY_NAMES[targetDate.getDay()];
+  const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
+  if (!matchesDay(daySpec, targetDayName)) {
+    return false;
+  }
+  const rawFreq = (event.frequency || '').trim();
+  if (!rawFreq) {
+    return true;
+  }
+  const parts = rawFreq.split(',').map((p) => p.trim());
+  const cadence = parts[0]?.toLowerCase() || 'weekly';
+  const pattern = (parts.slice(1).join(',') || '').toLowerCase();
+  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
+  const ordinalMatches: boolean[] = [];
+  if (/\b1st\b/.test(pattern)) ordinalMatches.push(occurrence === 1);
+  if (/\b2nd\b/.test(pattern)) ordinalMatches.push(occurrence === 2);
+  if (/\b3rd\b/.test(pattern)) ordinalMatches.push(occurrence === 3);
+  if (/\b4th\b/.test(pattern)) ordinalMatches.push(occurrence === 4);
+  if (/\b5th\b/.test(pattern)) ordinalMatches.push(occurrence === 5);
+  if (/\blast\b/.test(pattern)) ordinalMatches.push(isLast);
+  if (cadence.includes('monthly') || cadence.includes('bi-monthly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    return true;
+  }
+  if (cadence.includes('bi-weekly')) {
+    if (ordinalMatches.length > 0) {
+      return ordinalMatches.some(Boolean);
+    }
+    const weekNum = getWeekNumber(targetDate);
+    return weekNum % 2 === 0;
+  }
+  return true;
+}
+export function ensureExternalUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+export function getTagStyle(tag: string): { color: string; background: string } {
+  const t = (tag || '').trim().toLowerCase();
+  if (t.includes('science')) {
+    return { color: '#0f5c5c', background: '#d3efec' };
+  }
+  if (t.includes('craft')) {
+    return { color: '#8a3d0c', background: '#fde4cf' };
+  }
+  if (t.includes('food') || t.includes('drink')) {
+    return { color: '#6b5200', background: '#f4eab8' };
+  }
+  if (t.includes('community') || t.includes('social')) {
+    return { color: '#3b4a54', background: '#e1e7ea' };
+  }
+  if (t.includes('music') || t.includes('bluegrass')) {
+    return { color: '#5b2a86', background: '#ecdcf7' };
+  }
+  if (t.includes('trivia')) {
+    return { color: '#2d3f7a', background: '#dde4f7' };
+  }
+  if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
+    return { color: '#8a1f4f', background: '#fbdce9' };
+  }
+  if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
+    return { color: '#852b2b', background: '#f9dede' };
+  }
+  if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
+    return { color: '#1f6a42', background: '#d7f0df' };
+  }
+  if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
+    return { color: '#2c4f7c', background: '#dbe5f7' };
+  }
+  return { color: '#4f483e', background: '#f3ead4' };
+}
+
+================
 File: app/layout.tsx
 ================
 import type { Metadata } from 'next';
@@ -4834,60 +5136,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
-
-================
-File: app/lib/cities.ts
-================
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-};
-export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-  },
-};
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 ================
@@ -5137,6 +5385,108 @@ export default function EventCard({
 }
 
 ================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+};
+export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
+  }
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+================
 File: app/components/Footer.tsx
 ================
 import styles from './Footer.module.css';
@@ -5181,9 +5531,9 @@ File: app/events/CityEventsView.tsx
 ================
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { CityConfig, getAllCities } from '../lib/cities';
+import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
-import { parseHour, isFreePrice, isEventActiveOnDate } from './utils';
+import { parseHour, matchesPriceFilter, isEventActiveOnDate } from './utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -5230,17 +5580,21 @@ export default function CityEventsView({
   initialEvents?: Event[];
   initialCityCounts?: Record<string, number>;
 }) {
+  const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
   const [cityCounts, setCityCounts] = useState<Record<string, number>>(initialCityCounts);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [freeOnly, setFreeOnly] = useState(false);
+  const [maxPrice, setMaxPrice] = useState<number>(priceConfig.maxPrice);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  useEffect(() => {
+    setMaxPrice(priceConfig.maxPrice);
+  }, [priceConfig]);
   useEffect(() => {
     if (initialEvents.length === 0) {
       setLoading(true);
@@ -5323,7 +5677,7 @@ export default function CityEventsView({
     return allEvents
       .filter((ev) => {
         if (!isEventActiveOnDate(ev, day)) return false;
-        if (freeOnly && !isFreePrice(ev.price)) return false;
+        if (!matchesPriceFilter(ev.price, maxPrice, priceConfig)) return false;
         const evHour = parseHour(ev.startTime);
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
@@ -5371,7 +5725,17 @@ export default function CityEventsView({
   };
   const currentList = useMemo(() => {
     return getFilteredEventsForDay(activeDayIdx);
-  }, [allEvents, activeDayIdx, freeOnly, selectedTimes, selectedActivities, selectedAreas, searchQuery, rollingWeek]);
+  }, [
+    allEvents,
+    activeDayIdx,
+    maxPrice,
+    priceConfig,
+    selectedTimes,
+    selectedActivities,
+    selectedAreas,
+    searchQuery,
+    rollingWeek,
+  ]);
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
     const nextEvent = currentList.find((ev) => parseHour(ev.startTime) >= nowHour);
@@ -5379,13 +5743,13 @@ export default function CityEventsView({
   }, [activeDayIdx, currentList, nowHour]);
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
-    freeOnly ||
+    maxPrice < priceConfig.maxPrice ||
     selectedTimes.length > 0 ||
     selectedActivities.length > 0 ||
     selectedAreas.length > 0;
   const clearAllFilters = () => {
     setSearchQuery('');
-    setFreeOnly(false);
+    setMaxPrice(priceConfig.maxPrice);
     setSelectedTimes([]);
     setSelectedActivities([]);
     setSelectedAreas([]);
@@ -5436,8 +5800,9 @@ export default function CityEventsView({
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            freeOnly={freeOnly}
-            onToggleFree={() => setFreeOnly(!freeOnly)}
+            priceConfig={priceConfig}
+            maxPrice={maxPrice}
+            onPriceChange={setMaxPrice}
             timeSections={TIME_GROUPS.map((g) => g.name)}
             selectedTimes={selectedTimes}
             onToggleTime={toggleTime}
@@ -5633,6 +5998,319 @@ File: app/about/page.tsx
 import { redirect } from 'next/navigation';
 export default function AboutPage() {
   redirect('/');
+}
+
+================
+File: app/lib/google-sheets.ts
+================
+import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
+import { normalizeDayOfWeek } from '../events/utils';
+export type Event = {
+  id: string;
+  title: string;
+  venue: string;
+  organization: string;
+  location: string;
+  area: string;
+  activity: string;
+  activities: string[];
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  frequency: string;
+  frequencyNotes: string;
+  price: string;
+  preRegistration: string;
+  map: string;
+  social: string;
+  website: string;
+  contact: string;
+  about: string;
+  notes: string;
+  database: string;
+};
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+function getCandidateUrls(city: CityConfig): string[] {
+  if (city.csvUrl) return [city.csvUrl];
+  const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
+  const tabs = [city.sheetTab];
+  if (city.sheetTab.toLowerCase() === 'medellin') {
+    tabs.push('Medellín');
+  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
+    tabs.push('FortCollins');
+  }
+  const urls: string[] = [];
+  for (const tab of tabs) {
+    const encodedTab = encodeURIComponent(tab);
+    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodedTab}`);
+    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodedTab}`);
+  }
+  if (city.sheetGid) {
+    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`);
+    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`);
+    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
+  }
+  urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
+  return urls;
+}
+function parseCsv(csvText: string): string[][] {
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentField = '';
+  let inQuotes = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (char === '"') {
+      if (inQuotes && csvText[i + 1] === '"') {
+        currentField += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField);
+      currentField = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      currentRow.push(currentField);
+      rows.push(currentRow);
+      currentRow = [];
+      currentField = '';
+      if (char === '\r' && csvText[i + 1] === '\n') {
+        i++;
+      }
+    } else {
+      currentField += char;
+    }
+  }
+  currentRow.push(currentField);
+  rows.push(currentRow);
+  return rows;
+}
+function parseSheetData(rawText: string): string[][] {
+  const trimmed = rawText.trim();
+  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
+    try {
+      const startIdx = trimmed.indexOf('{');
+      const endIdx = trimmed.lastIndexOf('}');
+      if (startIdx !== -1 && endIdx !== -1) {
+        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
+        const data = JSON.parse(jsonStr);
+        if (data.status === 'error') {
+          return [];
+        }
+        if (data.table) {
+          const cols: { label?: string; id?: string }[] = data.table.cols || [];
+          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
+          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+            return (row.c || []).map((cell) => {
+              if (!cell || cell.v === null || cell.v === undefined) return '';
+              return String(cell.f || cell.v).trim();
+            });
+          });
+          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
+            return [headerRow, ...dataRows];
+          } else if (dataRows.length > 0) {
+            return dataRows;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
+    }
+  }
+  return parseCsv(rawText);
+}
+const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
+const HEADER_ALIASES: Record<string, string[]> = {
+  id: ['id'],
+  title: ['title', 'eventname', 'name'],
+  venue: ['venue', 'place'],
+  organization: ['organization', 'organizer', 'host'],
+  location: ['location', 'address'],
+  area: ['area', 'neighborhood'],
+  activity: ['activity', 'activities'],
+  activity1: ['activity1', 'activity'],
+  activity2: ['activity2'],
+  activity3: ['activity3'],
+  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
+  startTime: ['starttime', 'start'],
+  endTime: ['endtime', 'end'],
+  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
+  frequencyNotes: [
+    'frequencynotes',
+    'frequencynote',
+    'frequency_notes',
+    'freqnotes',
+    'freqnote',
+    'frequencynot',
+    'recurrencenotes',
+  ],
+  price: ['price', 'cost'],
+  preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
+  map: ['map', 'googlemap', 'googlemaplink', 'maps'],
+  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
+  website: ['website', 'site', 'url'],
+  contact: ['contact', 'whatsapp', 'phone'],
+  about: ['about', 'description'],
+  notes: ['notes', 'note'],
+  database: ['database', 'db', 'sheet'],
+};
+const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
+  id: 0,
+  title: 1,
+  venue: 2,
+  organization: 2,
+  location: 3,
+  area: 4,
+  activity: 5,
+  dayOfWeek: 6,
+  startTime: 7,
+  endTime: 8,
+  frequency: 9,
+  frequencyNotes: 10,
+  price: 11,
+  preRegistration: 12,
+  map: 13,
+  social: 14,
+  website: 15,
+  contact: 16,
+  about: 17,
+  notes: 18,
+};
+export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
+  try {
+    let cityConfig: CityConfig;
+    if (typeof cityOrTab === 'string') {
+      cityConfig = CITIES[cityOrTab] || {
+        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
+        name: cityOrTab,
+        region: '',
+        heroLocation: cityOrTab,
+        sheetTab: cityOrTab,
+      };
+    } else if (cityOrTab) {
+      cityConfig = cityOrTab;
+    } else {
+      cityConfig = CITIES['medellin-colombia'];
+    }
+    const candidateUrls = getCandidateUrls(cityConfig);
+    const isDev = process.env.NODE_ENV === 'development';
+    let rows: string[][] = [];
+    for (const url of candidateUrls) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Accept: 'text/csv, application/json, text/plain, */*',
+          },
+          cache: isDev ? 'no-store' : 'default',
+          next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+        });
+        if (response.ok) {
+          const text = await response.text();
+          const trimmed = text.trim();
+          if (
+            trimmed &&
+            !trimmed.startsWith('<!DOCTYPE html') &&
+            !trimmed.startsWith('<html') &&
+            !trimmed.includes('accounts.google.com') &&
+            !trimmed.includes('"status":"error"') &&
+            !trimmed.includes('INVALID_QUERY')
+          ) {
+            const parsed = parseSheetData(trimmed);
+            if (parsed.length >= 2) {
+              rows = parsed;
+              break;
+            }
+          }
+        }
+      } catch (fetchErr) {
+        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+      }
+    }
+    if (rows.length < 2) {
+      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
+      return [];
+    }
+    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
+    const headerIndexMap: Record<string, number> = {};
+    Object.keys(HEADER_ALIASES).forEach((field) => {
+      const aliases = HEADER_ALIASES[field];
+      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
+      if (foundIdx !== -1) {
+        headerIndexMap[field] = foundIdx;
+      }
+    });
+    const cleanCell = (cell: string): string => {
+      const trimmed = (cell || '').trim();
+      return trimmed.toLowerCase() === 'x' ? '' : trimmed;
+    };
+    const dataRows = rows.slice(1);
+    const events = dataRows
+      .map((row): Event | null => {
+        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
+        const getValue = (field: string): string => {
+          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+          if (colIdx !== undefined && colIdx < row.length) {
+            return cleanCell(row[colIdx]);
+          }
+          return '';
+        };
+        const venueVal = getValue('venue');
+        const orgVal = getValue('organization');
+        const locVal = getValue('location');
+        const rawActivity = getValue('activity');
+        const act1 = getValue('activity1');
+        const act2 = getValue('activity2');
+        const act3 = getValue('activity3');
+        let parsedActivities: string[] = [];
+        if (rawActivity) {
+          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
+        }
+        if (parsedActivities.length === 0) {
+          parsedActivities = [act1, act2, act3]
+            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+            .filter(Boolean);
+        }
+        const uniqueActs: string[] = [];
+        for (const act of parsedActivities) {
+          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+            uniqueActs.push(act);
+          }
+        }
+        const activityStr = uniqueActs.join(', ');
+        const rawDay = getValue('dayOfWeek');
+        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
+        return {
+          id: getValue('id'),
+          title: getValue('title'),
+          venue: venueVal,
+          organization: orgVal || venueVal,
+          location: locVal || venueVal,
+          area: getValue('area'),
+          activity: activityStr,
+          activities: uniqueActs,
+          dayOfWeek: dayOfWeekStr,
+          startTime: getValue('startTime'),
+          endTime: getValue('endTime'),
+          frequency: getValue('frequency'),
+          frequencyNotes: getValue('frequencyNotes'),
+          price: getValue('price'),
+          preRegistration: getValue('preRegistration'),
+          map: getValue('map'),
+          social: getValue('social'),
+          website: getValue('website'),
+          contact: getValue('contact'),
+          about: getValue('about'),
+          notes: getValue('notes'),
+          database: getValue('database'),
+        };
+      })
+      .filter((event): event is Event => event !== null);
+    return events.filter((event) => Boolean(event.title));
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
 }
 
 ================
@@ -5976,319 +6654,6 @@ File: app/components/Header.module.css
   }
   .navMobileActions {
     display: flex;
-  }
-}
-
-================
-File: app/lib/google-sheets.ts
-================
-import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
-import { normalizeDayOfWeek } from '../events/utils';
-export type Event = {
-  id: string;
-  title: string;
-  venue: string;
-  organization: string;
-  location: string;
-  area: string;
-  activity: string;
-  activities: string[];
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  frequency: string;
-  frequencyNotes: string;
-  price: string;
-  preRegistration: string;
-  map: string;
-  social: string;
-  website: string;
-  contact: string;
-  about: string;
-  notes: string;
-  database: string;
-};
-const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
-function getCandidateUrls(city: CityConfig): string[] {
-  if (city.csvUrl) return [city.csvUrl];
-  const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
-  const tabs = [city.sheetTab];
-  if (city.sheetTab.toLowerCase() === 'medellin') {
-    tabs.push('Medellín');
-  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
-    tabs.push('FortCollins');
-  }
-  const urls: string[] = [];
-  for (const tab of tabs) {
-    const encodedTab = encodeURIComponent(tab);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodedTab}`);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodedTab}`);
-  }
-  if (city.sheetGid) {
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`);
-    urls.push(`https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`);
-    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
-  }
-  urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
-  return urls;
-}
-function parseCsv(csvText: string): string[][] {
-  const rows: string[][] = [];
-  let currentRow: string[] = [];
-  let currentField = '';
-  let inQuotes = false;
-  for (let i = 0; i < csvText.length; i++) {
-    const char = csvText[i];
-    if (char === '"') {
-      if (inQuotes && csvText[i + 1] === '"') {
-        currentField += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === ',' && !inQuotes) {
-      currentRow.push(currentField);
-      currentField = '';
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      currentRow.push(currentField);
-      rows.push(currentRow);
-      currentRow = [];
-      currentField = '';
-      if (char === '\r' && csvText[i + 1] === '\n') {
-        i++;
-      }
-    } else {
-      currentField += char;
-    }
-  }
-  currentRow.push(currentField);
-  rows.push(currentRow);
-  return rows;
-}
-function parseSheetData(rawText: string): string[][] {
-  const trimmed = rawText.trim();
-  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
-    try {
-      const startIdx = trimmed.indexOf('{');
-      const endIdx = trimmed.lastIndexOf('}');
-      if (startIdx !== -1 && endIdx !== -1) {
-        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
-        const data = JSON.parse(jsonStr);
-        if (data.status === 'error') {
-          return [];
-        }
-        if (data.table) {
-          const cols: { label?: string; id?: string }[] = data.table.cols || [];
-          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
-          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
-            return (row.c || []).map((cell) => {
-              if (!cell || cell.v === null || cell.v === undefined) return '';
-              return String(cell.f || cell.v).trim();
-            });
-          });
-          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
-            return [headerRow, ...dataRows];
-          } else if (dataRows.length > 0) {
-            return dataRows;
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
-    }
-  }
-  return parseCsv(rawText);
-}
-const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
-const HEADER_ALIASES: Record<string, string[]> = {
-  id: ['id'],
-  title: ['title', 'eventname', 'name'],
-  venue: ['venue', 'place'],
-  organization: ['organization', 'organizer', 'host'],
-  location: ['location', 'address'],
-  area: ['area', 'neighborhood'],
-  activity: ['activity', 'activities'],
-  activity1: ['activity1', 'activity'],
-  activity2: ['activity2'],
-  activity3: ['activity3'],
-  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
-  startTime: ['starttime', 'start'],
-  endTime: ['endtime', 'end'],
-  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
-  frequencyNotes: [
-    'frequencynotes',
-    'frequencynote',
-    'frequency_notes',
-    'freqnotes',
-    'freqnote',
-    'frequencynot',
-    'recurrencenotes',
-  ],
-  price: ['price', 'cost'],
-  preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
-  map: ['map', 'googlemap', 'googlemaplink', 'maps'],
-  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
-  website: ['website', 'site', 'url'],
-  contact: ['contact', 'whatsapp', 'phone'],
-  about: ['about', 'description'],
-  notes: ['notes', 'note'],
-  database: ['database', 'db', 'sheet'],
-};
-const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
-  id: 0,
-  title: 1,
-  venue: 2,
-  organization: 2,
-  location: 3,
-  area: 4,
-  activity: 5,
-  dayOfWeek: 6,
-  startTime: 7,
-  endTime: 8,
-  frequency: 9,
-  frequencyNotes: 10,
-  price: 11,
-  preRegistration: 12,
-  map: 13,
-  social: 14,
-  website: 15,
-  contact: 16,
-  about: 17,
-  notes: 18,
-};
-export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
-  try {
-    let cityConfig: CityConfig;
-    if (typeof cityOrTab === 'string') {
-      cityConfig = CITIES[cityOrTab] || {
-        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
-        name: cityOrTab,
-        region: '',
-        heroLocation: cityOrTab,
-        sheetTab: cityOrTab,
-      };
-    } else if (cityOrTab) {
-      cityConfig = cityOrTab;
-    } else {
-      cityConfig = CITIES['medellin-colombia'];
-    }
-    const candidateUrls = getCandidateUrls(cityConfig);
-    const isDev = process.env.NODE_ENV === 'development';
-    let rows: string[][] = [];
-    for (const url of candidateUrls) {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            Accept: 'text/csv, application/json, text/plain, */*',
-          },
-          cache: isDev ? 'no-store' : 'default',
-          next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
-        });
-        if (response.ok) {
-          const text = await response.text();
-          const trimmed = text.trim();
-          if (
-            trimmed &&
-            !trimmed.startsWith('<!DOCTYPE html') &&
-            !trimmed.startsWith('<html') &&
-            !trimmed.includes('accounts.google.com') &&
-            !trimmed.includes('"status":"error"') &&
-            !trimmed.includes('INVALID_QUERY')
-          ) {
-            const parsed = parseSheetData(trimmed);
-            if (parsed.length >= 2) {
-              rows = parsed;
-              break;
-            }
-          }
-        }
-      } catch (fetchErr) {
-        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
-      }
-    }
-    if (rows.length < 2) {
-      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
-      return [];
-    }
-    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
-    const headerIndexMap: Record<string, number> = {};
-    Object.keys(HEADER_ALIASES).forEach((field) => {
-      const aliases = HEADER_ALIASES[field];
-      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
-      if (foundIdx !== -1) {
-        headerIndexMap[field] = foundIdx;
-      }
-    });
-    const cleanCell = (cell: string): string => {
-      const trimmed = (cell || '').trim();
-      return trimmed.toLowerCase() === 'x' ? '' : trimmed;
-    };
-    const dataRows = rows.slice(1);
-    const events = dataRows
-      .map((row): Event | null => {
-        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
-        const getValue = (field: string): string => {
-          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
-          if (colIdx !== undefined && colIdx < row.length) {
-            return cleanCell(row[colIdx]);
-          }
-          return '';
-        };
-        const venueVal = getValue('venue');
-        const orgVal = getValue('organization');
-        const locVal = getValue('location');
-        const rawActivity = getValue('activity');
-        const act1 = getValue('activity1');
-        const act2 = getValue('activity2');
-        const act3 = getValue('activity3');
-        let parsedActivities: string[] = [];
-        if (rawActivity) {
-          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
-        }
-        if (parsedActivities.length === 0) {
-          parsedActivities = [act1, act2, act3]
-            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
-            .filter(Boolean);
-        }
-        const uniqueActs: string[] = [];
-        for (const act of parsedActivities) {
-          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
-            uniqueActs.push(act);
-          }
-        }
-        const activityStr = uniqueActs.join(', ');
-        const rawDay = getValue('dayOfWeek');
-        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
-        return {
-          id: getValue('id'),
-          title: getValue('title'),
-          venue: venueVal,
-          organization: orgVal || venueVal,
-          location: locVal || venueVal,
-          area: getValue('area'),
-          activity: activityStr,
-          activities: uniqueActs,
-          dayOfWeek: dayOfWeekStr,
-          startTime: getValue('startTime'),
-          endTime: getValue('endTime'),
-          frequency: getValue('frequency'),
-          frequencyNotes: getValue('frequencyNotes'),
-          price: getValue('price'),
-          preRegistration: getValue('preRegistration'),
-          map: getValue('map'),
-          social: getValue('social'),
-          website: getValue('website'),
-          contact: getValue('contact'),
-          about: getValue('about'),
-          notes: getValue('notes'),
-          database: getValue('database'),
-        };
-      })
-      .filter((event): event is Event => event !== null);
-    return events.filter((event) => Boolean(event.title));
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return [];
   }
 }
 
