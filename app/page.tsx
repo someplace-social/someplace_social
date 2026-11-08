@@ -41,6 +41,7 @@ export default function Home() {
       <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
             <h1 className={styles.heroTitle}>About Someplace Social</h1>
             <p className={styles.heroDescription}>
               We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
@@ -65,6 +66,7 @@ export default function Home() {
             />
           </div>
         </section>
+
         <section aria-labelledby="criteria-heading">
           <div className={styles.criteriaHeader}>
             <h2 id="criteria-heading" className={styles.criteriaTitle}>
@@ -72,6 +74,7 @@ export default function Home() {
             </h2>
             <div className={styles.criteriaLine} aria-hidden="true" />
           </div>
+
           <div className={styles.criteriaList}>
             {CRITERIA_ITEMS.map((item) => (
               <div key={item.number} className={styles.criteriaCard}>

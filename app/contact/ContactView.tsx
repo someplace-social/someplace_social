@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -24,9 +25,9 @@ const PRE_REGISTRATION_OPTIONS = [
 export default function ContactView() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') === 'question' ? 'question' : 'submit';
+
   const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
 
-  // Section 1: The Basics (What & Who)
   const [city, setCity] = useState('Medellín, Colombia');
   const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
@@ -92,7 +93,6 @@ export default function ContactView() {
         : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
       : activity || 'Not specified';
 
-    // Compute combined pre-registration text
     const fullPreRegistration = preRegistrationDetails.trim()
       ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
       : preRegistrationType;
@@ -159,13 +159,13 @@ export default function ContactView() {
           message: summaryLines.join('\n'),
         }),
       });
+
       const result = await response.json();
       if (result.success) {
         setSubmitStatus({
           success: true,
           message: 'Thank you! Your event submission has been sent. We will review and add it shortly.',
         });
-        // Reset form
         setTitle('');
         setOrganizer('');
         setActivity('');
@@ -210,12 +210,14 @@ export default function ContactView() {
     e.preventDefault();
     setQuestionLoading(true);
     setQuestionStatus(null);
+
     const messageLines = [
       `First Name: ${questionFirstName}`,
       `Email Address: ${questionEmail}`,
       `Message:`,
       questionMessage,
     ];
+
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -225,6 +227,7 @@ export default function ContactView() {
           message: messageLines.join('\n'),
         }),
       });
+
       const result = await response.json();
       if (result.success) {
         setQuestionStatus({
@@ -254,6 +257,7 @@ export default function ContactView() {
     <main className={styles.page}>
       <section className={styles.hero}>
         <div>
+          <p className={styles.eyebrow}>CONTACT</p>
           <h1 className={styles.heroTitle}>Contact Us</h1>
           <p className={styles.heroDescription}>
             Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
@@ -345,7 +349,6 @@ export default function ContactView() {
               </p>
             </div>
 
-            {/* SECTION 1: Event Identity */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>The Event</legend>
               <p className={styles.sectionDescription}>
@@ -368,6 +371,7 @@ export default function ContactView() {
                     <option value="Other / New City">Other / New City</option>
                   </select>
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-title" className={styles.label}>
                     Event Title *
@@ -400,6 +404,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-activity" className={styles.label}>
                     Activity / Category
@@ -455,7 +460,6 @@ export default function ContactView() {
               </div>
             </fieldset>
 
-            {/* SECTION 2: When & Schedule */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>When &amp; Schedule</legend>
               <p className={styles.sectionDescription}>
@@ -474,11 +478,12 @@ export default function ContactView() {
                     className={styles.select}
                   >
                     <option value="Weekly">Weekly</option>
-                    <option value="Bi-weekly">Bi-weekly (every two weeks)</option>
+                    <option value="Bi-weekly (every two weeks)">Bi-weekly (every two weeks)</option>
                     <option value="Monthly (1st Tuesday…)">Monthly (e.g. 1st Tuesday)</option>
                     <option value="Seasonal / Irregular">Seasonal / Irregular</option>
                   </select>
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-freq-notes" className={styles.label}>
                     Frequency notes
@@ -535,6 +540,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-end-time" className={styles.label}>
                     End time
@@ -552,7 +558,6 @@ export default function ContactView() {
               </div>
             </fieldset>
 
-            {/* SECTION 3: Where / Location */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>Where / Location</legend>
               <p className={styles.sectionDescription}>
@@ -575,6 +580,7 @@ export default function ContactView() {
                   />
                   <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-area" className={styles.label}>
                     Neighborhood / Area
@@ -606,6 +612,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-map" className={styles.label}>
                     Google Maps link
@@ -623,7 +630,6 @@ export default function ContactView() {
               </div>
             </fieldset>
 
-            {/* SECTION 4: Cost & Pre-Registration */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>Cost &amp; Pre-Registration</legend>
               <p className={styles.sectionDescription}>
@@ -686,7 +692,6 @@ export default function ContactView() {
               </div>
             </fieldset>
 
-            {/* SECTION 5: Links & Contact */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>
                 Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
@@ -710,6 +715,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-social" className={styles.label}>
                     Social media / Instagram
@@ -745,7 +751,6 @@ export default function ContactView() {
               </div>
             </fieldset>
 
-            {/* SECTION 6: Submitter Info & Notes */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>
                 About You <span className={styles.legendOptional}>(optional)</span>
@@ -769,6 +774,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="submit-email" className={styles.label}>
                     Your email address
@@ -838,6 +844,7 @@ export default function ContactView() {
           >
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>Ask a question</legend>
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="q-first-name" className={styles.label}>
@@ -853,6 +860,7 @@ export default function ContactView() {
                     className={styles.input}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <label htmlFor="q-email" className={styles.label}>
                     Email address *
@@ -868,6 +876,7 @@ export default function ContactView() {
                   />
                 </div>
               </div>
+
               <div className={styles.field}>
                 <label htmlFor="q-message" className={styles.label}>
                   Message *
@@ -882,9 +891,11 @@ export default function ContactView() {
                 />
               </div>
             </fieldset>
+
             <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
               {questionLoading ? 'Sending message...' : 'Send message'}
             </button>
+
             {questionStatus && (
               <div
                 className={`${styles.statusAlert} ${

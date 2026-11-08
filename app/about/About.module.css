@@ -20,6 +20,16 @@
   flex: 1 1 500px;
   max-width: 540px;
 }
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
 .heroTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-size: 44px;
