@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
@@ -216,9 +217,10 @@ export default function CityEventsView({
       : activeDayIdx === 1
       ? 'Tomorrow'
       : DAY_NAMES_LONG[activeDate.getDay()];
+
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
-  } · ${currentList.length} ${currentList.length === 1 ? 'thing' : 'things'} on`;
+  }`;
 
   return (
     <div className={styles.pageContainer}>
@@ -226,9 +228,9 @@ export default function CityEventsView({
         city={city}
         allCityOptions={allCityOptions}
       />
-      <div className={styles.heroWrapper}>
-        {city.alertBanner && (
-          <div className={styles.alertBanner} role="status">
+      {city.alertBanner && (
+        <div className={styles.alertBanner} role="status">
+          <div className={styles.alertBannerInner}>
             <span className={styles.alertBannerIcon} aria-hidden="true">
               <svg
                 width="18"
@@ -252,7 +254,9 @@ export default function CityEventsView({
               </Link>
             </span>
           </div>
-        )}
+        </div>
+      )}
+      <div className={styles.heroWrapper}>
         <CityHeroCard
           cityName={city.name}
           introTitle={city.introTitle}

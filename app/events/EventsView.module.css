@@ -16,18 +16,21 @@
   padding: 28px 32px 0;
 }
 .alertBanner {
+  width: 100%;
+  background-color: #fde8e8;
+  border-bottom: 1px solid #f8b4b4;
+  padding: 10px 24px;
+  box-sizing: border-box;
+}
+.alertBannerInner {
+  max-width: 1120px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   gap: 10px;
-  background-color: #fde8e8;
-  border: 1.5px solid #f8b4b4;
-  border-radius: 12px;
-  padding: 12px 20px;
-  margin: 0 auto 20px;
-  max-width: 640px;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #991b1b;
   line-height: 1.4;
@@ -183,10 +186,10 @@
     padding: 14px 16px 0;
   }
   .alertBanner {
-    padding: 10px 14px;
+    padding: 9px 16px;
+  }
+  .alertBannerInner {
     font-size: 13.5px;
-    margin: 0 auto 14px;
-    max-width: 100%;
     gap: 8px;
   }
   .mainLayout {
