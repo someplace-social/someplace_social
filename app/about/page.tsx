@@ -2,13 +2,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import styles from '../Page.module.css';
+import styles from './About.module.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: 'Learn about Someplace Social, our mission to build community, and the criteria for our event listings.',
+  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
 };
+
+const CRITERIA_ITEMS = [
+  {
+    number: '1',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly.',
+  },
+  {
+    number: '2',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No one-on-one sessions.',
+  },
+  {
+    number: '3',
+    title: 'Open',
+    description: 'Must be inclusive and open to all.',
+  },
+  {
+    number: '4',
+    title: 'Affordable',
+    description: 'Must be relatively affordable.',
+  },
+] as const;
 
 export default function AboutPage() {
   return (
@@ -17,9 +40,9 @@ export default function AboutPage() {
       <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
-            <h1>About The Guides</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We can leverage technology to find existing communities, encourage new spaces, and go someplace social.
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties. We leverage technology to find existing communities, encourage new spaces, and go someplace social.
             </p>
           </div>
           <div className={styles.illustrationContainer}>
@@ -28,45 +51,41 @@ export default function AboutPage() {
               alt="Illustration of capybaras sitting around a table"
               width={400}
               height={300}
-              style={{ width: '100%', height: 'auto' }}
+              priority
+              className={styles.heroImage}
             />
           </div>
         </section>
-        <section className={styles.contentBox}>
-          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Why Our Listings Are Different</h2>
-          <ul>
-            <li><strong>More listings</strong> because we don't rely on the organization hosting the events to add. Anyone from the community can submit and spread the word.</li>
-            <li><strong>Better organized</strong> events listed in order of date and time rather than by who pays the most.</li>
-            <li><strong>Better quality</strong> events because they are vetted by real humans.</li>
-          </ul>
-          <h2 style={{ fontSize: '2.5em', marginTop: '2.5rem', marginBottom: '1rem' }}>Event Listings Criteria</h2>
-          <ul>
-            <li><strong>Regularly Occurring:</strong> must happen weekly or biweekly.</li>
-            <li><strong>Group Event:</strong> must be open to multiple people. No one-on-one sessions.</li>
-            <li><strong>Open:</strong> must be inclusive and open to all.</li>
-            <li><strong>Affordable:</strong> must be relatively affordable.</li>
-          </ul>
-        </section>
-        <section className={styles.heroSection} style={{ marginTop: '4rem' }}>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-about.png"
-              alt="Illustration of a person relaxing in a hammock"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
+
+        <section aria-labelledby="criteria-heading">
+          <div className={styles.criteriaHeader}>
+            <h2 id="criteria-heading" className={styles.criteriaTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.criteriaLine} aria-hidden="true" />
           </div>
-          <div className={styles.heroText}>
-            <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>About Someplace Social</h2>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              Someplace Social was born out of frustration that a quick, easy list of weekly activities in Medellin didn't exist. We decided to make a website so we could help other people find their communities.
-            </p>
-            <div style={{ marginTop: '1rem' }}>
-              <Link href="/support" className={styles.button}>
-                Support
-              </Link>
-            </div>
+
+          <div className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <div key={item.number} className={styles.criteriaCard}>
+                <div className={styles.badgeCircle} aria-hidden="true">
+                  {item.number}
+                </div>
+                <div className={styles.criteriaContent}>
+                  <h3 className={styles.criteriaCardTitle}>{item.title}</h3>
+                  <p className={styles.criteriaCardDescription}>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.actionRow}>
+            <Link href="/contact" className={styles.submitButton}>
+              + Submit an Event
+            </Link>
+            <Link href="/events/medellin-colombia" className={styles.secondaryButton}>
+              Browse Events
+            </Link>
           </div>
         </section>
       </main>
