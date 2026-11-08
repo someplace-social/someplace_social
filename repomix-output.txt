@@ -1,5 +1,156 @@
 #TASK
 
+add this header to both the Fort Collins and Medellin pages. Obviously the fort collins one will say fort collins and pertain to fort collins. For each, make sure the list of things to do start with the most popular activities on the list. Then there will also be a complete list of activities in those pills which act as filters, so when clicked, it filters the whole page for only those events. by default it shows all. I'm attaching the backend so you can see what's most popular. Also make it use our theme colors. Make sure this looks nice and fits well with the pages. and make sure it all fits on mobile nicely as well.
+
+
+MULTI-STEP PROCESS:
+
+
+1) Make a plan:
+As soon as you get the files, investigate the issue at hand and find the root. 
+#RULES
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan. 
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours. 
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 25k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response. 
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan. 
+
+2) Implement plan: 
+Implement the outline / plan. 
+
+
+
+
+
+
+
+#GUIDELINES
+You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
+1. PROJECT CONTEXT
+Project Name: Someplace Social
+Environment: Windows 11
+Package Manager: PNPM
+2. CORE DIRECTIVES (NON-NEGOTIABLE)
+Full File Output: When modifying a file, output the ENTIRE , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
+Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
+PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
+Response length: If your response contains more than approximately 30k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
+3. RULES
+Security: Security is very important - always keep in mind best practices.
+Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices. 
+DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
+Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
+Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
+Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
+Egress: Keep egress low whenever possible.
+Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
+Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
+Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
+Simple & Robust: The simplest and most robust solution is best. When building or fixing a problem, always start with what coild be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
+Page text: when writing text, choose simple, easy to understand,  straightforward words for page titles, page text, etc. 
+Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
+UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+
+
+4. RESPONSE FORMAT RULES
+Start with a brief explanation of what you are doing.
+Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
+End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
+Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: $targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }
+5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):
+IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow. 
+Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
+File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
+Code Output: A single, complete, full-file code block.
+Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
+Git Commands: The very last item in your response must be a single code block containing the final git commands.
+5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
+- Never provide multiple open commands in a row.
+- Never provide multiple file code blocks in a row.
+- Never list all commands first and all files afterward.
+- Never open several files before showing the first file’s contents.
+- Never skip ahead to later files.
+- Never bundle files together in one code block.
+- The command for file N+1 MUST appear immediately before the code block for file N+1.
+- The ONLY allowed pattern is:
+open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
+5.3 FORBIDDEN PATTERNS:
+- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
+- open 1 -> open 2 -> file 1 -> file 2
+- any response that shows all commands first and all files later 
+
+EXAMPLE OF CORRECT RESPONSE FORMAT:
+This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
+
+Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc… 
+
+```powershell
+pnpx supabase migration new create_example_table
+```
+
+Here is the sql code.
+
+```sql
+-- supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
+create table example (
+  ...
+);
+```
+
+Next we will push to supabase.
+
+```powershell
+pnpx supabase db push
+```
+
+Now we’ll create a new file.
+
+```powershell
+New-Item 'app/index.tsx' -Force
+code 'app/index.tsx'
+```
+
+Here is the full code for our new file.
+
+```typescript
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HelloScreen() {
+  // ...
+  return <Text>hello, world</Text>;
+  // ...
+}
+```
+
+Now we’ll open page2.
+
+```powershell
+code 'app/page2.tsx'
+```
+
+Here is the updated code for page2.
+
+```typescript
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function PageTwoScreen() {
+  // ...
+  return <Text>hello, world page 2</Text>;
+  // ...
+}
+```
+
+Finally, we will commit.
+
+```powershell
+git add .
+git commit -m "feat: Add example migration and pages"
+```
+
+
+
 
 
 
@@ -25,6 +176,8 @@ Project Structure Map:
 |   |   +--- Header.module.css
 |   |   \--- Header.tsx
 |   +--- contact
+|   |   +--- Contact.module.css
+|   |   +--- ContactView.tsx
 |   |   \--- page.tsx
 |   +--- events
 |   |   +--- [city]
@@ -134,6 +287,8 @@ app/components/Footer.tsx
 app/components/GoogleAnalytics.tsx
 app/components/Header.module.css
 app/components/Header.tsx
+app/contact/Contact.module.css
+app/contact/ContactView.tsx
 app/contact/page.tsx
 app/events/[city]/layout.tsx
 app/events/[city]/page.tsx
@@ -307,6 +462,1055 @@ export default function GoogleAnalytics({ gaId }: { gaId: string }) {
         `}
       </Script>
     </>
+  );
+}
+
+================
+File: app/contact/Contact.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0;
+}
+.heroImageContainer {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.thanks {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 26px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 4px rgba(31, 27, 22, 0.04);
+}
+.thanksTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+.thanksText {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.ghostBtn:hover {
+  border-color: var(--ink);
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+.labelDivider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0 0 24px;
+}
+.labelLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.panel {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
+}
+.tabs {
+  display: inline-flex;
+  background-color: var(--chip);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 4px;
+}
+.tabBtn {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.tabBtnActive {
+  background-color: var(--ink);
+  color: #ffffff;
+}
+.criteria {
+  background-color: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.criteriaHeading {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.criteriaGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+}
+.criteriaItem {
+  line-height: 1.45;
+}
+.criteriaItem strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.criteriaFootnote {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 28px;
+}
+.legend {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 0;
+  margin-bottom: 16px;
+  color: var(--ink);
+}
+.legendOptional {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #8a8174;
+  margin-left: 6px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.labelSub {
+  font-weight: 400;
+  color: #8a8174;
+  font-size: 13px;
+  margin-left: 4px;
+}
+.input,
+.select,
+.textarea {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1.5px solid #e0d4b6;
+  border-radius: 12px;
+  background-color: #fffdf7;
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: #a79d8b;
+}
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  background-color: #ffffff;
+  border-color: var(--ink);
+}
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.select {
+  cursor: pointer;
+  appearance: auto;
+}
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.dayCheckbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.dayPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1.5px solid #e0d4b6;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #fffdf7;
+  color: var(--ink);
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.dayPillActive {
+  background-color: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ink);
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 26px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.submitBtn:hover {
+  opacity: 0.9;
+}
+.submitBtn:active {
+  transform: scale(0.99);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.statusAlert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  margin-top: 18px;
+  line-height: 1.4;
+}
+.statusSuccess {
+  background-color: #eaf7ee;
+  border: 1px solid #b7e4c7;
+  color: #155724;
+}
+.statusError {
+  background-color: #fde8e8;
+  border: 1px solid #f8b4b4;
+  color: #9b1c1c;
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 24px 16px 56px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .heroTitle {
+    font-size: 34px;
+  }
+  .heroDescription {
+    font-size: 16px;
+  }
+  .heroImageContainer {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .thanks {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    margin-bottom: 32px;
+  }
+  .ghostBtn {
+    width: 100%;
+    text-align: center;
+  }
+  .panel {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+  .tabs {
+    width: 100%;
+    display: flex;
+  }
+  .tabBtn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .criteriaGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .days {
+    gap: 6px;
+  }
+  .dayPill {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .submitBtn {
+    width: 100%;
+  }
+}
+
+================
+File: app/contact/ContactView.tsx
+================
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import styles from './Contact.module.css';
+const DAYS_OF_WEEK = [
+  { id: 'mon', label: 'Mon' },
+  { id: 'tue', label: 'Tue' },
+  { id: 'wed', label: 'Wed' },
+  { id: 'thu', label: 'Thu' },
+  { id: 'fri', label: 'Fri' },
+  { id: 'sat', label: 'Sat' },
+  { id: 'sun', label: 'Sun' },
+] as const;
+export default function ContactView() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'question' ? 'question' : 'submit';
+  const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [eventName, setEventName] = useState('');
+  const [organizer, setOrganizer] = useState('');
+  const [activity, setActivity] = useState('');
+  const [otherActivities, setOtherActivities] = useState('');
+  const [frequency, setFrequency] = useState('Weekly');
+  const [frequencyNotes, setFrequencyNotes] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [price, setPrice] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [location, setLocation] = useState('');
+  const [googleMaps, setGoogleMaps] = useState('');
+  const [website, setWebsite] = useState('');
+  const [social, setSocial] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [notes, setNotes] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
+  // Ask Question Form State
+  const [questionFirstName, setQuestionFirstName] = useState('');
+  const [questionEmail, setQuestionEmail] = useState('');
+  const [questionMessage, setQuestionMessage] = useState('');
+  const [questionLoading, setQuestionLoading] = useState(false);
+  const [questionStatus, setQuestionStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const toggleDay = (dayLabel: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
+    );
+  };
+  const handleEventSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+    setSubmitStatus(null);
+    const messageLines = [
+      `Submitter Name: ${name || 'Not provided'}`,
+      `Submitter Email: ${email || 'Not provided'}`,
+      `Event Name: ${eventName}`,
+      `Organizer: ${organizer || 'Not provided'}`,
+      `Activity: ${activity || 'Not provided'}`,
+      otherActivities ? `Other Activities: ${otherActivities}` : null,
+      `Frequency: ${frequency}`,
+      frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
+      `Days of Week: ${selectedDays.length > 0 ? selectedDays.join(', ') : 'Not specified'}`,
+      `Start Time: ${startTime || 'Not specified'}`,
+      `End Time: ${endTime || 'Not specified'}`,
+      `Price: ${price || 'Not specified'}`,
+      `Neighborhood: ${neighborhood || 'Not specified'}`,
+      `Location: ${location || 'Not specified'}`,
+      googleMaps ? `Google Maps: ${googleMaps}` : null,
+      website ? `Website: ${website}` : null,
+      social ? `Social Media: ${social}` : null,
+      whatsapp ? `WhatsApp: ${whatsapp}` : null,
+      notes ? `Additional Notes: ${notes}` : null,
+    ].filter(Boolean);
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'Submit an Event',
+          message: messageLines.join('\n'),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus({
+          success: true,
+          message: 'Thank you! Your event submission has been sent. We will review it shortly.',
+        });
+        setName('');
+        setEmail('');
+        setEventName('');
+        setOrganizer('');
+        setActivity('');
+        setOtherActivities('');
+        setFrequency('Weekly');
+        setFrequencyNotes('');
+        setSelectedDays([]);
+        setStartTime('');
+        setEndTime('');
+        setPrice('');
+        setNeighborhood('');
+        setLocation('');
+        setGoogleMaps('');
+        setWebsite('');
+        setSocial('');
+        setWhatsapp('');
+        setNotes('');
+      } else {
+        setSubmitStatus({
+          success: false,
+          message: 'Failed to submit event. Please try again.',
+        });
+      }
+    } catch {
+      setSubmitStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+  const handleQuestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuestionLoading(true);
+    setQuestionStatus(null);
+    const messageLines = [
+      `First Name: ${questionFirstName}`,
+      `Email Address: ${questionEmail}`,
+      `Message:`,
+      questionMessage,
+    ];
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'Ask a Question',
+          message: messageLines.join('\n'),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setQuestionStatus({
+          success: true,
+          message: 'Thank you! Your message has been sent. We will get back to you soon.',
+        });
+        setQuestionFirstName('');
+        setQuestionEmail('');
+        setQuestionMessage('');
+      } else {
+        setQuestionStatus({
+          success: false,
+          message: 'Failed to send message. Please try again.',
+        });
+      }
+    } catch {
+      setQuestionStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setQuestionLoading(false);
+    }
+  };
+  return (
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <div>
+          <h1 className={styles.heroTitle}>Contact Us</h1>
+          <p className={styles.heroDescription}>
+            Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
+          </p>
+        </div>
+        <div className={styles.heroImageContainer}>
+          <Image
+            src="/images/hero-contact.png"
+            alt="Illustration of a capybara drinking coffee"
+            width={340}
+            height={260}
+            priority
+            className={styles.heroImage}
+          />
+        </div>
+      </section>
+      <section className={styles.thanks}>
+        <div>
+          <h2 className={styles.thanksTitle}>Thanks for contributing</h2>
+          <p className={styles.thanksText}>
+            Free for everyone — no ads, no pop-ups. It runs 100% on donations. If you&apos;re able, buy me a drink.
+          </p>
+        </div>
+        <a
+          href="https://buymeacoffee.com/someplacesocial"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.ghostBtn}
+        >
+          Buy me a drink
+        </a>
+      </section>
+      <div className={styles.labelDivider}>
+        <span>Get in touch</span>
+        <div className={styles.labelLine} aria-hidden="true" />
+      </div>
+      <section className={styles.panel}>
+        <div className={styles.tabs} role="tablist" aria-label="Contact options">
+          <button
+            type="button"
+            role="tab"
+            id="tab-submit"
+            aria-selected={activeTab === 'submit'}
+            aria-controls="panel-submit"
+            className={`${styles.tabBtn} ${activeTab === 'submit' ? styles.tabBtnActive : ''}`}
+            onClick={() => setActiveTab('submit')}
+          >
+            Submit an event
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-question"
+            aria-selected={activeTab === 'question'}
+            aria-controls="panel-question"
+            className={`${styles.tabBtn} ${activeTab === 'question' ? styles.tabBtnActive : ''}`}
+            onClick={() => setActiveTab('question')}
+          >
+            Ask a question
+          </button>
+        </div>
+        {activeTab === 'submit' ? (
+          <form
+            id="panel-submit"
+            role="tabpanel"
+            aria-labelledby="tab-submit"
+            onSubmit={handleEventSubmit}
+          >
+            <div className={styles.criteria}>
+              <h3 className={styles.criteriaHeading}>Event listing criteria</h3>
+              <ul className={styles.criteriaGrid}>
+                <li className={styles.criteriaItem}>
+                  <strong>Regularly occurring:</strong> weekly, bi-weekly, or monthly.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Group event:</strong> open to multiple people, no one-on-one.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Open:</strong> inclusive and open to all.
+                </li>
+                <li className={styles.criteriaItem}>
+                  <strong>Affordable:</strong> relatively affordable.
+                </li>
+              </ul>
+              <p className={styles.criteriaFootnote}>
+                Don&apos;t know all the details? Put a &ldquo;?&rdquo; in the box.
+              </p>
+            </div>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>About you</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-name" className={styles.label}>
+                    Your name
+                  </label>
+                  <input
+                    id="submit-name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. John Doe"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-email" className={styles.label}>
+                    Your email address
+                  </label>
+                  <input
+                    id="submit-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="e.g. john@doe.com"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>The event</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-event-name" className={styles.label}>
+                    Name of event *
+                  </label>
+                  <input
+                    id="submit-event-name"
+                    type="text"
+                    required
+                    value={eventName}
+                    onChange={(e) => setEventName(e.target.value)}
+                    placeholder="e.g. Verb &amp; Vibe Game Nite"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-organizer" className={styles.label}>
+                    Organizer
+                  </label>
+                  <input
+                    id="submit-organizer"
+                    type="text"
+                    value={organizer}
+                    onChange={(e) => setOrganizer(e.target.value)}
+                    placeholder="e.g. Life Dance Studios"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-activity" className={styles.label}>
+                    Activity
+                  </label>
+                  <select
+                    id="submit-activity"
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="">Select an activity…</option>
+                    <option value="Language exchange">Language exchange</option>
+                    <option value="Dance">Dance</option>
+                    <option value="Games">Games</option>
+                    <option value="Music">Music</option>
+                    <option value="Social">Social</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-other-act" className={styles.label}>
+                    If &ldquo;Other&rdquo;, list the activities
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-other-act"
+                    type="text"
+                    value={otherActivities}
+                    onChange={(e) => setOtherActivities(e.target.value)}
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>When</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-frequency" className={styles.label}>
+                    How often does it happen?
+                  </label>
+                  <select
+                    id="submit-frequency"
+                    value={frequency}
+                    onChange={(e) => setFrequency(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="Weekly">Weekly</option>
+                    <option value="Bi-weekly">Bi-weekly</option>
+                    <option value="Monthly (1st Tuesday…)">Monthly (1st Tuesday…)</option>
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-freq-notes" className={styles.label}>
+                    Frequency notes
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-freq-notes"
+                    type="text"
+                    value={frequencyNotes}
+                    onChange={(e) => setFrequencyNotes(e.target.value)}
+                    placeholder="e.g. May–Sep only, Even/Odd weeks"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <span className={styles.label}>Day of week</span>
+                <div className={styles.days}>
+                  {DAYS_OF_WEEK.map((day) => {
+                    const isChecked = selectedDays.includes(day.label);
+                    return (
+                      <label
+                        key={day.id}
+                        className={`${styles.dayPill} ${isChecked ? styles.dayPillActive : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleDay(day.label)}
+                          className={styles.dayCheckbox}
+                        />
+                        {day.label}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-start-time" className={styles.label}>
+                    Start time
+                  </label>
+                  <input
+                    id="submit-start-time"
+                    type="text"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    placeholder="e.g. 7:30 PM"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-end-time" className={styles.label}>
+                    End time
+                  </label>
+                  <input
+                    id="submit-end-time"
+                    type="text"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    placeholder="e.g. 10:00 PM"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Where &amp; how much</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-price" className={styles.label}>
+                    Price
+                  </label>
+                  <input
+                    id="submit-price"
+                    type="text"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="e.g. 10k, Free, or Donation"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-neighborhood" className={styles.label}>
+                    Neighborhood
+                  </label>
+                  <input
+                    id="submit-neighborhood"
+                    type="text"
+                    value={neighborhood}
+                    onChange={(e) => setNeighborhood(e.target.value)}
+                    placeholder="e.g. Laureles"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-location" className={styles.label}>
+                    Location
+                  </label>
+                  <input
+                    id="submit-location"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g. Café Revolución"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-maps" className={styles.label}>
+                    Google Maps link
+                  </label>
+                  <input
+                    id="submit-maps"
+                    type="text"
+                    value={googleMaps}
+                    onChange={(e) => setGoogleMaps(e.target.value)}
+                    placeholder="e.g. maps.app.goo.gl/…"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>
+                Links <span className={styles.legendOptional}>(optional)</span>
+              </legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-website" className={styles.label}>
+                    Website
+                  </label>
+                  <input
+                    id="submit-website"
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="e.g. theflyer.info/…"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-social" className={styles.label}>
+                    Social media
+                  </label>
+                  <input
+                    id="submit-social"
+                    type="text"
+                    value={social}
+                    onChange={(e) => setSocial(e.target.value)}
+                    placeholder="e.g. instagram.com/…"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="submit-wa" className={styles.label}>
+                  WhatsApp link
+                </label>
+                <input
+                  id="submit-wa"
+                  type="text"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="e.g. api.whatsapp.com/send?phone=…"
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="submit-notes" className={styles.label}>
+                  Anything else you&apos;d like to say?
+                </label>
+                <textarea
+                  id="submit-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+            <button type="submit" className={styles.submitBtn} disabled={submitLoading}>
+              {submitLoading ? 'Submitting event...' : 'Submit event'}
+            </button>
+            {submitStatus && (
+              <div
+                className={`${styles.statusAlert} ${
+                  submitStatus.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {submitStatus.message}
+              </div>
+            )}
+          </form>
+        ) : (
+          <form
+            id="panel-question"
+            role="tabpanel"
+            aria-labelledby="tab-question"
+            onSubmit={handleQuestionSubmit}
+          >
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Ask a question</legend>
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="q-first-name" className={styles.label}>
+                    First name *
+                  </label>
+                  <input
+                    id="q-first-name"
+                    type="text"
+                    required
+                    value={questionFirstName}
+                    onChange={(e) => setQuestionFirstName(e.target.value)}
+                    placeholder="e.g. John"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="q-email" className={styles.label}>
+                    Email address *
+                  </label>
+                  <input
+                    id="q-email"
+                    type="email"
+                    required
+                    value={questionEmail}
+                    onChange={(e) => setQuestionEmail(e.target.value)}
+                    placeholder="e.g. john@doe.com"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="q-message" className={styles.label}>
+                  Message *
+                </label>
+                <textarea
+                  id="q-message"
+                  required
+                  value={questionMessage}
+                  onChange={(e) => setQuestionMessage(e.target.value)}
+                  placeholder="Enter your message…"
+                  className={styles.textarea}
+                />
+              </div>
+            </fieldset>
+            <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
+              {questionLoading ? 'Sending message...' : 'Send message'}
+            </button>
+            {questionStatus && (
+              <div
+                className={`${styles.statusAlert} ${
+                  questionStatus.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {questionStatus.message}
+              </div>
+            )}
+          </form>
+        )}
+      </section>
+    </main>
   );
 }
 
@@ -1203,175 +2407,6 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 
 ================
-File: app/about/About.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 24px 80px;
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-  width: 100%;
-  margin-bottom: 56px;
-}
-.heroText {
-  flex: 1 1 500px;
-  max-width: 540px;
-}
-.heroTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 0 0 16px;
-  color: var(--ink);
-}
-.heroDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  color: #4f483e;
-  margin: 0;
-}
-.illustrationContainer {
-  flex: 0 0 340px;
-  max-width: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.heroImage {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-.criteriaHeader {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.criteriaTitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-  margin: 0;
-  white-space: nowrap;
-}
-.criteriaLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.criteriaList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.criteriaCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  background-color: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.criteriaCard:hover {
-  border-color: #d6c8ad;
-  box-shadow: 0 4px 12px rgba(31, 27, 22, 0.06);
-}
-.badgeCircle {
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: var(--topbar-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--ink);
-  margin-top: 1px;
-}
-.criteriaContent {
-  flex: 1;
-  min-width: 0;
-}
-.criteriaCardTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 19px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 0;
-  line-height: 1.3;
-}
-.criteriaCardDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
-  color: var(--muted);
-  margin: 5px 0 0;
-  line-height: 1.45;
-}
-@media (max-width: 768px) {
-  .page {
-    padding: 24px 16px 56px;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 36px;
-  }
-  .heroText {
-    max-width: 100%;
-  }
-  .heroTitle {
-    font-size: 32px;
-  }
-  .heroDescription {
-    font-size: 15px;
-  }
-  .illustrationContainer {
-    width: 100%;
-    max-width: 280px;
-    align-self: center;
-  }
-  .criteriaCard {
-    padding: 16px;
-    gap: 14px;
-  }
-  .badgeCircle {
-    flex: 0 0 34px;
-    width: 34px;
-    height: 34px;
-    font-size: 15px;
-  }
-  .criteriaCardTitle {
-    font-size: 17px;
-  }
-  .criteriaCardDescription {
-    font-size: 14px;
-  }
-}
-
-================
 File: app/api/send-form/route.ts
 ================
 import { NextResponse } from 'next/server';
@@ -1559,6 +2594,191 @@ File: tsconfig.json
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
+}
+
+================
+File: app/about/About.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  margin-bottom: 56px;
+}
+.heroText {
+  flex: 1 1 500px;
+  max-width: 540px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #4f483e;
+  margin: 0;
+}
+.illustrationContainer {
+  flex: 0 0 340px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.criteriaHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.criteriaTitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin: 0;
+  white-space: nowrap;
+}
+.criteriaLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+.criteriaList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.criteriaCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background-color: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.criteriaCard:hover {
+  border-color: #d6c8ad;
+  box-shadow: 0 4px 12px rgba(31, 27, 22, 0.06);
+}
+.badgeCircle {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--topbar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  margin-top: 1px;
+}
+.criteriaContent {
+  flex: 1;
+  min-width: 0;
+}
+.criteriaCardTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+.criteriaCardDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--muted);
+  margin: 5px 0 0;
+  line-height: 1.45;
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 24px 16px 56px;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  .heroText {
+    max-width: 100%;
+  }
+  .heroTitle {
+    font-size: 32px;
+  }
+  .heroDescription {
+    font-size: 15px;
+  }
+  .illustrationContainer {
+    width: 100%;
+    max-width: 280px;
+    align-self: center;
+  }
+  .criteriaCard {
+    padding: 16px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+  .badgeCircle {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+  .criteriaCardTitle {
+    font-size: 17px;
+  }
+  .criteriaCardDescription {
+    font-size: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .badgeCircle {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  .criteriaCard {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+  .heroTitle {
+    font-size: 28px;
+  }
 }
 
 ================
@@ -3485,116 +4705,6 @@ export default function Footer() {
 }
 
 ================
-File: app/contact/page.tsx
-================
-import Image from 'next/image';
-import Accordion from '../components/Accordion';
-import ContactForm from '../components/ContactForm';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new event, request an edit to an existing listing, or ask a question.',
-};
-const submitEventFields = [
-  { name: 'Your Name', label: 'Your Name', placeholder: 'e.g. John Doe', type: 'text', required: false },
-  { name: 'Your Email', label: 'Your Email Address', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Event Frequency', label: 'How often does this event happen?', placeholder: 'e.g. Weekly, Monthly (1st Tuesday), Bi-weekly', type: 'text', required: false },
-  { name: 'Frequency Notes', label: 'Frequency Notes (optional)', placeholder: 'e.g. Months, May–Sep or Months, Even/Odd', type: 'text', required: false },
-  { name: 'Day of Week', label: 'Day of Week', placeholder: 'e.g. Tue, Thu', type: 'text', required: false },
-  { name: 'Event Name', label: 'Name of Event', placeholder: 'e.g. Verb & Vibe Game Nite', type: 'text', required: false },
-  { name: 'Organizer', label: 'Organizer', placeholder: 'e.g. Life Dance Studios', type: 'text', required: false },
-  { name: 'Activity Type', label: 'Activity', placeholder: 'e.g. Language Exchange, Dance, Social', type: 'text', required: false },
-  { name: 'Other Activities', label: '*If you chose "Other" under "Activity", list the activities here', placeholder: '', type: 'text', required: false },
-  { name: 'Start Time', label: 'Start Time', placeholder: 'e.g. 7:30 PM', type: 'text', required: false },
-  { name: 'End Time', label: 'End Time', placeholder: 'e.g. 10:00 PM', type: 'text', required: false },
-  { name: 'Price', label: 'Price', placeholder: 'e.g. 10k, Free, or Donation', type: 'text', required: false },
-  { name: 'Location', label: 'Location', placeholder: 'e.g. Café Revolución', type: 'text', required: false },
-  { name: 'Neighborhood', label: 'Neighborhood', placeholder: 'e.g. Laureles', type: 'text', required: false },
-  { name: 'Google Map Link', label: 'Google Map Link', placeholder: 'e.g. www.maps.app.goo.gl/BNNzzoaq3avhH3TE6', type: 'text', required: false },
-  { name: 'Website', label: 'Your Website', placeholder: 'e.g. www.theflyer.info/medellinweeklyevents', type: 'text', required: false },
-  { name: 'Social Media Link', label: 'Social Media Link', placeholder: 'e.g. www.instagram.com/medellinweeklyevents/', type: 'text', required: false },
-  { name: 'Whatsapp Link', label: 'Whatsapp Link', placeholder: 'api.whatsapp.com/send?phone=573052372904', type: 'text', required: false },
-  { name: 'Anything else', label: 'Anything else you\'d like to say?', placeholder: '', type: 'textarea', required: false },
-] as const;
-const editEventFields = [
-  { name: 'Your Email', label: 'Your Email? (optional)', placeholder: 'e.g. john@doe.com', type: 'email', required: false },
-  { name: 'Listing Needs to be Updated', label: 'Which Listing Needs to be Updated? *', placeholder: "This part can't be blank or we won't know what listing you're referring to!", type: 'text', required: true },
-  { name: 'What Needs to be Changed', label: 'What Needs to be Changed? *', placeholder: "Ex. time, price, location etc. Or say, DOESN'T EXIST", type: 'textarea', required: true },
-] as const;
-const askQuestionFields = [
-  { name: 'First Name', label: 'First Name *', placeholder: 'E.g. John', type: 'text', required: true },
-  { name: 'Email Address', label: 'Email Address *', placeholder: 'E.g. john@doe.com', type: 'email', required: true },
-  { name: 'Message', label: 'Message *', placeholder: 'Enter your message...', type: 'textarea', required: true },
-] as const;
-export default function ContactPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>Contact Us</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-contact.png"
-              alt="Illustration of a capybara drinking a coffee"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-        <section className={styles.contentBox}>
-          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-          <p>
-            This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able,{' '}
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
-            >
-              buy me a drink.
-            </a>
-          </p>
-        </section>
-        <div style={{ width: '100%', marginTop: '2rem' }}>
-          <Accordion title="Submit an Event">
-            <div>
-              <strong>A FEW NOTES</strong>
-              <p>• Anyone can submit an event as long as it meets the criteria below.</p>
-              <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
-              <br/>
-              <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
-              <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
-              <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
-              <p><strong>• Open:</strong> must be inclusive and open to all.</p>
-              <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-              <hr style={{ margin: '2rem 0' }} />
-              <ContactForm formType="Submit an Event" fields={submitEventFields} />
-            </div>
-          </Accordion>
-          <Accordion title="Edit Event Info">
-            <ContactForm formType="Edit Event Info" fields={editEventFields} />
-          </Accordion>
-          <Accordion title="Ask a Question">
-            <ContactForm formType="Ask a Question" fields={askQuestionFields} />
-          </Accordion>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
 File: app/page.tsx
 ================
 import { redirect } from 'next/navigation';
@@ -3681,6 +4791,30 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
+      <Footer />
+    </div>
+  );
+}
+
+================
+File: app/contact/page.tsx
+================
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+export default function ContactPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
       <Footer />
     </div>
   );
@@ -3823,9 +4957,15 @@ File: app/components/Header.module.css
   font-weight: 500;
   color: var(--ink);
   text-decoration: none;
+  border-radius: 8px;
 }
 .navLink:hover {
   color: var(--accent);
+}
+.navLinkActive {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
 }
 .addEventBtn {
   display: inline-flex;
@@ -3982,6 +5122,10 @@ File: app/components/Header.module.css
 }
 .drawerNavLink:hover {
   background-color: var(--topbar-bg);
+}
+.drawerNavLinkActive {
+  background-color: var(--topbar-bg);
+  font-weight: 700;
 }
 .drawerFooter {
   margin-top: auto;
@@ -4340,6 +5484,7 @@ File: app/components/Header.tsx
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { CityConfig, getAllCities } from '../lib/cities';
 import styles from './Header.module.css';
 interface HeaderProps {
@@ -4352,6 +5497,7 @@ export default function Header({
   allCityOptions,
   cityCounts = {},
 }: HeaderProps) {
+  const pathname = usePathname();
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
@@ -4366,6 +5512,8 @@ export default function Header({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   const currentCityCount = city ? cityCounts[city.slug] : undefined;
+  const isAboutActive = pathname === '/about';
+  const isContactActive = pathname === '/contact';
   return (
     <>
       <header className={styles.header}>
@@ -4457,10 +5605,16 @@ export default function Header({
                 </div>
               )}
             </div>
-            <Link href="/about" className={styles.navLink}>
+            <Link
+              href="/about"
+              className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
+            >
               About
             </Link>
-            <Link href="/contact" className={styles.navLink}>
+            <Link
+              href="/contact"
+              className={`${styles.navLink} ${isContactActive ? styles.navLinkActive : ''}`}
+            >
               Contact
             </Link>
             <Link href="/contact" className={styles.addEventBtn}>
@@ -4545,14 +5699,18 @@ export default function Header({
             <div className={styles.drawerNavLinks}>
               <Link
                 href="/about"
-                className={styles.drawerNavLink}
+                className={`${styles.drawerNavLink} ${
+                  isAboutActive ? styles.drawerNavLinkActive : ''
+                }`}
                 onClick={() => setMobileDrawerOpen(false)}
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className={styles.drawerNavLink}
+                className={`${styles.drawerNavLink} ${
+                  isContactActive ? styles.drawerNavLinkActive : ''
+                }`}
                 onClick={() => setMobileDrawerOpen(false)}
               >
                 Contact
