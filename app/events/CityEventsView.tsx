@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
+import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
 import {
@@ -226,6 +227,32 @@ export default function CityEventsView({
         allCityOptions={allCityOptions}
       />
       <div className={styles.heroWrapper}>
+        {city.alertBanner && (
+          <div className={styles.alertBanner} role="status">
+            <span className={styles.alertBannerIcon} aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </span>
+            <span className={styles.alertBannerText}>
+              {city.alertBanner.message}{' '}
+              <Link href={city.alertBanner.linkHref} className={styles.alertBannerLink}>
+                {city.alertBanner.linkText}
+              </Link>
+            </span>
+          </div>
+        )}
         <CityHeroCard
           cityName={city.name}
           introTitle={city.introTitle}

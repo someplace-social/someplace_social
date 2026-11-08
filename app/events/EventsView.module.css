@@ -15,6 +15,41 @@
   box-sizing: border-box;
   padding: 28px 32px 0;
 }
+.alertBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fde8e8;
+  border: 1.5px solid #f8b4b4;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #991b1b;
+  line-height: 1.4;
+}
+.alertBannerIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #991b1b;
+}
+.alertBannerText {
+  flex: 1;
+  min-width: 0;
+}
+.alertBannerLink {
+  color: #991b1b;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s ease;
+}
+.alertBannerLink:hover {
+  opacity: 0.8;
+}
 .mainLayout {
   flex: 1;
   width: 100%;
@@ -144,6 +179,12 @@
 @media (max-width: 899px) {
   .heroWrapper {
     padding: 14px 16px 0;
+  }
+  .alertBanner {
+    padding: 10px 14px;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+    gap: 8px;
   }
   .mainLayout {
     padding: 16px 16px 40px;

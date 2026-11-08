@@ -9,6 +9,12 @@ export type CityPriceConfig = {
   midLabel: string;
 };
 
+export type CityAlertBanner = {
+  message: string;
+  linkText: string;
+  linkHref: string;
+};
+
 export type CityConfig = {
   slug: string;
   name: string;
@@ -21,6 +27,7 @@ export type CityConfig = {
   introTitle?: string;
   introDescription?: string;
   priceConfig?: CityPriceConfig;
+  alertBanner?: CityAlertBanner;
 };
 
 export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
@@ -68,6 +75,11 @@ export const CITIES: Record<string, CityConfig> = {
       underValue: 10,
       underLabel: 'Under $10',
       midLabel: '$25',
+    },
+    alertBanner: {
+      message: 'Nov 8, 2026: this page is new! Having issues?',
+      linkText: 'Contact us',
+      linkHref: '/contact',
     },
   },
 };

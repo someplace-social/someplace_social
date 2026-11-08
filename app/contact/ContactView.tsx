@@ -76,8 +76,8 @@ export default function ContactView() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
 
-  // Ask a question tab states
-  const [questionFirstName, setQuestionFirstName] = useState('');
+  // Send a message tab states
+  const [questionName, setQuestionName] = useState('');
   const [questionEmail, setQuestionEmail] = useState('');
   const [questionMessage, setQuestionMessage] = useState('');
   const [questionLoading, setQuestionLoading] = useState(false);
@@ -165,6 +165,7 @@ export default function ContactView() {
           message: summaryLines.join('\n'),
         }),
       });
+
       const result = await response.json();
       if (result.success) {
         setSubmitStatus({
@@ -217,7 +218,7 @@ export default function ContactView() {
     setQuestionStatus(null);
 
     const messageLines = [
-      `First Name: ${questionFirstName}`,
+      `Name: ${questionName}`,
       `Email Address: ${questionEmail}`,
       `Message:`,
       questionMessage,
@@ -228,17 +229,18 @@ export default function ContactView() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formType: 'Ask a Question',
+          formType: 'Question / Message',
           message: messageLines.join('\n'),
         }),
       });
+
       const result = await response.json();
       if (result.success) {
         setQuestionStatus({
           success: true,
           message: 'Thank you! Your message has been sent. We will get back to you soon.',
         });
-        setQuestionFirstName('');
+        setQuestionName('');
         setQuestionEmail('');
         setQuestionMessage('');
       } else {
@@ -264,7 +266,7 @@ export default function ContactView() {
           <p className={styles.eyebrow}>CONTACT</p>
           <h1 className={styles.heroTitle}>Contact Us</h1>
           <p className={styles.heroDescription}>
-            Have an event to share or a question for us? Use the forms below and we&apos;ll get back to you.
+            Have an event to share, or a question, comment, or suggestion? Use the forms below and we&apos;ll get back to you.
           </p>
           <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
             <button
@@ -279,7 +281,7 @@ export default function ContactView() {
                 window.history.replaceState(null, '', '/contact');
               }}
             >
-              Ask a question
+              Send a Message
             </button>
             <button
               type="button"
@@ -293,7 +295,7 @@ export default function ContactView() {
                 window.history.replaceState(null, '', '/contact?tab=submit');
               }}
             >
-              Submit an event
+              Submit an Event
             </button>
           </div>
         </div>
@@ -318,25 +320,25 @@ export default function ContactView() {
             onSubmit={handleQuestionSubmit}
           >
             <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Ask a question</legend>
+              <legend className={styles.legend}>Question? Comment? Suggestion?</legend>
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label htmlFor="q-first-name" className={styles.label}>
-                    First name *
+                  <label htmlFor="q-name" className={styles.label}>
+                    Name *
                   </label>
                   <input
-                    id="q-first-name"
+                    id="q-name"
                     type="text"
                     required
-                    value={questionFirstName}
-                    onChange={(e) => setQuestionFirstName(e.target.value)}
-                    placeholder="e.g. John"
+                    value={questionName}
+                    onChange={(e) => setQuestionName(e.target.value)}
+                    placeholder="e.g. John Doe"
                     className={styles.input}
                   />
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="q-email" className={styles.label}>
-                    Email address *
+                    Email *
                   </label>
                   <input
                     id="q-email"
@@ -363,11 +365,9 @@ export default function ContactView() {
                 />
               </div>
             </fieldset>
-
             <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
-              {questionLoading ? 'Sending message...' : 'Send message'}
+              {questionLoading ? 'Sending message...' : 'Send Message'}
             </button>
-
             {questionStatus && (
               <div
                 className={`${styles.statusAlert} ${
@@ -406,7 +406,6 @@ export default function ContactView() {
                 Only the <strong>event title</strong> is required. Don&apos;t worry if you don&apos;t know all details — share whatever you know!
               </p>
             </div>
-
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>The Event</legend>
               <p className={styles.sectionDescription}>
@@ -444,7 +443,6 @@ export default function ContactView() {
                   <span className={styles.helperText}>The only required field!</span>
                 </div>
               </div>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-organizer" className={styles.label}>
@@ -483,7 +481,6 @@ export default function ContactView() {
                   </select>
                 </div>
               </div>
-
               {activity === 'Other' && (
                 <div className={styles.field}>
                   <label htmlFor="submit-other-act" className={styles.label}>
@@ -499,7 +496,6 @@ export default function ContactView() {
                   />
                 </div>
               )}
-
               <div className={styles.field}>
                 <label htmlFor="submit-about" className={styles.label}>
                   About the event
@@ -552,7 +548,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.field}>
                 <span className={styles.label}>
                   Day of week <span className={styles.labelSub}>(select all that apply)</span>
@@ -577,7 +572,6 @@ export default function ContactView() {
                   })}
                 </div>
               </div>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-start-time" className={styles.label}>
@@ -646,7 +640,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-location" className={styles.label}>
@@ -698,7 +691,6 @@ export default function ContactView() {
                   className={styles.input}
                 />
               </div>
-
               <div className={styles.field}>
                 <span className={styles.label}>Pre-Registration / RSVP</span>
                 <div className={styles.radioGroup}>
@@ -723,7 +715,6 @@ export default function ContactView() {
                   })}
                 </div>
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="submit-prereg-details" className={styles.label}>
                   Registration link or instructions
@@ -777,7 +768,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="submit-contact" className={styles.label}>
                   Organizer contact
@@ -834,7 +824,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.field}>
                 <label className={styles.checkboxContainer}>
                   <input
@@ -848,7 +837,6 @@ export default function ContactView() {
                   </span>
                 </label>
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="submit-admin-notes" className={styles.label}>
                   Note for administrator
@@ -867,7 +855,6 @@ export default function ContactView() {
             <button type="submit" className={styles.submitBtn} disabled={submitLoading}>
               {submitLoading ? 'Submitting event...' : 'Submit event'}
             </button>
-
             {submitStatus && (
               <div
                 className={`${styles.statusAlert} ${

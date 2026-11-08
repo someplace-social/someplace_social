@@ -44,7 +44,7 @@ export default function Home() {
             <p className={styles.eyebrow}>ABOUT</p>
             <h1 className={styles.heroTitle}>About Someplace Social</h1>
             <p className={styles.heroDescription}>
-              We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
+              We are social creatures. However, modern life can sometimes lead to isolation. The solution is actually quite fun: More clubs, classes, art, and parties.
             </p>
             <div className={styles.heroCityLinks}>
               <Link href="/events/medellin-colombia" className={styles.cityPill}>
