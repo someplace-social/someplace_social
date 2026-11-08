@@ -8,7 +8,6 @@
   flex-direction: column;
   position: relative;
 }
-
 .heroWrapper {
   width: 100%;
   max-width: 1120px;
@@ -16,7 +15,6 @@
   box-sizing: border-box;
   padding: 28px 32px 0;
 }
-
 .mainLayout {
   flex: 1;
   width: 100%;
@@ -28,19 +26,17 @@
   align-items: flex-start;
   gap: 48px;
 }
-
 .aside {
   flex: 0 0 300px;
   min-width: 0;
   position: sticky;
   top: 24px;
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 24px 20px;
-  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.04);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
-
 .asideTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
@@ -50,7 +46,6 @@
   margin: 0 0 6px;
   color: var(--ink);
 }
-
 .asideSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -59,14 +54,12 @@
   color: #5a5247;
   margin: 0;
 }
-
 .dayListVertical {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 20px;
 }
-
 .dayBtnVertical {
   display: flex;
   justify-content: space-between;
@@ -75,7 +68,7 @@
   padding: 0 16px;
   background-color: #ffffff;
   color: var(--ink);
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: 12px;
   font-family: inherit;
   font-size: 15px;
@@ -84,42 +77,37 @@
   box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
   transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
-
 .dayBtnVertical:hover {
   background-color: #faf7f2;
+  border-color: var(--ink);
   box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
 }
-
 .dayBtnVerticalActive {
   background-color: var(--ink);
   color: #ffffff;
+  border-color: var(--ink);
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(31, 27, 22, 0.15);
 }
-
 .dayBtnVerticalActive:hover {
   background-color: var(--ink);
+  border-color: var(--ink);
 }
-
 .dayCountText {
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
 }
-
 .dayCountTextActive {
   color: #e6dfd0;
 }
-
 .mobileDaysGrid {
   display: none;
 }
-
 .contentCol {
   flex: 999 1 520px;
   min-width: 0;
 }
-
 .timeGroupHeader {
   display: flex;
   align-items: center;
@@ -129,17 +117,14 @@
   font-weight: 700;
   color: var(--muted);
 }
-
 .timeGroupHeader:first-of-type {
   margin-top: 0;
 }
-
 .timeGroupLine {
   flex: 1;
   height: 1px;
   background-color: var(--line);
 }
-
 .emptyState {
   text-align: center;
   color: var(--muted);
@@ -148,7 +133,6 @@
   border: 1px solid var(--line);
   border-radius: 14px;
 }
-
 .emptyStateTitle {
   display: block;
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -157,7 +141,6 @@
   color: var(--ink);
   margin-bottom: 6px;
 }
-
 @media (max-width: 899px) {
   .heroWrapper {
     padding: 14px 16px 0;
