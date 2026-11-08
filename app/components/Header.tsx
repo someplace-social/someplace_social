@@ -22,7 +22,11 @@ export default function Header({
   const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const citiesMenuRef = useRef<HTMLDivElement>(null);
-  const citiesList = useMemo(() => allCityOptions || getAllCities(), [allCityOptions]);
+
+  const citiesList = useMemo(() => {
+    const list = allCityOptions || getAllCities();
+    return [...list].sort((a, b) => a.name.localeCompare(b.name));
+  }, [allCityOptions]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -60,11 +64,12 @@ export default function Header({
               <div className={styles.brandSubtitle}>
                 {city.heroLocation}
                 {typeof currentCityCount === 'number' && (
-                  <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'} listed</>
+                  <> · {currentCityCount} {currentCityCount === 1 ? 'event' : 'events'}</>
                 )}
               </div>
             )}
           </div>
+
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
@@ -87,6 +92,7 @@ export default function Header({
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
+
               {citiesMenuOpen && (
                 <div className={styles.citiesDropdown}>
                   {citiesList.map((c) => {
@@ -129,6 +135,7 @@ export default function Header({
                 </div>
               )}
             </div>
+
             <Link
               href="/about"
               className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
@@ -145,6 +152,7 @@ export default function Header({
               + Add event
             </Link>
           </nav>
+
           <div className={styles.navMobileActions}>
             <Link href="/contact" className={styles.mobileAddBtn}>
               + Add
@@ -170,6 +178,7 @@ export default function Header({
           </div>
         </div>
       </header>
+
       {mobileDrawerOpen && (
         <div
           className={styles.drawerBackdrop}
@@ -192,6 +201,7 @@ export default function Header({
                 ✕
               </button>
             </div>
+
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
               {citiesList.map((c) => {
@@ -219,6 +229,7 @@ export default function Header({
                 );
               })}
             </div>
+
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
@@ -247,6 +258,7 @@ export default function Header({
                 + Add event
               </Link>
             </div>
+
             <div className={styles.drawerFooter}>
               <a
                 href="https://buymeacoffee.com/someplacesocial"

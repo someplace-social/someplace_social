@@ -51,5 +51,5 @@ export function getAllCitySlugs(): string[] {
 }
 
 export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES);
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
