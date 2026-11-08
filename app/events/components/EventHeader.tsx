@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CityConfig } from '../../lib/cities';
-import styles from '../EventsView.module.css';
+import styles from './EventHeader.module.css';
 
 interface EventHeaderProps {
   city: CityConfig;

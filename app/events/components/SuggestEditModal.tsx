@@ -1,7 +1,8 @@
 'use client';
+
 import { useState } from 'react';
 import { Event } from '../../lib/google-sheets';
-import styles from '../EventsView.module.css';
+import styles from './SuggestEditModal.module.css';
 
 interface SuggestEditModalProps {
   event: Event;

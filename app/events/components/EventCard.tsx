@@ -7,7 +7,7 @@ import {
   ensureExternalUrl,
   getTagStyle,
 } from '../utils';
-import styles from '../EventsView.module.css';
+import styles from './EventCard.module.css';
 
 interface EventCardProps {
   event: Event;
@@ -34,6 +34,7 @@ export default function EventCard({
       : event.activity
       ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
       : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+
   const displayVenue = event.venue || event.location;
   const recurrenceText = event.frequency
     ? `${event.frequency}${event.frequencyNotes ? ` (${event.frequencyNotes})` : ''}`

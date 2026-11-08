@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Accordion from '../components/Accordion';
 import ContactForm from '../components/ContactForm';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import styles from '../Page.module.css';
 import type { Metadata } from 'next';
 
@@ -45,47 +47,65 @@ const askQuestionFields = [
 
 export default function ContactPage() {
   return (
-    <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroText}>
-          <h1>Contact Us</h1>
-          <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-            This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
-          </p>
-        </div>
-        <div className={styles.illustrationContainer}>
-          <Image src="/images/hero-contact.png" alt="Illustration of a capybara drinking a coffee" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-
-      <section className={styles.contentBox}>
-        <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
-        <p>This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able, <a href="https://buymeacoffee.com/someplacesocial" target="_blank" rel="noopener noreferrer" style={{color: 'inherit'}}>buy me a drink.</a></p>
-      </section>
-
-      <div style={{ width: '100%', marginTop: '2rem' }}>
-        <Accordion title="Submit an Event">
-          <div>
-            <strong>A FEW NOTES</strong>
-            <p>• Anyone can submit an event as long as it meets the criteria below.</p>
-            <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
-            <br/>
-            <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
-            <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
-            <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
-            <p><strong>• Open:</strong> must be inclusive and open to all.</p>
-            <p><strong>• Affordable:</strong> must be relatively affordable.</p>
-            <hr style={{ margin: '2rem 0' }} />
-            <ContactForm formType="Submit an Event" fields={submitEventFields} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Contact Us</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This site relies on the community to keep information updated and correct. If you have a submission, a question, or if listing info is wrong, use the links below.
+            </p>
           </div>
-        </Accordion>
-        <Accordion title="Edit Event Info">
-          <ContactForm formType="Edit Event Info" fields={editEventFields} />
-        </Accordion>
-        <Accordion title="Ask a Question">
-          <ContactForm formType="Ask a Question" fields={askQuestionFields} />
-        </Accordion>
-      </div>
-    </main>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox}>
+          <h2 style={{ fontSize: '2.5em', marginBottom: '1rem' }}>Thanks for Contributing</h2>
+          <p>
+            This site’s free for everyone—no ads, no pop-ups. It runs 100% on donations. If you’re able,{' '}
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'inherit' }}
+            >
+              buy me a drink.
+            </a>
+          </p>
+        </section>
+        <div style={{ width: '100%', marginTop: '2rem' }}>
+          <Accordion title="Submit an Event">
+            <div>
+              <strong>A FEW NOTES</strong>
+              <p>• Anyone can submit an event as long as it meets the criteria below.</p>
+              <p>• If you're submitting an event you know of, but don't know all the details, you can put a “?” in the box.</p>
+              <br/>
+              <strong>WEEKLY EVENT LISTINGS CRITERIA</strong>
+              <p><strong>• Regularly Occurring:</strong> must happen weekly or biweekly.</p>
+              <p><strong>• Group Event:</strong> must be open to multiple people. No one-on-one sessions.</p>
+              <p><strong>• Open:</strong> must be inclusive and open to all.</p>
+              <p><strong>• Affordable:</strong> must be relatively affordable.</p>
+              <hr style={{ margin: '2rem 0' }} />
+              <ContactForm formType="Submit an Event" fields={submitEventFields} />
+            </div>
+          </Accordion>
+          <Accordion title="Edit Event Info">
+            <ContactForm formType="Edit Event Info" fields={editEventFields} />
+          </Accordion>
+          <Accordion title="Ask a Question">
+            <ContactForm formType="Ask a Question" fields={askQuestionFields} />
+          </Accordion>
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }

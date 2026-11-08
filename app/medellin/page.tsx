@@ -1,6 +1,9 @@
 "use client";
+
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { getEvents, Event } from '../lib/google-sheets';
 import { isEventActiveOnDate } from '../events/utils';
 import DayAccordion from './DayAccordion';
@@ -72,14 +75,12 @@ export default function MedellinPage() {
           ? event.activity.split(',').map((a) => a.trim()).filter(Boolean)
           : [event.activity1, event.activity2, event.activity3].filter(Boolean)
       ).map((a) => a.toLowerCase());
-
       const activityMatch =
         filters.activity === 'all' ||
         evActs.includes(filters.activity.toLowerCase()) ||
         event.activity1 === filters.activity ||
         event.activity2 === filters.activity ||
         event.activity3 === filters.activity;
-
       const areaMatch = filters.area === 'all' || event.area === filters.area;
       const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, '')) || 0;
       const priceMatch = numericPrice <= filters.price;
@@ -89,11 +90,10 @@ export default function MedellinPage() {
 
   const currentWeekDates = useMemo(() => {
     const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon ...
+    const currentDay = today.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     const monday = new Date(today);
     monday.setDate(today.getDate() + mondayOffset);
-
     const map: Record<string, Date> = {};
     daysOfWeek.forEach((dayName, idx) => {
       const d = new Date(monday);
@@ -113,46 +113,53 @@ export default function MedellinPage() {
   }, [filteredEvents, currentWeekDates]);
 
   return (
-    <main className={pageStyles.page}>
-      <section className={pageStyles.heroSection}>
-        <div className={pageStyles.heroText}>
-          <h1>Medellin Weekly Events & Activity Guide</h1>
-          <p><strong>by Someplace Social</strong></p>
-          <p style={{ marginTop: '1rem' }}>
-            Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
-          </p>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={pageStyles.page} style={{ flex: 1 }}>
+        <section className={pageStyles.heroSection}>
+          <div className={pageStyles.heroText}>
+            <h1>Medellin Weekly Events & Activity Guide</h1>
+            <p><strong>by Someplace Social</strong></p>
+            <p style={{ marginTop: '1rem' }}>
+              Medellin, Colombia recurring activities, group events, and community classes all in one place. Find traveler friendly weekly language exchanges, free salsa classes, fun parties, and other stuff to do happening near you.
+            </p>
+          </div>
+          <div className={pageStyles.illustrationContainer}>
+            <Image
+              src="/images/hero-medellin.png"
+              alt="Illustration of two capybaras dancing"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <FilterBar
+          activities={uniqueActivities}
+          areas={uniqueAreas}
+          onFilterChange={setFilters}
+        />
+        <div style={{ width: '100%' }}>
+          {daysOfWeek.map((day) => (
+            eventsByDay[day] && eventsByDay[day].length > 0 ? (
+              <DayAccordion key={day} title={day}>
+                {eventsByDay[day].map((event, index) => (
+                  <EventListing key={index} event={event} onEdit={handleEditClick} />
+                ))}
+              </DayAccordion>
+            ) : null
+          ))}
         </div>
-        <div className={pageStyles.illustrationContainer}>
-          <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      </section>
-
-      <FilterBar
-        activities={uniqueActivities}
-        areas={uniqueAreas}
-        onFilterChange={setFilters}
-      />
-
-      <div style={{ width: '100%' }}>
-        {daysOfWeek.map((day) => (
-          eventsByDay[day] && eventsByDay[day].length > 0 ? (
-            <DayAccordion key={day} title={day}>
-              {eventsByDay[day].map((event, index) => (
-                <EventListing key={index} event={event} onEdit={handleEditClick} />
-              ))}
-            </DayAccordion>
-          ) : null
-        ))}
-      </div>
-
-      <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
-        <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
-        <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
-        <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
-        <div style={{ width: '100%', marginTop: '2rem' }}>
-          <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
-        </div>
-      </section>
-    </main>
+        <section ref={editFormRef} style={{ width: '100%', marginTop: '4rem' }}>
+          <h2 style={{ fontSize: '2.5em' }}>Edit a Listing</h2>
+          <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>
+          <p>*Note: click the “✏️ EDIT” link at the end of the listing that needs to be updated to copy and paste it’s details below automatically.</p>
+          <div style={{ width: '100%', marginTop: '2rem' }}>
+            <ContactForm formType="Edit a Listing (Medellin)" fields={editEventFields} />
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

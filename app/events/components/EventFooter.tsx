@@ -1,4 +1,4 @@
-import styles from '../EventsView.module.css';
+import styles from './EventFooter.module.css';
 
 export default function EventFooter() {
   return (
@@ -17,7 +17,6 @@ export default function EventFooter() {
               © 2026 Someplace Social. All rights reserved.
             </div>
           </div>
-
           <div className={styles.footerRightSection}>
             <div className={styles.footerSupportText}>
               Free for everyone, no ads.{' '}
