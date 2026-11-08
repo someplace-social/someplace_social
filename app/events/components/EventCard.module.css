@@ -1,22 +1,69 @@
 .eventCard {
   position: relative;
   overflow: hidden;
-  background-color: #ffffff;
+  background-color: var(--card);
   border: 1px solid var(--line);
   border-radius: 14px;
   margin-bottom: 12px;
   content-visibility: auto;
   contain-intrinsic-size: 0 110px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  --tag-science-ink: #0f5c5c;
+  --tag-science-bg: #d3efec;
+  --tag-craft-ink: #8a3d0c;
+  --tag-craft-bg: #fde4cf;
+  --tag-food-ink: #6b5200;
+  --tag-food-bg: #f4eab8;
+  --tag-community-ink: #3b4a54;
+  --tag-community-bg: #e1e7ea;
+  --tag-music-ink: #5b2a86;
+  --tag-music-bg: #ecdcf7;
+  --tag-trivia-ink: #2d3f7a;
+  --tag-trivia-bg: #dde4f7;
+  --tag-comedy-ink: #8a1f4f;
+  --tag-comedy-bg: #fbdce9;
+  --tag-dance-ink: #852b2b;
+  --tag-dance-bg: #f9dede;
+  --tag-sport-ink: #1f6a42;
+  --tag-sport-bg: #d7f0df;
+  --tag-language-ink: #2c4f7c;
+  --tag-language-bg: #dbe5f7;
+  --tag-default-ink: #4f483e;
+  --tag-default-bg: #f3ead4;
+}
+
+:global(html[data-theme='dark']) .eventCard {
+  --tag-science-ink: #5eead4;
+  --tag-science-bg: #133330;
+  --tag-craft-ink: #fdba74;
+  --tag-craft-bg: #361c0c;
+  --tag-food-ink: #fde047;
+  --tag-food-bg: #33280c;
+  --tag-community-ink: #cbd5e1;
+  --tag-community-bg: #222b33;
+  --tag-music-ink: #d8b4fe;
+  --tag-music-bg: #2f1847;
+  --tag-trivia-ink: #93c5fd;
+  --tag-trivia-bg: #1c284d;
+  --tag-comedy-ink: #f472b6;
+  --tag-comedy-bg: #3d1427;
+  --tag-dance-ink: #fca5a5;
+  --tag-dance-bg: #3d1919;
+  --tag-sport-ink: #86efac;
+  --tag-sport-bg: #143823;
+  --tag-language-ink: #93c5fd;
+  --tag-language-bg: #1c2b45;
+  --tag-default-ink: #d6cbbe;
+  --tag-default-bg: #2c2720;
 }
 
 .eventCardOpen {
   border-color: var(--ink);
-  box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
+  box-shadow: var(--shadow-md);
   overflow: visible;
   z-index: 10;
 }
-
 .cardRow {
   display: flex;
   gap: 20px;
@@ -30,15 +77,14 @@
   font: inherit;
   cursor: pointer;
 }
-
 .timeCol {
   flex: 0 0 76px;
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
   font-size: 26px;
   line-height: 1;
+  color: var(--ink);
 }
-
 .endTimeText {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-weight: 500;
@@ -46,13 +92,11 @@
   color: var(--muted);
   margin-top: 5px;
 }
-
 .infoCol {
   flex: 1;
   min-width: 0;
   padding-right: 48px;
 }
-
 .nextUpBadge {
   display: inline-block;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -64,25 +108,22 @@
   padding: 2px 7px;
   margin-bottom: 6px;
 }
-
 .eventTitle {
   font-weight: 700;
   font-size: 18px;
   line-height: 1.25;
+  color: var(--ink);
 }
-
 .eventHost {
   color: var(--muted);
   font-weight: 400;
 }
-
 .eventLocation {
   font-size: 15px;
   line-height: 1.4;
   color: var(--muted);
   margin-top: 3px;
 }
-
 .priceLine {
   display: flex;
   align-items: center;
@@ -92,30 +133,26 @@
   line-height: 1.3;
   font-weight: 700;
 }
-
 .priceFree {
   color: var(--free);
 }
-
 .pricePaid {
   color: var(--price-donation);
 }
-
 .tagList {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
 }
-
 .tagChip {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 6px;
   padding: 3px 9px;
   white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
-
 .chevronCircle {
   position: absolute;
   top: 16px;
@@ -131,27 +168,23 @@
   pointer-events: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-
 .chevronCircleOpen {
   background-color: var(--ink);
   color: var(--bg);
 }
-
 .expandedDrawer {
   border-top: 1px solid var(--line);
   padding: 16px 20px 18px 116px;
   background-color: transparent;
   position: relative;
 }
-
 .eventDescription {
   margin: 0 0 14px;
   max-width: 580px;
   font-size: 15px;
   line-height: 1.5;
-  color: #4f483e;
+  color: var(--text-subtle);
 }
-
 .drawerActionRow {
   display: flex;
   align-items: center;
@@ -159,13 +192,11 @@
   gap: 16px;
   flex-wrap: wrap;
 }
-
 .buttonGrid4 {
   display: grid;
   grid-template-columns: repeat(4, 100px);
   gap: 8px;
 }
-
 .actionBtnPrimary {
   display: flex;
   flex-direction: column;
@@ -182,12 +213,10 @@
   text-decoration: none;
   cursor: pointer;
 }
-
 .actionBtnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
-
 .actionBtnOutline {
   display: flex;
   flex-direction: column;
@@ -195,28 +224,25 @@
   justify-content: center;
   gap: 5px;
   min-height: 60px;
-  border: 1.5px solid #e0d4b8;
+  border: 1.5px solid var(--line);
   border-radius: 10px;
   font-weight: 700;
   font-size: 13px;
   color: var(--ink);
   text-decoration: none;
-  background: #ffffff;
+  background: var(--card);
   cursor: pointer;
   font-family: inherit;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-
 .actionBtnOutline:hover {
   border-color: var(--ink);
   color: var(--ink);
 }
-
 .actionBtnOutlineActive {
   border-color: var(--ink);
   background-color: var(--topbar-bg);
 }
-
 .suggestEditBtn {
   display: inline-flex;
   align-items: center;
@@ -231,44 +257,38 @@
   cursor: pointer;
   font-family: inherit;
 }
-
 .suggestEditBtn:hover {
   color: var(--accent);
 }
-
 .contactWrapper {
   position: relative;
   display: flex;
 }
-
 .contactWrapper > button {
   width: 100%;
 }
-
 .contactPopover {
   position: absolute;
   bottom: calc(100% + 8px);
   right: 0;
   width: 260px;
   max-width: calc(100vw - 32px);
-  background-color: #ffffff;
+  background-color: var(--surface-elevated);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 10px 28px rgba(31, 27, 22, 0.14);
+  box-shadow: var(--shadow-md);
   z-index: 50;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .contactHeader {
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 4px 6px 6px;
 }
-
 .contactHeaderLabel {
   font-size: 11px;
   font-weight: 700;
@@ -276,7 +296,6 @@
   letter-spacing: 0.05em;
   color: var(--muted);
 }
-
 .contactInlineRow {
   display: flex;
   align-items: center;
@@ -287,7 +306,6 @@
   border-radius: 8px;
   padding: 5px 6px 5px 10px;
 }
-
 .contactHeaderValue {
   font-size: 13.5px;
   font-weight: 600;
@@ -298,7 +316,6 @@
   flex: 1;
   min-width: 0;
 }
-
 .copyIconBtn {
   display: inline-flex;
   align-items: center;
@@ -307,45 +324,38 @@
   height: 28px;
   border-radius: 6px;
   border: 0;
-  background: #ffffff;
+  background: var(--card);
   color: var(--ink);
   cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(31, 27, 22, 0.08);
+  box-shadow: var(--shadow-sm);
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
-
 .copyIconBtn:hover {
-  background-color: #f7f1e3;
+  background-color: var(--topbar-bg);
   color: var(--accent);
 }
-
 .copyIconBtn:active {
   transform: scale(0.94);
 }
-
 .copyIconBtnCopied {
-  background-color: #eaf7ee;
+  background-color: var(--free-bg);
   color: var(--free);
 }
-
 .copyIconBtnCopied:hover {
-  background-color: #eaf7ee;
+  background-color: var(--free-bg);
   color: var(--free);
 }
-
 .contactDivider {
   height: 1px;
   background-color: var(--line);
   margin: 2px 0 4px;
 }
-
 .contactActions {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .contactActionBtn,
 .contactActionLink,
 .contactActionLinkPrimary {
@@ -365,84 +375,68 @@
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-
 .contactActionBtn:hover,
 .contactActionLink:hover {
   background-color: var(--topbar-bg);
   color: var(--ink);
 }
-
 .contactActionLinkPrimary {
   background-color: var(--ink);
-  color: #ffffff;
+  color: var(--bg);
 }
-
 .contactActionLinkPrimary:hover {
-  background-color: #332d25;
-  color: #ffffff;
+  opacity: 0.9;
+  color: var(--bg);
 }
-
 @media (max-width: 899px) {
   .cardRow {
     gap: 12px;
     padding: 14px;
   }
-
   .timeCol {
     flex: 0 0 58px;
     font-size: 20px;
     line-height: 1.1;
   }
-
   .endTimeText {
     font-size: 11.5px;
     margin-top: 3px;
   }
-
   .infoCol {
     padding-right: 32px;
   }
-
   .eventTitle {
     font-size: 16px;
   }
-
   .eventLocation {
     font-size: 13.5px;
   }
-
   .priceLine {
     font-size: 13.5px;
   }
-
   .chevronCircle {
     top: 12px;
     right: 12px;
     width: 28px;
     height: 28px;
   }
-
   .expandedDrawer {
     padding: 14px 14px 12px;
   }
-
   .eventDescription {
     font-size: 14px;
     line-height: 1.45;
   }
-
   .drawerActionRow {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
-
   .buttonGrid4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
   }
-
   .actionBtnPrimary,
   .actionBtnOutline {
     min-height: 52px;
@@ -450,19 +444,16 @@
     font-size: 11.5px;
     gap: 4px;
   }
-
   .actionBtnPrimary svg,
   .actionBtnOutline svg {
     width: 18px;
     height: 18px;
   }
-
   .suggestEditBtn {
     align-self: center;
     min-height: 38px;
     font-size: 13px;
   }
-
   .contactPopover {
     position: fixed;
     top: auto;
@@ -473,6 +464,6 @@
     max-width: none;
     z-index: 100;
     border-radius: 16px;
-    box-shadow: 0 12px 36px rgba(31, 27, 22, 0.25);
+    box-shadow: var(--shadow-lg);
   }
 }

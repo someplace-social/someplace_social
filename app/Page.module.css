@@ -7,12 +7,11 @@
   max-width: 1000px;
   margin: 0 auto;
 }
-
 .page h1 {
   font-size: 2.4em;
   margin-bottom: 1rem;
+  color: var(--ink);
 }
-
 .heroSection {
   display: flex;
   align-items: center;
@@ -21,27 +20,34 @@
   width: 100%;
   margin-bottom: 4rem;
 }
-
 .heroText {
   flex: 1;
   max-width: 500px;
 }
-
+.heroText p {
+  color: var(--text-subtle);
+}
 .illustrationContainer {
   flex: 1;
   max-width: 400px;
 }
-
 .contentBox {
-  background-color: #fdf8e1;
+  background-color: var(--card);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
-
+.contentBox h2 {
+  color: var(--ink);
+}
+.contentBox p {
+  color: var(--text-subtle);
+}
 .button {
   background-color: var(--ink);
-  color: white;
+  color: var(--bg);
   padding: 12px 24px;
   border: none;
   border-radius: 10px;
@@ -55,12 +61,10 @@
   margin-top: 1rem;
   transition: opacity 0.15s ease;
 }
-
 .button:hover {
   opacity: 0.9;
-  color: white;
+  color: var(--bg);
 }
-
 @media (max-width: 899px) {
   .page {
     padding: 20px 16px 48px;
@@ -86,4 +90,4 @@
   .button {
     width: 100%;
   }
-} 
+}

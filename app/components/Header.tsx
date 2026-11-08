@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { CityConfig, getAllCities } from '../lib/cities';
+import ThemeToggle from './ThemeToggle';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -142,6 +143,7 @@ export default function Header({
             >
               Contact
             </Link>
+            <ThemeToggle />
             <Link href="/contact?tab=submit" className={styles.addEventBtn}>
               +Add Event
             </Link>
@@ -229,6 +231,10 @@ export default function Header({
               >
                 Contact
               </Link>
+            </div>
+            <div className={styles.drawerSectionTitle}>Preferences</div>
+            <div className={styles.drawerNavLinks}>
+              <ThemeToggle showLabel />
             </div>
             <div className={styles.drawerFooter}>
               <Link

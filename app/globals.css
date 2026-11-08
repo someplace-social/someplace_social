@@ -3,16 +3,111 @@
   --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
   --bg: #fff9ec;
   --card: #ffffff;
+  --card-hover: #faf6ee;
+  --surface-elevated: #ffffff;
   --ink: #1f1b16;
   --muted: #6f675c;
+  --text-subtle: #4f483e;
   --line: #eadfc8;
+  --line-strong: #d6c8ad;
+  --line-light: #f1e7d2;
   --accent: #d2432f;
+  --accent-hover: #b83220;
   --topbar-bg: #f3ead4;
   --sidebar-bg: var(--topbar-bg);
+  --pill-hover: #ebdcb9;
   --free: #1f7a4d;
   --free-bg: #e4f4ea;
   --price-donation: #7a4a00;
   --chip: #f3ead4;
+  --input-bg: #fffdf7;
+  --input-focus-bg: #ffffff;
+  --modal-footer-bg: #faf6ed;
+  --modal-banner-bg: #f3ead4;
+  --changed-badge-bg: #fef3c7;
+  --changed-badge-text: #92400e;
+  --changed-badge-border: #fde68a;
+  --shadow-sm: 0 1px 3px rgba(31, 27, 22, 0.04);
+  --shadow-md: 0 8px 24px rgba(31, 27, 22, 0.12);
+  --shadow-lg: 0 16px 40px rgba(31, 27, 22, 0.2);
+  --backdrop: rgba(31, 27, 22, 0.6);
+  --logo-filter: brightness(0);
+  --slider-track: #eadfc4;
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  --bg: #14120f;
+  --card: #1c1a16;
+  --card-hover: #24211c;
+  --surface-elevated: #24211c;
+  --ink: #f4eee2;
+  --muted: #a49a8c;
+  --text-subtle: #cbc2b3;
+  --line: #332e27;
+  --line-strong: #474036;
+  --line-light: #2a251f;
+  --accent: #ff6854;
+  --accent-hover: #ff8270;
+  --topbar-bg: #1f1c18;
+  --sidebar-bg: var(--topbar-bg);
+  --pill-hover: #2e2922;
+  --free: #4ade80;
+  --free-bg: #132a1b;
+  --price-donation: #e09f3e;
+  --chip: #24211c;
+  --input-bg: #171512;
+  --input-focus-bg: #1c1a16;
+  --modal-footer-bg: #191714;
+  --modal-banner-bg: #221f1a;
+  --changed-badge-bg: #38240d;
+  --changed-badge-text: #fcd34d;
+  --changed-badge-border: #78350f;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --backdrop: rgba(0, 0, 0, 0.75);
+  --logo-filter: brightness(0) invert(0.96);
+  --slider-track: #332e27;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --bg: #14120f;
+    --card: #1c1a16;
+    --card-hover: #24211c;
+    --surface-elevated: #24211c;
+    --ink: #f4eee2;
+    --muted: #a49a8c;
+    --text-subtle: #cbc2b3;
+    --line: #332e27;
+    --line-strong: #474036;
+    --line-light: #2a251f;
+    --accent: #ff6854;
+    --accent-hover: #ff8270;
+    --topbar-bg: #1f1c18;
+    --sidebar-bg: var(--topbar-bg);
+    --pill-hover: #2e2922;
+    --free: #4ade80;
+    --free-bg: #132a1b;
+    --price-donation: #e09f3e;
+    --chip: #24211c;
+    --input-bg: #171512;
+    --input-focus-bg: #1c1a16;
+    --modal-footer-bg: #191714;
+    --modal-banner-bg: #221f1a;
+    --changed-badge-bg: #38240d;
+    --changed-badge-text: #fcd34d;
+    --changed-badge-border: #78350f;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+    --backdrop: rgba(0, 0, 0, 0.75);
+    --logo-filter: brightness(0) invert(0.96);
+    --slider-track: #332e27;
+    color-scheme: dark;
+  }
 }
 
 * {
@@ -27,6 +122,7 @@ body {
   color: var(--ink);
   font-family: var(--font-karla);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button,
@@ -47,6 +143,7 @@ textarea {
 a {
   color: var(--ink);
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 a:hover {

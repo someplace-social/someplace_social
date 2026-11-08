@@ -3,6 +3,7 @@
   border-bottom: 1px solid var(--line);
   background-color: var(--bg);
   z-index: 50;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .headerInner {
   max-width: 1120px;
@@ -30,7 +31,8 @@
   width: auto;
   max-width: 570px;
   object-fit: contain;
-  filter: brightness(0);
+  filter: var(--logo-filter);
+  transition: filter 0.2s ease;
 }
 .brandSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -69,8 +71,8 @@
 }
 .citiesBtnActive {
   font-weight: 700;
-  background-color: #ebdcb9;
-  border-color: #d6c8ad;
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
 }
 .citiesDropdown {
   position: absolute;
@@ -79,11 +81,11 @@
   left: 0;
   min-width: 220px;
   margin-top: 6px;
-  background-color: #ffffff;
+  background-color: var(--surface-elevated);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 6px;
-  box-shadow: 0 10px 30px rgba(31, 27, 22, 0.12);
+  box-shadow: var(--shadow-md);
 }
 .citiesDropdownHidden {
   display: none;
@@ -112,7 +114,7 @@
 }
 .cityOptionActive {
   font-weight: 700;
-  background-color: #ebdcb9;
+  background-color: var(--pill-hover);
 }
 .navLink {
   display: inline-flex;
@@ -134,8 +136,8 @@
 .navLinkActive {
   font-weight: 700;
   text-decoration: none;
-  background-color: #ebdcb9;
-  border-color: #d6c8ad;
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
 }
 .navLinkActive:hover {
   color: var(--ink);
@@ -151,14 +153,14 @@
   font-family: inherit;
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--bg);
   text-decoration: none;
   background-color: var(--ink);
   transition: opacity 0.15s ease;
 }
 .addEventBtn:hover {
   opacity: 0.88;
-  color: #ffffff;
+  color: var(--bg);
 }
 .navMobileActions {
   display: none;
@@ -182,7 +184,7 @@
 .drawerBackdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(31, 27, 22, 0.45);
+  background-color: var(--backdrop);
   z-index: 100;
 }
 .drawer {
@@ -193,7 +195,7 @@
   width: 290px;
   max-width: 85vw;
   background-color: var(--bg);
-  box-shadow: -6px 0 24px rgba(31, 27, 22, 0.15);
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.3);
   z-index: 101;
   display: flex;
   flex-direction: column;
@@ -211,6 +213,7 @@
   font-family: var(--font-bricolage), system-ui, sans-serif;
   font-weight: 800;
   font-size: 18px;
+  color: var(--ink);
 }
 .drawerCloseBtn {
   background: none;
@@ -252,7 +255,7 @@
   gap: 10px;
 }
 .drawerCityItemActive {
-  background-color: #ebdcb9;
+  background-color: var(--pill-hover);
   font-weight: 700;
 }
 .drawerNavLinks {
@@ -275,7 +278,7 @@
   background-color: var(--topbar-bg);
 }
 .drawerNavLinkActive {
-  background-color: #ebdcb9;
+  background-color: var(--pill-hover);
   font-weight: 700;
 }
 .drawerFooter {
@@ -289,7 +292,7 @@
   justify-content: center;
   min-height: 48px;
   background-color: var(--ink);
-  color: #ffffff;
+  color: var(--bg);
   border-radius: 12px;
   font-weight: 700;
   font-size: 15px;
@@ -298,7 +301,7 @@
 }
 .drawerAddEventBtn:hover {
   opacity: 0.9;
-  color: #ffffff;
+  color: var(--bg);
 }
 @media (max-width: 899px) {
   .headerInner {

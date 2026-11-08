@@ -457,7 +457,6 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
   if (!trimmed || trimmed.toLowerCase() === 'x') {
     return { type: 'none' };
   }
-
   if (/^mailto:/i.test(trimmed)) {
     const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
     if (email) {
@@ -469,7 +468,6 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       };
     }
   }
-
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
     return {
       type: 'email',
@@ -478,7 +476,6 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(trimmed)}`,
     };
   }
-
   if (/^tel:/i.test(trimmed)) {
     const rawNumber = trimmed.replace(/^tel:/i, '').trim();
     const displayPhone = formatPhoneNumber(rawNumber);
@@ -495,14 +492,12 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: rawNumber,
     };
   }
-
   if (/^https?:\/\//i.test(trimmed)) {
     return {
       type: 'url',
       url: trimmed,
     };
   }
-
   const digitCount = (trimmed.match(/\d/g) || []).length;
   if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
     const displayPhone = formatPhoneNumber(trimmed);
@@ -519,50 +514,48 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: trimmed,
     };
   }
-
   if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
     return {
       type: 'url',
       url: ensureExternalUrl(trimmed),
     };
   }
-
   return { type: 'none' };
 }
 
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();
   if (t.includes('science')) {
-    return { color: '#0f5c5c', background: '#d3efec' };
+    return { color: 'var(--tag-science-ink, #0f5c5c)', background: 'var(--tag-science-bg, #d3efec)' };
   }
   if (t.includes('craft')) {
-    return { color: '#8a3d0c', background: '#fde4cf' };
+    return { color: 'var(--tag-craft-ink, #8a3d0c)', background: 'var(--tag-craft-bg, #fde4cf)' };
   }
   if (t.includes('food') || t.includes('drink')) {
-    return { color: '#6b5200', background: '#f4eab8' };
+    return { color: 'var(--tag-food-ink, #6b5200)', background: 'var(--tag-food-bg, #f4eab8)' };
   }
   if (t.includes('community') || t.includes('social')) {
-    return { color: '#3b4a54', background: '#e1e7ea' };
+    return { color: 'var(--tag-community-ink, #3b4a54)', background: 'var(--tag-community-bg, #e1e7ea)' };
   }
   if (t.includes('music') || t.includes('bluegrass')) {
-    return { color: '#5b2a86', background: '#ecdcf7' };
+    return { color: 'var(--tag-music-ink, #5b2a86)', background: 'var(--tag-music-bg, #ecdcf7)' };
   }
   if (t.includes('trivia')) {
-    return { color: '#2d3f7a', background: '#dde4f7' };
+    return { color: 'var(--tag-trivia-ink, #2d3f7a)', background: 'var(--tag-trivia-bg, #dde4f7)' };
   }
   if (t.includes('open mic') || t.includes('mic') || t.includes('comedy')) {
-    return { color: '#8a1f4f', background: '#fbdce9' };
+    return { color: 'var(--tag-comedy-ink, #8a1f4f)', background: 'var(--tag-comedy-bg, #fbdce9)' };
   }
   if (t.includes('dance') || t.includes('salsa') || t.includes('bachata')) {
-    return { color: '#852b2b', background: '#f9dede' };
+    return { color: 'var(--tag-dance-ink, #852b2b)', background: 'var(--tag-dance-bg, #f9dede)' };
   }
   if (t.includes('sport') || t.includes('fitness') || t.includes('yoga') || t.includes('walk')) {
-    return { color: '#1f6a42', background: '#d7f0df' };
+    return { color: 'var(--tag-sport-ink, #1f6a42)', background: 'var(--tag-sport-bg, #d7f0df)' };
   }
   if (t.includes('language') || t.includes('english') || t.includes('spanish')) {
-    return { color: '#2c4f7c', background: '#dbe5f7' };
+    return { color: 'var(--tag-language-ink, #2c4f7c)', background: 'var(--tag-language-bg, #dbe5f7)' };
   }
-  return { color: '#4f483e', background: '#f3ead4' };
+  return { color: 'var(--tag-default-ink, #4f483e)', background: 'var(--tag-default-bg, #f3ead4)' };
 }
 
 export function indexEvents(

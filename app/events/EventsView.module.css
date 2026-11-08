@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 .heroWrapper {
   width: 100%;
@@ -22,6 +23,10 @@
   padding: 10px 24px;
   box-sizing: border-box;
 }
+:global(html[data-theme='dark']) .alertBanner {
+  background-color: #2b1616;
+  border-bottom: 1px solid #4a2121;
+}
 .alertBannerInner {
   max-width: 1120px;
   margin: 0 auto;
@@ -35,18 +40,21 @@
   color: #991b1b;
   line-height: 1.4;
 }
+:global(html[data-theme='dark']) .alertBannerInner {
+  color: #fca5a5;
+}
 .alertBannerIcon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #991b1b;
+  color: inherit;
 }
 .alertBannerText {
   flex: 0 1 auto;
 }
 .alertBannerLink {
-  color: #991b1b;
+  color: inherit;
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -91,7 +99,7 @@
   font-weight: 500;
   font-size: 14.5px;
   line-height: 1.4;
-  color: #5a5247;
+  color: var(--text-subtle);
   margin: 0;
 }
 .dayListVertical {
@@ -106,7 +114,7 @@
   align-items: center;
   min-height: 46px;
   padding: 0 16px;
-  background-color: #ffffff;
+  background-color: var(--card);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -114,20 +122,20 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.04);
+  box-shadow: var(--shadow-sm);
   transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .dayBtnVertical:hover {
-  background-color: #faf7f2;
-  border-color: var(--ink);
-  box-shadow: 0 2px 6px rgba(31, 27, 22, 0.08);
+  background-color: var(--card-hover);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-sm);
 }
 .dayBtnVerticalActive {
   background-color: var(--ink);
-  color: #ffffff;
+  color: var(--bg);
   border-color: var(--ink);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(31, 27, 22, 0.15);
+  box-shadow: var(--shadow-md);
 }
 .dayBtnVerticalActive:hover {
   background-color: var(--ink);
@@ -138,8 +146,12 @@
   font-weight: 500;
   color: var(--muted);
 }
+.dayBtnVerticalActive .dayCountText {
+  color: var(--bg);
+  opacity: 0.85;
+}
 .dayCountTextActive {
-  color: #e6dfd0;
+  color: var(--bg);
 }
 .mobileDaysGrid {
   display: none;
@@ -169,7 +181,7 @@
   text-align: center;
   color: var(--muted);
   padding: 48px 16px;
-  background: #ffffff;
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: 14px;
 }
@@ -244,7 +256,7 @@
     min-height: 60px;
     padding: 6px 2px;
     border: 1.5px solid var(--line);
-    background: #ffffff;
+    background: var(--card);
     color: var(--ink);
     border-radius: 10px;
     font: inherit;
@@ -263,8 +275,9 @@
     color: var(--muted);
     line-height: 1;
   }
-  .mobileDayLabelActive {
-    color: #e6dfd0;
+  .mobileDayBtnActive .mobileDayLabel {
+    color: var(--bg);
+    opacity: 0.85;
   }
   .mobileDayNum {
     font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -278,8 +291,9 @@
     color: var(--muted);
     line-height: 1;
   }
-  .mobileDayCountActive {
-    color: #e6dfd0;
+  .mobileDayBtnActive .mobileDayCount {
+    color: var(--bg);
+    opacity: 0.85;
   }
   .contentCol {
     width: 100%;

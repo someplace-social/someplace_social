@@ -1,35 +1,36 @@
 .header {
-  background-color: transparent; /* Changed from #fffbee */
+  background-color: transparent;
   padding: 20px 10px;
   cursor: pointer;
-  font-size: 3em; /* Matched to DayAccordion */
+  font-size: 3em;
   position: relative;
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
+  border-top: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
   margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--ink);
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
-
 .icon {
-  transition: transform 0.3s;
-  font-size: 1em; /* Inherit size from header */
+  transition: transform 0.3s ease;
+  font-size: 1em;
+  color: var(--muted);
 }
-
 .iconOpen {
   transform: rotate(-180deg);
 }
-
 .content {
-  padding: 10px;
-  background-color: #fffbee;
+  padding: 16px;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border-radius: 12px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
-
-/* --- Mobile Styles --- */
 @media (max-width: 768px) {
   .header {
-    font-size: 2em; /* Reduce font size on mobile */
+    font-size: 2em;
   }
 }

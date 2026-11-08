@@ -38,8 +38,8 @@ export default function PriceFilterDropdown({
     return formatPriceReadout(maxPrice, priceConfig);
   }, [maxPrice, priceConfig]);
 
-  const readoutColor = isFreeActive ? '#1F7A4D' : '#1F1A14';
-  const trackFill = isFreeActive ? '#1F7A4D' : '#1F1A14';
+  const readoutColor = isFreeActive ? 'var(--free)' : 'var(--ink)';
+  const trackFill = isFreeActive ? 'var(--free)' : 'var(--ink)';
   const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
 
   const handleToggleFree = () => {
@@ -157,7 +157,7 @@ export default function PriceFilterDropdown({
               className={styles.rangeSlider}
               aria-label="Maximum price"
               style={{
-                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, #EADFC4 ${trackPercent}%, #EADFC4 100%)`,
+                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, var(--slider-track) ${trackPercent}%, var(--slider-track) 100%)`,
               }}
             />
             <div className={styles.sliderLabelsRow} aria-hidden="true">
