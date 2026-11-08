@@ -1,13 +1,12 @@
 export type CityPriceConfig = {
   currencyCode: string;
   currencySymbol: string;
+  unitSuffix: string;
   maxPrice: number;
   step: number;
   underValue: number;
   underLabel: string;
   midLabel: string;
-  formatValue: (val: number) => string;
-  formatReadout: (val: number) => string;
 };
 
 export type CityConfig = {
@@ -41,20 +40,12 @@ export const CITIES: Record<string, CityConfig> = {
     priceConfig: {
       currencyCode: 'COP',
       currencySymbol: '$',
+      unitSuffix: 'k',
       maxPrice: 100,
       step: 5,
       underValue: 40,
       underLabel: 'Under 40k',
       midLabel: '50k',
-      formatValue: (val: number) => (val === 0 ? 'Free' : `${val}k`),
-      formatReadout: (val: number) =>
-        val === 0
-          ? 'Free / donation'
-          : val === 40
-          ? 'Under 40k'
-          : val >= 100
-          ? 'Any price'
-          : `Up to ${val}k`,
     },
   },
   'fort-collins-colorado': {
@@ -71,20 +62,12 @@ export const CITIES: Record<string, CityConfig> = {
     priceConfig: {
       currencyCode: 'USD',
       currencySymbol: '$',
+      unitSuffix: '',
       maxPrice: 50,
       step: 5,
       underValue: 10,
       underLabel: 'Under $10',
       midLabel: '$25',
-      formatValue: (val: number) => (val === 0 ? 'Free' : `$${val}`),
-      formatReadout: (val: number) =>
-        val === 0
-          ? 'Free / donation'
-          : val === 10
-          ? 'Under $10'
-          : val >= 50
-          ? 'Any price'
-          : `Up to $${val}`,
     },
   },
 };
@@ -92,20 +75,12 @@ export const CITIES: Record<string, CityConfig> = {
 export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
   currencyCode: 'USD',
   currencySymbol: '$',
+  unitSuffix: '',
   maxPrice: 50,
   step: 5,
   underValue: 10,
   underLabel: 'Under $10',
   midLabel: '$25',
-  formatValue: (val: number) => (val === 0 ? 'Free' : `$${val}`),
-  formatReadout: (val: number) =>
-    val === 0
-      ? 'Free / donation'
-      : val === 10
-      ? 'Under $10'
-      : val >= 50
-      ? 'Any price'
-      : `Up to $${val}`,
 };
 
 export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {

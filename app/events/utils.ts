@@ -125,6 +125,28 @@ export function matchesPriceFilter(
   return num <= maxPriceFilter;
 }
 
+export function formatPriceValue(val: number, config: CityPriceConfig): string {
+  if (val === 0) return 'Free';
+  if (config.unitSuffix) {
+    return `${val}${config.unitSuffix}`;
+  }
+  return `${config.currencySymbol}${val}`;
+}
+
+export function formatPriceReadout(val: number, config: CityPriceConfig): string {
+  if (val === 0) return 'Free / donation';
+  if (val === config.underValue) return config.underLabel;
+  if (val >= config.maxPrice) return 'Any price';
+  return `Up to ${formatPriceValue(val, config)}`;
+}
+
+export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
+  if (val >= config.maxPrice) return 'All prices';
+  if (val === 0) return 'Free / donation';
+  if (val === config.underValue) return config.underLabel;
+  return `Up to ${formatPriceValue(val, config)}`;
+}
+
 const DAY_ALIAS_MAP: Record<string, string[]> = {
   sun: ['sun', 'sunday'],
   sunday: ['sun', 'sunday'],

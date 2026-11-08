@@ -1,6 +1,7 @@
 'use client';
 import { useMemo } from 'react';
 import { CityPriceConfig } from '../../lib/cities';
+import { formatPriceTriggerLabel, formatPriceReadout } from '../utils';
 import styles from './FilterControls.module.css';
 
 interface PriceFilterDropdownProps {
@@ -27,14 +28,11 @@ export default function PriceFilterDropdown({
   const isFiltered = maxPrice < priceConfig.maxPrice;
 
   const triggerLabel = useMemo(() => {
-    if (maxPrice >= priceConfig.maxPrice) return 'All prices';
-    if (maxPrice === 0) return 'Free / donation';
-    if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
-    return `Up to ${priceConfig.formatValue(maxPrice)}`;
+    return formatPriceTriggerLabel(maxPrice, priceConfig);
   }, [maxPrice, priceConfig]);
 
   const readoutText = useMemo(() => {
-    return priceConfig.formatReadout(maxPrice);
+    return formatPriceReadout(maxPrice, priceConfig);
   }, [maxPrice, priceConfig]);
 
   const readoutColor = isFreeActive ? '#1F7A4D' : '#1F1A14';
