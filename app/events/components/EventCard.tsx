@@ -27,9 +27,12 @@ export default function EventCard({
 }: EventCardProps) {
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
-  const tagList = [event.activity1, event.activity2, event.activity3].filter(Boolean);
+  const tagList = event.activities && event.activities.length > 0
+    ? event.activities
+    : (event.activity
+        ? event.activity.split(',').map((s) => s.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean));
   const displayVenue = event.venue || event.location;
-
   return (
     <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
       <button
@@ -110,17 +113,14 @@ export default function EventCard({
           </svg>
         </span>
       </button>
-
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
-
           {event.preRegistration && (
             <p className={styles.preRegistration}>{event.preRegistration}</p>
           )}
-
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>
               <a

@@ -1,4 +1,5 @@
 import { CityConfig, CITIES } from './cities';
+import { normalizeDayOfWeek } from '../events/utils';
 
 export type Event = {
   id: string;
@@ -7,6 +8,8 @@ export type Event = {
   organization: string;
   location: string;
   area: string;
+  activity: string;
+  activities: string[];
   activity1: string;
   activity2: string;
   activity3: string;
@@ -36,19 +39,15 @@ const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8
 
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
-
   const targetId = city.spreadsheetId || POSSIBLE_SPREADSHEET_IDS[0];
   const ids = Array.from(new Set([targetId, ...POSSIBLE_SPREADSHEET_IDS]));
-
   const tabs = [city.sheetTab];
   if (city.sheetTab.toLowerCase() === 'medellin') {
     tabs.push('Medellín');
   } else if (city.sheetTab.toLowerCase() === 'fort collins') {
     tabs.push('FortCollins');
   }
-
   const urls: string[] = [];
-
   for (const id of ids) {
     for (const tab of tabs) {
       const encodedTab = encodeURIComponent(tab);
@@ -60,12 +59,10 @@ function getCandidateUrls(city: CityConfig): string[] {
       urls.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${city.sheetGid}`);
     }
   }
-
   if (city.sheetGid) {
     urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
   }
   urls.push(`${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`);
-
   return urls;
 }
 
@@ -74,7 +71,6 @@ function parseCsv(csvText: string): string[][] {
   let currentRow: string[] = [];
   let currentField = '';
   let inQuotes = false;
-
   for (let i = 0; i < csvText.length; i++) {
     const char = csvText[i];
     if (char === '"') {
@@ -148,10 +144,11 @@ const HEADER_ALIASES: Record<string, string[]> = {
   organization: ['organization', 'organizer', 'host'],
   location: ['location', 'address'],
   area: ['area', 'neighborhood'],
+  activity: ['activity', 'activities'],
   activity1: ['activity1', 'activity'],
   activity2: ['activity2'],
   activity3: ['activity3'],
-  dayOfWeek: ['dayofweek', 'day', 'days'],
+  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
   startTime: ['starttime', 'start'],
   endTime: ['endtime', 'end'],
   frequency: ['frequency'],
@@ -173,21 +170,22 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   organization: 2,
   location: 3,
   area: 4,
+  activity: 5,
   activity1: 5,
   activity2: 6,
   activity3: 7,
-  dayOfWeek: 8,
-  startTime: 9,
-  endTime: 10,
-  frequency: 11,
-  price: 12,
-  preRegistration: 13,
-  map: 14,
-  social: 15,
-  website: 16,
-  contact: 17,
-  about: 18,
-  notes: 19,
+  dayOfWeek: 6,
+  startTime: 7,
+  endTime: 8,
+  frequency: 9,
+  price: 10,
+  preRegistration: 11,
+  map: 12,
+  social: 13,
+  website: 14,
+  contact: 15,
+  about: 16,
+  notes: 17,
 };
 
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
@@ -206,11 +204,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     } else {
       cityConfig = CITIES['medellin-colombia'];
     }
-
     const candidateUrls = getCandidateUrls(cityConfig);
     const isDev = process.env.NODE_ENV === 'development';
     let rows: string[][] = [];
-
     for (const url of candidateUrls) {
       try {
         const response = await fetch(url, {
@@ -220,7 +216,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
           cache: isDev ? 'no-store' : 'default',
           next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
         });
-
         if (response.ok) {
           const text = await response.text();
           const trimmed = text.trim();
@@ -243,15 +238,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
       }
     }
-
     if (rows.length < 2) {
       console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
       return [];
     }
-
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
-
     Object.keys(HEADER_ALIASES).forEach((field) => {
       const aliases = HEADER_ALIASES[field];
       const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
@@ -259,16 +251,13 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         headerIndexMap[field] = foundIdx;
       }
     });
-
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
     };
-
     const dataRows = rows.slice(1);
     const events = dataRows.map((row): Event | null => {
       if (row.length === 0 || row.every(cell => cleanCell(cell) === '')) return null;
-
       const getValue = (field: string): string => {
         const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
         if (colIdx !== undefined && colIdx < row.length) {
@@ -276,11 +265,31 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         }
         return '';
       };
-
       const venueVal = getValue('venue');
       const orgVal = getValue('organization');
       const locVal = getValue('location');
-
+      const rawActivity = getValue('activity');
+      const act1 = getValue('activity1');
+      const act2 = getValue('activity2');
+      const act3 = getValue('activity3');
+      let parsedActivities: string[] = [];
+      if (rawActivity) {
+        parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+      if (parsedActivities.length === 0) {
+        parsedActivities = [act1, act2, act3]
+          .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+          .filter(Boolean);
+      }
+      const uniqueActs: string[] = [];
+      for (const act of parsedActivities) {
+        if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+          uniqueActs.push(act);
+        }
+      }
+      const activityStr = uniqueActs.join(', ');
+      const rawDay = getValue('dayOfWeek');
+      const dayOfWeekStr = normalizeDayOfWeek(rawDay);
       return {
         id: getValue('id'),
         title: getValue('title'),
@@ -288,10 +297,12 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         organization: orgVal || venueVal,
         location: locVal || venueVal,
         area: getValue('area'),
-        activity1: getValue('activity1'),
-        activity2: getValue('activity2'),
-        activity3: getValue('activity3'),
-        dayOfWeek: getValue('dayOfWeek'),
+        activity: activityStr,
+        activities: uniqueActs,
+        activity1: uniqueActs[0] || '',
+        activity2: uniqueActs[1] || '',
+        activity3: uniqueActs[2] || '',
+        dayOfWeek: dayOfWeekStr,
         startTime: getValue('startTime'),
         endTime: getValue('endTime'),
         frequency: getValue('frequency'),
@@ -306,7 +317,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         database: getValue('database'),
       };
     }).filter((event): event is Event => event !== null);
-
     return events.filter((event) => Boolean(event.title));
   } catch (error) {
     console.error('Error fetching events:', error);

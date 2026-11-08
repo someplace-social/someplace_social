@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { CityConfig, CITIES } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
@@ -21,6 +20,7 @@ const DAY_NAMES_LONG = [
   'Friday',
   'Saturday',
 ];
+
 const MONTH_NAMES = [
   'Jan',
   'Feb',
@@ -88,9 +88,15 @@ export default function CityEventsView({
   const activities = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
-      if (ev.activity1) set.add(ev.activity1.trim());
-      if (ev.activity2) set.add(ev.activity2.trim());
-      if (ev.activity3) set.add(ev.activity3.trim());
+      const list = ev.activities && ev.activities.length > 0
+        ? ev.activities
+        : ev.activity
+        ? ev.activity.split(',').map((a) => a.trim()).filter(Boolean)
+        : [ev.activity1, ev.activity2, ev.activity3].filter(Boolean);
+      list.forEach((act) => {
+        const trimmed = act.trim();
+        if (trimmed) set.add(trimmed);
+      });
     });
     return Array.from(set).filter(Boolean).sort();
   }, [allEvents]);
@@ -131,9 +137,7 @@ export default function CityEventsView({
       .filter((ev) => {
         if (!matchesDay(ev.dayOfWeek, dayName)) return false;
         if (freeOnly && !isFreePrice(ev.price)) return false;
-
         const evHour = parseHour(ev.startTime);
-
         if (selectedTimes.length > 0) {
           const matchesTime = selectedTimes.some((tgName) => {
             const group = TIME_GROUPS.find((g) => g.name === tgName);
@@ -141,9 +145,13 @@ export default function CityEventsView({
           });
           if (!matchesTime) return false;
         }
-
         if (selectedActivities.length > 0) {
-          const acts = [ev.activity1, ev.activity2, ev.activity3]
+          const acts = (ev.activities && ev.activities.length > 0
+            ? ev.activities
+            : ev.activity
+            ? ev.activity.split(',').map((a) => a.trim())
+            : [ev.activity1, ev.activity2, ev.activity3]
+          )
             .filter(Boolean)
             .map((a) => a.trim().toLowerCase());
           const hasActivityMatch = selectedActivities.some((sa) =>
@@ -151,7 +159,6 @@ export default function CityEventsView({
           );
           if (!hasActivityMatch) return false;
         }
-
         if (selectedAreas.length > 0) {
           const areaLower = (ev.area || '').trim().toLowerCase();
           const hasAreaMatch = selectedAreas.some(
@@ -159,7 +166,6 @@ export default function CityEventsView({
           );
           if (!hasAreaMatch) return false;
         }
-
         return true;
       })
       .sort((a, b) => parseHour(a.startTime) - parseHour(b.startTime));
@@ -194,7 +200,6 @@ export default function CityEventsView({
   return (
     <div className={styles.pageContainer}>
       <EventHeader city={city} allCityOptions={allCityOptions} />
-
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
           <h1 className={styles.asideTitle}>
@@ -209,7 +214,6 @@ export default function CityEventsView({
             {MONTH_NAMES[activeDate.getMonth()]} · {currentList.length}{' '}
             {currentList.length === 1 ? 'thing' : 'things'} on
           </p>
-
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -219,7 +223,6 @@ export default function CityEventsView({
             }}
             getEventCountForDay={(idx) => getFilteredEventsForDay(idx).length}
           />
-
           <FilterControls
             freeOnly={freeOnly}
             onToggleFree={() => setFreeOnly(!freeOnly)}
@@ -239,7 +242,6 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
-
         <section className={styles.contentCol}>
           <div className={styles.mobileSectionHeader}>
             <h1 className={styles.mobileHeadingTitle}>
@@ -255,7 +257,6 @@ export default function CityEventsView({
               {currentList.length === 1 ? 'thing' : 'things'} on
             </p>
           </div>
-
           {loading ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
@@ -282,7 +283,6 @@ export default function CityEventsView({
                     {group.name}
                     <div className={styles.timeGroupLine} />
                   </div>
-
                   {groupEvents.map((ev, i) => {
                     const uniqueId = ev.id || `${ev.title}-${i}`;
                     return (
@@ -305,9 +305,7 @@ export default function CityEventsView({
           )}
         </section>
       </main>
-
       <EventFooter />
-
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

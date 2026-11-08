@@ -1,8 +1,8 @@
 "use client";
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { getEvents, Event } from '../lib/google-sheets';
+import { matchesDay } from '../events/utils';
 import DayAccordion from './DayAccordion';
 import FilterBar from '../components/FilterBar';
 import ContactForm from '../components/ContactForm';
@@ -45,9 +45,12 @@ export default function MedellinPage() {
   const uniqueActivities = useMemo(() => {
     const activitySet = new Set<string>();
     allEvents.forEach(event => {
-      if (event.activity1) activitySet.add(event.activity1);
-      if (event.activity2) activitySet.add(event.activity2);
-      if (event.activity3) activitySet.add(event.activity3);
+      const list = event.activities && event.activities.length > 0
+        ? event.activities
+        : event.activity
+        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean);
+      list.forEach(a => activitySet.add(a));
     });
     return Array.from(activitySet).sort();
   }, [allEvents]);
@@ -62,26 +65,31 @@ export default function MedellinPage() {
 
   const filteredEvents = useMemo(() => {
     return allEvents.filter(event => {
+      const evActs = (event.activities && event.activities.length > 0
+        ? event.activities
+        : event.activity
+        ? event.activity.split(',').map(a => a.trim()).filter(Boolean)
+        : [event.activity1, event.activity2, event.activity3].filter(Boolean)
+      ).map(a => a.toLowerCase());
       const activityMatch = filters.activity === 'all' ||
+        evActs.includes(filters.activity.toLowerCase()) ||
         event.activity1 === filters.activity ||
         event.activity2 === filters.activity ||
         event.activity3 === filters.activity;
-      
       const areaMatch = filters.area === 'all' || event.area === filters.area;
-
       const numericPrice = parseFloat(event.price.replace(/[^0-9.]+/g, "")) || 0;
       const priceMatch = numericPrice <= filters.price;
-
       return activityMatch && areaMatch && priceMatch;
     });
   }, [allEvents, filters]);
 
-  const eventsByDay = filteredEvents.reduce((acc, event) => {
-    const day = event.dayOfWeek;
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(event);
-    return acc;
-  }, {} as Record<string, Event[]>);
+  const eventsByDay = useMemo(() => {
+    const map: Record<string, Event[]> = {};
+    daysOfWeek.forEach((day) => {
+      map[day] = filteredEvents.filter((event) => matchesDay(event.dayOfWeek, day));
+    });
+    return map;
+  }, [filteredEvents]);
 
   return (
     <main className={pageStyles.page}>
@@ -95,13 +103,11 @@ export default function MedellinPage() {
           <Image src="/images/hero-medellin.png" alt="Illustration of two capybaras dancing" width={400} height={300} style={{ width: '100%', height: 'auto' }} />
         </div>
       </section>
-
-      <FilterBar 
-        activities={uniqueActivities} 
-        areas={uniqueAreas} 
-        onFilterChange={setFilters} 
+      <FilterBar
+        activities={uniqueActivities}
+        areas={uniqueAreas}
+        onFilterChange={setFilters}
       />
-
       <div style={{ width: '100%' }}>
         {daysOfWeek.map(day => (
           eventsByDay[day] && eventsByDay[day].length > 0 ? (
@@ -113,7 +119,6 @@ export default function MedellinPage() {
           ) : null
         ))}
       </div>
-
       <section ref={editFormRef} style={{width: '100%', marginTop: '4rem'}}>
         <h2 style={{fontSize: '2.5em'}}>Edit a Listing</h2>
         <p>These listings stay up to date because of the community members like you! If you see info that’s incorrect, let us know below.</p>

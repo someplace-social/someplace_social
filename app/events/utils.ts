@@ -51,30 +51,71 @@ export function isFreePrice(price: string): boolean {
 }
 
 const DAY_ALIAS_MAP: Record<string, string[]> = {
+  sun: ['sun', 'sunday'],
   sunday: ['sun', 'sunday'],
+  mon: ['mon', 'monday'],
   monday: ['mon', 'monday'],
+  tue: ['tue', 'tues', 'tuesday'],
   tuesday: ['tue', 'tues', 'tuesday'],
-  wednesday: ['wed', 'wednesday'],
+  wed: ['wed', 'weds', 'wednesday'],
+  wednesday: ['wed', 'weds', 'wednesday'],
+  thu: ['thu', 'thur', 'thurs', 'thursday'],
   thursday: ['thu', 'thur', 'thurs', 'thursday'],
+  fri: ['fri', 'friday'],
   friday: ['fri', 'friday'],
+  sat: ['sat', 'saturday'],
   saturday: ['sat', 'saturday'],
 };
 
+export function normalizeDayOfWeek(dayStr: string): string {
+  if (!dayStr) return '';
+  const trimmed = dayStr.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
+    return 'Daily';
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
+  const DAY_TO_SHORT: Record<string, string> = {
+    sun: 'Sun',
+    sunday: 'Sun',
+    mon: 'Mon',
+    monday: 'Mon',
+    tue: 'Tue',
+    tues: 'Tue',
+    tuesday: 'Tue',
+    wed: 'Wed',
+    weds: 'Wed',
+    wednesday: 'Wed',
+    thu: 'Thu',
+    thur: 'Thu',
+    thurs: 'Thu',
+    thursday: 'Thu',
+    fri: 'Fri',
+    friday: 'Fri',
+    sat: 'Sat',
+    saturday: 'Sat',
+  };
+  const normalized: string[] = [];
+  for (const token of tokens) {
+    const short = DAY_TO_SHORT[token.toLowerCase()];
+    if (short && !normalized.includes(short)) {
+      normalized.push(short);
+    }
+  }
+  return normalized.length > 0 ? normalized.join(', ') : trimmed;
+}
+
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
-
   const targetKey = targetDayName.trim().toLowerCase();
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
   const rawLower = eventDays.toLowerCase();
-
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
     return true;
   }
-
   if (rawLower.includes(targetKey)) {
     return true;
   }
-
   const tokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
   return tokens.some((token) => aliases.includes(token));
 }

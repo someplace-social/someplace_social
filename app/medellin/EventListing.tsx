@@ -13,10 +13,9 @@ const createLink = (text: string, url: string) => {
 };
 
 export default function EventListing({ event, onEdit }: EventListingProps) {
-  const activities = [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', ');
+  const activities = event.activity || (event.activities && event.activities.length > 0 ? event.activities.join(', ') : [event.activity1, event.activity2, event.activity3].filter(Boolean).join(', '));
   const organizationText = event.organization ? ` w/ ${event.organization}` : "";
   const visualText = `${event.title}${organizationText}\n${activities}\n⏳ ${event.startTime} - ${event.endTime} 💰 ${event.price}${event.preRegistration ? ` 📋 Pre-Reg: ${event.preRegistration}` : ''} 📍 ${event.location} 🗺️ ${event.area}\nMap: ${event.map}\nSocial: ${event.social}\nWebsite: ${event.website}\nContact: ${event.contact}`;
-
   return (
     <div className={styles.listing}>
       <strong className={styles.listingTitle}>{event.title}{organizationText}</strong>
