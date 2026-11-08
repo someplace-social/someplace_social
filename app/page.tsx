@@ -1,12 +1,14 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import styles from './about/About.module.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About Someplace Social',
-  description: 'Learn about Someplace Social, our mission to build community, and our event listing criteria.',
+  title: 'Community Events, Social Clubs & Weekly Activities',
+  description:
+    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
 };
 
 const CRITERIA_ITEMS = [
@@ -43,6 +45,14 @@ export default function Home() {
             <p className={styles.heroDescription}>
               We are inherently social creatures. However, modern life can sometimes lead to isolation. The solution is actually super fun: More clubs, classes, art, and parties.
             </p>
+            <div className={styles.heroCityLinks}>
+              <Link href="/events/medellin-colombia" className={styles.cityPill}>
+                Medellín Events →
+              </Link>
+              <Link href="/events/fort-collins-colorado" className={styles.cityPill}>
+                Fort Collins Events →
+              </Link>
+            </div>
           </div>
           <div className={styles.illustrationContainer}>
             <Image

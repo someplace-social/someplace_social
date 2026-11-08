@@ -23,12 +23,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       robots: { index: false, follow: false },
     };
   }
+
+  const title = `${city.name} Events & Activities This Week`;
+  const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
+
   return {
-    title: `${city.name} this week · Someplace Social`,
-    description: `Weekly events, classes, and activities in ${city.heroLocation}.`,
+    title,
+    description,
+    alternates: {
+      canonical: `/events/${city.slug}`,
+    },
+    openGraph: {
+      title: `${title} | Someplace Social`,
+      description,
+      url: `/events/${city.slug}`,
+      siteName: 'Someplace Social',
+      type: 'website',
+    },
     robots: {
-      index: false,
-      follow: false,
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
     },
   };
 }
@@ -39,7 +57,6 @@ export default async function CityEventsPage({ params }: PageProps) {
   if (!city) {
     notFound();
   }
-
   const events = await getEvents(city);
   const allSlugs = getAllCitySlugs();
   const countEntries = await Promise.all(
@@ -51,7 +68,6 @@ export default async function CityEventsPage({ params }: PageProps) {
       return [slug, otherEvents.length] as const;
     })
   );
-
   const cityCounts = Object.fromEntries(countEntries);
 
   return (

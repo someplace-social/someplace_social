@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -65,7 +64,6 @@ export default function Header({
               </div>
             )}
           </div>
-
           <nav className={styles.navDesktop}>
             <div className={styles.citiesWrapper} ref={citiesMenuRef}>
               <button
@@ -88,49 +86,50 @@ export default function Header({
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-              {citiesMenuOpen && (
-                <div className={styles.citiesDropdown}>
-                  {citiesList.map((c) => {
-                    const isActive = city?.slug === c.slug;
-                    const count = cityCounts[c.slug];
-                    return (
-                      <Link
-                        key={c.slug}
-                        href={`/events/${c.slug}`}
-                        className={`${styles.cityOption} ${
-                          isActive ? styles.cityOptionActive : ''
-                        }`}
-                        onClick={() => setCitiesMenuOpen(false)}
-                      >
-                        <span className={styles.cityName}>{c.name}</span>
-                        <div className={styles.cityOptionRight}>
-                          {typeof count === 'number' && (
-                            <span className={styles.cityEventCount}>
-                              {count} {count === 1 ? 'event' : 'events'}
-                            </span>
-                          )}
-                          {isActive && (
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.4"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M5 12.5l4.5 4.5L19 7.5" />
-                            </svg>
-                          )}
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
+              <div
+                className={`${styles.citiesDropdown} ${
+                  citiesMenuOpen ? '' : styles.citiesDropdownHidden
+                }`}
+              >
+                {citiesList.map((c) => {
+                  const isActive = city?.slug === c.slug;
+                  const count = cityCounts[c.slug];
+                  return (
+                    <Link
+                      key={c.slug}
+                      href={`/events/${c.slug}`}
+                      className={`${styles.cityOption} ${
+                        isActive ? styles.cityOptionActive : ''
+                      }`}
+                      onClick={() => setCitiesMenuOpen(false)}
+                    >
+                      <span className={styles.cityName}>{c.name}</span>
+                      <div className={styles.cityOptionRight}>
+                        {typeof count === 'number' && (
+                          <span className={styles.cityEventCount}>
+                            {count} {count === 1 ? 'event' : 'events'}
+                          </span>
+                        )}
+                        {isActive && (
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12.5l4.5 4.5L19 7.5" />
+                          </svg>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-
             <Link
               href="/"
               className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
@@ -143,12 +142,10 @@ export default function Header({
             >
               Contact
             </Link>
-
             <Link href="/contact" className={styles.addEventBtn}>
               + Add event
             </Link>
           </nav>
-
           <div className={styles.navMobileActions}>
             <Link href="/contact" className={styles.mobileAddBtn}>
               + Add
@@ -174,7 +171,6 @@ export default function Header({
           </div>
         </div>
       </header>
-
       {mobileDrawerOpen && (
         <div
           className={styles.drawerBackdrop}
@@ -197,7 +193,6 @@ export default function Header({
                 ✕
               </button>
             </div>
-
             <div className={styles.drawerSectionTitle}>Choose City</div>
             <div className={styles.drawerCityList}>
               {citiesList.map((c) => {
@@ -225,7 +220,6 @@ export default function Header({
                 );
               })}
             </div>
-
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
               <Link
@@ -254,7 +248,6 @@ export default function Header({
                 + Add event
               </Link>
             </div>
-
             <div className={styles.drawerFooter}>
               <a
                 href="https://buymeacoffee.com/someplacesocial"

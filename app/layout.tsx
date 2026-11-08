@@ -30,6 +30,26 @@ export const metadata: Metadata = {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'Someplace Social | Community Event Listings',
+    description:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+    url: 'https://www.someplacesocial.org',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
