@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -15,34 +14,60 @@ const DAYS_OF_WEEK = [
   { id: 'sun', label: 'Sun' },
 ] as const;
 
+const PRE_REGISTRATION_OPTIONS = [
+  'Drop-in (no RSVP needed)',
+  'RSVP recommended',
+  'RSVP required',
+  'Ticketed / pre-pay',
+] as const;
+
 export default function ContactView() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') === 'question' ? 'question' : 'submit';
-
   const [activeTab, setActiveTab] = useState<'submit' | 'question'>(initialTab);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [eventName, setEventName] = useState('');
+  // Section 1: The Basics (What & Who)
+  const [city, setCity] = useState('Medellín, Colombia');
+  const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
   const [activity, setActivity] = useState('');
   const [otherActivities, setOtherActivities] = useState('');
+  const [about, setAbout] = useState('');
+
+  // Section 2: When & Schedule
   const [frequency, setFrequency] = useState('Weekly');
   const [frequencyNotes, setFrequencyNotes] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [price, setPrice] = useState('');
-  const [neighborhood, setNeighborhood] = useState('');
+
+  // Section 3: Where / Location
+  const [venue, setVenue] = useState('');
   const [location, setLocation] = useState('');
-  const [googleMaps, setGoogleMaps] = useState('');
+  const [area, setArea] = useState('');
+  const [map, setMap] = useState('');
+
+  // Section 4: Cost & Pre-Registration
+  const [price, setPrice] = useState('');
+  const [preRegistrationType, setPreRegistrationType] = useState('Drop-in (no RSVP needed)');
+  const [preRegistrationDetails, setPreRegistrationDetails] = useState('');
+
+  // Section 5: Links & Contact
   const [website, setWebsite] = useState('');
   const [social, setSocial] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [notes, setNotes] = useState('');
+  const [contact, setContact] = useState('');
+
+  // Section 6: Submitter Info & Notes
+  const [submitterName, setSubmitterName] = useState('');
+  const [submitterEmail, setSubmitterEmail] = useState('');
+  const [isOrganizer, setIsOrganizer] = useState(false);
+  const [adminNotes, setAdminNotes] = useState('');
+
+  // Status states
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ success: boolean; message: string } | null>(null);
 
+  // Ask a question tab states
   const [questionFirstName, setQuestionFirstName] = useState('');
   const [questionEmail, setQuestionEmail] = useState('');
   const [questionMessage, setQuestionMessage] = useState('');
@@ -60,26 +85,69 @@ export default function ContactView() {
     setSubmitLoading(true);
     setSubmitStatus(null);
 
-    const messageLines = [
-      `Submitter Name: ${name || 'Not provided'}`,
-      `Submitter Email: ${email || 'Not provided'}`,
-      `Event Name: ${eventName}`,
-      `Organizer: ${organizer || 'Not provided'}`,
-      `Activity: ${activity || 'Not provided'}`,
-      otherActivities ? `Other Activities: ${otherActivities}` : null,
-      `Frequency: ${frequency}`,
-      frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
-      `Days of Week: ${selectedDays.length > 0 ? selectedDays.join(', ') : 'Not specified'}`,
+    // Compute unified activity text
+    const fullActivity = otherActivities.trim()
+      ? activity === 'Other'
+        ? otherActivities.trim()
+        : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
+      : activity || 'Not specified';
+
+    // Compute combined pre-registration text
+    const fullPreRegistration = preRegistrationDetails.trim()
+      ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
+      : preRegistrationType;
+
+    const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
+
+    // Build structured human-readable summary
+    const summaryLines = [
+      `=== EVENT SUBMISSION ===`,
+      `City: ${city}`,
+      `Title: ${title}`,
+      `Venue: ${venue || 'Not specified'}`,
+      `Location / Address: ${location || 'Not specified'}`,
+      `Area / Neighborhood: ${area || 'Not specified'}`,
+      `Activity: ${fullActivity}`,
+      `Day of Week: ${daysText || 'Not specified'}`,
       `Start Time: ${startTime || 'Not specified'}`,
       `End Time: ${endTime || 'Not specified'}`,
+      `Frequency: ${frequency}`,
+      frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
       `Price: ${price || 'Not specified'}`,
-      `Neighborhood: ${neighborhood || 'Not specified'}`,
-      `Location: ${location || 'Not specified'}`,
-      googleMaps ? `Google Maps: ${googleMaps}` : null,
-      website ? `Website: ${website}` : null,
+      `Pre-Registration: ${fullPreRegistration}`,
+      map ? `Google Maps Link: ${map}` : null,
       social ? `Social Media: ${social}` : null,
-      whatsapp ? `WhatsApp: ${whatsapp}` : null,
-      notes ? `Additional Notes: ${notes}` : null,
+      website ? `Website: ${website}` : null,
+      contact ? `Contact (Email / Phone / WhatsApp / Form): ${contact}` : null,
+      about ? `About / Description:\n${about}` : null,
+      ``,
+      `=== SUBMITTER INFO ===`,
+      `Submitter Name: ${submitterName || 'Anonymous / Not provided'}`,
+      `Submitter Email: ${submitterEmail || 'Not provided'}`,
+      `Is Event Host/Organizer: ${isOrganizer ? 'Yes' : 'No (Community member)'}`,
+      adminNotes ? `Notes for Admin:\n${adminNotes}` : null,
+      ``,
+      `=== COPY-PASTE GOOGLE SHEET ROW (TSV) ===`,
+      `Title\tVenue\tLocation\tArea\tActivity\tDay of Week\tStart Time\tEnd Time\tFrequency\tFrequency Notes\tPrice\tPre-Registration\tMap\tSocial\tWebsite\tContact\tAbout`,
+      [
+        title.replace(/[\t\r\n]+/g, ' '),
+        venue.replace(/[\t\r\n]+/g, ' '),
+        location.replace(/[\t\r\n]+/g, ' '),
+        area.replace(/[\t\r\n]+/g, ' '),
+        fullActivity.replace(/[\t\r\n]+/g, ' '),
+        daysText.replace(/[\t\r\n]+/g, ' '),
+        startTime.replace(/[\t\r\n]+/g, ' '),
+        endTime.replace(/[\t\r\n]+/g, ' '),
+        frequency.replace(/[\t\r\n]+/g, ' '),
+        frequencyNotes.replace(/[\t\r\n]+/g, ' '),
+        price.replace(/[\t\r\n]+/g, ' '),
+        fullPreRegistration.replace(/[\t\r\n]+/g, ' '),
+        map.replace(/[\t\r\n]+/g, ' '),
+        social.replace(/[\t\r\n]+/g, ' '),
+        website.replace(/[\t\r\n]+/g, ' '),
+        contact.replace(/[\t\r\n]+/g, ' '),
+        about.replace(/[\t\r\n]+/g, ' '),
+      ].join('\t'),
     ].filter(Boolean);
 
     try {
@@ -87,37 +155,41 @@ export default function ContactView() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formType: 'Submit an Event',
-          message: messageLines.join('\n'),
+          formType: `Submit an Event (${city})`,
+          message: summaryLines.join('\n'),
         }),
       });
-
       const result = await response.json();
-
       if (result.success) {
         setSubmitStatus({
           success: true,
-          message: 'Thank you! Your event submission has been sent. We will review it shortly.',
+          message: 'Thank you! Your event submission has been sent. We will review and add it shortly.',
         });
-        setName('');
-        setEmail('');
-        setEventName('');
+        // Reset form
+        setTitle('');
         setOrganizer('');
         setActivity('');
         setOtherActivities('');
+        setAbout('');
         setFrequency('Weekly');
         setFrequencyNotes('');
         setSelectedDays([]);
         setStartTime('');
         setEndTime('');
-        setPrice('');
-        setNeighborhood('');
+        setVenue('');
         setLocation('');
-        setGoogleMaps('');
+        setArea('');
+        setMap('');
+        setPrice('');
+        setPreRegistrationType('Drop-in (no RSVP needed)');
+        setPreRegistrationDetails('');
         setWebsite('');
         setSocial('');
-        setWhatsapp('');
-        setNotes('');
+        setContact('');
+        setSubmitterName('');
+        setSubmitterEmail('');
+        setIsOrganizer(false);
+        setAdminNotes('');
       } else {
         setSubmitStatus({
           success: false,
@@ -138,14 +210,12 @@ export default function ContactView() {
     e.preventDefault();
     setQuestionLoading(true);
     setQuestionStatus(null);
-
     const messageLines = [
       `First Name: ${questionFirstName}`,
       `Email Address: ${questionEmail}`,
       `Message:`,
       questionMessage,
     ];
-
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -155,9 +225,7 @@ export default function ContactView() {
           message: messageLines.join('\n'),
         }),
       });
-
       const result = await response.json();
-
       if (result.success) {
         setQuestionStatus({
           success: true,
@@ -269,82 +337,73 @@ export default function ContactView() {
                   <strong>Open:</strong> inclusive and open to all.
                 </li>
                 <li className={styles.criteriaItem}>
-                  <strong>Affordable:</strong> relatively affordable.
+                  <strong>Affordable:</strong> free, donation, or reasonably priced.
                 </li>
               </ul>
               <p className={styles.criteriaFootnote}>
-                Don&apos;t know all the details? Put a &ldquo;?&rdquo; in the box.
+                Only the <strong>event title</strong> is required. Don&apos;t worry if you don&apos;t know all details — share whatever you know!
               </p>
             </div>
 
+            {/* SECTION 1: Event Identity */}
             <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>About you</legend>
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <label htmlFor="submit-name" className={styles.label}>
-                    Your name
-                  </label>
-                  <input
-                    id="submit-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. John Doe"
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="submit-email" className={styles.label}>
-                    Your email address
-                  </label>
-                  <input
-                    id="submit-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. john@doe.com"
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-            </fieldset>
+              <legend className={styles.legend}>The Event</legend>
+              <p className={styles.sectionDescription}>
+                Basic details about the event.
+              </p>
 
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>The event</legend>
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label htmlFor="submit-event-name" className={styles.label}>
-                    Name of event *
+                  <label htmlFor="submit-city" className={styles.label}>
+                    City / Region
+                  </label>
+                  <select
+                    id="submit-city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="Medellín, Colombia">Medellín, Colombia</option>
+                    <option value="Fort Collins, Colorado">Fort Collins, Colorado</option>
+                    <option value="Other / New City">Other / New City</option>
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-title" className={styles.label}>
+                    Event Title *
                   </label>
                   <input
-                    id="submit-event-name"
+                    id="submit-title"
                     type="text"
                     required
-                    value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Verb &amp; Vibe Game Nite"
                     className={styles.input}
                   />
+                  <span className={styles.helperText}>The only required field!</span>
                 </div>
+              </div>
+
+              <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-organizer" className={styles.label}>
-                    Organizer
+                    Organizer / Host
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-organizer"
                     type="text"
                     value={organizer}
                     onChange={(e) => setOrganizer(e.target.value)}
-                    placeholder="e.g. Life Dance Studios"
+                    placeholder="e.g. Life Dance Studios, English Club"
                     className={styles.input}
                   />
                 </div>
-              </div>
-
-              <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-activity" className={styles.label}>
-                    Activity
+                    Activity / Category
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <select
                     id="submit-activity"
@@ -354,31 +413,55 @@ export default function ContactView() {
                   >
                     <option value="">Select an activity…</option>
                     <option value="Language exchange">Language exchange</option>
-                    <option value="Dance">Dance</option>
-                    <option value="Games">Games</option>
-                    <option value="Music">Music</option>
-                    <option value="Social">Social</option>
+                    <option value="Dance">Dance (Salsa, Bachata, etc.)</option>
+                    <option value="Games">Games &amp; Trivia</option>
+                    <option value="Music">Live Music &amp; Jam</option>
+                    <option value="Social">Social &amp; Drinks</option>
+                    <option value="Fitness">Fitness, Sports &amp; Yoga</option>
+                    <option value="Art & Craft">Art &amp; Crafts</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
+              </div>
+
+              {activity === 'Other' && (
                 <div className={styles.field}>
                   <label htmlFor="submit-other-act" className={styles.label}>
-                    If &ldquo;Other&rdquo;, list the activities
-                    <span className={styles.labelSub}>(optional)</span>
+                    Describe the activity
                   </label>
                   <input
                     id="submit-other-act"
                     type="text"
                     value={otherActivities}
                     onChange={(e) => setOtherActivities(e.target.value)}
+                    placeholder="e.g. Book club, Coding meetup, Chess"
                     className={styles.input}
                   />
                 </div>
+              )}
+
+              <div className={styles.field}>
+                <label htmlFor="submit-about" className={styles.label}>
+                  About the event
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <textarea
+                  id="submit-about"
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  placeholder="What is this event about? What can people expect when they arrive?"
+                  className={styles.textarea}
+                />
               </div>
             </fieldset>
 
+            {/* SECTION 2: When & Schedule */}
             <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>When</legend>
+              <legend className={styles.legend}>When &amp; Schedule</legend>
+              <p className={styles.sectionDescription}>
+                Help people know when to show up.
+              </p>
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-frequency" className={styles.label}>
@@ -391,8 +474,9 @@ export default function ContactView() {
                     className={styles.select}
                   >
                     <option value="Weekly">Weekly</option>
-                    <option value="Bi-weekly">Bi-weekly</option>
-                    <option value="Monthly (1st Tuesday…)">Monthly (1st Tuesday…)</option>
+                    <option value="Bi-weekly">Bi-weekly (every two weeks)</option>
+                    <option value="Monthly (1st Tuesday…)">Monthly (e.g. 1st Tuesday)</option>
+                    <option value="Seasonal / Irregular">Seasonal / Irregular</option>
                   </select>
                 </div>
                 <div className={styles.field}>
@@ -405,14 +489,16 @@ export default function ContactView() {
                     type="text"
                     value={frequencyNotes}
                     onChange={(e) => setFrequencyNotes(e.target.value)}
-                    placeholder="e.g. May–Sep only, Even/Odd weeks"
+                    placeholder="e.g. 1st &amp; 3rd Friday of each month, May–Sep only"
                     className={styles.input}
                   />
                 </div>
               </div>
 
               <div className={styles.field}>
-                <span className={styles.label}>Day of week</span>
+                <span className={styles.label}>
+                  Day of week <span className={styles.labelSub}>(select all that apply)</span>
+                </span>
                 <div className={styles.days}>
                   {DAYS_OF_WEEK.map((day) => {
                     const isChecked = selectedDays.includes(day.label);
@@ -438,58 +524,68 @@ export default function ContactView() {
                 <div className={styles.field}>
                   <label htmlFor="submit-start-time" className={styles.label}>
                     Start time
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-start-time"
                     type="text"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    placeholder="e.g. 7:30 PM"
+                    placeholder="e.g. 7:00 PM"
                     className={styles.input}
                   />
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="submit-end-time" className={styles.label}>
                     End time
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-end-time"
                     type="text"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    placeholder="e.g. 10:00 PM"
+                    placeholder="e.g. 9:30 PM"
                     className={styles.input}
                   />
                 </div>
               </div>
             </fieldset>
 
+            {/* SECTION 3: Where / Location */}
             <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Where &amp; how much</legend>
+              <legend className={styles.legend}>Where / Location</legend>
+              <p className={styles.sectionDescription}>
+                Where does the event take place?
+              </p>
+
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label htmlFor="submit-price" className={styles.label}>
-                    Price
+                  <label htmlFor="submit-venue" className={styles.label}>
+                    Venue name
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
-                    id="submit-price"
+                    id="submit-venue"
                     type="text"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="e.g. 10k, Free, or Donation"
+                    value={venue}
+                    onChange={(e) => setVenue(e.target.value)}
+                    placeholder="e.g. Café Revolución, Washington Park"
                     className={styles.input}
                   />
+                  <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
                 </div>
                 <div className={styles.field}>
-                  <label htmlFor="submit-neighborhood" className={styles.label}>
-                    Neighborhood
+                  <label htmlFor="submit-area" className={styles.label}>
+                    Neighborhood / Area
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
-                    id="submit-neighborhood"
+                    id="submit-area"
                     type="text"
-                    value={neighborhood}
-                    onChange={(e) => setNeighborhood(e.target.value)}
-                    placeholder="e.g. Laureles"
+                    value={area}
+                    onChange={(e) => setArea(e.target.value)}
+                    placeholder="e.g. Laureles, Poblado, Old Town"
                     className={styles.input}
                   />
                 </div>
@@ -498,26 +594,28 @@ export default function ContactView() {
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-location" className={styles.label}>
-                    Location
+                    Address / Specific location
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-location"
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Café Revolución"
+                    placeholder="e.g. Cra. 37 #8A-37, 2nd floor"
                     className={styles.input}
                   />
                 </div>
                 <div className={styles.field}>
-                  <label htmlFor="submit-maps" className={styles.label}>
+                  <label htmlFor="submit-map" className={styles.label}>
                     Google Maps link
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
-                    id="submit-maps"
+                    id="submit-map"
                     type="text"
-                    value={googleMaps}
-                    onChange={(e) => setGoogleMaps(e.target.value)}
+                    value={map}
+                    onChange={(e) => setMap(e.target.value)}
                     placeholder="e.g. maps.app.goo.gl/…"
                     className={styles.input}
                   />
@@ -525,61 +623,192 @@ export default function ContactView() {
               </div>
             </fieldset>
 
+            {/* SECTION 4: Cost & Pre-Registration */}
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>Cost &amp; Pre-Registration</legend>
+              <p className={styles.sectionDescription}>
+                Is it free, paid, or does it require signing up in advance?
+              </p>
+
+              <div className={styles.field}>
+                <label htmlFor="submit-price" className={styles.label}>
+                  Price
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <input
+                  id="submit-price"
+                  type="text"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="e.g. Free, Donation, $10, or 15k COP"
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.field}>
+                <span className={styles.label}>Pre-Registration / RSVP</span>
+                <div className={styles.radioGroup}>
+                  {PRE_REGISTRATION_OPTIONS.map((opt) => {
+                    const isSelected = preRegistrationType === opt;
+                    return (
+                      <label
+                        key={opt}
+                        className={`${styles.radioPill} ${isSelected ? styles.radioPillActive : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="preRegistrationType"
+                          value={opt}
+                          checked={isSelected}
+                          onChange={(e) => setPreRegistrationType(e.target.value)}
+                          className={styles.radioInput}
+                        />
+                        {opt}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="submit-prereg-details" className={styles.label}>
+                  Registration link or instructions
+                  <span className={styles.labelSub}>(optional)</span>
+                </label>
+                <input
+                  id="submit-prereg-details"
+                  type="text"
+                  value={preRegistrationDetails}
+                  onChange={(e) => setPreRegistrationDetails(e.target.value)}
+                  placeholder="e.g. eventbrite.com/... or DM @account on Instagram"
+                  className={styles.input}
+                />
+              </div>
+            </fieldset>
+
+            {/* SECTION 5: Links & Contact */}
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>
-                Links <span className={styles.legendOptional}>(optional)</span>
+                Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
               </legend>
+              <p className={styles.sectionDescription}>
+                How people can find more information or reach out to the organizer.
+              </p>
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <label htmlFor="submit-website" className={styles.label}>
-                    Website
+                    Website link
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-website"
                     type="text"
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
-                    placeholder="e.g. theflyer.info/…"
+                    placeholder="e.g. somedomain.com/event"
                     className={styles.input}
                   />
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="submit-social" className={styles.label}>
-                    Social media
+                    Social media / Instagram
+                    <span className={styles.labelSub}>(optional)</span>
                   </label>
                   <input
                     id="submit-social"
                     type="text"
                     value={social}
                     onChange={(e) => setSocial(e.target.value)}
-                    placeholder="e.g. instagram.com/…"
+                    placeholder="e.g. instagram.com/ourgroup or @ourgroup"
                     className={styles.input}
                   />
                 </div>
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="submit-wa" className={styles.label}>
-                  WhatsApp link
+                <label htmlFor="submit-contact" className={styles.label}>
+                  Organizer contact
+                  <span className={styles.labelSub}>(optional)</span>
                 </label>
                 <input
-                  id="submit-wa"
+                  id="submit-contact"
                   type="text"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="e.g. api.whatsapp.com/send?phone=…"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  placeholder="e.g. organizer@gmail.com, +57 300 123 4567, or WhatsApp / form link"
                   className={styles.input}
                 />
+                <span className={styles.helperText}>
+                  Can be an email address, phone number, WhatsApp link, or web contact form.
+                </span>
+              </div>
+            </fieldset>
+
+            {/* SECTION 6: Submitter Info & Notes */}
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>
+                About You <span className={styles.legendOptional}>(optional)</span>
+              </legend>
+              <p className={styles.sectionDescription}>
+                Let us know who is submitting in case we have a question before publishing.
+              </p>
+
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label htmlFor="submit-name" className={styles.label}>
+                    Your name
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-name"
+                    type="text"
+                    value={submitterName}
+                    onChange={(e) => setSubmitterName(e.target.value)}
+                    placeholder="e.g. Alex Rivera"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="submit-email" className={styles.label}>
+                    Your email address
+                    <span className={styles.labelSub}>(optional)</span>
+                  </label>
+                  <input
+                    id="submit-email"
+                    type="email"
+                    value={submitterEmail}
+                    onChange={(e) => setSubmitterEmail(e.target.value)}
+                    placeholder="e.g. alex@gmail.com"
+                    className={styles.input}
+                  />
+                </div>
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="submit-notes" className={styles.label}>
-                  Anything else you&apos;d like to say?
+                <label className={styles.checkboxContainer}>
+                  <input
+                    type="checkbox"
+                    checked={isOrganizer}
+                    onChange={(e) => setIsOrganizer(e.target.checked)}
+                    className={styles.checkboxCustom}
+                  />
+                  <span className={styles.checkboxLabelText}>
+                    I am the organizer or host of this event
+                  </span>
+                </label>
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="submit-admin-notes" className={styles.label}>
+                  Note for administrator
+                  <span className={styles.labelSub}>(optional)</span>
                 </label>
                 <textarea
-                  id="submit-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  id="submit-admin-notes"
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                  placeholder="Any extra context or private notes for us (e.g., 'Venue might change next month', 'Found this on Instagram')."
                   className={styles.textarea}
                 />
               </div>
@@ -639,7 +868,6 @@ export default function ContactView() {
                   />
                 </div>
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="q-message" className={styles.label}>
                   Message *
@@ -654,11 +882,9 @@ export default function ContactView() {
                 />
               </div>
             </fieldset>
-
             <button type="submit" className={styles.submitBtn} disabled={questionLoading}>
               {questionLoading ? 'Sending message...' : 'Send message'}
             </button>
-
             {questionStatus && (
               <div
                 className={`${styles.statusAlert} ${
