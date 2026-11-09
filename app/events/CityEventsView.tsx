@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import { getEvents, Event } from '../lib/google-sheets';
 import {
-  parseHour,
   indexEvents,
   filterAndCountEvents,
-  IndexedEvent,
 } from './utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -228,6 +226,7 @@ export default function CityEventsView({
         city={city}
         allCityOptions={allCityOptions}
       />
+
       {city.alertBanner && (
         <div className={styles.alertBanner} role="status">
           <div className={styles.alertBannerInner}>
@@ -248,14 +247,20 @@ export default function CityEventsView({
               </svg>
             </span>
             <span className={styles.alertBannerText}>
-              {city.alertBanner.message}{' '}
-              <Link href={city.alertBanner.linkHref} className={styles.alertBannerLink}>
-                {city.alertBanner.linkText}
-              </Link>
+              {city.alertBanner.message}
+              {city.alertBanner.linkText && city.alertBanner.linkHref ? (
+                <>
+                  {' '}
+                  <Link href={city.alertBanner.linkHref} className={styles.alertBannerLink}>
+                    {city.alertBanner.linkText}
+                  </Link>
+                </>
+              ) : null}
             </span>
           </div>
         </div>
       )}
+
       <div className={styles.heroWrapper}>
         <CityHeroCard
           cityName={city.name}
@@ -268,10 +273,12 @@ export default function CityEventsView({
           onClearActivities={() => setSelectedActivities([])}
         />
       </div>
+
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
           <h2 className={styles.asideTitle}>{dayHeading}</h2>
           <p className={styles.asideSubtitle}>{daySubheading}</p>
+
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -281,6 +288,7 @@ export default function CityEventsView({
             }}
             dayCounts={dayCounts}
           />
+
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -303,6 +311,7 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
+
         <section className={styles.contentCol}>
           {loading ? (
             <div className={styles.emptyState}>
@@ -324,6 +333,7 @@ export default function CityEventsView({
                 group.predicate(ev.parsedHour)
               );
               if (groupEvents.length === 0) return null;
+
               return (
                 <div key={group.name}>
                   <div className={styles.timeGroupHeader}>
@@ -352,7 +362,9 @@ export default function CityEventsView({
           )}
         </section>
       </main>
+
       <Footer />
+
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import styles from '../Contact.module.css';
 
@@ -202,6 +203,9 @@ export default function EventSubmissionForm() {
             <strong>Regularly occurring:</strong> weekly, bi-weekly, or monthly.
           </li>
           <li className={styles.criteriaItem}>
+            <strong>In-person:</strong> real-world gatherings only, no virtual events.
+          </li>
+          <li className={styles.criteriaItem}>
             <strong>Group event:</strong> open to multiple people, no one-on-one.
           </li>
           <li className={styles.criteriaItem}>
@@ -212,13 +216,14 @@ export default function EventSubmissionForm() {
           </li>
         </ul>
         <p className={styles.criteriaFootnote}>
-          Only the <strong>event title</strong> is required. Don&apos;t worry if you don&apos;t know all details — share whatever you know!
+          Only the <strong>event title</strong> is required. In-person gatherings only — no virtual events. Share whatever you know!
         </p>
       </div>
 
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>The Event</legend>
         <p className={styles.sectionDescription}>Basic details about the event.</p>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-city" className={styles.label}>
@@ -235,6 +240,7 @@ export default function EventSubmissionForm() {
               <option value="Other / New City">Other / New City</option>
             </select>
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-title" className={styles.label}>
               Event Title *
@@ -248,9 +254,10 @@ export default function EventSubmissionForm() {
               placeholder="e.g. Verb &amp; Vibe Game Nite"
               className={styles.input}
             />
-            <span className={styles.helperText}>The only required field!</span>
+            <span className={styles.helperText}>The only required field! In-person events only.</span>
           </div>
         </div>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-organizer" className={styles.label}>
@@ -265,6 +272,7 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-activity" className={styles.label}>
               Activity / Category <span className={styles.labelSub}>(optional)</span>
@@ -287,6 +295,7 @@ export default function EventSubmissionForm() {
             </select>
           </div>
         </div>
+
         {activity === 'Other' && (
           <div className={styles.field}>
             <label htmlFor="submit-other-act" className={styles.label}>
@@ -302,6 +311,7 @@ export default function EventSubmissionForm() {
             />
           </div>
         )}
+
         <div className={styles.field}>
           <label htmlFor="submit-about" className={styles.label}>
             About the event <span className={styles.labelSub}>(optional)</span>
@@ -319,6 +329,7 @@ export default function EventSubmissionForm() {
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>When &amp; Schedule</legend>
         <p className={styles.sectionDescription}>Help people know when to show up.</p>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-frequency" className={styles.label}>
@@ -336,6 +347,7 @@ export default function EventSubmissionForm() {
               <option value="Seasonal / Irregular">Seasonal / Irregular</option>
             </select>
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-freq-notes" className={styles.label}>
               Frequency notes <span className={styles.labelSub}>(optional)</span>
@@ -350,6 +362,7 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
+
         <div className={styles.field}>
           <span className={styles.label}>
             Day of week <span className={styles.labelSub}>(select all that apply)</span>
@@ -374,6 +387,7 @@ export default function EventSubmissionForm() {
             })}
           </div>
         </div>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-start-time" className={styles.label}>
@@ -388,6 +402,7 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-end-time" className={styles.label}>
               End time <span className={styles.labelSub}>(optional)</span>
@@ -407,6 +422,7 @@ export default function EventSubmissionForm() {
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Where / Location</legend>
         <p className={styles.sectionDescription}>Where does the event take place?</p>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-venue" className={styles.label}>
@@ -422,6 +438,7 @@ export default function EventSubmissionForm() {
             />
             <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-area" className={styles.label}>
               Neighborhood / Area <span className={styles.labelSub}>(optional)</span>
@@ -436,6 +453,7 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-location" className={styles.label}>
@@ -450,6 +468,7 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-map" className={styles.label}>
               Google Maps link <span className={styles.labelSub}>(optional)</span>
@@ -471,6 +490,7 @@ export default function EventSubmissionForm() {
         <p className={styles.sectionDescription}>
           Is it free, paid, or does it require signing up in advance?
         </p>
+
         <div className={styles.field}>
           <label htmlFor="submit-price" className={styles.label}>
             Price <span className={styles.labelSub}>(optional)</span>
@@ -484,6 +504,7 @@ export default function EventSubmissionForm() {
             className={styles.input}
           />
         </div>
+
         <div className={styles.field}>
           <span className={styles.label}>Pre-Registration / RSVP</span>
           <div className={styles.radioGroup}>
@@ -508,6 +529,7 @@ export default function EventSubmissionForm() {
             })}
           </div>
         </div>
+
         <div className={styles.field}>
           <label htmlFor="submit-prereg-details" className={styles.label}>
             Registration link or instructions <span className={styles.labelSub}>(optional)</span>
@@ -530,6 +552,7 @@ export default function EventSubmissionForm() {
         <p className={styles.sectionDescription}>
           How people can find more information or reach out to the organizer.
         </p>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-website" className={styles.label}>
@@ -544,6 +567,7 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-social" className={styles.label}>
               Social media / Instagram <span className={styles.labelSub}>(optional)</span>
@@ -558,6 +582,7 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
+
         <div className={styles.field}>
           <label htmlFor="submit-contact" className={styles.label}>
             Organizer contact <span className={styles.labelSub}>(optional)</span>
@@ -583,6 +608,7 @@ export default function EventSubmissionForm() {
         <p className={styles.sectionDescription}>
           Let us know who is submitting in case we have a question before publishing.
         </p>
+
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-name" className={styles.label}>
@@ -597,6 +623,7 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
+
           <div className={styles.field}>
             <label htmlFor="submit-email" className={styles.label}>
               Your email address <span className={styles.labelSub}>(optional)</span>
@@ -611,6 +638,7 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
+
         <div className={styles.field}>
           <label className={styles.checkboxContainer}>
             <input
@@ -624,6 +652,7 @@ export default function EventSubmissionForm() {
             </span>
           </label>
         </div>
+
         <div className={styles.field}>
           <label htmlFor="submit-admin-notes" className={styles.label}>
             Note for administrator <span className={styles.labelSub}>(optional)</span>
@@ -641,6 +670,7 @@ export default function EventSubmissionForm() {
       <button type="submit" className={styles.submitBtn} disabled={loading}>
         {loading ? 'Submitting event...' : 'Submit Event'}
       </button>
+
       {status && (
         <div
           className={`${styles.statusAlert} ${

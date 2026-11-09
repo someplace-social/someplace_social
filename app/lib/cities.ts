@@ -11,8 +11,8 @@ export type CityPriceConfig = {
 
 export type CityAlertBanner = {
   message: string;
-  linkText: string;
-  linkHref: string;
+  linkText?: string;
+  linkHref?: string;
 };
 
 export type CityConfig = {
@@ -54,6 +54,9 @@ export const CITIES: Record<string, CityConfig> = {
       underLabel: 'Under 40k',
       midLabel: '50k',
     },
+    alertBanner: {
+      message: 'Much of this info is likely out of date. Working on a new verification method. Check back soon.',
+    },
   },
   'fort-collins-colorado': {
     slug: 'fort-collins-colorado',
@@ -77,8 +80,8 @@ export const CITIES: Record<string, CityConfig> = {
       midLabel: '$25',
     },
     alertBanner: {
-      message: 'Nov 8, 2026: this page is new! Having issues?',
-      linkText: 'Contact us',
+      message: 'Nov 8, 2026: This page is new! Info may not be correct yet. Having issues?',
+      linkText: 'Contact.',
       linkHref: '/contact',
     },
   },
