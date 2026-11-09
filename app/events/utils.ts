@@ -15,6 +15,7 @@ export type ContactInfo =
       email: string;
       mailtoUrl: string;
       gmailUrl: string;
+      androidIntentUrl: string;
     }
   | {
       type: 'phone';
@@ -113,6 +114,7 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
   if (!priceStr) return 0;
   const cleaned = priceStr.trim().toLowerCase();
   if (isFreeOrDonation(cleaned)) return 0;
+
   if (currencyCode === 'COP') {
     const kMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*k/i);
     if (kMatch) {
@@ -134,6 +136,7 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
     }
     return null;
   }
+
   const usdMatch = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)/);
   if (usdMatch) {
     return parseFloat(usdMatch[1]);
@@ -250,6 +253,7 @@ export function normalizeDayOfWeek(dayStr: string): string {
     sat: 'Sat',
     saturday: 'Sat',
   };
+
   const normalized: string[] = [];
   for (const token of tokens) {
     const short = DAY_TO_SHORT[token.toLowerCase()];
@@ -265,6 +269,7 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   const targetKey = targetDayName.trim().toLowerCase();
   const targetIndex = DAY_INDEX[targetKey];
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
+
   const rawLower = eventDays.toLowerCase();
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
     return true;
@@ -276,6 +281,7 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (tokens.some((token) => aliases.includes(token))) {
     return true;
   }
+
   const rangeMatch = rawLower.match(/([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|to)\s*([a-zA-Z]+)/);
   if (rangeMatch && targetIndex !== undefined) {
     const d1 = DAY_INDEX[rangeMatch[1].toLowerCase()];
@@ -287,6 +293,7 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
       return targetIndex >= d1 || targetIndex <= d2;
     }
   }
+
   return false;
 }
 
@@ -309,16 +316,20 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
   if (!cleaned) return true;
+
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(cleaned)) {
     return false;
   }
+
   const targetMonth = targetDate.getMonth() + 1;
+
   if (/\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned)) {
     return targetMonth % 2 === 0;
   }
   if (/\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned)) {
     return targetMonth % 2 !== 0;
   }
+
   const exceptMatch = cleaned.match(
     /\b(?:except|excluding|no meetings? in|off in)\s+([a-zA-Z]+)(?:\s*(?:and|&|,)\s*([a-zA-Z]+))?\b/i
   );
@@ -328,6 +339,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
+
   const rangeMatch = cleaned.match(
     /\b([a-zA-Z]{3,9})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,9})\b/i
   );
@@ -341,6 +353,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth >= startMonth || targetMonth <= endMonth;
     }
   }
+
   const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,9})\s+only\b/i);
   if (singleMonthMatch) {
     const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
@@ -348,6 +361,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth === m;
     }
   }
+
   if (/\bsummer\b/i.test(cleaned)) {
     return targetMonth >= 6 && targetMonth <= 8;
   }
@@ -360,6 +374,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   if (/\b(?:fall|autumn)\b/i.test(cleaned)) {
     return targetMonth >= 9 && targetMonth <= 11;
   }
+
   return true;
 }
 
@@ -388,18 +403,22 @@ function getWeekNumber(d: Date): number {
 
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const combinedText = `${event.frequency || ''} ${event.frequencyNotes || ''}`.trim();
+
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(combinedText)) {
     return false;
   }
+
   if (!isMonthActive(event.frequencyNotes, targetDate) || !isMonthActive(event.frequency, targetDate)) {
     return false;
   }
+
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const targetDayName = DAY_NAMES[targetDate.getDay()];
   const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
+
   if (/\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText)) {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 !== 0) return false;
@@ -408,6 +427,7 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 === 0) return false;
   }
+
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
   const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText);
   const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText);
@@ -415,6 +435,7 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText);
   const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText);
   const hasLast = /\b(last|ultimo|últim[oa])\b/i.test(combinedText);
+
   if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
     const matchesOrdinal =
       (has1st && occurrence === 1) ||
@@ -425,11 +446,13 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
       (hasLast && isLast);
     return matchesOrdinal;
   }
+
   const cadence = (event.frequency || '').toLowerCase();
   if (cadence.includes('bi-weekly')) {
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
   }
+
   return true;
 }
 
@@ -457,25 +480,29 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
   if (!trimmed || trimmed.toLowerCase() === 'x') {
     return { type: 'none' };
   }
+
+  const createEmailContact = (cleanEmail: string): ContactInfo => {
+    const encoded = encodeURIComponent(cleanEmail);
+    return {
+      type: 'email',
+      email: cleanEmail,
+      mailtoUrl: `mailto:${cleanEmail}`,
+      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encoded}`,
+      androidIntentUrl: `intent:${encoded}#Intent;scheme=mailto;package=com.google.android.gm;action=android.intent.action.SENDTO;S.browser_fallback_url=${encodeURIComponent(`mailto:${cleanEmail}`)};end`,
+    };
+  };
+
   if (/^mailto:/i.test(trimmed)) {
     const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
     if (email) {
-      return {
-        type: 'email',
-        email,
-        mailtoUrl: `mailto:${email}`,
-        gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`,
-      };
+      return createEmailContact(email);
     }
   }
+
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-    return {
-      type: 'email',
-      email: trimmed,
-      mailtoUrl: `mailto:${trimmed}`,
-      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(trimmed)}`,
-    };
+    return createEmailContact(trimmed);
   }
+
   if (/^tel:/i.test(trimmed)) {
     const rawNumber = trimmed.replace(/^tel:/i, '').trim();
     const displayPhone = formatPhoneNumber(rawNumber);
@@ -492,12 +519,14 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: rawNumber,
     };
   }
+
   if (/^https?:\/\//i.test(trimmed)) {
     return {
       type: 'url',
       url: trimmed,
     };
   }
+
   const digitCount = (trimmed.match(/\d/g) || []).length;
   if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
     const displayPhone = formatPhoneNumber(trimmed);
@@ -514,12 +543,14 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: trimmed,
     };
   }
+
   if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
     return {
       type: 'url',
       url: ensureExternalUrl(trimmed),
     };
   }
+
   return { type: 'none' };
 }
 
@@ -581,7 +612,9 @@ export function indexEvents(
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
+
     const activeDays = rollingWeek.map((day) => isEventActiveOnDate(ev, day));
+
     return {
       ...ev,
       parsedHour,
@@ -606,20 +639,26 @@ export function filterAndCountEvents(
 ): { currentList: IndexedEvent[]; dayCounts: number[] } {
   const dayCounts = [0, 0, 0, 0, 0, 0, 0];
   const currentList: IndexedEvent[] = [];
+
   const queryTerms = searchQuery.trim()
     ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
     : null;
+
   const selectedActivitiesLower =
     selectedActivities.length > 0
       ? selectedActivities.map((a) => a.toLowerCase())
       : null;
+
   const selectedAreasLower =
     selectedAreas.length > 0
       ? selectedAreas.map((a) => a.toLowerCase())
       : null;
+
   const isPriceFiltered = maxPrice < priceConfig.maxPrice;
+
   for (let i = 0; i < indexedEvents.length; i++) {
     const ev = indexedEvents[i];
+
     if (isPriceFiltered) {
       if (maxPrice === 0) {
         if (!ev.isFreeOrDonationPrice) continue;
@@ -627,6 +666,7 @@ export function filterAndCountEvents(
         if (ev.parsedPrice === null || ev.parsedPrice > maxPrice) continue;
       }
     }
+
     if (selectedTimes.length > 0) {
       const matchesTime = selectedTimes.some((tgName) => {
         const group = timeGroups.find((g) => g.name === tgName);
@@ -634,31 +674,37 @@ export function filterAndCountEvents(
       });
       if (!matchesTime) continue;
     }
+
     if (selectedActivitiesLower) {
       const hasActivityMatch = ev.activities.some((act) =>
         selectedActivitiesLower.includes(act.trim().toLowerCase())
       );
       if (!hasActivityMatch) continue;
     }
+
     if (selectedAreasLower) {
       const evAreaLower = (ev.area || '').trim().toLowerCase();
       if (!selectedAreasLower.includes(evAreaLower)) continue;
     }
+
     if (queryTerms) {
       const matchesSearch = queryTerms.every((term) =>
         ev.searchCorpus.includes(term)
       );
       if (!matchesSearch) continue;
     }
+
     for (let d = 0; d < 7; d++) {
       if (ev.activeDays[d]) {
         dayCounts[d]++;
       }
     }
+
     if (ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
+
   currentList.sort((a, b) => a.parsedHour - b.parsedHour);
   return { currentList, dayCounts };
 }

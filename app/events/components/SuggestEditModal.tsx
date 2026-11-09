@@ -79,13 +79,23 @@ export default function SuggestEditModal({
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && !isSubmitting) {
         onClose();
       }
     }
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [onClose, isSubmitting]);
 
   const handleChange = (key: keyof FormValues, val: string) => {
@@ -218,10 +228,6 @@ export default function SuggestEditModal({
 
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           <div className={styles.modalScrollArea}>
-            <div className={styles.infoBanner}>
-              Section headers and original details are fixed below. Pre-filled fields are editable — only fields you change will be sent to the administrator.
-            </div>
-
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>Event Info</span>
@@ -243,6 +249,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('title') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-org" className={styles.label}>
@@ -282,6 +289,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('venue') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-area" className={styles.label}>
@@ -298,6 +306,7 @@ export default function SuggestEditModal({
                   />
                 </div>
               </div>
+
               <div className={styles.field}>
                 <div className={styles.fieldHeader}>
                   <label htmlFor="edit-location" className={styles.label}>
@@ -336,6 +345,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('dayOfWeek') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-start" className={styles.label}>
@@ -351,6 +361,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('startTime') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-end" className={styles.label}>
@@ -367,6 +378,7 @@ export default function SuggestEditModal({
                   />
                 </div>
               </div>
+
               <div className={styles.gridRow}>
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
@@ -383,6 +395,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('frequency') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-freq-notes" className={styles.label}>
@@ -423,6 +436,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('price') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-prereg" className={styles.label}>
@@ -462,6 +476,7 @@ export default function SuggestEditModal({
                     className={`${styles.input} ${isFieldChanged('map') ? styles.inputChanged : ''}`}
                   />
                 </div>
+
                 <div className={styles.field}>
                   <div className={styles.fieldHeader}>
                     <label htmlFor="edit-social" className={styles.label}>
@@ -487,7 +502,7 @@ export default function SuggestEditModal({
               </div>
               <div className={styles.field}>
                 <label htmlFor="edit-notes" className={styles.label}>
-                  What changed or needs updating? (optional context)
+                  What changed or needs updating? (optional)
                 </label>
                 <textarea
                   id="edit-notes"
@@ -497,6 +512,7 @@ export default function SuggestEditModal({
                   className={styles.textarea}
                 />
               </div>
+
               <div className={styles.field}>
                 <label htmlFor="edit-email" className={styles.label}>
                   Your Email (optional)

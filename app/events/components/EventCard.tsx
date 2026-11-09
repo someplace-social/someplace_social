@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
 import { Event } from '../../lib/google-sheets';
 import {
@@ -56,21 +57,32 @@ function ActionButton({
 function ContactButton({ contact }: { contact?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
+
   const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
 
   useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      setIsAndroid(/android/i.test(navigator.userAgent || ''));
+    }
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) return;
+
     function handleClickOutside(e: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     }
+
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setIsOpen(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -97,9 +109,22 @@ function ContactButton({ contact }: { contact?: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Ignore clipboard write failures gracefully
     }
   }, []);
+
+  const handleOpenGmail = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (contactInfo.type !== 'email') return;
+      if (isAndroid) {
+        e.preventDefault();
+        window.location.href = contactInfo.androidIntentUrl;
+        setIsOpen(false);
+      } else {
+        setIsOpen(false);
+      }
+    },
+    [contactInfo, isAndroid]
+  );
 
   const contactIcon = (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -183,11 +208,11 @@ function ContactButton({ contact }: { contact?: string }) {
 
               <div className={styles.contactActions}>
                 <a
-                  href={contactInfo.gmailUrl}
-                  target="_blank"
+                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
+                  target={isAndroid ? undefined : '_blank'}
                   rel="noopener noreferrer"
                   className={styles.contactActionLink}
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleOpenGmail}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -195,6 +220,7 @@ function ContactButton({ contact }: { contact?: string }) {
                   </svg>
                   Open in Gmail
                 </a>
+
                 <a
                   href={contactInfo.mailtoUrl}
                   className={styles.contactActionLink}
@@ -290,6 +316,7 @@ function EventCard({
 
         <div className={styles.infoCol}>
           {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
+
           <div className={styles.eventTitle}>
             {event.title}
             {event.organization && event.organization !== displayVenue && (
