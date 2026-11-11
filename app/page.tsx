@@ -42,15 +42,15 @@ const CRITERIA_ITEMS = [
 const HOW_IT_WORKS_STEPS = [
   {
     title: 'Weekly Updates',
-    description: 'Listings are reviewed, verified, and updated once per week so schedules stay reliable.',
+    description: 'Listings are updated once per week.',
   },
   {
     title: 'Community Sourced',
-    description: 'Anyone can submit new recurring gatherings or suggest edits to keep details accurate.',
+    description: 'Anyone can submit new recurring activities.',
   },
   {
     title: '100% Free & Ad-Free',
-    description: 'No accounts required, no sponsors, no tracking, and no paywalls — just pure community info.',
+    description: 'No accounts, no sponsors, no tracking, and no paywalls.',
   },
 ] as const;
 
@@ -86,7 +86,6 @@ export default function Home() {
             />
           </div>
         </section>
-
         <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
           <div className={styles.sectionHeader}>
             <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
@@ -103,7 +102,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
         <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
           <div className={styles.sectionHeader}>
             <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
@@ -124,9 +122,6 @@ export default function Home() {
               </li>
             ))}
           </ol>
-          <p className={styles.criteriaFootnote}>
-            Note: All listings are for in-person gatherings only. We do not accept virtual, online, or hybrid-only meetings.
-          </p>
         </section>
       </main>
       <Footer />
