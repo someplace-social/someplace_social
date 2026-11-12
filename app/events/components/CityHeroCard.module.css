@@ -36,20 +36,42 @@
   margin: 0;
   color: var(--ink);
 }
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+}
+.lastUpdatedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background-color: var(--free-bg);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.lastUpdatedIcon {
+  color: var(--free);
+  flex-shrink: 0;
+}
+.lastUpdatedLabel {
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+.lastUpdatedDate {
+  font-weight: 700;
+  color: var(--ink);
+}
 .metaSubtitle {
   font-family: var(--font-karla), system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: var(--muted);
-  margin-top: 10px;
-  line-height: 1.35;
-}
-.lastUpdated {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--muted);
-  margin-top: 4px;
   line-height: 1.35;
 }
 .lead {
@@ -110,13 +132,16 @@
   .title {
     font-size: 32px;
   }
+  .metaRow {
+    margin-top: 10px;
+    gap: 6px 10px;
+  }
+  .lastUpdatedBadge {
+    font-size: 12.5px;
+    padding: 4px 9px;
+  }
   .metaSubtitle {
     font-size: 13.5px;
-    margin-top: 6px;
-  }
-  .lastUpdated {
-    font-size: 13px;
-    margin-top: 3px;
   }
   .lead {
     font-size: 15px;

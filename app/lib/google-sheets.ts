@@ -119,8 +119,8 @@ function parseSheetData(rawText: string): string[][] {
           const headerRow: string[] = cols.map((col) => col.label || col.id || '');
           const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
             return (row.c || []).map((cell) => {
-              if (!cell || cell.v === null || cell.v === undefined) return '';
-              return String(cell.f || cell.v).trim();
+              if (!cell || (cell.v === null && !cell.f) || (cell.v === undefined && !cell.f)) return '';
+              return String(cell.f ?? cell.v ?? '').trim();
             });
           });
           if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
@@ -136,36 +136,41 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
-async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
+async function fetchValidSheetText(url: string): Promise<string | null> {
   const isDev = process.env.NODE_ENV === 'development';
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/csv, application/json, text/plain, */*',
+      },
+      cache: isDev ? 'no-store' : 'default',
+      next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+    });
+    if (!response.ok) return null;
+    const text = await response.text();
+    const trimmed = text.trim();
+    if (
+      trimmed &&
+      !trimmed.startsWith('<!DOCTYPE html') &&
+      !trimmed.startsWith('<html') &&
+      !trimmed.includes('accounts.google.com') &&
+      !trimmed.includes('"status":"error"') &&
+      !trimmed.includes('INVALID_QUERY')
+    ) {
+      return trimmed;
+    }
+  } catch (fetchErr) {
+    console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+  }
+  return null;
+}
+async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
   for (const url of candidateUrls) {
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Accept: 'text/csv, application/json, text/plain, */*',
-        },
-        cache: isDev ? 'no-store' : 'default',
-        next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
-      });
-      if (response.ok) {
-        const text = await response.text();
-        const trimmed = text.trim();
-        if (
-          trimmed &&
-          !trimmed.startsWith('<!DOCTYPE html') &&
-          !trimmed.startsWith('<html') &&
-          !trimmed.includes('accounts.google.com') &&
-          !trimmed.includes('"status":"error"') &&
-          !trimmed.includes('INVALID_QUERY')
-        ) {
-          const parsed = parseSheetData(trimmed);
-          if (parsed.length >= 2) {
-            return parsed;
-          }
-        }
-      }
-    } catch (fetchErr) {
-      console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+    const text = await fetchValidSheetText(url);
+    if (!text) continue;
+    const parsed = parseSheetData(text);
+    if (parsed.length >= 2) {
+      return parsed;
     }
   }
   return [];
@@ -191,6 +196,64 @@ function formatSheetDate(value: string): string {
     });
   }
   return value;
+}
+function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
+  if (rows.length < 2) return null;
+  const headerRow = rows[0].map((h) => normalizeHeader(h));
+  const dateColIdx = headerRow.findIndex((h) =>
+    ['lastupdateddate', 'lastupdated', 'updateddate', 'lastupdate'].includes(h)
+  );
+  const cityColIdx = headerRow.findIndex((h) => h === 'city');
+  if (dateColIdx === -1 || cityColIdx === -1) {
+    return null;
+  }
+  const map = new Map<string, string>();
+  for (const row of rows.slice(1)) {
+    const rawDate = (row[dateColIdx] || '').trim();
+    const rawCity = (row[cityColIdx] || '').trim();
+    if (!rawDate || !rawCity || rawDate.toLowerCase() === 'x') continue;
+    map.set(normalizeCityKey(rawCity), formatSheetDate(rawDate));
+  }
+  return map.size > 0 ? map : null;
+}
+function findTabGidInHtml(html: string, tabNames: string[]): string | null {
+  const targets = new Set(tabNames.map((n) => normalizeHeader(n)));
+  const itemRegex = /name:\s*["']([^"']+)["'][\s\S]{0,400}?gid:\s*["'](\d+)["']/gi;
+  let match: RegExpExecArray | null;
+  while ((match = itemRegex.exec(html)) !== null) {
+    if (targets.has(normalizeHeader(match[1]))) {
+      return match[2];
+    }
+  }
+  const buttonRegex = /id=["']sheet-button-(\d+)["'][^>]*>\s*<a[^>]*>([^<]+)<\/a>/gi;
+  while ((match = buttonRegex.exec(html)) !== null) {
+    if (targets.has(normalizeHeader(match[2]))) {
+      return match[1];
+    }
+  }
+  return null;
+}
+async function discoverTabGid(targetId: string, tabNames: string[]): Promise<string | null> {
+  const isDev = process.env.NODE_ENV === 'development';
+  const indexUrls = [
+    BASE_PUB_URL,
+    `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`,
+  ];
+  for (const url of indexUrls) {
+    try {
+      const response = await fetch(url, {
+        cache: isDev ? 'no-store' : 'default',
+        next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+      });
+      if (!response.ok) continue;
+      const html = await response.text();
+      if (!html || html.includes('accounts.google.com')) continue;
+      const gid = findTabGidInHtml(html, tabNames);
+      if (gid) return gid;
+    } catch {
+    }
+  }
+  return null;
 }
 const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
@@ -251,38 +314,56 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
 export async function getLastUpdated(city: CityConfig): Promise<string | null> {
   try {
     const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
-    const cached = lastUpdatedCache.get(targetId);
-    let cityDateMap: Map<string, string>;
+    const isDev = process.env.NODE_ENV === 'development';
+    const cached = !isDev ? lastUpdatedCache.get(targetId) : undefined;
+    let cityDateMap: Map<string, string> | null = null;
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       cityDateMap = cached.data;
     } else {
-      const tabName = 'LastUpdate';
-      const candidateUrls = [
-        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-          tabName
-        )}`,
-        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
-          tabName
-        )}`,
-        `${BASE_PUB_URL}?sheet=${encodeURIComponent(tabName)}&single=true&output=csv`,
-      ];
-      const rows = await fetchSheetRows(candidateUrls);
-      if (rows.length < 2) {
-        return null;
+      const tabNames = ['LastUpdate', 'Last Update'];
+      const directUrls: string[] = [];
+      for (const tabName of tabNames) {
+        directUrls.push(
+          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+            tabName
+          )}`
+        );
+        directUrls.push(
+          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
+            tabName
+          )}`
+        );
       }
-      const headerRow = rows[0].map((h) => normalizeHeader(h));
-      const dateColIdx = headerRow.findIndex((h) =>
-        ['lastupdateddate', 'lastupdated', 'updateddate', 'date', 'updated'].includes(h)
-      );
-      const cityColIdx = headerRow.findIndex((h) => ['city', 'location', 'name'].includes(h));
-      const resolvedDateIdx = dateColIdx !== -1 ? dateColIdx : 0;
-      const resolvedCityIdx = cityColIdx !== -1 ? cityColIdx : 1;
-      cityDateMap = new Map<string, string>();
-      for (const row of rows.slice(1)) {
-        const rawDate = (row[resolvedDateIdx] || '').trim();
-        const rawCity = (row[resolvedCityIdx] || '').trim();
-        if (!rawDate || !rawCity || rawDate.toLowerCase() === 'x') continue;
-        cityDateMap.set(normalizeCityKey(rawCity), formatSheetDate(rawDate));
+      for (const url of directUrls) {
+        const text = await fetchValidSheetText(url);
+        if (!text) continue;
+        const parsedMap = parseLastUpdatedRows(parseSheetData(text));
+        if (parsedMap) {
+          cityDateMap = parsedMap;
+          break;
+        }
+      }
+      if (!cityDateMap) {
+        const discoveredGid = await discoverTabGid(targetId, tabNames);
+        if (discoveredGid) {
+          const gidUrls = [
+            `${BASE_PUB_URL}?gid=${discoveredGid}&single=true&output=csv`,
+            `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${discoveredGid}`,
+            `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${discoveredGid}`,
+          ];
+          for (const url of gidUrls) {
+            const text = await fetchValidSheetText(url);
+            if (!text) continue;
+            const parsedMap = parseLastUpdatedRows(parseSheetData(text));
+            if (parsedMap) {
+              cityDateMap = parsedMap;
+              break;
+            }
+          }
+        }
+      }
+      if (!cityDateMap) {
+        return null;
       }
       lastUpdatedCache.set(targetId, { timestamp: Date.now(), data: cityDateMap });
     }

@@ -30,14 +30,34 @@ export default function CityHeroCard({
         <h1 id="city-intro-heading" className={styles.title}>
           {introTitle || `${cityName} Community Listings`}
         </h1>
-        {typeof eventCount === 'number' && eventCount > 0 && (
-          <div className={styles.metaSubtitle}>
-            {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-          </div>
-        )}
-        {lastUpdated && (
-          <div className={styles.lastUpdated}>
-            Last updated: {lastUpdated}
+        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
+          <div className={styles.metaRow}>
+            {lastUpdated && (
+              <div className={styles.lastUpdatedBadge}>
+                <svg
+                  className={styles.lastUpdatedIcon}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 12.5l2 2 4-4.5" />
+                </svg>
+                <span className={styles.lastUpdatedLabel}>Last updated:</span>
+                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
+              </div>
+            )}
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
           </div>
         )}
       </div>
