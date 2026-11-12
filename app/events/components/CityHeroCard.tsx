@@ -1,29 +1,28 @@
 'use client';
 import styles from './CityHeroCard.module.css';
-
 interface CityHeroCardProps {
   cityName: string;
   introTitle?: string;
   introDescription?: string;
   eventCount?: number;
+  lastUpdated?: string | null;
   activities: string[];
   selectedActivities: string[];
   onSelectChip: (activity: string) => void;
   onClearActivities: () => void;
 }
-
 export default function CityHeroCard({
   cityName,
   introTitle,
   introDescription,
   eventCount,
+  lastUpdated,
   activities,
   selectedActivities,
   onSelectChip,
   onClearActivities,
 }: CityHeroCardProps) {
   const isAllActive = selectedActivities.length === 0;
-
   return (
     <section className={styles.heroCard} aria-labelledby="city-intro-heading">
       <div className={styles.titleCol}>
@@ -36,15 +35,18 @@ export default function CityHeroCard({
             {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
           </div>
         )}
+        {lastUpdated && (
+          <div className={styles.lastUpdated}>
+            Last updated: {lastUpdated}
+          </div>
+        )}
       </div>
-
       <div className={styles.descCol}>
         <p className={styles.lead}>
           {introDescription ||
             `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
         </p>
       </div>
-
       <div className={styles.chips} role="group" aria-label="Filter by activity">
         <button
           type="button"

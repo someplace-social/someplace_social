@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
@@ -16,7 +15,6 @@ import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
 import styles from './EventsView.module.css';
-
 const DAY_NAMES_LONG = [
   'Sunday',
   'Monday',
@@ -26,7 +24,6 @@ const DAY_NAMES_LONG = [
   'Friday',
   'Saturday',
 ];
-
 const MONTH_NAMES = [
   'Jan',
   'Feb',
@@ -41,20 +38,20 @@ const MONTH_NAMES = [
   'Nov',
   'Dec',
 ];
-
 const TIME_GROUPS = [
   { name: 'Morning', predicate: (h: number) => h < 12 },
   { name: 'Afternoon', predicate: (h: number) => h >= 12 && h < 17 },
   { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
   { name: 'Night', predicate: (h: number) => h >= 20 },
 ];
-
 export default function CityEventsView({
   city,
   initialEvents = [],
+  lastUpdated = null,
 }: {
   city: CityConfig;
   initialEvents?: Event[];
+  lastUpdated?: string | null;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
@@ -68,11 +65,9 @@ export default function CityEventsView({
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
-
   useEffect(() => {
     setMaxPrice(priceConfig.maxPrice);
   }, [priceConfig]);
-
   useEffect(() => {
     if (initialEvents.length === 0) {
       setLoading(true);
@@ -86,7 +81,6 @@ export default function CityEventsView({
       setLoading(false);
     }
   }, [city, initialEvents]);
-
   const rollingWeek = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -95,15 +89,12 @@ export default function CityEventsView({
       return d;
     });
   }, []);
-
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
-
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
   const now = new Date();
   const nowHour = now.getHours() + now.getMinutes() / 60;
-
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
     allEvents.forEach((ev) => {
@@ -116,7 +107,6 @@ export default function CityEventsView({
     });
     return counts;
   }, [allEvents]);
-
   const activities = useMemo(() => {
     return Array.from(activityFrequencies.keys()).sort((a, b) => {
       const countDiff = (activityFrequencies.get(b) || 0) - (activityFrequencies.get(a) || 0);
@@ -124,7 +114,6 @@ export default function CityEventsView({
       return a.localeCompare(b);
     });
   }, [activityFrequencies]);
-
   const areas = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
@@ -134,19 +123,16 @@ export default function CityEventsView({
     });
     return Array.from(set).sort();
   }, [allEvents]);
-
   const toggleTime = useCallback((tName: string) => {
     setSelectedTimes((prev) =>
       prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
     );
   }, []);
-
   const toggleActivity = useCallback((act: string) => {
     setSelectedActivities((prev) =>
       prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
     );
   }, []);
-
   const handleSelectChip = useCallback((act: string) => {
     setSelectedActivities((prev) => {
       if (prev.includes(act)) {
@@ -155,13 +141,11 @@ export default function CityEventsView({
       return [act];
     });
   }, []);
-
   const toggleArea = useCallback((ar: string) => {
     setSelectedAreas((prev) =>
       prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
     );
   }, []);
-
   const { currentList, dayCounts } = useMemo(() => {
     return filterAndCountEvents(
       indexedEvents,
@@ -184,20 +168,17 @@ export default function CityEventsView({
     selectedAreas,
     deferredSearchQuery,
   ]);
-
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
     const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
     return nextEvent ? nextEvent.id || nextEvent.title : null;
   }, [activeDayIdx, currentList, nowHour]);
-
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
     maxPrice < priceConfig.maxPrice ||
     selectedTimes.length > 0 ||
     selectedActivities.length > 0 ||
     selectedAreas.length > 0;
-
   const clearAllFilters = useCallback(() => {
     setSearchQuery('');
     setMaxPrice(priceConfig.maxPrice);
@@ -205,28 +186,23 @@ export default function CityEventsView({
     setSelectedActivities([]);
     setSelectedAreas([]);
   }, [priceConfig.maxPrice]);
-
   const allCityOptions = useMemo(() => getAllCities(), []);
   const totalEventsCount = allEvents.length || initialEvents.length;
-
   const dayHeading =
     activeDayIdx === 0
       ? 'Today'
       : activeDayIdx === 1
       ? 'Tomorrow'
       : DAY_NAMES_LONG[activeDate.getDay()];
-
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
   }`;
-
   return (
     <div className={styles.pageContainer}>
       <Header
         city={city}
         allCityOptions={allCityOptions}
       />
-
       {city.alertBanner && (
         <div className={styles.alertBanner} role="status">
           <div className={styles.alertBannerInner}>
@@ -260,25 +236,23 @@ export default function CityEventsView({
           </div>
         </div>
       )}
-
       <div className={styles.heroWrapper}>
         <CityHeroCard
           cityName={city.name}
           introTitle={city.introTitle}
           introDescription={city.introDescription}
           eventCount={totalEventsCount}
+          lastUpdated={lastUpdated}
           activities={activities}
           selectedActivities={selectedActivities}
           onSelectChip={handleSelectChip}
           onClearActivities={() => setSelectedActivities([])}
         />
       </div>
-
       <main className={styles.mainLayout}>
         <aside className={styles.aside}>
           <h2 className={styles.asideTitle}>{dayHeading}</h2>
           <p className={styles.asideSubtitle}>{daySubheading}</p>
-
           <DayPicker
             rollingWeek={rollingWeek}
             activeDayIdx={activeDayIdx}
@@ -288,7 +262,6 @@ export default function CityEventsView({
             }}
             dayCounts={dayCounts}
           />
-
           <FilterControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -311,7 +284,6 @@ export default function CityEventsView({
             onClearAllFilters={clearAllFilters}
           />
         </aside>
-
         <section className={styles.contentCol}>
           {loading ? (
             <div className={styles.emptyState}>
@@ -333,7 +305,6 @@ export default function CityEventsView({
                 group.predicate(ev.parsedHour)
               );
               if (groupEvents.length === 0) return null;
-
               return (
                 <div key={group.name}>
                   <div className={styles.timeGroupHeader}>
@@ -362,9 +333,7 @@ export default function CityEventsView({
           )}
         </section>
       </main>
-
       <Footer />
-
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

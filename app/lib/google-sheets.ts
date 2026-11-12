@@ -1,6 +1,5 @@
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
-
 export type Event = {
   id: string;
   title: string;
@@ -25,23 +24,19 @@ export type Event = {
   notes: string;
   database: string;
 };
-
 const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
-
 const eventCache = new Map<string, { timestamp: number; data: Event[] }>();
+const lastUpdatedCache = new Map<string, { timestamp: number; data: Map<string, string> }>();
 const CACHE_TTL_MS = 60 * 1000;
-
 function getCandidateUrls(city: CityConfig): string[] {
   if (city.csvUrl) return [city.csvUrl];
   const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
   const urls: string[] = [];
-
   urls.push(
     `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
       city.sheetTab
     )}`
   );
-
   if (city.sheetGid) {
     urls.push(
       `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
@@ -50,7 +45,6 @@ function getCandidateUrls(city: CityConfig): string[] {
       `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`
     );
   }
-
   if (city.sheetTab.toLowerCase() === 'medellin') {
     urls.push(
       `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
@@ -62,23 +56,19 @@ function getCandidateUrls(city: CityConfig): string[] {
       `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=FortCollins`
     );
   }
-
   urls.push(
     `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
       city.sheetTab
     )}`
   );
-
   if (city.sheetGid) {
     urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
   }
   urls.push(
     `${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`
   );
-
   return urls;
 }
-
 function parseCsv(csvText: string): string[][] {
   const rows: string[][] = [];
   let currentRow: string[] = [];
@@ -112,7 +102,6 @@ function parseCsv(csvText: string): string[][] {
   rows.push(currentRow);
   return rows;
 }
-
 function parseSheetData(rawText: string): string[][] {
   const trimmed = rawText.trim();
   if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
@@ -147,9 +136,62 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
-
+async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
+  const isDev = process.env.NODE_ENV === 'development';
+  for (const url of candidateUrls) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'text/csv, application/json, text/plain, */*',
+        },
+        cache: isDev ? 'no-store' : 'default',
+        next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+      });
+      if (response.ok) {
+        const text = await response.text();
+        const trimmed = text.trim();
+        if (
+          trimmed &&
+          !trimmed.startsWith('<!DOCTYPE html') &&
+          !trimmed.startsWith('<html') &&
+          !trimmed.includes('accounts.google.com') &&
+          !trimmed.includes('"status":"error"') &&
+          !trimmed.includes('INVALID_QUERY')
+        ) {
+          const parsed = parseSheetData(trimmed);
+          if (parsed.length >= 2) {
+            return parsed;
+          }
+        }
+      }
+    } catch (fetchErr) {
+      console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+    }
+  }
+  return [];
+}
 const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
-
+const normalizeCityKey = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+function formatSheetDate(value: string): string {
+  const gvizDateMatch = value.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
+  if (gvizDateMatch) {
+    const year = parseInt(gvizDateMatch[1], 10);
+    const month = parseInt(gvizDateMatch[2], 10);
+    const day = parseInt(gvizDateMatch[3], 10);
+    const date = new Date(year, month, day);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+  return value;
+}
 const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
   title: ['title', 'eventname', 'name'],
@@ -184,7 +226,6 @@ const HEADER_ALIASES: Record<string, string[]> = {
   notes: ['notes', 'note'],
   database: ['database', 'db', 'sheet'],
 };
-
 const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   id: 0,
   title: 1,
@@ -207,7 +248,55 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   about: 17,
   notes: 18,
 };
-
+export async function getLastUpdated(city: CityConfig): Promise<string | null> {
+  try {
+    const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
+    const cached = lastUpdatedCache.get(targetId);
+    let cityDateMap: Map<string, string>;
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      cityDateMap = cached.data;
+    } else {
+      const tabName = 'LastUpdate';
+      const candidateUrls = [
+        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+          tabName
+        )}`,
+        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
+          tabName
+        )}`,
+        `${BASE_PUB_URL}?sheet=${encodeURIComponent(tabName)}&single=true&output=csv`,
+      ];
+      const rows = await fetchSheetRows(candidateUrls);
+      if (rows.length < 2) {
+        return null;
+      }
+      const headerRow = rows[0].map((h) => normalizeHeader(h));
+      const dateColIdx = headerRow.findIndex((h) =>
+        ['lastupdateddate', 'lastupdated', 'updateddate', 'date', 'updated'].includes(h)
+      );
+      const cityColIdx = headerRow.findIndex((h) => ['city', 'location', 'name'].includes(h));
+      const resolvedDateIdx = dateColIdx !== -1 ? dateColIdx : 0;
+      const resolvedCityIdx = cityColIdx !== -1 ? cityColIdx : 1;
+      cityDateMap = new Map<string, string>();
+      for (const row of rows.slice(1)) {
+        const rawDate = (row[resolvedDateIdx] || '').trim();
+        const rawCity = (row[resolvedCityIdx] || '').trim();
+        if (!rawDate || !rawCity || rawDate.toLowerCase() === 'x') continue;
+        cityDateMap.set(normalizeCityKey(rawCity), formatSheetDate(rawDate));
+      }
+      lastUpdatedCache.set(targetId, { timestamp: Date.now(), data: cityDateMap });
+    }
+    return (
+      cityDateMap.get(normalizeCityKey(city.sheetTab)) ??
+      cityDateMap.get(normalizeCityKey(city.name)) ??
+      cityDateMap.get(normalizeCityKey(city.slug)) ??
+      null
+    );
+  } catch (error) {
+    console.error('Error fetching last updated date:', error);
+    return null;
+  }
+}
 export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
   try {
     let cityConfig: CityConfig;
@@ -224,53 +313,16 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     } else {
       cityConfig = CITIES['medellin-colombia'];
     }
-
     const cached = eventCache.get(cityConfig.slug);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       return cached.data;
     }
-
     const candidateUrls = getCandidateUrls(cityConfig);
-    const isDev = process.env.NODE_ENV === 'development';
-    let rows: string[][] = [];
-
-    for (const url of candidateUrls) {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            Accept: 'text/csv, application/json, text/plain, */*',
-          },
-          cache: isDev ? 'no-store' : 'default',
-          next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
-        });
-        if (response.ok) {
-          const text = await response.text();
-          const trimmed = text.trim();
-          if (
-            trimmed &&
-            !trimmed.startsWith('<!DOCTYPE html') &&
-            !trimmed.startsWith('<html') &&
-            !trimmed.includes('accounts.google.com') &&
-            !trimmed.includes('"status":"error"') &&
-            !trimmed.includes('INVALID_QUERY')
-          ) {
-            const parsed = parseSheetData(trimmed);
-            if (parsed.length >= 2) {
-              rows = parsed;
-              break;
-            }
-          }
-        }
-      } catch (fetchErr) {
-        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
-      }
-    }
-
+    const rows = await fetchSheetRows(candidateUrls);
     if (rows.length < 2) {
       console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
       return [];
     }
-
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
     const headerIndexMap: Record<string, number> = {};
     Object.keys(HEADER_ALIASES).forEach((field) => {
@@ -280,12 +332,10 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         headerIndexMap[field] = foundIdx;
       }
     });
-
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
     };
-
     const dataRows = rows.slice(1);
     const events = dataRows
       .map((row): Event | null => {
@@ -297,7 +347,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
           }
           return '';
         };
-
         const venueVal = getValue('venue');
         const orgVal = getValue('organization');
         const locVal = getValue('location');
@@ -323,7 +372,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         const activityStr = uniqueActs.join(', ');
         const rawDay = getValue('dayOfWeek');
         const dayOfWeekStr = normalizeDayOfWeek(rawDay);
-
         return {
           id: getValue('id'),
           title: getValue('title'),
@@ -350,7 +398,6 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         };
       })
       .filter((event): event is Event => event !== null);
-
     const validEvents = events.filter((event) => Boolean(event.title));
     eventCache.set(cityConfig.slug, { timestamp: Date.now(), data: validEvents });
     return validEvents;

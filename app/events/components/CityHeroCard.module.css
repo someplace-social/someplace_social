@@ -44,6 +44,14 @@
   margin-top: 10px;
   line-height: 1.35;
 }
+.lastUpdated {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.35;
+}
 .lead {
   margin: 0;
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -105,6 +113,10 @@
   .metaSubtitle {
     font-size: 13.5px;
     margin-top: 6px;
+  }
+  .lastUpdated {
+    font-size: 13px;
+    margin-top: 3px;
   }
   .lead {
     font-size: 15px;
