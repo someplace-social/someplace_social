@@ -1,26 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ContactMessageForm from './components/ContactMessageForm';
 import EventSubmissionForm from './components/EventSubmissionForm';
 import styles from './Contact.module.css';
-
 export default function ContactView() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<'question' | 'submit'>(() => {
-    return tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
-  });
-
-  useEffect(() => {
-    if (tabParam === 'submit' || tabParam === 'event') {
-      setActiveTab('submit');
-    } else {
-      setActiveTab('question');
-    }
-  }, [tabParam]);
-
+  const activeTab: 'question' | 'submit' =
+    tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -39,8 +28,7 @@ export default function ContactView() {
               aria-controls="panel-question"
               className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
               onClick={() => {
-                setActiveTab('question');
-                window.history.replaceState(null, '', '/contact');
+                router.replace('/contact', { scroll: false });
               }}
             >
               Send a Message
@@ -53,8 +41,7 @@ export default function ContactView() {
               aria-controls="panel-submit"
               className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
               onClick={() => {
-                setActiveTab('submit');
-                window.history.replaceState(null, '', '/contact?tab=submit');
+                router.replace('/contact?tab=submit', { scroll: false });
               }}
             >
               Submit an Event
@@ -72,7 +59,6 @@ export default function ContactView() {
           />
         </div>
       </section>
-
       <section className={styles.panel}>
         {activeTab === 'question' ? (
           <ContactMessageForm />

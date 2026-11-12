@@ -4,12 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import styles from '../Page.module.css';
 import type { Metadata } from 'next';
-
 export const metadata: Metadata = {
   title: 'Support Us',
   description: 'Learn how you can support Someplace Social and keep the community going.',
 };
-
 export default function SupportPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -32,7 +30,6 @@ export default function SupportPage() {
             />
           </div>
         </section>
-
         <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
@@ -43,11 +40,10 @@ export default function SupportPage() {
               Submit or Edit Events
             </Link>
           </div>
-
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
             <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+              If you&apos;ve met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
             </p>
             <a
               href="https://buymeacoffee.com/someplacesocial"
@@ -58,7 +54,6 @@ export default function SupportPage() {
               Buy Me a Drink
             </a>
           </div>
-
           <div>
             <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
             <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>

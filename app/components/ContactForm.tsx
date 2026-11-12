@@ -1,33 +1,26 @@
 "use client";
-
 import { useState } from 'react';
 import styles from './ContactForm.module.css';
-
 type ContactFormProps = {
   formType: string;
   fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
 };
-
 export default function ContactForm({ formType, fields }: ContactFormProps) {
   const [status, setStatus] = useState('');
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus('Submitting...');
-
     const formData = new FormData(event.currentTarget);
     let message = '';
     formData.forEach((value, key) => {
       message += `${key}: ${value}\n`;
     });
-
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ formType, message }),
       });
-
       const result = await response.json();
       if (result.success) {
         setStatus('Message sent successfully!');
@@ -35,11 +28,10 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
       } else {
         setStatus('Failed to send message. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setStatus('An error occurred. Please try again.');
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       {fields.map(field => (

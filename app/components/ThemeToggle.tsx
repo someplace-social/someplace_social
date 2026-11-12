@@ -1,41 +1,52 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import styles from './ThemeToggle.module.css';
-
 interface ThemeToggleProps {
   showLabel?: boolean;
 }
-
+const emptySubscribe = () => () => {};
+function subscribeTheme(callback: () => void) {
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', callback);
+  return () => {
+    observer.disconnect();
+    media.removeEventListener('change', callback);
+  };
+}
+function getThemeSnapshot(): 'light' | 'dark' {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'dark') return 'dark';
+  if (current === 'light') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function getThemeServerSnapshot(): 'light' | 'dark' {
+  return 'light';
+}
 export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const current = document.documentElement.getAttribute('data-theme');
-    if (current === 'dark') {
-      setTheme('dark');
-    } else if (current === 'light') {
-      setTheme('light');
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
-  }, []);
-
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
     try {
       localStorage.setItem('theme', nextTheme);
     } catch {
-      // Storage unavailable
     }
   };
-
   const isDark = mounted ? theme === 'dark' : false;
-
   const sunIcon = (
     <svg
       width="18"
@@ -59,7 +70,6 @@ export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </svg>
   );
-
   const moonIcon = (
     <svg
       width="18"
@@ -75,7 +85,6 @@ export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
-
   if (showLabel) {
     return (
       <button
@@ -92,7 +101,6 @@ export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
       </button>
     );
   }
-
   return (
     <button
       type="button"

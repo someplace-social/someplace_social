@@ -1,6 +1,5 @@
 'use client';
-
-import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore, memo } from 'react';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -11,7 +10,7 @@ import {
   parseContactInfo,
 } from '../utils';
 import styles from './EventCard.module.css';
-
+const emptySubscribe = () => () => {};
 interface EventCardProps {
   event: Event;
   isOpen: boolean;
@@ -20,7 +19,6 @@ interface EventCardProps {
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;
 }
-
 function ActionButton({
   href,
   label,
@@ -53,36 +51,28 @@ function ActionButton({
     </div>
   );
 }
-
 function ContactButton({ contact }: { contact?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
+  const isAndroid = useSyncExternalStore(
+    emptySubscribe,
+    () => /android/i.test(navigator.userAgent || ''),
+    () => false
+  );
   const popoverRef = useRef<HTMLDivElement>(null);
-
   const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-
-  useEffect(() => {
-    if (typeof navigator !== 'undefined') {
-      setIsAndroid(/android/i.test(navigator.userAgent || ''));
-    }
-  }, []);
-
   useEffect(() => {
     if (!isOpen) return;
-
     function handleClickOutside(e: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     }
-
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setIsOpen(false);
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -90,7 +80,6 @@ function ContactButton({ contact }: { contact?: string }) {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
-
   const handleCopy = useCallback(async (text: string) => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -111,7 +100,6 @@ function ContactButton({ contact }: { contact?: string }) {
     } catch {
     }
   }, []);
-
   const handleOpenGmail = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (contactInfo.type !== 'email') return;
@@ -125,14 +113,12 @@ function ContactButton({ contact }: { contact?: string }) {
     },
     [contactInfo, isAndroid]
   );
-
   const contactIcon = (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="M3.5 6.5l8.5 6.5 8.5-6.5" />
     </svg>
   );
-
   if (contactInfo.type === 'none') {
     return (
       <div
@@ -145,7 +131,6 @@ function ContactButton({ contact }: { contact?: string }) {
       </div>
     );
   }
-
   if (contactInfo.type === 'url') {
     return (
       <a
@@ -159,7 +144,6 @@ function ContactButton({ contact }: { contact?: string }) {
       </a>
     );
   }
-
   return (
     <div className={styles.contactWrapper} ref={popoverRef}>
       <button
@@ -172,7 +156,6 @@ function ContactButton({ contact }: { contact?: string }) {
         {contactIcon}
         Contact
       </button>
-
       {isOpen && (
         <div className={styles.contactPopover} role="dialog" aria-label="Contact options">
           {contactInfo.type === 'email' && (
@@ -203,9 +186,7 @@ function ContactButton({ contact }: { contact?: string }) {
                   </button>
                 </div>
               </div>
-
               <div className={styles.contactDivider} />
-
               <div className={styles.contactActions}>
                 <a
                   href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
@@ -220,7 +201,6 @@ function ContactButton({ contact }: { contact?: string }) {
                   </svg>
                   Open in Gmail
                 </a>
-
                 <a
                   href={contactInfo.mailtoUrl}
                   className={styles.contactActionLink}
@@ -235,7 +215,6 @@ function ContactButton({ contact }: { contact?: string }) {
               </div>
             </>
           )}
-
           {contactInfo.type === 'phone' && (
             <>
               <div className={styles.contactHeader}>
@@ -264,9 +243,7 @@ function ContactButton({ contact }: { contact?: string }) {
                   </button>
                 </div>
               </div>
-
               <div className={styles.contactDivider} />
-
               <div className={styles.contactActions}>
                 <a
                   href={contactInfo.telUrl}
@@ -286,7 +263,6 @@ function ContactButton({ contact }: { contact?: string }) {
     </div>
   );
 }
-
 function EventCard({
   event,
   isOpen,
@@ -300,7 +276,6 @@ function EventCard({
   const tagList = event.activities || [];
   const displayVenue = event.venue || event.location;
   const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
-
   return (
     <div className={`${styles.eventCard} ${isOpen ? styles.eventCardOpen : ''}`}>
       <button
@@ -313,22 +288,18 @@ function EventCard({
           {start}
           {end && <div className={styles.endTimeText}>to {end}</div>}
         </div>
-
         <div className={styles.infoCol}>
           {isNextUp && <span className={styles.nextUpBadge}>Next up</span>}
-
           <div className={styles.eventTitle}>
             {event.title}
             {event.organization && event.organization !== displayVenue && (
               <span className={styles.eventHost}> w/ {event.organization}</span>
             )}
           </div>
-
           <div className={styles.eventLocation}>
             {displayVenue}
             {event.area ? ` · ${event.area}` : ''}
           </div>
-
           {event.price ? (
             <div className={`${styles.priceLine} ${isFree ? styles.priceFree : styles.pricePaid}`}>
               <svg
@@ -347,7 +318,6 @@ function EventCard({
               {event.price}
             </div>
           ) : null}
-
           {tagList.length > 0 && (
             <div className={styles.tagList}>
               {tagList.map((tag) => {
@@ -368,7 +338,6 @@ function EventCard({
             </div>
           )}
         </div>
-
         <span
           aria-hidden="true"
           className={`${styles.chevronCircle} ${
@@ -389,13 +358,11 @@ function EventCard({
           </svg>
         </span>
       </button>
-
       {isOpen && (
         <div className={styles.expandedDrawer}>
           {(event.about || event.notes) && (
             <p className={styles.eventDescription}>{event.about || event.notes}</p>
           )}
-
           {recurrenceText && (
             <p
               className={styles.eventDescription}
@@ -408,7 +375,6 @@ function EventCard({
               📅 {recurrenceText}
             </p>
           )}
-
           {event.preRegistration && (
             <p
               className={styles.eventDescription}
@@ -421,7 +387,6 @@ function EventCard({
               📝 {event.preRegistration}
             </p>
           )}
-
           <div className={styles.drawerActionRow}>
             <div className={styles.buttonGrid4}>
               <a
@@ -443,7 +408,6 @@ function EventCard({
                 </svg>
                 Maps
               </a>
-
               <ActionButton
                 href={event.website}
                 label="Website"
@@ -454,7 +418,6 @@ function EventCard({
                   </svg>
                 }
               />
-
               <ActionButton
                 href={event.social}
                 label="Instagram"
@@ -466,10 +429,8 @@ function EventCard({
                   </svg>
                 }
               />
-
               <ContactButton contact={event.contact} />
             </div>
-
             <button
               type="button"
               className={styles.suggestEditBtn}
@@ -486,5 +447,4 @@ function EventCard({
     </div>
   );
 }
-
 export default memo(EventCard);
