@@ -38,10 +38,10 @@
 }
 .metaRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 14px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
 }
 .lastUpdatedBadge {
   display: inline-flex;
@@ -133,8 +133,8 @@
     font-size: 32px;
   }
   .metaRow {
-    margin-top: 10px;
-    gap: 6px 10px;
+    margin-top: 6px;
+    gap: 6px;
   }
   .lastUpdatedBadge {
     font-size: 12.5px;

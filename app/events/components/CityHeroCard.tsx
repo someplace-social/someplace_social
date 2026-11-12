@@ -32,6 +32,11 @@ export default function CityHeroCard({
         </h1>
         {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
           <div className={styles.metaRow}>
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
             {lastUpdated && (
               <div className={styles.lastUpdatedBadge}>
                 <svg
@@ -52,11 +57,6 @@ export default function CityHeroCard({
                 <span className={styles.lastUpdatedLabel}>Last updated:</span>
                 <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
               </div>
-            )}
-            {typeof eventCount === 'number' && eventCount > 0 && (
-              <span className={styles.metaSubtitle}>
-                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-              </span>
             )}
           </div>
         )}
