@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
-    "next": "^16.0.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "next": "^16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "resend": "^6.4.2"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "^16.0.4",
+    "eslint-config-next": "^16.4.5",
     "repomix": "^0.2.32",
     "tsx": "^4.19.3",
     "typescript": "^5"
