@@ -1,138 +1,6 @@
 #TASK
 
 
-At the top of both the Fort Collins and Medellin page, there will be a new short line called "last updated". The purpose is so people see it and know when the listings were last updated / checked. Idk what this looks like, but do whatever is standard and looks nice, clear, simple. 
-The date for this will come from the google sheet 1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU from a new tab called “LastUpdate”. The date c
-
-
-
-
-
-#GUIDELINES
-You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
-1. PROJECT CONTEXT
-Project Name: Someplace Social
-Environment: Windows 11
-Package Manager: PNPM
-2. CORE DIRECTIVES (NON-NEGOTIABLE)
-Full File Output: When modifying a file, output the ENTIRE , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
-Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
-PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
-Response length: If your response contains more than approximately 30k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
-3. RULES
-Security: Security is very important - always keep in mind best practices.
-Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices. 
-DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
-Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
-Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
-Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
-Egress: Keep egress low whenever possible.
-Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
-Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
-Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
-Simple & Robust: Do not over-complicate things. The simplest and most robust solution is best. When building or fixing a problem, always start with what could be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
-Page text: when writing text, choose simple, easy to understand,  straightforward words for page titles, page text, etc. 
-Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
-UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-
-
-4. RESPONSE FORMAT RULES
-Start with a brief explanation of what you are doing.
-Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
-End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
-Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: $targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }
-5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):
-IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow. 
-Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
-File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
-Code Output: A single, complete, full-file code block.
-Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
-Git Commands: The very last item in your response must be a single code block containing the final git commands.
-5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
-- Never provide multiple open commands in a row.
-- Never provide multiple file code blocks in a row.
-- Never list all commands first and all files afterward.
-- Never open several files before showing the first file’s contents.
-- Never skip ahead to later files.
-- Never bundle files together in one code block.
-- The command for file N+1 MUST appear immediately before the code block for file N+1.
-- The ONLY allowed pattern is:
-open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
-5.3 FORBIDDEN PATTERNS:
-- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
-- open 1 -> open 2 -> file 1 -> file 2
-- any response that shows all commands first and all files later 
-
-EXAMPLE OF CORRECT RESPONSE FORMAT:
-This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
-
-Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc… 
-
-```powershell
-pnpx supabase migration new create_example_table
-```
-
-Here is the sql code.
-
-```sql
--- supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
-create table example (
-  ...
-);
-```
-
-Next we will push to supabase.
-
-```powershell
-pnpx supabase db push
-```
-
-Now we’ll create a new file.
-
-```powershell
-New-Item 'app/index.tsx' -Force
-code 'app/index.tsx'
-```
-
-Here is the full code for our new file.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function HelloScreen() {
-  // ...
-  return <Text>hello, world</Text>;
-  // ...
-}
-```
-
-Now we’ll open page2.
-
-```powershell
-code 'app/page2.tsx'
-```
-
-Here is the updated code for page2.
-
-```typescript
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function PageTwoScreen() {
-  // ...
-  return <Text>hello, world page 2</Text>;
-  // ...
-}
-```
-
-Finally, we will commit.
-
-```powershell
-git add .
-git commit -m "feat: Add example migration and pages"
-```
-
-
-
 
 
 #PROJECT FILES
@@ -322,101 +190,27 @@ Files
 ================================================================
 
 ================
-File: app/api/send-form/route.ts
-================
-import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-const resend = new Resend(process.env.RESEND_API_KEY);
-const recipientEmail = process.env.EMAIL_RECIPIENT;
-export async function POST(request: Request) {
-  try {
-    if (!recipientEmail) {
-      throw new Error('Recipient email is not configured.');
-    }
-    const body = await request.json();
-    const { formType, message } = body;
-    const { data, error } = await resend.emails.send({
-      from: 'Someplace Social <onboarding@resend.dev>',
-      to: recipientEmail,
-      subject: `New Form Submission: ${formType}`,
-      text: message,
-    });
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
-  } catch (error) {
-    console.error('Error processing form:', error);
-    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
-  }
-}
-
-================
-File: app/components/ContactForm.tsx
+File: app/components/Accordion.tsx
 ================
 "use client";
 import { useState } from 'react';
-import styles from './ContactForm.module.css';
-type ContactFormProps = {
-  formType: string;
-  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+import styles from './Accordion.module.css';
+type AccordionProps = {
+  title: string;
+  children: React.ReactNode;
 };
-export default function ContactForm({ formType, fields }: ContactFormProps) {
-  const [status, setStatus] = useState('');
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('Submitting...');
-    const formData = new FormData(event.currentTarget);
-    let message = '';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
-    });
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, message }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setStatus('Message sent successfully!');
-        (event.target as HTMLFormElement).reset();
-      } else {
-        setStatus('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      setStatus('An error occurred. Please try again.');
-    }
-  };
+export default function Accordion({ title, children }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      {fields.map(field => (
-        <div key={field.name} className={styles.field}>
-          <label htmlFor={field.name}>{field.label}</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.textarea}
-            />
-          ) : (
-            <input
-              type={field.type}
-              id={field.name}
-              name={field.name}
-              required={field.required}
-              placeholder={field.placeholder || ''}
-              className={styles.input}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit" className={styles.button}>Send Message</button>
-      {status && <p>{status}</p>}
-    </form>
+    <div>
+      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        {title}
+        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && <div className={styles.content}>{children}</div>}
+    </div>
   );
 }
 
@@ -483,6 +277,41 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ================
+File: app/api/send-form/route.ts
+================
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+const recipientEmail = process.env.EMAIL_RECIPIENT;
+export async function POST(request: Request) {
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('Resend API key is not configured.');
+    }
+    if (!recipientEmail) {
+      throw new Error('Recipient email is not configured.');
+    }
+    const resend = new Resend(apiKey);
+    const body = await request.json();
+    const { formType, message } = body;
+    const { error } = await resend.emails.send({
+      from: 'Someplace Social <onboarding@resend.dev>',
+      to: recipientEmail,
+      subject: `New Form Submission: ${formType}`,
+      text: message,
+    });
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ success: false, message: 'Error sending email.' }, { status: 500 });
+    }
+    return NextResponse.json({ success: true, message: 'Form submitted successfully.' });
+  } catch (error) {
+    console.error('Error processing form:', error);
+    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
+  }
+}
+
+================
 File: app/components/Accordion.module.css
 ================
 .header {
@@ -520,31 +349,6 @@ File: app/components/Accordion.module.css
   .header {
     font-size: 2em;
   }
-}
-
-================
-File: app/components/Accordion.tsx
-================
-"use client";
-import { useState } from 'react';
-import styles from './Accordion.module.css';
-type AccordionProps = {
-  title: string;
-  children: React.ReactNode;
-};
-export default function Accordion({ title, children }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div>
-      <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
-        {title}
-        <span className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`}>
-          ▼
-        </span>
-      </div>
-      {isOpen && <div className={styles.content}>{children}</div>}
-    </div>
-  );
 }
 
 ================
@@ -601,6 +405,74 @@ File: app/components/ContactForm.module.css
 }
 .button:hover {
   opacity: 0.9;
+}
+
+================
+File: app/components/ContactForm.tsx
+================
+"use client";
+import { useState } from 'react';
+import styles from './ContactForm.module.css';
+type ContactFormProps = {
+  formType: string;
+  fields: readonly { name: string; label: string; placeholder?: string; type: 'text' | 'email' | 'textarea'; required: boolean }[];
+};
+export default function ContactForm({ formType, fields }: ContactFormProps) {
+  const [status, setStatus] = useState('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus('Submitting...');
+    const formData = new FormData(event.currentTarget);
+    let message = '';
+    formData.forEach((value, key) => {
+      message += `${key}: ${value}\n`;
+    });
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, message }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus('Message sent successfully!');
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setStatus('Failed to send message. Please try again.');
+      }
+    } catch {
+      setStatus('An error occurred. Please try again.');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      {fields.map(field => (
+        <div key={field.name} className={styles.field}>
+          <label htmlFor={field.name}>{field.label}</label>
+          {field.type === 'textarea' ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.textarea}
+            />
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              placeholder={field.placeholder || ''}
+              className={styles.input}
+            />
+          )}
+        </div>
+      ))}
+      <button type="submit" className={styles.button}>Send Message</button>
+      {status && <p>{status}</p>}
+    </form>
+  );
 }
 
 ================
@@ -687,106 +559,6 @@ File: app/components/ThemeToggle.module.css
   background-color: var(--topbar-bg);
   color: var(--muted);
   border: 1px solid var(--line);
-}
-
-================
-File: app/components/ThemeToggle.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import styles from './ThemeToggle.module.css';
-interface ThemeToggleProps {
-  showLabel?: boolean;
-}
-export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-    const current = document.documentElement.getAttribute('data-theme');
-    if (current === 'dark') {
-      setTheme('dark');
-    } else if (current === 'light') {
-      setTheme('light');
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
-  }, []);
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    try {
-      localStorage.setItem('theme', nextTheme);
-    } catch {
-    }
-  };
-  const isDark = mounted ? theme === 'dark' : false;
-  const sunIcon = (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  );
-  const moonIcon = (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-  if (showLabel) {
-    return (
-      <button
-        type="button"
-        className={styles.toggleBtnMobile}
-        onClick={toggleTheme}
-        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      >
-        <span className={styles.mobileLabelRow}>
-          {isDark ? sunIcon : moonIcon}
-          <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
-        </span>
-        <span className={styles.pillBadge}>{isDark ? 'Dark' : 'Light'}</span>
-      </button>
-    );
-  }
-  return (
-    <button
-      type="button"
-      className={styles.toggleBtn}
-      onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-    >
-      {isDark ? sunIcon : moonIcon}
-    </button>
-  );
 }
 
 ================
@@ -1007,6 +779,125 @@ File: tsconfig.json
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
+}
+
+================
+File: app/components/ThemeToggle.tsx
+================
+'use client';
+import { useSyncExternalStore } from 'react';
+import styles from './ThemeToggle.module.css';
+interface ThemeToggleProps {
+  showLabel?: boolean;
+}
+const emptySubscribe = () => () => {};
+function subscribeTheme(callback: () => void) {
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', callback);
+  return () => {
+    observer.disconnect();
+    media.removeEventListener('change', callback);
+  };
+}
+function getThemeSnapshot(): 'light' | 'dark' {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'dark') return 'dark';
+  if (current === 'light') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function getThemeServerSnapshot(): 'light' | 'dark' {
+  return 'light';
+}
+export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    try {
+      localStorage.setItem('theme', nextTheme);
+    } catch {
+    }
+  };
+  const isDark = mounted ? theme === 'dark' : false;
+  const sunIcon = (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+  const moonIcon = (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+  if (showLabel) {
+    return (
+      <button
+        type="button"
+        className={styles.toggleBtnMobile}
+        onClick={toggleTheme}
+        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      >
+        <span className={styles.mobileLabelRow}>
+          {isDark ? sunIcon : moonIcon}
+          <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+        </span>
+        <span className={styles.pillBadge}>{isDark ? 'Dark' : 'Light'}</span>
+      </button>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className={styles.toggleBtn}
+      onClick={toggleTheme}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+    >
+      {isDark ? sunIcon : moonIcon}
+    </button>
+  );
 }
 
 ================
@@ -1956,155 +1847,123 @@ File: app/components/Footer.module.css
 }
 
 ================
-File: app/support/page.tsx
+File: app/Page.module.css
 ================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Support Us',
-  description: 'Learn how you can support Someplace Social and keep the community going.',
-};
-export default function SupportPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>Support Someplace Social</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-contact.png"
-              alt="Illustration of a capybara drinking a coffee"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
-            </p>
-            <Link href="/contact?tab=submit" className={styles.button}>
-              Submit or Edit Events
-            </Link>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              If you've met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
-            </p>
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Buy Me a Drink
-            </a>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
-            </p>
-            <a
-              href="https://sites.google.com/view/starlink-referral-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Get Starlink Referral
-            </a>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 2.4em;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+.heroText {
+  flex: 1;
+  max-width: 500px;
+}
+.heroText p {
+  color: var(--text-subtle);
+}
+.illustrationContainer {
+  flex: 1;
+  max-width: 400px;
+}
+.contentBox {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.contentBox h2 {
+  color: var(--ink);
+}
+.contentBox p {
+  color: var(--text-subtle);
+}
+.button {
+  background-color: var(--ink);
+  color: var(--bg);
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  min-height: 44px;
+  margin-top: 1rem;
+  transition: opacity 0.15s ease;
+}
+.button:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 20px 16px 48px;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .heroText {
+    text-align: left;
+    width: 100%;
+  }
+  .illustrationContainer {
+    width: 100%;
+    max-width: 260px;
+    align-self: center;
+  }
+  .contentBox {
+    padding: 1.25rem;
+  }
+  .button {
+    width: 100%;
+  }
 }
 
 ================
-File: app/events/components/CityHeroCard.tsx
+File: app/contact/page.tsx
 ================
-'use client';
-import styles from './CityHeroCard.module.css';
-interface CityHeroCardProps {
-  cityName: string;
-  introTitle?: string;
-  introDescription?: string;
-  eventCount?: number;
-  activities: string[];
-  selectedActivities: string[];
-  onSelectChip: (activity: string) => void;
-  onClearActivities: () => void;
-}
-export default function CityHeroCard({
-  cityName,
-  introTitle,
-  introDescription,
-  eventCount,
-  activities,
-  selectedActivities,
-  onSelectChip,
-  onClearActivities,
-}: CityHeroCardProps) {
-  const isAllActive = selectedActivities.length === 0;
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+export default function ContactPage() {
   return (
-    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
-      <div className={styles.titleCol}>
-        <p className={styles.eyebrow}>Someplace Social</p>
-        <h1 id="city-intro-heading" className={styles.title}>
-          {introTitle || `${cityName} Community Listings`}
-        </h1>
-        {typeof eventCount === 'number' && eventCount > 0 && (
-          <div className={styles.metaSubtitle}>
-            {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-          </div>
-        )}
-      </div>
-      <div className={styles.descCol}>
-        <p className={styles.lead}>
-          {introDescription ||
-            `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
-        </p>
-      </div>
-      <div className={styles.chips} role="group" aria-label="Filter by activity">
-        <button
-          type="button"
-          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
-          aria-pressed={isAllActive}
-          onClick={onClearActivities}
-        >
-          All
-        </button>
-        {activities.map((act) => {
-          const isSelected = selectedActivities.includes(act);
-          return (
-            <button
-              key={act}
-              type="button"
-              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectChip(act)}
-            >
-              {act}
-            </button>
-          );
-        })}
-      </div>
-    </section>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
+      <Footer />
+    </div>
   );
 }
 
@@ -2278,100 +2137,83 @@ export default function PriceFilterDropdown({
 }
 
 ================
-File: app/Page.module.css
+File: app/support/page.tsx
 ================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: left;
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.page h1 {
-  font-size: 2.4em;
-  margin-bottom: 1rem;
-  color: var(--ink);
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  width: 100%;
-  margin-bottom: 4rem;
-}
-.heroText {
-  flex: 1;
-  max-width: 500px;
-}
-.heroText p {
-  color: var(--text-subtle);
-}
-.illustrationContainer {
-  flex: 1;
-  max-width: 400px;
-}
-.contentBox {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.contentBox h2 {
-  color: var(--ink);
-}
-.contentBox p {
-  color: var(--text-subtle);
-}
-.button {
-  background-color: var(--ink);
-  color: var(--bg);
-  padding: 12px 24px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  min-height: 44px;
-  margin-top: 1rem;
-  transition: opacity 0.15s ease;
-}
-.button:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .page {
-    padding: 20px 16px 48px;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .heroText {
-    text-align: left;
-    width: 100%;
-  }
-  .illustrationContainer {
-    width: 100%;
-    max-width: 260px;
-    align-self: center;
-  }
-  .contentBox {
-    padding: 1.25rem;
-  }
-  .button {
-    width: 100%;
-  }
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Support Us',
+  description: 'Learn how you can support Someplace Social and keep the community going.',
+};
+export default function SupportPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Support Someplace Social</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
+            </p>
+            <Link href="/contact?tab=submit" className={styles.button}>
+              Submit or Edit Events
+            </Link>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              If you&apos;ve met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+            </p>
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Buy Me a Drink
+            </a>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
+            </p>
+            <a
+              href="https://sites.google.com/view/starlink-referral-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Get Starlink Referral
+            </a>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 ================
@@ -2407,27 +2249,11 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 
 ================
-File: app/contact/page.tsx
+File: app/about/page.tsx
 ================
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ContactView from './ContactView';
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
-};
-export default function ContactPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <Suspense fallback={null}>
-        <ContactView />
-      </Suspense>
-      <Footer />
-    </div>
-  );
+import { redirect } from 'next/navigation';
+export default function AboutPage() {
+  redirect('/');
 }
 
 ================
@@ -2734,220 +2560,6 @@ File: app/events/components/SuggestEditModal.module.css
   .modalSubmitBtn {
     flex: 1;
     text-align: center;
-  }
-}
-
-================
-File: app/about/page.tsx
-================
-import { redirect } from 'next/navigation';
-export default function AboutPage() {
-  redirect('/');
-}
-
-================
-File: app/events/[city]/page.tsx
-================
-import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
-import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
-import { getEvents } from '../../lib/google-sheets';
-import CityEventsView from '../CityEventsView';
-export const revalidate = 3600;
-type PageProps = {
-  params: Promise<{ city: string }>;
-};
-export async function generateStaticParams() {
-  return getAllCitySlugs().map((city) => ({ city }));
-}
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    return {
-      title: 'City Not Found · Someplace Social',
-      robots: { index: false, follow: false },
-    };
-  }
-  const title = `${city.name} Events & Activities This Week`;
-  const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `/events/${city.slug}`,
-    },
-    openGraph: {
-      title: `${title} | Someplace Social`,
-      description,
-      url: `/events/${city.slug}`,
-      siteName: 'Someplace Social',
-      type: 'website',
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-      },
-    },
-  };
-}
-export default async function CityEventsPage({ params }: PageProps) {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    notFound();
-  }
-  const events = await getEvents(city);
-  return (
-    <CityEventsView
-      city={city}
-      initialEvents={events}
-    />
-  );
-}
-
-================
-File: app/events/components/CityHeroCard.module.css
-================
-.heroCard {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 16px 0 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
-  gap: 16px 48px;
-  align-items: start;
-}
-.titleCol {
-  display: flex;
-  flex-direction: column;
-}
-.descCol {
-  display: flex;
-  flex-direction: column;
-  padding-top: 24px;
-}
-.eyebrow {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 12px;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 44px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-}
-.metaSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  margin-top: 10px;
-  line-height: 1.35;
-}
-.lead {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-}
-.chips {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--topbar-bg);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-  min-height: 38px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.chip:hover {
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-  color: var(--ink);
-}
-.chipActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.chipActive:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .heroCard {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 8px 0 0;
-  }
-  .descCol {
-    padding-top: 0;
-  }
-  .title {
-    font-size: 32px;
-  }
-  .metaSubtitle {
-    font-size: 13.5px;
-    margin-top: 6px;
-  }
-  .lead {
-    font-size: 15px;
-    line-height: 1.55;
-  }
-  .chips {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 8px;
-    margin-top: 4px;
-    padding-bottom: 4px;
-  }
-  .chips::-webkit-scrollbar {
-    display: none;
-  }
-  .chip {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 7px 14px;
-    font-size: 13.5px;
-    min-height: 36px;
-  }
-}
-@media (max-width: 480px) {
-  .title {
-    font-size: 28px;
   }
 }
 
@@ -4113,44 +3725,6 @@ a:hover {
 }
 
 ================
-File: package.json
-================
-{
-  "name": "someplace-social",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "pnpm@9.15.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
-    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
-    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
-    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
-    "repomix": "repomix"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^1.6.1",
-    "next": "^16.0.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "resend": "^6.4.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.0.4",
-    "repomix": "^0.2.32",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
-  }
-}
-
-================
 File: app/components/Footer.tsx
 ================
 import styles from './Footer.module.css';
@@ -4186,6 +3760,212 @@ export default function Footer() {
       </div>
     </footer>
   );
+}
+
+================
+File: app/events/[city]/page.tsx
+================
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getEvents, getLastUpdated } from '../../lib/google-sheets';
+import CityEventsView from '../CityEventsView';
+export const revalidate = 3600;
+type PageProps = {
+  params: Promise<{ city: string }>;
+};
+export async function generateStaticParams() {
+  return getAllCitySlugs().map((city) => ({ city }));
+}
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    return {
+      title: 'City Not Found · Someplace Social',
+      robots: { index: false, follow: false },
+    };
+  }
+  const title = `${city.name} Events & Activities This Week`;
+  const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/events/${city.slug}`,
+    },
+    openGraph: {
+      title: `${title} | Someplace Social`,
+      description,
+      url: `/events/${city.slug}`,
+      siteName: 'Someplace Social',
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
+  };
+}
+export default async function CityEventsPage({ params }: PageProps) {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    notFound();
+  }
+  const [events, lastUpdated] = await Promise.all([
+    getEvents(city),
+    getLastUpdated(city),
+  ]);
+  return (
+    <CityEventsView
+      city={city}
+      initialEvents={events}
+      lastUpdated={lastUpdated}
+    />
+  );
+}
+
+================
+File: app/events/components/CityHeroCard.tsx
+================
+'use client';
+import styles from './CityHeroCard.module.css';
+interface CityHeroCardProps {
+  cityName: string;
+  introTitle?: string;
+  introDescription?: string;
+  eventCount?: number;
+  lastUpdated?: string | null;
+  activities: string[];
+  selectedActivities: string[];
+  onSelectChip: (activity: string) => void;
+  onClearActivities: () => void;
+}
+export default function CityHeroCard({
+  cityName,
+  introTitle,
+  introDescription,
+  eventCount,
+  lastUpdated,
+  activities,
+  selectedActivities,
+  onSelectChip,
+  onClearActivities,
+}: CityHeroCardProps) {
+  const isAllActive = selectedActivities.length === 0;
+  return (
+    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
+      <div className={styles.titleCol}>
+        <p className={styles.eyebrow}>Someplace Social</p>
+        <h1 id="city-intro-heading" className={styles.title}>
+          {introTitle || `${cityName} Community Listings`}
+        </h1>
+        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
+          <div className={styles.metaRow}>
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
+            {lastUpdated && (
+              <div className={styles.lastUpdatedBadge}>
+                <svg
+                  className={styles.lastUpdatedIcon}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 12.5l2 2 4-4.5" />
+                </svg>
+                <span className={styles.lastUpdatedLabel}>Last updated:</span>
+                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className={styles.descCol}>
+        <p className={styles.lead}>
+          {introDescription ||
+            `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+        </p>
+      </div>
+      <div className={styles.chips} role="group" aria-label="Filter by activity">
+        <button
+          type="button"
+          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
+          aria-pressed={isAllActive}
+          onClick={onClearActivities}
+        >
+          All
+        </button>
+        {activities.map((act) => {
+          const isSelected = selectedActivities.includes(act);
+          return (
+            <button
+              key={act}
+              type="button"
+              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectChip(act)}
+            >
+              {act}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+================
+File: package.json
+================
+{
+  "name": "someplace-social",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
+    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
+    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
+    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
+    "repomix": "repomix"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.0.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "resend": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.0.4",
+    "repomix": "^0.2.32",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
 }
 
 ================
@@ -4650,91 +4430,6 @@ File: app/contact/Contact.module.css
   .submitBtn {
     width: 100%;
   }
-}
-
-================
-File: app/contact/ContactView.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import ContactMessageForm from './components/ContactMessageForm';
-import EventSubmissionForm from './components/EventSubmissionForm';
-import styles from './Contact.module.css';
-export default function ContactView() {
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<'question' | 'submit'>(() => {
-    return tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
-  });
-  useEffect(() => {
-    if (tabParam === 'submit' || tabParam === 'event') {
-      setActiveTab('submit');
-    } else {
-      setActiveTab('question');
-    }
-  }, [tabParam]);
-  return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.heroText}>
-          <p className={styles.eyebrow}>CONTACT</p>
-          <h1 className={styles.heroTitle}>Contact Us</h1>
-          <p className={styles.heroDescription}>
-            Have an event to share, or a question, comment, or suggestion? Use the forms below and we&apos;ll get back to you.
-          </p>
-          <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
-            <button
-              type="button"
-              role="tab"
-              id="tab-question"
-              aria-selected={activeTab === 'question'}
-              aria-controls="panel-question"
-              className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
-              onClick={() => {
-                setActiveTab('question');
-                window.history.replaceState(null, '', '/contact');
-              }}
-            >
-              Send a Message
-            </button>
-            <button
-              type="button"
-              role="tab"
-              id="tab-submit"
-              aria-selected={activeTab === 'submit'}
-              aria-controls="panel-submit"
-              className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
-              onClick={() => {
-                setActiveTab('submit');
-                window.history.replaceState(null, '', '/contact?tab=submit');
-              }}
-            >
-              Submit an Event
-            </button>
-          </div>
-        </div>
-        <div className={styles.heroImageContainer}>
-          <Image
-            src="/images/hero-contact.png"
-            alt="Illustration of a capybara drinking coffee"
-            width={340}
-            height={260}
-            priority
-            className={styles.heroImage}
-          />
-        </div>
-      </section>
-      <section className={styles.panel}>
-        {activeTab === 'question' ? (
-          <ContactMessageForm />
-        ) : (
-          <EventSubmissionForm />
-        )}
-      </section>
-    </main>
-  );
 }
 
 ================
@@ -5252,6 +4947,390 @@ File: app/events/components/FilterControls.module.css
     padding: 4px 6px;
     color: var(--accent);
   }
+}
+
+================
+File: app/contact/ContactView.tsx
+================
+'use client';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import ContactMessageForm from './components/ContactMessageForm';
+import EventSubmissionForm from './components/EventSubmissionForm';
+import styles from './Contact.module.css';
+export default function ContactView() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const activeTab: 'question' | 'submit' =
+    tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
+  return (
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <div className={styles.heroText}>
+          <p className={styles.eyebrow}>CONTACT</p>
+          <h1 className={styles.heroTitle}>Contact Us</h1>
+          <p className={styles.heroDescription}>
+            Have an event to share, or a question, comment, or suggestion? Use the forms below and we&apos;ll get back to you.
+          </p>
+          <div className={styles.pillGroup} role="tablist" aria-label="Contact options">
+            <button
+              type="button"
+              role="tab"
+              id="tab-question"
+              aria-selected={activeTab === 'question'}
+              aria-controls="panel-question"
+              className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
+              onClick={() => {
+                router.replace('/contact', { scroll: false });
+              }}
+            >
+              Send a Message
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-submit"
+              aria-selected={activeTab === 'submit'}
+              aria-controls="panel-submit"
+              className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
+              onClick={() => {
+                router.replace('/contact?tab=submit', { scroll: false });
+              }}
+            >
+              Submit an Event
+            </button>
+          </div>
+        </div>
+        <div className={styles.heroImageContainer}>
+          <Image
+            src="/images/hero-contact.png"
+            alt="Illustration of a capybara drinking coffee"
+            width={340}
+            height={260}
+            priority
+            className={styles.heroImage}
+          />
+        </div>
+      </section>
+      <section className={styles.panel}>
+        {activeTab === 'question' ? (
+          <ContactMessageForm />
+        ) : (
+          <EventSubmissionForm />
+        )}
+      </section>
+    </main>
+  );
+}
+
+================
+File: app/events/components/CityHeroCard.module.css
+================
+.heroCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
+  gap: 16px 48px;
+  align-items: start;
+}
+.titleCol {
+  display: flex;
+  flex-direction: column;
+}
+.descCol {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 12px;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+}
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.lastUpdatedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background-color: var(--free-bg);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.lastUpdatedIcon {
+  color: var(--free);
+  flex-shrink: 0;
+}
+.lastUpdatedLabel {
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+.lastUpdatedDate {
+  font-weight: 700;
+  color: var(--ink);
+}
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+}
+.chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  min-height: 38px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.chip:hover {
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.chipActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chipActive:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 8px 0 0;
+  }
+  .descCol {
+    padding-top: 0;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .metaRow {
+    margin-top: 6px;
+    gap: 6px;
+  }
+  .lastUpdatedBadge {
+    font-size: 12.5px;
+    padding: 4px 9px;
+  }
+  .metaSubtitle {
+    font-size: 13.5px;
+  }
+  .lead {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+    margin-top: 4px;
+    padding-bottom: 4px;
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 14px;
+    font-size: 13.5px;
+    min-height: 36px;
+  }
+}
+@media (max-width: 480px) {
+  .title {
+    font-size: 28px;
+  }
+}
+
+================
+File: app/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import styles from './about/About.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Community Events, Social Clubs & Weekly Activities',
+  description:
+    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
+};
+const CRITERIA_ITEMS = [
+  {
+    number: '01',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
+  },
+  {
+    number: '02',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No private or one-on-one sessions.',
+  },
+  {
+    number: '03',
+    title: 'Open & Inclusive',
+    description: 'Must be welcoming and open to anyone who wishes to attend.',
+  },
+  {
+    number: '04',
+    title: 'Affordable',
+    description: 'Must be free, donation-based, or reasonably priced for the community.',
+  },
+  {
+    number: '05',
+    title: 'In-Person Only',
+    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
+  },
+] as const;
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Weekly Updates',
+    description: 'Listings are updated once per week.',
+  },
+  {
+    title: 'Community Sourced',
+    description: 'Anyone can submit new recurring activities.',
+  },
+  {
+    title: '100% Free & Ad-Free',
+    description: 'No accounts, no sponsors, no tracking, and no paywalls.',
+  },
+] as const;
+export default function Home() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: More clubs, classes, art, and parties.
+            </p>
+            <div className={styles.heroCityLinks}>
+              <Link href="/events/medellin-colombia" className={styles.cityPill}>
+                Medellín Events →
+              </Link>
+              <Link href="/events/fort-collins-colorado" className={styles.cityPill}>
+                Fort Collins Events →
+              </Link>
+            </div>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
+              How It Works
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <div className={styles.howItWorksGrid}>
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <div key={step.title} className={styles.howItWorksItem}>
+                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
+                <p className={styles.howItWorksDescription}>{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <ol className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <li key={item.number} className={styles.criteriaListItem}>
+                <span className={styles.criteriaListNumber} aria-hidden="true">
+                  {item.number}
+                </span>
+                <div className={styles.criteriaListContent}>
+                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
+                  <p className={styles.criteriaListDescription}>{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 ================
@@ -5939,136 +6018,6 @@ function FilterControls({
 export default memo(FilterControls);
 
 ================
-File: app/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import styles from './about/About.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Community Events, Social Clubs & Weekly Activities',
-  description:
-    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
-};
-const CRITERIA_ITEMS = [
-  {
-    number: '01',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
-  },
-  {
-    number: '02',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No private or one-on-one sessions.',
-  },
-  {
-    number: '03',
-    title: 'Open & Inclusive',
-    description: 'Must be welcoming and open to anyone who wishes to attend.',
-  },
-  {
-    number: '04',
-    title: 'Affordable',
-    description: 'Must be free, donation-based, or reasonably priced for the community.',
-  },
-  {
-    number: '05',
-    title: 'In-Person Only',
-    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
-  },
-] as const;
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: 'Weekly Updates',
-    description: 'Listings are updated once per week.',
-  },
-  {
-    title: 'Community Sourced',
-    description: 'Anyone can submit new recurring activities.',
-  },
-  {
-    title: '100% Free & Ad-Free',
-    description: 'No accounts, no sponsors, no tracking, and no paywalls.',
-  },
-] as const;
-export default function Home() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <p className={styles.eyebrow}>ABOUT</p>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
-            <p className={styles.heroDescription}>
-              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: More clubs, classes, art, and parties.
-            </p>
-            <div className={styles.heroCityLinks}>
-              <Link href="/events/medellin-colombia" className={styles.cityPill}>
-                Medellín Events →
-              </Link>
-              <Link href="/events/fort-collins-colorado" className={styles.cityPill}>
-                Fort Collins Events →
-              </Link>
-            </div>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
-              How It Works
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <div className={styles.howItWorksGrid}>
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <div key={step.title} className={styles.howItWorksItem}>
-                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
-                <p className={styles.howItWorksDescription}>{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <ol className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <li key={item.number} className={styles.criteriaListItem}>
-                <span className={styles.criteriaListNumber} aria-hidden="true">
-                  {item.number}
-                </span>
-                <div className={styles.criteriaListContent}>
-                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
-                  <p className={styles.criteriaListDescription}>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
 File: app/layout.tsx
 ================
 import type { Metadata, Viewport } from 'next';
@@ -6147,6 +6096,352 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+
+================
+File: app/components/Header.module.css
+================
+.header {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
+  z-index: 50;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.brandLogoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 108px;
+  width: auto;
+  max-width: 570px;
+  object-fit: contain;
+  filter: var(--logo-filter);
+  transition: filter 0.2s ease;
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.navDesktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.citiesWrapper {
+  position: relative;
+}
+.citiesBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  background-color: transparent;
+  color: var(--ink);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.citiesBtn:hover {
+  color: var(--accent);
+}
+.citiesBtnActive {
+  font-weight: 700;
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+}
+.citiesDropdown {
+  position: absolute;
+  z-index: 40;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  margin-top: 6px;
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: var(--shadow-md);
+}
+.citiesDropdownHidden {
+  display: none;
+}
+.cityOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  gap: 12px;
+}
+.cityName {
+  flex: 1;
+  white-space: nowrap;
+}
+.cityOption:hover {
+  background-color: var(--topbar-bg);
+}
+.cityOptionActive {
+  font-weight: 700;
+  background-color: var(--pill-hover);
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.navLink:hover {
+  color: var(--accent);
+}
+.navLinkActive {
+  font-weight: 700;
+  text-decoration: none;
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+}
+.navLinkActive:hover {
+  color: var(--ink);
+}
+.addEventBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  margin-left: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bg);
+  text-decoration: none;
+  background-color: var(--ink);
+  transition: opacity 0.15s ease;
+}
+.addEventBtn:hover {
+  opacity: 0.88;
+  color: var(--bg);
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--backdrop);
+  z-index: 100;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background-color: var(--bg);
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.3);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.drawerTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink);
+}
+.drawerCloseBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerCityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerCityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  gap: 10px;
+}
+.drawerCityItemActive {
+  background-color: var(--pill-hover);
+  font-weight: 700;
+}
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerNavLinkActive {
+  background-color: var(--pill-hover);
+  font-weight: 700;
+}
+.drawerFooter {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.drawerAddEventBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  background-color: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.drawerAddEventBtn:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .headerInner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .brandCol {
+    flex: 1;
+  }
+  .logoImage {
+    height: 57px;
+    max-width: 285px;
+  }
+  .brandSubtitle {
+    font-size: 11.5px;
+    margin-top: 2px;
+  }
+  .navDesktop {
+    display: none;
+  }
+  .navMobileActions {
+    display: flex;
+  }
+}
+@media (max-width: 360px) {
+  .headerInner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .logoImage {
+    height: 48px;
+    max-width: 225px;
+  }
+  .hamburgerBtn {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 ================
@@ -7155,352 +7450,6 @@ export function getAllCities(): CityConfig[] {
 }
 
 ================
-File: app/components/Header.module.css
-================
-.header {
-  position: relative;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--bg);
-  z-index: 50;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.headerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.brandCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-.brandLogoLink {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.logoImage {
-  height: 108px;
-  width: auto;
-  max-width: 570px;
-  object-fit: contain;
-  filter: var(--logo-filter);
-  transition: filter 0.2s ease;
-}
-.brandSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--muted);
-  margin-top: 6px;
-}
-.navDesktop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.citiesWrapper {
-  position: relative;
-}
-.citiesBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 0 14px;
-  background-color: transparent;
-  color: var(--ink);
-  border: 1.5px solid transparent;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-.citiesBtn:hover {
-  color: var(--accent);
-}
-.citiesBtnActive {
-  font-weight: 700;
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-}
-.citiesDropdown {
-  position: absolute;
-  z-index: 40;
-  top: 100%;
-  left: 0;
-  min-width: 220px;
-  margin-top: 6px;
-  background-color: var(--surface-elevated);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: var(--shadow-md);
-}
-.citiesDropdownHidden {
-  display: none;
-}
-.cityOption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 8px;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  text-decoration: none;
-  background: none;
-  gap: 12px;
-}
-.cityName {
-  flex: 1;
-  white-space: nowrap;
-}
-.cityOption:hover {
-  background-color: var(--topbar-bg);
-}
-.cityOptionActive {
-  font-weight: 700;
-  background-color: var(--pill-hover);
-}
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 0 16px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 999px;
-  border: 1.5px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-.navLink:hover {
-  color: var(--accent);
-}
-.navLinkActive {
-  font-weight: 700;
-  text-decoration: none;
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-}
-.navLinkActive:hover {
-  color: var(--ink);
-}
-.addEventBtn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 0 18px;
-  margin-left: 6px;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--bg);
-  text-decoration: none;
-  background-color: var(--ink);
-  transition: opacity 0.15s ease;
-}
-.addEventBtn:hover {
-  opacity: 0.88;
-  color: var(--bg);
-}
-.navMobileActions {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.hamburgerBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 10px;
-  color: var(--ink);
-  cursor: pointer;
-}
-.drawerBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: var(--backdrop);
-  z-index: 100;
-}
-.drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 290px;
-  max-width: 85vw;
-  background-color: var(--bg);
-  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.3);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 20px 28px;
-  overflow-y: auto;
-}
-.drawerHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.drawerTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  color: var(--ink);
-}
-.drawerCloseBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-.drawerSectionTitle {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin: 20px 0 8px;
-}
-.drawerCityList {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerCityItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  gap: 10px;
-}
-.drawerCityItemActive {
-  background-color: var(--pill-hover);
-  font-weight: 700;
-}
-.drawerNavLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerNavLink {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 8px;
-}
-.drawerNavLink:hover {
-  background-color: var(--topbar-bg);
-}
-.drawerNavLinkActive {
-  background-color: var(--pill-hover);
-  font-weight: 700;
-}
-.drawerFooter {
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-.drawerAddEventBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  background-color: var(--ink);
-  color: var(--bg);
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-  text-decoration: none;
-  transition: opacity 0.15s ease;
-}
-.drawerAddEventBtn:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .headerInner {
-    padding: 12px 16px;
-    gap: 12px;
-  }
-  .brandCol {
-    flex: 1;
-  }
-  .logoImage {
-    height: 57px;
-    max-width: 285px;
-  }
-  .brandSubtitle {
-    font-size: 11.5px;
-    margin-top: 2px;
-  }
-  .navDesktop {
-    display: none;
-  }
-  .navMobileActions {
-    display: flex;
-  }
-}
-@media (max-width: 360px) {
-  .headerInner {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .logoImage {
-    height: 48px;
-    max-width: 225px;
-  }
-  .hamburgerBtn {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-================
 File: app/events/EventsView.module.css
 ================
 .pageContainer {
@@ -7813,7 +7762,7 @@ File: app/events/EventsView.module.css
 File: app/events/components/EventCard.tsx
 ================
 'use client';
-import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore, memo } from 'react';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -7824,6 +7773,7 @@ import {
   parseContactInfo,
 } from '../utils';
 import styles from './EventCard.module.css';
+const emptySubscribe = () => () => {};
 interface EventCardProps {
   event: Event;
   isOpen: boolean;
@@ -7867,14 +7817,13 @@ function ActionButton({
 function ContactButton({ contact }: { contact?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
+  const isAndroid = useSyncExternalStore(
+    emptySubscribe,
+    () => /android/i.test(navigator.userAgent || ''),
+    () => false
+  );
   const popoverRef = useRef<HTMLDivElement>(null);
   const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-  useEffect(() => {
-    if (typeof navigator !== 'undefined') {
-      setIsAndroid(/android/i.test(navigator.userAgent || ''));
-    }
-  }, []);
   useEffect(() => {
     if (!isOpen) return;
     function handleClickOutside(e: MouseEvent) {
@@ -8264,345 +8213,6 @@ function EventCard({
 export default memo(EventCard);
 
 ================
-File: app/lib/google-sheets.ts
-================
-import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
-import { normalizeDayOfWeek } from '../events/utils';
-export type Event = {
-  id: string;
-  title: string;
-  venue: string;
-  organization: string;
-  location: string;
-  area: string;
-  activity: string;
-  activities: string[];
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  frequency: string;
-  frequencyNotes: string;
-  price: string;
-  preRegistration: string;
-  map: string;
-  social: string;
-  website: string;
-  contact: string;
-  about: string;
-  notes: string;
-  database: string;
-};
-const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
-const eventCache = new Map<string, { timestamp: number; data: Event[] }>();
-const CACHE_TTL_MS = 60 * 1000;
-function getCandidateUrls(city: CityConfig): string[] {
-  if (city.csvUrl) return [city.csvUrl];
-  const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
-  const urls: string[] = [];
-  urls.push(
-    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-      city.sheetTab
-    )}`
-  );
-  if (city.sheetGid) {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
-    );
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`
-    );
-  }
-  if (city.sheetTab.toLowerCase() === 'medellin') {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-        'Medellín'
-      )}`
-    );
-  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=FortCollins`
-    );
-  }
-  urls.push(
-    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
-      city.sheetTab
-    )}`
-  );
-  if (city.sheetGid) {
-    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
-  }
-  urls.push(
-    `${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`
-  );
-  return urls;
-}
-function parseCsv(csvText: string): string[][] {
-  const rows: string[][] = [];
-  let currentRow: string[] = [];
-  let currentField = '';
-  let inQuotes = false;
-  for (let i = 0; i < csvText.length; i++) {
-    const char = csvText[i];
-    if (char === '"') {
-      if (inQuotes && csvText[i + 1] === '"') {
-        currentField += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === ',' && !inQuotes) {
-      currentRow.push(currentField);
-      currentField = '';
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      currentRow.push(currentField);
-      rows.push(currentRow);
-      currentRow = [];
-      currentField = '';
-      if (char === '\r' && csvText[i + 1] === '\n') {
-        i++;
-      }
-    } else {
-      currentField += char;
-    }
-  }
-  currentRow.push(currentField);
-  rows.push(currentRow);
-  return rows;
-}
-function parseSheetData(rawText: string): string[][] {
-  const trimmed = rawText.trim();
-  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
-    try {
-      const startIdx = trimmed.indexOf('{');
-      const endIdx = trimmed.lastIndexOf('}');
-      if (startIdx !== -1 && endIdx !== -1) {
-        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
-        const data = JSON.parse(jsonStr);
-        if (data.status === 'error') {
-          return [];
-        }
-        if (data.table) {
-          const cols: { label?: string; id?: string }[] = data.table.cols || [];
-          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
-          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
-            return (row.c || []).map((cell) => {
-              if (!cell || cell.v === null || cell.v === undefined) return '';
-              return String(cell.f || cell.v).trim();
-            });
-          });
-          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
-            return [headerRow, ...dataRows];
-          } else if (dataRows.length > 0) {
-            return dataRows;
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
-    }
-  }
-  return parseCsv(rawText);
-}
-const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
-const HEADER_ALIASES: Record<string, string[]> = {
-  id: ['id'],
-  title: ['title', 'eventname', 'name'],
-  venue: ['venue', 'place'],
-  organization: ['organization', 'organizer', 'host'],
-  location: ['location', 'address'],
-  area: ['area', 'neighborhood'],
-  activity: ['activity', 'activities'],
-  activity1: ['activity1', 'activity'],
-  activity2: ['activity2'],
-  activity3: ['activity3'],
-  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
-  startTime: ['starttime', 'start'],
-  endTime: ['endtime', 'end'],
-  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
-  frequencyNotes: [
-    'frequencynotes',
-    'frequencynote',
-    'frequency_notes',
-    'freqnotes',
-    'freqnote',
-    'frequencynot',
-    'recurrencenotes',
-  ],
-  price: ['price', 'cost'],
-  preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
-  map: ['map', 'googlemap', 'googlemaplink', 'maps'],
-  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
-  website: ['website', 'site', 'url'],
-  contact: ['contact', 'whatsapp', 'phone'],
-  about: ['about', 'description'],
-  notes: ['notes', 'note'],
-  database: ['database', 'db', 'sheet'],
-};
-const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
-  id: 0,
-  title: 1,
-  venue: 2,
-  organization: 2,
-  location: 3,
-  area: 4,
-  activity: 5,
-  dayOfWeek: 6,
-  startTime: 7,
-  endTime: 8,
-  frequency: 9,
-  frequencyNotes: 10,
-  price: 11,
-  preRegistration: 12,
-  map: 13,
-  social: 14,
-  website: 15,
-  contact: 16,
-  about: 17,
-  notes: 18,
-};
-export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
-  try {
-    let cityConfig: CityConfig;
-    if (typeof cityOrTab === 'string') {
-      cityConfig = CITIES[cityOrTab] || {
-        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
-        name: cityOrTab,
-        region: '',
-        heroLocation: cityOrTab,
-        sheetTab: cityOrTab,
-      };
-    } else if (cityOrTab) {
-      cityConfig = cityOrTab;
-    } else {
-      cityConfig = CITIES['medellin-colombia'];
-    }
-    const cached = eventCache.get(cityConfig.slug);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data;
-    }
-    const candidateUrls = getCandidateUrls(cityConfig);
-    const isDev = process.env.NODE_ENV === 'development';
-    let rows: string[][] = [];
-    for (const url of candidateUrls) {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            Accept: 'text/csv, application/json, text/plain, */*',
-          },
-          cache: isDev ? 'no-store' : 'default',
-          next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
-        });
-        if (response.ok) {
-          const text = await response.text();
-          const trimmed = text.trim();
-          if (
-            trimmed &&
-            !trimmed.startsWith('<!DOCTYPE html') &&
-            !trimmed.startsWith('<html') &&
-            !trimmed.includes('accounts.google.com') &&
-            !trimmed.includes('"status":"error"') &&
-            !trimmed.includes('INVALID_QUERY')
-          ) {
-            const parsed = parseSheetData(trimmed);
-            if (parsed.length >= 2) {
-              rows = parsed;
-              break;
-            }
-          }
-        }
-      } catch (fetchErr) {
-        console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
-      }
-    }
-    if (rows.length < 2) {
-      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
-      return [];
-    }
-    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
-    const headerIndexMap: Record<string, number> = {};
-    Object.keys(HEADER_ALIASES).forEach((field) => {
-      const aliases = HEADER_ALIASES[field];
-      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
-      if (foundIdx !== -1) {
-        headerIndexMap[field] = foundIdx;
-      }
-    });
-    const cleanCell = (cell: string): string => {
-      const trimmed = (cell || '').trim();
-      return trimmed.toLowerCase() === 'x' ? '' : trimmed;
-    };
-    const dataRows = rows.slice(1);
-    const events = dataRows
-      .map((row): Event | null => {
-        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
-        const getValue = (field: string): string => {
-          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
-          if (colIdx !== undefined && colIdx < row.length) {
-            return cleanCell(row[colIdx]);
-          }
-          return '';
-        };
-        const venueVal = getValue('venue');
-        const orgVal = getValue('organization');
-        const locVal = getValue('location');
-        const rawActivity = getValue('activity');
-        const act1 = getValue('activity1');
-        const act2 = getValue('activity2');
-        const act3 = getValue('activity3');
-        let parsedActivities: string[] = [];
-        if (rawActivity) {
-          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
-        }
-        if (parsedActivities.length === 0) {
-          parsedActivities = [act1, act2, act3]
-            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
-            .filter(Boolean);
-        }
-        const uniqueActs: string[] = [];
-        for (const act of parsedActivities) {
-          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
-            uniqueActs.push(act);
-          }
-        }
-        const activityStr = uniqueActs.join(', ');
-        const rawDay = getValue('dayOfWeek');
-        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
-        return {
-          id: getValue('id'),
-          title: getValue('title'),
-          venue: venueVal,
-          organization: orgVal || venueVal,
-          location: locVal || venueVal,
-          area: getValue('area'),
-          activity: activityStr,
-          activities: uniqueActs,
-          dayOfWeek: dayOfWeekStr,
-          startTime: getValue('startTime'),
-          endTime: getValue('endTime'),
-          frequency: getValue('frequency'),
-          frequencyNotes: getValue('frequencyNotes'),
-          price: getValue('price'),
-          preRegistration: getValue('preRegistration'),
-          map: getValue('map'),
-          social: getValue('social'),
-          website: getValue('website'),
-          contact: getValue('contact'),
-          about: getValue('about'),
-          notes: getValue('notes'),
-          database: getValue('database'),
-        };
-      })
-      .filter((event): event is Event => event !== null);
-    const validEvents = events.filter((event) => Boolean(event.title));
-    eventCache.set(cityConfig.slug, { timestamp: Date.now(), data: validEvents });
-    return validEvents;
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return [];
-  }
-}
-
-================
 File: app/events/CityEventsView.tsx
 ================
 'use client';
@@ -8654,9 +8264,11 @@ const TIME_GROUPS = [
 export default function CityEventsView({
   city,
   initialEvents = [],
+  lastUpdated = null,
 }: {
   city: CityConfig;
   initialEvents?: Event[];
+  lastUpdated?: string | null;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
@@ -8847,6 +8459,7 @@ export default function CityEventsView({
           introTitle={city.introTitle}
           introDescription={city.introDescription}
           eventCount={totalEventsCount}
+          lastUpdated={lastUpdated}
           activities={activities}
           selectedActivities={selectedActivities}
           onSelectChip={handleSelectChip}
@@ -8947,6 +8560,499 @@ export default function CityEventsView({
       )}
     </div>
   );
+}
+
+================
+File: app/lib/google-sheets.ts
+================
+import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
+import { normalizeDayOfWeek } from '../events/utils';
+export type Event = {
+  id: string;
+  title: string;
+  venue: string;
+  organization: string;
+  location: string;
+  area: string;
+  activity: string;
+  activities: string[];
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  frequency: string;
+  frequencyNotes: string;
+  price: string;
+  preRegistration: string;
+  map: string;
+  social: string;
+  website: string;
+  contact: string;
+  about: string;
+  notes: string;
+  database: string;
+};
+const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
+const eventCache = new Map<string, { timestamp: number; data: Event[] }>();
+const lastUpdatedCache = new Map<string, { timestamp: number; data: Map<string, string> }>();
+const CACHE_TTL_MS = 60 * 1000;
+function getCandidateUrls(city: CityConfig): string[] {
+  if (city.csvUrl) return [city.csvUrl];
+  const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
+  const urls: string[] = [];
+  urls.push(
+    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+      city.sheetTab
+    )}`
+  );
+  if (city.sheetGid) {
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
+    );
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`
+    );
+  }
+  if (city.sheetTab.toLowerCase() === 'medellin') {
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+        'Medellín'
+      )}`
+    );
+  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
+    urls.push(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=FortCollins`
+    );
+  }
+  urls.push(
+    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
+      city.sheetTab
+    )}`
+  );
+  if (city.sheetGid) {
+    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
+  }
+  urls.push(
+    `${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`
+  );
+  return urls;
+}
+function parseCsv(csvText: string): string[][] {
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentField = '';
+  let inQuotes = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (char === '"') {
+      if (inQuotes && csvText[i + 1] === '"') {
+        currentField += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      currentRow.push(currentField);
+      currentField = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      currentRow.push(currentField);
+      rows.push(currentRow);
+      currentRow = [];
+      currentField = '';
+      if (char === '\r' && csvText[i + 1] === '\n') {
+        i++;
+      }
+    } else {
+      currentField += char;
+    }
+  }
+  currentRow.push(currentField);
+  rows.push(currentRow);
+  return rows;
+}
+function parseSheetData(rawText: string): string[][] {
+  const trimmed = rawText.trim();
+  if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
+    try {
+      const startIdx = trimmed.indexOf('{');
+      const endIdx = trimmed.lastIndexOf('}');
+      if (startIdx !== -1 && endIdx !== -1) {
+        const jsonStr = trimmed.substring(startIdx, endIdx + 1);
+        const data = JSON.parse(jsonStr);
+        if (data.status === 'error') {
+          return [];
+        }
+        if (data.table) {
+          const cols: { label?: string; id?: string }[] = data.table.cols || [];
+          const headerRow: string[] = cols.map((col) => col.label || col.id || '');
+          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+            return (row.c || []).map((cell) => {
+              if (!cell || (cell.v === null && !cell.f) || (cell.v === undefined && !cell.f)) return '';
+              return String(cell.f ?? cell.v ?? '').trim();
+            });
+          });
+          if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
+            return [headerRow, ...dataRows];
+          } else if (dataRows.length > 0) {
+            return dataRows;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Someplace Social] Failed to parse GViz JSON, falling back to CSV parser:', e);
+    }
+  }
+  return parseCsv(rawText);
+}
+async function fetchValidSheetText(url: string): Promise<string | null> {
+  const isDev = process.env.NODE_ENV === 'development';
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/csv, application/json, text/plain, */*',
+      },
+      cache: isDev ? 'no-store' : 'default',
+      next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+    });
+    if (!response.ok) return null;
+    const text = await response.text();
+    const trimmed = text.trim();
+    if (
+      trimmed &&
+      !trimmed.startsWith('<!DOCTYPE html') &&
+      !trimmed.startsWith('<html') &&
+      !trimmed.includes('accounts.google.com') &&
+      !trimmed.includes('"status":"error"') &&
+      !trimmed.includes('INVALID_QUERY')
+    ) {
+      return trimmed;
+    }
+  } catch (fetchErr) {
+    console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
+  }
+  return null;
+}
+async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
+  for (const url of candidateUrls) {
+    const text = await fetchValidSheetText(url);
+    if (!text) continue;
+    const parsed = parseSheetData(text);
+    if (parsed.length >= 2) {
+      return parsed;
+    }
+  }
+  return [];
+}
+const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
+const normalizeCityKey = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+function formatSheetDate(value: string): string {
+  const gvizDateMatch = value.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
+  if (gvizDateMatch) {
+    const year = parseInt(gvizDateMatch[1], 10);
+    const month = parseInt(gvizDateMatch[2], 10);
+    const day = parseInt(gvizDateMatch[3], 10);
+    const date = new Date(year, month, day);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+  return value;
+}
+function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
+  if (rows.length < 2) return null;
+  const headerRow = rows[0].map((h) => normalizeHeader(h));
+  const dateColIdx = headerRow.findIndex((h) =>
+    ['lastupdateddate', 'lastupdated', 'updateddate', 'lastupdate'].includes(h)
+  );
+  const cityColIdx = headerRow.findIndex((h) => h === 'city');
+  if (dateColIdx === -1 || cityColIdx === -1) {
+    return null;
+  }
+  const map = new Map<string, string>();
+  for (const row of rows.slice(1)) {
+    const rawDate = (row[dateColIdx] || '').trim();
+    const rawCity = (row[cityColIdx] || '').trim();
+    if (!rawDate || !rawCity || rawDate.toLowerCase() === 'x') continue;
+    map.set(normalizeCityKey(rawCity), formatSheetDate(rawDate));
+  }
+  return map.size > 0 ? map : null;
+}
+function findTabGidInHtml(html: string, tabNames: string[]): string | null {
+  const targets = new Set(tabNames.map((n) => normalizeHeader(n)));
+  const itemRegex = /name:\s*["']([^"']+)["'][\s\S]{0,400}?gid:\s*["'](\d+)["']/gi;
+  let match: RegExpExecArray | null;
+  while ((match = itemRegex.exec(html)) !== null) {
+    if (targets.has(normalizeHeader(match[1]))) {
+      return match[2];
+    }
+  }
+  const buttonRegex = /id=["']sheet-button-(\d+)["'][^>]*>\s*<a[^>]*>([^<]+)<\/a>/gi;
+  while ((match = buttonRegex.exec(html)) !== null) {
+    if (targets.has(normalizeHeader(match[2]))) {
+      return match[1];
+    }
+  }
+  return null;
+}
+async function discoverTabGid(targetId: string, tabNames: string[]): Promise<string | null> {
+  const isDev = process.env.NODE_ENV === 'development';
+  const indexUrls = [
+    BASE_PUB_URL,
+    `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`,
+  ];
+  for (const url of indexUrls) {
+    try {
+      const response = await fetch(url, {
+        cache: isDev ? 'no-store' : 'default',
+        next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+      });
+      if (!response.ok) continue;
+      const html = await response.text();
+      if (!html || html.includes('accounts.google.com')) continue;
+      const gid = findTabGidInHtml(html, tabNames);
+      if (gid) return gid;
+    } catch {
+    }
+  }
+  return null;
+}
+const HEADER_ALIASES: Record<string, string[]> = {
+  id: ['id'],
+  title: ['title', 'eventname', 'name'],
+  venue: ['venue', 'place'],
+  organization: ['organization', 'organizer', 'host'],
+  location: ['location', 'address'],
+  area: ['area', 'neighborhood'],
+  activity: ['activity', 'activities'],
+  activity1: ['activity1', 'activity'],
+  activity2: ['activity2'],
+  activity3: ['activity3'],
+  dayOfWeek: ['dayofweek', 'day', 'days', 'daysofweek'],
+  startTime: ['starttime', 'start'],
+  endTime: ['endtime', 'end'],
+  frequency: ['frequency', 'cadence', 'recurrence', 'howoften'],
+  frequencyNotes: [
+    'frequencynotes',
+    'frequencynote',
+    'frequency_notes',
+    'freqnotes',
+    'freqnote',
+    'frequencynot',
+    'recurrencenotes',
+  ],
+  price: ['price', 'cost'],
+  preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
+  map: ['map', 'googlemap', 'googlemaplink', 'maps'],
+  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
+  website: ['website', 'site', 'url'],
+  contact: ['contact', 'whatsapp', 'phone'],
+  about: ['about', 'description'],
+  notes: ['notes', 'note'],
+  database: ['database', 'db', 'sheet'],
+};
+const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
+  id: 0,
+  title: 1,
+  venue: 2,
+  organization: 2,
+  location: 3,
+  area: 4,
+  activity: 5,
+  dayOfWeek: 6,
+  startTime: 7,
+  endTime: 8,
+  frequency: 9,
+  frequencyNotes: 10,
+  price: 11,
+  preRegistration: 12,
+  map: 13,
+  social: 14,
+  website: 15,
+  contact: 16,
+  about: 17,
+  notes: 18,
+};
+export async function getLastUpdated(city: CityConfig): Promise<string | null> {
+  try {
+    const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
+    const isDev = process.env.NODE_ENV === 'development';
+    const cached = !isDev ? lastUpdatedCache.get(targetId) : undefined;
+    let cityDateMap: Map<string, string> | null = null;
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      cityDateMap = cached.data;
+    } else {
+      const tabNames = ['LastUpdate', 'Last Update'];
+      const directUrls: string[] = [];
+      for (const tabName of tabNames) {
+        directUrls.push(
+          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+            tabName
+          )}`
+        );
+        directUrls.push(
+          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
+            tabName
+          )}`
+        );
+      }
+      for (const url of directUrls) {
+        const text = await fetchValidSheetText(url);
+        if (!text) continue;
+        const parsedMap = parseLastUpdatedRows(parseSheetData(text));
+        if (parsedMap) {
+          cityDateMap = parsedMap;
+          break;
+        }
+      }
+      if (!cityDateMap) {
+        const discoveredGid = await discoverTabGid(targetId, tabNames);
+        if (discoveredGid) {
+          const gidUrls = [
+            `${BASE_PUB_URL}?gid=${discoveredGid}&single=true&output=csv`,
+            `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${discoveredGid}`,
+            `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${discoveredGid}`,
+          ];
+          for (const url of gidUrls) {
+            const text = await fetchValidSheetText(url);
+            if (!text) continue;
+            const parsedMap = parseLastUpdatedRows(parseSheetData(text));
+            if (parsedMap) {
+              cityDateMap = parsedMap;
+              break;
+            }
+          }
+        }
+      }
+      if (!cityDateMap) {
+        return null;
+      }
+      lastUpdatedCache.set(targetId, { timestamp: Date.now(), data: cityDateMap });
+    }
+    return (
+      cityDateMap.get(normalizeCityKey(city.sheetTab)) ??
+      cityDateMap.get(normalizeCityKey(city.name)) ??
+      cityDateMap.get(normalizeCityKey(city.slug)) ??
+      null
+    );
+  } catch (error) {
+    console.error('Error fetching last updated date:', error);
+    return null;
+  }
+}
+export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
+  try {
+    let cityConfig: CityConfig;
+    if (typeof cityOrTab === 'string') {
+      cityConfig = CITIES[cityOrTab] || {
+        slug: cityOrTab.toLowerCase().replace(/\s+/g, '-'),
+        name: cityOrTab,
+        region: '',
+        heroLocation: cityOrTab,
+        sheetTab: cityOrTab,
+      };
+    } else if (cityOrTab) {
+      cityConfig = cityOrTab;
+    } else {
+      cityConfig = CITIES['medellin-colombia'];
+    }
+    const cached = eventCache.get(cityConfig.slug);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+    const candidateUrls = getCandidateUrls(cityConfig);
+    const rows = await fetchSheetRows(candidateUrls);
+    if (rows.length < 2) {
+      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
+      return [];
+    }
+    const headerRow = rows[0].map((h: string) => normalizeHeader(h));
+    const headerIndexMap: Record<string, number> = {};
+    Object.keys(HEADER_ALIASES).forEach((field) => {
+      const aliases = HEADER_ALIASES[field];
+      const foundIdx = headerRow.findIndex((h: string) => aliases.includes(h));
+      if (foundIdx !== -1) {
+        headerIndexMap[field] = foundIdx;
+      }
+    });
+    const cleanCell = (cell: string): string => {
+      const trimmed = (cell || '').trim();
+      return trimmed.toLowerCase() === 'x' ? '' : trimmed;
+    };
+    const dataRows = rows.slice(1);
+    const events = dataRows
+      .map((row): Event | null => {
+        if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
+        const getValue = (field: string): string => {
+          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+          if (colIdx !== undefined && colIdx < row.length) {
+            return cleanCell(row[colIdx]);
+          }
+          return '';
+        };
+        const venueVal = getValue('venue');
+        const orgVal = getValue('organization');
+        const locVal = getValue('location');
+        const rawActivity = getValue('activity');
+        const act1 = getValue('activity1');
+        const act2 = getValue('activity2');
+        const act3 = getValue('activity3');
+        let parsedActivities: string[] = [];
+        if (rawActivity) {
+          parsedActivities = rawActivity.split(',').map((s) => s.trim()).filter(Boolean);
+        }
+        if (parsedActivities.length === 0) {
+          parsedActivities = [act1, act2, act3]
+            .flatMap((s) => (s ? s.split(',').map((x) => x.trim()) : []))
+            .filter(Boolean);
+        }
+        const uniqueActs: string[] = [];
+        for (const act of parsedActivities) {
+          if (!uniqueActs.some((u) => u.toLowerCase() === act.toLowerCase())) {
+            uniqueActs.push(act);
+          }
+        }
+        const activityStr = uniqueActs.join(', ');
+        const rawDay = getValue('dayOfWeek');
+        const dayOfWeekStr = normalizeDayOfWeek(rawDay);
+        return {
+          id: getValue('id'),
+          title: getValue('title'),
+          venue: venueVal,
+          organization: orgVal || venueVal,
+          location: locVal || venueVal,
+          area: getValue('area'),
+          activity: activityStr,
+          activities: uniqueActs,
+          dayOfWeek: dayOfWeekStr,
+          startTime: getValue('startTime'),
+          endTime: getValue('endTime'),
+          frequency: getValue('frequency'),
+          frequencyNotes: getValue('frequencyNotes'),
+          price: getValue('price'),
+          preRegistration: getValue('preRegistration'),
+          map: getValue('map'),
+          social: getValue('social'),
+          website: getValue('website'),
+          contact: getValue('contact'),
+          about: getValue('about'),
+          notes: getValue('notes'),
+          database: getValue('database'),
+        };
+      })
+      .filter((event): event is Event => event !== null);
+    const validEvents = events.filter((event) => Boolean(event.title));
+    eventCache.set(cityConfig.slug, { timestamp: Date.now(), data: validEvents });
+    return validEvents;
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
 }
 
 

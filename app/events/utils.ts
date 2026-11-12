@@ -1,6 +1,5 @@
 import { Event } from '../lib/google-sheets';
 import { CityPriceConfig } from '../lib/cities';
-
 export type IndexedEvent = Event & {
   parsedHour: number;
   parsedPrice: number | null;
@@ -8,7 +7,6 @@ export type IndexedEvent = Event & {
   searchCorpus: string;
   activeDays: boolean[];
 };
-
 export type ContactInfo =
   | {
       type: 'email';
@@ -30,7 +28,6 @@ export type ContactInfo =
   | {
       type: 'none';
     };
-
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -54,7 +51,6 @@ export function parseHour(timeStr: string): number {
   const numMatch = cleaned.match(/\d+/);
   return numMatch ? parseInt(numMatch[0], 10) : 18;
 }
-
 export function formatTimeLabel(timeStr: string): string {
   if (!timeStr) return '';
   const cleaned = timeStr.trim();
@@ -67,7 +63,6 @@ export function formatTimeLabel(timeStr: string): string {
   }
   return cleaned;
 }
-
 export function formatTimeRange(
   startTime: string,
   endTime: string
@@ -76,7 +71,6 @@ export function formatTimeRange(
   const end = endTime ? formatTimeLabel(endTime) : undefined;
   return { start, end };
 }
-
 export function formatRecurrenceText(
   frequency?: string,
   frequencyNotes?: string
@@ -87,17 +81,23 @@ export function formatRecurrenceText(
     if (notes.startsWith(',') || notes.startsWith('.')) {
       return `${freq}${notes}`;
     }
-    return `${freq} ${notes}`;
+    if (
+      notes.startsWith('(') ||
+      notes.startsWith('·') ||
+      notes.startsWith('•') ||
+      notes.startsWith('-')
+    ) {
+      return `${freq} ${notes}`;
+    }
+    return `${freq} · ${notes}`;
   }
   return freq || notes || '';
 }
-
 export function isFreePrice(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
   return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
 }
-
 export function isFreeOrDonation(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
@@ -109,12 +109,10 @@ export function isFreeOrDonation(price: string): boolean {
     p === '0k'
   );
 }
-
 export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'): number | null {
   if (!priceStr) return 0;
   const cleaned = priceStr.trim().toLowerCase();
   if (isFreeOrDonation(cleaned)) return 0;
-
   if (currencyCode === 'COP') {
     const kMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*k/i);
     if (kMatch) {
@@ -136,14 +134,12 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
     }
     return null;
   }
-
   const usdMatch = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)/);
   if (usdMatch) {
     return parseFloat(usdMatch[1]);
   }
   return null;
 }
-
 export function matchesPriceFilter(
   eventPrice: string,
   maxPriceFilter: number,
@@ -164,7 +160,6 @@ export function matchesPriceFilter(
   }
   return num <= maxPriceFilter;
 }
-
 export function formatPriceValue(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free';
   if (config.unitSuffix) {
@@ -172,21 +167,18 @@ export function formatPriceValue(val: number, config: CityPriceConfig): string {
   }
   return `${config.currencySymbol}${val}`;
 }
-
 export function formatPriceReadout(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   if (val >= config.maxPrice) return 'Any price';
   return `Up to ${formatPriceValue(val, config)}`;
 }
-
 export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
   if (val >= config.maxPrice) return 'All prices';
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   return `Up to ${formatPriceValue(val, config)}`;
 }
-
 const DAY_ALIAS_MAP: Record<string, string[]> = {
   sun: ['sun', 'sunday'],
   sunday: ['sun', 'sunday'],
@@ -203,7 +195,6 @@ const DAY_ALIAS_MAP: Record<string, string[]> = {
   sat: ['sat', 'saturday'],
   saturday: ['sat', 'saturday'],
 };
-
 const DAY_INDEX: Record<string, number> = {
   sun: 0,
   sunday: 0,
@@ -224,7 +215,6 @@ const DAY_INDEX: Record<string, number> = {
   sat: 6,
   saturday: 6,
 };
-
 export function normalizeDayOfWeek(dayStr: string): string {
   if (!dayStr) return '';
   const trimmed = dayStr.trim();
@@ -253,7 +243,6 @@ export function normalizeDayOfWeek(dayStr: string): string {
     sat: 'Sat',
     saturday: 'Sat',
   };
-
   const normalized: string[] = [];
   for (const token of tokens) {
     const short = DAY_TO_SHORT[token.toLowerCase()];
@@ -263,13 +252,11 @@ export function normalizeDayOfWeek(dayStr: string): string {
   }
   return normalized.length > 0 ? normalized.join(', ') : trimmed;
 }
-
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
   const targetKey = targetDayName.trim().toLowerCase();
   const targetIndex = DAY_INDEX[targetKey];
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
-
   const rawLower = eventDays.toLowerCase();
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
     return true;
@@ -281,7 +268,6 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (tokens.some((token) => aliases.includes(token))) {
     return true;
   }
-
   const rangeMatch = rawLower.match(/([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|to)\s*([a-zA-Z]+)/);
   if (rangeMatch && targetIndex !== undefined) {
     const d1 = DAY_INDEX[rangeMatch[1].toLowerCase()];
@@ -293,10 +279,8 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
       return targetIndex >= d1 || targetIndex <= d2;
     }
   }
-
   return false;
 }
-
 const MONTH_NAME_TO_NUM: Record<string, number> = {
   jan: 1, january: 1, enero: 1, ene: 1,
   feb: 2, february: 2, febrero: 2,
@@ -311,25 +295,20 @@ const MONTH_NAME_TO_NUM: Record<string, number> = {
   nov: 11, november: 11, noviembre: 11,
   dec: 12, december: 12, diciembre: 12, dic: 12,
 };
-
 export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
   if (!cleaned) return true;
-
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(cleaned)) {
     return false;
   }
-
   const targetMonth = targetDate.getMonth() + 1;
-
   if (/\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned)) {
     return targetMonth % 2 === 0;
   }
   if (/\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned)) {
     return targetMonth % 2 !== 0;
   }
-
   const exceptMatch = cleaned.match(
     /\b(?:except|excluding|no meetings? in|off in)\s+([a-zA-Z]+)(?:\s*(?:and|&|,)\s*([a-zA-Z]+))?\b/i
   );
@@ -339,7 +318,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
-
   const rangeMatch = cleaned.match(
     /\b([a-zA-Z]{3,9})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,9})\b/i
   );
@@ -353,7 +331,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth >= startMonth || targetMonth <= endMonth;
     }
   }
-
   const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,9})\s+only\b/i);
   if (singleMonthMatch) {
     const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
@@ -361,7 +338,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
       return targetMonth === m;
     }
   }
-
   if (/\bsummer\b/i.test(cleaned)) {
     return targetMonth >= 6 && targetMonth <= 8;
   }
@@ -374,10 +350,8 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   if (/\b(?:fall|autumn)\b/i.test(cleaned)) {
     return targetMonth >= 9 && targetMonth <= 11;
   }
-
   return true;
 }
-
 export function getWeekdayOccurrence(targetDate: Date): {
   occurrence: number;
   isLast: boolean;
@@ -392,7 +366,6 @@ export function getWeekdayOccurrence(targetDate: Date): {
   const isLast = dayOfMonth + 7 > daysInMonth;
   return { occurrence, isLast };
 }
-
 function getWeekNumber(d: Date): number {
   const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dayNum = target.getUTCDay() || 7;
@@ -400,25 +373,20 @@ function getWeekNumber(d: Date): number {
   const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
   return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
-
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const combinedText = `${event.frequency || ''} ${event.frequencyNotes || ''}`.trim();
-
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(combinedText)) {
     return false;
   }
-
   if (!isMonthActive(event.frequencyNotes, targetDate) || !isMonthActive(event.frequency, targetDate)) {
     return false;
   }
-
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const targetDayName = DAY_NAMES[targetDate.getDay()];
   const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
-
   if (/\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText)) {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 !== 0) return false;
@@ -427,7 +395,6 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     const weekNum = getWeekNumber(targetDate);
     if (weekNum % 2 === 0) return false;
   }
-
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
   const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText);
   const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText);
@@ -435,7 +402,6 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText);
   const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText);
   const hasLast = /\b(last|ultimo|últim[oa])\b/i.test(combinedText);
-
   if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
     const matchesOrdinal =
       (has1st && occurrence === 1) ||
@@ -446,23 +412,19 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
       (hasLast && isLast);
     return matchesOrdinal;
   }
-
   const cadence = (event.frequency || '').toLowerCase();
   if (cadence.includes('bi-weekly')) {
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
   }
-
   return true;
 }
-
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }
-
 export function formatPhoneNumber(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   if (digits.length === 10) {
@@ -473,14 +435,12 @@ export function formatPhoneNumber(phone: string): string {
   }
   return phone;
 }
-
 export function parseContactInfo(rawContact?: string): ContactInfo {
   if (!rawContact) return { type: 'none' };
   const trimmed = rawContact.trim();
   if (!trimmed || trimmed.toLowerCase() === 'x') {
     return { type: 'none' };
   }
-
   const createEmailContact = (cleanEmail: string): ContactInfo => {
     const encoded = encodeURIComponent(cleanEmail);
     return {
@@ -491,18 +451,15 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       androidIntentUrl: `intent:${encoded}#Intent;scheme=mailto;package=com.google.android.gm;action=android.intent.action.SENDTO;S.browser_fallback_url=${encodeURIComponent(`mailto:${cleanEmail}`)};end`,
     };
   };
-
   if (/^mailto:/i.test(trimmed)) {
     const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
     if (email) {
       return createEmailContact(email);
     }
   }
-
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
     return createEmailContact(trimmed);
   }
-
   if (/^tel:/i.test(trimmed)) {
     const rawNumber = trimmed.replace(/^tel:/i, '').trim();
     const displayPhone = formatPhoneNumber(rawNumber);
@@ -519,14 +476,12 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: rawNumber,
     };
   }
-
   if (/^https?:\/\//i.test(trimmed)) {
     return {
       type: 'url',
       url: trimmed,
     };
   }
-
   const digitCount = (trimmed.match(/\d/g) || []).length;
   if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
     const displayPhone = formatPhoneNumber(trimmed);
@@ -543,17 +498,14 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
       rawPhone: trimmed,
     };
   }
-
   if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
     return {
       type: 'url',
       url: ensureExternalUrl(trimmed),
     };
   }
-
   return { type: 'none' };
 }
-
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();
   if (t.includes('science')) {
@@ -588,7 +540,6 @@ export function getTagStyle(tag: string): { color: string; background: string } 
   }
   return { color: 'var(--tag-default-ink, #4f483e)', background: 'var(--tag-default-bg, #f3ead4)' };
 }
-
 export function indexEvents(
   events: Event[],
   rollingWeek: Date[],
@@ -612,9 +563,7 @@ export function indexEvents(
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
-
     const activeDays = rollingWeek.map((day) => isEventActiveOnDate(ev, day));
-
     return {
       ...ev,
       parsedHour,
@@ -625,7 +574,6 @@ export function indexEvents(
     };
   });
 }
-
 export function filterAndCountEvents(
   indexedEvents: IndexedEvent[],
   activeDayIdx: number,
@@ -639,26 +587,20 @@ export function filterAndCountEvents(
 ): { currentList: IndexedEvent[]; dayCounts: number[] } {
   const dayCounts = [0, 0, 0, 0, 0, 0, 0];
   const currentList: IndexedEvent[] = [];
-
   const queryTerms = searchQuery.trim()
     ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
     : null;
-
   const selectedActivitiesLower =
     selectedActivities.length > 0
       ? selectedActivities.map((a) => a.toLowerCase())
       : null;
-
   const selectedAreasLower =
     selectedAreas.length > 0
       ? selectedAreas.map((a) => a.toLowerCase())
       : null;
-
   const isPriceFiltered = maxPrice < priceConfig.maxPrice;
-
   for (let i = 0; i < indexedEvents.length; i++) {
     const ev = indexedEvents[i];
-
     if (isPriceFiltered) {
       if (maxPrice === 0) {
         if (!ev.isFreeOrDonationPrice) continue;
@@ -666,7 +608,6 @@ export function filterAndCountEvents(
         if (ev.parsedPrice === null || ev.parsedPrice > maxPrice) continue;
       }
     }
-
     if (selectedTimes.length > 0) {
       const matchesTime = selectedTimes.some((tgName) => {
         const group = timeGroups.find((g) => g.name === tgName);
@@ -674,37 +615,31 @@ export function filterAndCountEvents(
       });
       if (!matchesTime) continue;
     }
-
     if (selectedActivitiesLower) {
       const hasActivityMatch = ev.activities.some((act) =>
         selectedActivitiesLower.includes(act.trim().toLowerCase())
       );
       if (!hasActivityMatch) continue;
     }
-
     if (selectedAreasLower) {
       const evAreaLower = (ev.area || '').trim().toLowerCase();
       if (!selectedAreasLower.includes(evAreaLower)) continue;
     }
-
     if (queryTerms) {
       const matchesSearch = queryTerms.every((term) =>
         ev.searchCorpus.includes(term)
       );
       if (!matchesSearch) continue;
     }
-
     for (let d = 0; d < 7; d++) {
       if (ev.activeDays[d]) {
         dayCounts[d]++;
       }
     }
-
     if (ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
-
   currentList.sort((a, b) => a.parsedHour - b.parsedHour);
   return { currentList, dayCounts };
 }

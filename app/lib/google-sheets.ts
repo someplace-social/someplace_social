@@ -259,7 +259,7 @@ const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
   title: ['title', 'eventname', 'name'],
   venue: ['venue', 'place'],
-  organization: ['organization', 'organizer', 'host'],
+  organization: ['organization', 'organizer', 'host', 'hostedby', 'organizerhost', 'hostorganization'],
   location: ['location', 'address'],
   area: ['area', 'neighborhood'],
   activity: ['activity', 'activities'],
@@ -413,6 +413,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         headerIndexMap[field] = foundIdx;
       }
     });
+    const hasHeaderMap = Object.keys(headerIndexMap).length > 0;
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
@@ -422,7 +423,11 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       .map((row): Event | null => {
         if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
         const getValue = (field: string): string => {
-          const colIdx = headerIndexMap[field] ?? DEFAULT_INDEX_FALLBACK[field];
+          const colIdx =
+            headerIndexMap[field] ??
+            (hasHeaderMap && field === 'organization'
+              ? undefined
+              : DEFAULT_INDEX_FALLBACK[field]);
           if (colIdx !== undefined && colIdx < row.length) {
             return cleanCell(row[colIdx]);
           }
