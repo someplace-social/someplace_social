@@ -29,42 +29,51 @@ function makeEvent(overrides: Partial<Event>): Event {
     ...overrides,
   };
 }
-// 2026 Fridays:
-// Jan (odd month, 31 days):
-//   Jan 2  = ISO week 1 (odd),  1st Fri
-//   Jan 9  = ISO week 2 (even), 2nd Fri
-//   Jan 16 = ISO week 3 (odd),  3rd Fri
-//   Jan 23 = ISO week 4 (even), 4th Fri
-//   Jan 30 = ISO week 5 (odd),  5th & Last Fri
-// Feb (even month, 28 days):
-//   Feb 6  = ISO week 6 (even), 1st Fri
-//   Feb 13 = ISO week 7 (odd),  2nd Fri
-//   Feb 20 = ISO week 8 (even), 3rd Fri
-//   Feb 27 = ISO week 9 (odd),  4th & Last Fri
 const jan2Fri = new Date(2026, 0, 2);
 const jan3Sat = new Date(2026, 0, 3);
+const jan4Sun = new Date(2026, 0, 4);
 const jan5Mon = new Date(2026, 0, 5);
 const jan7Wed = new Date(2026, 0, 7);
 const jan9Fri = new Date(2026, 0, 9);
+const jan12Mon = new Date(2026, 0, 12);
 const jan16Fri = new Date(2026, 0, 16);
 const jan23Fri = new Date(2026, 0, 23);
+const jan25Sun = new Date(2026, 0, 25);
 const jan30Fri = new Date(2026, 0, 30);
+const feb3Tue = new Date(2026, 1, 3);
+const feb4Wed = new Date(2026, 1, 4);
+const feb5Thu = new Date(2026, 1, 5);
 const feb6Fri = new Date(2026, 1, 6);
+const feb10Tue = new Date(2026, 1, 10);
 const feb13Fri = new Date(2026, 1, 13);
+const feb17Tue = new Date(2026, 1, 17);
+const feb18Wed = new Date(2026, 1, 18);
+const feb19Thu = new Date(2026, 1, 19);
 const feb20Fri = new Date(2026, 1, 20);
 const feb27Fri = new Date(2026, 1, 27);
+const mar3Tue = new Date(2026, 2, 3);
+const mar17Tue = new Date(2026, 2, 17);
+const mar31Tue = new Date(2026, 2, 31);
 describe('isEventActiveOnDate frequency parsing', () => {
-  it('handles Weekly events on matching days only', () => {
-    const ev = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan3Sat), false);
+  it('handles Weekly and Weekly, Sat & Sun', () => {
+    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
+    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
+    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
+    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
   });
-  it('handles Twice-weekly with Mon & Wed', () => {
-    const ev = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
-    assert.equal(isEventActiveOnDate(ev, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(ev, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
+  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
+    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
+    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
+    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
+    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
   });
   it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
     const variations = [
@@ -83,6 +92,9 @@ describe('isEventActiveOnDate frequency parsing', () => {
       assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
       assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
     }
+    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), false);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), true);
   });
   it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
     const oddEv = makeEvent({
@@ -102,7 +114,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
     assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
   });
-  it('handles Bi-weekly with ordinal notes like 2nd & 4th Fri', () => {
+  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
     const ev = makeEvent({
       frequency: 'Bi-weekly',
       frequencyNotes: '2nd & 4th Fri',
@@ -115,6 +127,14 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
     assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
     assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
+    const fifthTueEv = makeEvent({
+      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
   });
   it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
     for (const freq of ['Monthly', 'Once a month', 'Every month']) {
@@ -127,7 +147,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
       assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
     }
   });
-  it('handles Monthly with Last Fri and Final Fri', () => {
+  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
     const lastEv = makeEvent({
       frequency: 'Monthly',
       frequencyNotes: 'Last Fri',
@@ -145,6 +165,13 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
     assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
     assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
+    const firstAndLastSun = makeEvent({
+      frequency: 'Monthly, 1st & Last Sun',
+      dayOfWeek: 'Sun',
+    });
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
   });
   it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
     const weeksListEv = makeEvent({
@@ -174,7 +201,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
     assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
   });
-  it('handles Bi-monthly variations, odd months override, and optional ordinals', () => {
+  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
     const variations = [
       'Bi-monthly',
       'Bimonthly',
@@ -203,6 +230,16 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
     assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
     assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
+    const pairedBiMonthlyEv = makeEvent({
+      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
+      dayOfWeek: 'Wed, Thu',
+    });
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
   });
   it('handles paused and hiatus statuses', () => {
     const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });

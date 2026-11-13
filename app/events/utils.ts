@@ -299,6 +299,42 @@ const BIWEEKLY_REGEX =
   /\b(?:bi[-\s]?weekly|every\s+other\s+week|every\s+(?:2|two)\s+weeks?|alternating\s+weeks?)\b/i;
 const BIMONTHLY_REGEX =
   /\b(?:bi[-\s]?monthly|every\s+other\s+month|every\s+(?:2|two)\s+months?)\b/i;
+const ORDINAL_TOKEN_PATTERN =
+  '(?:1st|first|primer[oa]?|2nd|second|segund[oa]|3rd|third|tercer[oa]?|4th|fourth|cuart[oa]|5th|fifth|quint[oa]|last|final|ultimo|últim[oa])';
+const WEEKDAY_TOKEN_PATTERN =
+  '(?:sun(?:day)?|mon(?:day)?|tue(?:s|sday)?|wed(?:s|nesday)?|thu(?:r|rs|rsday)?|fri(?:day)?|sat(?:urday)?)';
+const DAY_PAIRED_ORDINAL_REGEX = new RegExp(
+  `\\b((?:${ORDINAL_TOKEN_PATTERN})(?:\\s*(?:,\\s*(?:and\\b|&|y\\b)?|&|/|\\band\\b|\\by\\b)\\s*(?:${ORDINAL_TOKEN_PATTERN}))*)\\s+(?:of\\s+)?(${WEEKDAY_TOKEN_PATTERN})\\b`,
+  'gi'
+);
+type OrdinalFlags = {
+  has1st: boolean;
+  has2nd: boolean;
+  has3rd: boolean;
+  has4th: boolean;
+  has5th: boolean;
+  hasLast: boolean;
+};
+function parseOrdinalFlags(text: string, numericWeeks?: Set<number>): OrdinalFlags {
+  return {
+    has1st: /\b(1st|first|primer[oa]?)\b/i.test(text) || Boolean(numericWeeks?.has(1)),
+    has2nd: /\b(2nd|second|segund[oa])\b/i.test(text) || Boolean(numericWeeks?.has(2)),
+    has3rd: /\b(3rd|third|tercer[oa]?)\b/i.test(text) || Boolean(numericWeeks?.has(3)),
+    has4th: /\b(4th|fourth|cuart[oa])\b/i.test(text) || Boolean(numericWeeks?.has(4)),
+    has5th: /\b(5th|fifth|quint[oa])\b/i.test(text) || Boolean(numericWeeks?.has(5)),
+    hasLast: /\b(last|final|ultimo|últim[oa])\b/i.test(text),
+  };
+}
+function matchesOrdinalFlags(flags: OrdinalFlags, occurrence: number, isLast: boolean): boolean {
+  return (
+    (flags.has1st && occurrence === 1) ||
+    (flags.has2nd && occurrence === 2) ||
+    (flags.has3rd && occurrence === 3) ||
+    (flags.has4th && occurrence === 4) ||
+    (flags.has5th && occurrence === 5) ||
+    (flags.hasLast && isLast)
+  );
+}
 export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
@@ -395,7 +431,10 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     return false;
   }
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const targetDayName = DAY_NAMES[targetDate.getDay()];
+  const DAY_SHORT_NAMES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const dayIdx = targetDate.getDay();
+  const targetDayName = DAY_NAMES[dayIdx];
+  const targetDayShort = DAY_SHORT_NAMES[dayIdx];
   const baseDaySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`.trim();
   const daySpec = baseDaySpec || event.frequencyNotes || '';
   if (!matchesDay(daySpec, targetDayName)) {
@@ -407,6 +446,29 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
     const weekNum = getWeekNumber(targetDate);
     if (hasEvenWeeks && !hasOddWeeks) return weekNum % 2 === 0;
     if (hasOddWeeks && !hasEvenWeeks) return weekNum % 2 !== 0;
+  }
+  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
+  const dayRules = new Map<string, OrdinalFlags>();
+  for (const match of combinedText.matchAll(DAY_PAIRED_ORDINAL_REGEX)) {
+    const dayKey = match[2].slice(0, 3).toLowerCase();
+    const flags = parseOrdinalFlags(match[1]);
+    const existing = dayRules.get(dayKey);
+    if (existing) {
+      existing.has1st = existing.has1st || flags.has1st;
+      existing.has2nd = existing.has2nd || flags.has2nd;
+      existing.has3rd = existing.has3rd || flags.has3rd;
+      existing.has4th = existing.has4th || flags.has4th;
+      existing.has5th = existing.has5th || flags.has5th;
+      existing.hasLast = existing.hasLast || flags.hasLast;
+    } else {
+      dayRules.set(dayKey, flags);
+    }
+  }
+  if (dayRules.size > 0) {
+    const rule = dayRules.get(targetDayShort);
+    if (rule) {
+      return matchesOrdinalFlags(rule, occurrence, isLast);
+    }
   }
   const weekNumMatches = new Set<number>();
   for (const m of combinedText.matchAll(
@@ -423,22 +485,16 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
       weekNumMatches.add(Number(d));
     }
   }
-  const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-  const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText) || weekNumMatches.has(1);
-  const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText) || weekNumMatches.has(2);
-  const has3rd = /\b(3rd|third|tercer[oa]?)\b/i.test(combinedText) || weekNumMatches.has(3);
-  const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText) || weekNumMatches.has(4);
-  const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText) || weekNumMatches.has(5);
-  const hasLast = /\b(last|final|ultimo|últim[oa])\b/i.test(combinedText);
-  if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
-    const matchesOrdinal =
-      (has1st && occurrence === 1) ||
-      (has2nd && occurrence === 2) ||
-      (has3rd && occurrence === 3) ||
-      (has4th && occurrence === 4) ||
-      (has5th && occurrence === 5) ||
-      (hasLast && isLast);
-    return matchesOrdinal;
+  const globalFlags = parseOrdinalFlags(combinedText, weekNumMatches);
+  if (
+    globalFlags.has1st ||
+    globalFlags.has2nd ||
+    globalFlags.has3rd ||
+    globalFlags.has4th ||
+    globalFlags.has5th ||
+    globalFlags.hasLast
+  ) {
+    return matchesOrdinalFlags(globalFlags, occurrence, isLast);
   }
   if (BIWEEKLY_REGEX.test(combinedText)) {
     const weekNum = getWeekNumber(targetDate);
