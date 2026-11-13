@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "tsx --test app/events/utils.test.ts",
     "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
     "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
     "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",

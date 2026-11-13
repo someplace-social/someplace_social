@@ -295,6 +295,10 @@ const MONTH_NAME_TO_NUM: Record<string, number> = {
   nov: 11, november: 11, noviembre: 11,
   dec: 12, december: 12, diciembre: 12, dic: 12,
 };
+const BIWEEKLY_REGEX =
+  /\b(?:bi[-\s]?weekly|every\s+other\s+week|every\s+(?:2|two)\s+weeks?|alternating\s+weeks?)\b/i;
+const BIMONTHLY_REGEX =
+  /\b(?:bi[-\s]?monthly|every\s+other\s+month|every\s+(?:2|two)\s+months?)\b/i;
 export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
@@ -303,12 +307,6 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     return false;
   }
   const targetMonth = targetDate.getMonth() + 1;
-  if (/\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned)) {
-    return targetMonth % 2 === 0;
-  }
-  if (/\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned)) {
-    return targetMonth % 2 !== 0;
-  }
   const exceptMatch = cleaned.match(
     /\b(?:except|excluding|no meetings? in|off in)\s+([a-zA-Z]+)(?:\s*(?:and|&|,)\s*([a-zA-Z]+))?\b/i
   );
@@ -318,37 +316,49 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
-  const rangeMatch = cleaned.match(
-    /\b([a-zA-Z]{3,9})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,9})\b/i
-  );
-  if (rangeMatch) {
+  for (const rangeMatch of cleaned.matchAll(
+    /\b([a-zA-Z]{3,10})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,10})\b/gi
+  )) {
     const startMonth = MONTH_NAME_TO_NUM[rangeMatch[1].toLowerCase()];
     const endMonth = MONTH_NAME_TO_NUM[rangeMatch[2].toLowerCase()];
     if (startMonth && endMonth) {
-      if (startMonth <= endMonth) {
-        return targetMonth >= startMonth && targetMonth <= endMonth;
-      }
-      return targetMonth >= startMonth || targetMonth <= endMonth;
+      const inRange =
+        startMonth <= endMonth
+          ? targetMonth >= startMonth && targetMonth <= endMonth
+          : targetMonth >= startMonth || targetMonth <= endMonth;
+      if (!inRange) return false;
+      break;
     }
   }
-  const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,9})\s+only\b/i);
+  const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,10})\s+only\b/i);
   if (singleMonthMatch) {
     const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
     if (m) {
       return targetMonth === m;
     }
   }
-  if (/\bsummer\b/i.test(cleaned)) {
-    return targetMonth >= 6 && targetMonth <= 8;
+  if (/\bsummer\b/i.test(cleaned) && (targetMonth < 6 || targetMonth > 8)) {
+    return false;
   }
-  if (/\bwinter\b/i.test(cleaned)) {
-    return targetMonth === 12 || targetMonth <= 2;
+  if (/\bwinter\b/i.test(cleaned) && targetMonth !== 12 && targetMonth > 2) {
+    return false;
   }
-  if (/\bspring\b/i.test(cleaned)) {
-    return targetMonth >= 3 && targetMonth <= 5;
+  if (/\bspring\b/i.test(cleaned) && (targetMonth < 3 || targetMonth > 5)) {
+    return false;
   }
-  if (/\b(?:fall|autumn)\b/i.test(cleaned)) {
-    return targetMonth >= 9 && targetMonth <= 11;
+  if (/\b(?:fall|autumn)\b/i.test(cleaned) && (targetMonth < 9 || targetMonth > 11)) {
+    return false;
+  }
+  const hasEvenMonths = /\b(?:even\s*months?|months?[\s,]+even|meses\s*pares)\b/i.test(cleaned);
+  const hasOddMonths = /\b(?:odd\s*months?|months?[\s,]+odd|meses\s*impares)\b/i.test(cleaned);
+  if (hasEvenMonths && !hasOddMonths) {
+    return targetMonth % 2 === 0;
+  }
+  if (hasOddMonths && !hasEvenMonths) {
+    return targetMonth % 2 !== 0;
+  }
+  if (!hasEvenMonths && !hasOddMonths && BIMONTHLY_REGEX.test(cleaned)) {
+    return targetMonth % 2 === 0;
   }
   return true;
 }
@@ -374,34 +384,52 @@ function getWeekNumber(d: Date): number {
   return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
-  const combinedText = `${event.frequency || ''} ${event.frequencyNotes || ''}`.trim();
+  const combinedText = [event.frequency, event.frequencyNotes]
+    .map((s) => (s || '').trim())
+    .filter(Boolean)
+    .join(' | ');
   if (/\b(?:irregular|hiatus|paused|cancelled|canceled|on hold|inactive|tbd)\b/i.test(combinedText)) {
     return false;
   }
-  if (!isMonthActive(event.frequencyNotes, targetDate) || !isMonthActive(event.frequency, targetDate)) {
+  if (!isMonthActive(combinedText, targetDate)) {
     return false;
   }
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const targetDayName = DAY_NAMES[targetDate.getDay()];
-  const daySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`;
+  const baseDaySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`.trim();
+  const daySpec = baseDaySpec || event.frequencyNotes || '';
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
-  if (/\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText)) {
+  const hasEvenWeeks = /\b(?:even\s*weeks?|weeks?[\s,]+even)\b/i.test(combinedText);
+  const hasOddWeeks = /\b(?:odd\s*weeks?|weeks?[\s,]+odd)\b/i.test(combinedText);
+  if (hasEvenWeeks || hasOddWeeks) {
     const weekNum = getWeekNumber(targetDate);
-    if (weekNum % 2 !== 0) return false;
+    if (hasEvenWeeks && !hasOddWeeks) return weekNum % 2 === 0;
+    if (hasOddWeeks && !hasEvenWeeks) return weekNum % 2 !== 0;
   }
-  if (/\b(?:odd\s*weeks?|weeks?[\s,]+odd)\b/i.test(combinedText)) {
-    const weekNum = getWeekNumber(targetDate);
-    if (weekNum % 2 === 0) return false;
+  const weekNumMatches = new Set<number>();
+  for (const m of combinedText.matchAll(
+    /\b(?:weeks?|wks?|occurrences?)\s+(?:#\s*)?([1-5](?:\s*(?:,\s*(?:and\b|&|y\b)?|&|\/|\band\b|\by\b)\s*[1-5])*)\b/gi
+  )) {
+    for (const d of m[1].match(/[1-5]/g) || []) {
+      weekNumMatches.add(Number(d));
+    }
+  }
+  for (const m of combinedText.matchAll(
+    /(?:^|[\s,(|])([1-5](?:\s*(?:,\s*(?:and\b|&|y\b)?|&|\/|\band\b|\by\b)\s*[1-5])+)(?![\d:/-])/gi
+  )) {
+    for (const d of m[1].match(/[1-5]/g) || []) {
+      weekNumMatches.add(Number(d));
+    }
   }
   const { occurrence, isLast } = getWeekdayOccurrence(targetDate);
-  const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText);
-  const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText);
-  const has3rd = /\b(3rd|third|tercer[oa]?)\b/i.test(combinedText);
-  const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText);
-  const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText);
-  const hasLast = /\b(last|ultimo|últim[oa])\b/i.test(combinedText);
+  const has1st = /\b(1st|first|primer[oa]?)\b/i.test(combinedText) || weekNumMatches.has(1);
+  const has2nd = /\b(2nd|second|segund[oa])\b/i.test(combinedText) || weekNumMatches.has(2);
+  const has3rd = /\b(3rd|third|tercer[oa]?)\b/i.test(combinedText) || weekNumMatches.has(3);
+  const has4th = /\b(4th|fourth|cuart[oa])\b/i.test(combinedText) || weekNumMatches.has(4);
+  const has5th = /\b(5th|fifth|quint[oa])\b/i.test(combinedText) || weekNumMatches.has(5);
+  const hasLast = /\b(last|final|ultimo|últim[oa])\b/i.test(combinedText);
   if (has1st || has2nd || has3rd || has4th || has5th || hasLast) {
     const matchesOrdinal =
       (has1st && occurrence === 1) ||
@@ -412,10 +440,17 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
       (hasLast && isLast);
     return matchesOrdinal;
   }
-  const cadence = (event.frequency || '').toLowerCase();
-  if (cadence.includes('bi-weekly')) {
+  if (BIWEEKLY_REGEX.test(combinedText)) {
     const weekNum = getWeekNumber(targetDate);
     return weekNum % 2 === 0;
+  }
+  const isBiMonthly = BIMONTHLY_REGEX.test(combinedText);
+  const isPlainMonthly =
+    !isBiMonthly &&
+    !/\b(?:twice|semi)[-\s]?monthly\b/i.test(combinedText) &&
+    /\b(?:monthly|once\s+a\s+month|every\s+month)\b/i.test(combinedText);
+  if (isPlainMonthly) {
+    return occurrence === 1;
   }
   return true;
 }

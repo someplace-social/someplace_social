@@ -54,33 +54,58 @@ export default function CityEventsView({
   lastUpdated?: string | null;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
-  const [allEvents, setAllEvents] = useState<Event[]>(initialEvents);
-  const [loading, setLoading] = useState(initialEvents.length === 0);
+  const [fetchedState, setFetchedState] = useState<{
+    citySlug: string;
+    events: Event[];
+  } | null>(null);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const [maxPrice, setMaxPrice] = useState<number>(priceConfig.maxPrice);
+  const [selectedMaxPrice, setSelectedMaxPrice] = useState<{
+    citySlug: string;
+    value: number;
+  } | null>(null);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  const maxPrice =
+    selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
+      ? selectedMaxPrice.value
+      : priceConfig.maxPrice;
+  const handlePriceChange = useCallback(
+    (val: number) => {
+      setSelectedMaxPrice({ citySlug: city.slug, value: val });
+    },
+    [city.slug]
+  );
+  const hasInitialEvents = initialEvents.length > 0;
+  const hasFetchedForCity = fetchedState?.citySlug === city.slug;
+  const allEvents = useMemo(() => {
+    if (hasInitialEvents) return initialEvents;
+    if (hasFetchedForCity && fetchedState) return fetchedState.events;
+    return [];
+  }, [hasInitialEvents, initialEvents, hasFetchedForCity, fetchedState]);
+  const loading = !hasInitialEvents && !hasFetchedForCity;
   useEffect(() => {
-    setMaxPrice(priceConfig.maxPrice);
-  }, [priceConfig]);
-  useEffect(() => {
-    if (initialEvents.length === 0) {
-      setLoading(true);
-      getEvents(city)
-        .then((data) => {
-          setAllEvents(data);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setAllEvents(initialEvents);
-      setLoading(false);
-    }
-  }, [city, initialEvents]);
+    if (hasInitialEvents) return;
+    let cancelled = false;
+    getEvents(city)
+      .then((data) => {
+        if (!cancelled) {
+          setFetchedState({ citySlug: city.slug, events: data });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setFetchedState({ citySlug: city.slug, events: [] });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [city, hasInitialEvents]);
   const rollingWeek = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -181,11 +206,11 @@ export default function CityEventsView({
     selectedAreas.length > 0;
   const clearAllFilters = useCallback(() => {
     setSearchQuery('');
-    setMaxPrice(priceConfig.maxPrice);
+    setSelectedMaxPrice(null);
     setSelectedTimes([]);
     setSelectedActivities([]);
     setSelectedAreas([]);
-  }, [priceConfig.maxPrice]);
+  }, []);
   const allCityOptions = useMemo(() => getAllCities(), []);
   const totalEventsCount = allEvents.length || initialEvents.length;
   const dayHeading =
@@ -267,7 +292,7 @@ export default function CityEventsView({
             onSearchChange={setSearchQuery}
             priceConfig={priceConfig}
             maxPrice={maxPrice}
-            onPriceChange={setMaxPrice}
+            onPriceChange={handlePriceChange}
             timeSections={TIME_GROUPS.map((g) => g.name)}
             selectedTimes={selectedTimes}
             onToggleTime={toggleTime}
