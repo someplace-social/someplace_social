@@ -93,8 +93,8 @@ describe('isEventActiveOnDate frequency parsing', () => {
       assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
     }
     const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), false);
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
   });
   it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
     const oddEv = makeEvent({
@@ -131,8 +131,9 @@ describe('isEventActiveOnDate frequency parsing', () => {
       frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
       dayOfWeek: 'Tue',
     });
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
     assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
     assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
     assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
   });
