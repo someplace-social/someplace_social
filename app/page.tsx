@@ -45,7 +45,7 @@ const HOW_IT_WORKS_STEPS = [
     description: 'Listings are updated once per week.',
   },
   {
-    title: 'Community Sourced',
+    title: 'Community Supported',
     description: 'Anyone can submit new recurring activities.',
   },
   {
