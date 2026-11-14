@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Karla } from 'next/font/google';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
-
+import ThemeScript from './components/ThemeScript';
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
   weight: ['500', '700', '800'],
@@ -15,13 +15,11 @@ const karla = Karla({
   variable: '--font-karla',
   display: 'swap',
 });
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
 };
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
   title: {
@@ -55,7 +53,6 @@ export const metadata: Metadata = {
     type: 'website',
   },
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -63,14 +60,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${bricolage.variable} ${karla.variable}`} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`,
-          }}
-        />
-      </head>
       <body>
+        <ThemeScript />
         {children}
         <Analytics />
       </body>

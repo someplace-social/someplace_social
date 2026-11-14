@@ -1,13 +1,26 @@
 'use client';
-import { useState, useMemo, useDeferredValue, useCallback, useEffect, useRef } from 'react';
+import {
+  useState,
+  useMemo,
+  useDeferredValue,
+  useCallback,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import Link from 'next/link';
-import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
+import {
+  CityConfig,
+  getAllCities,
+  getCityPriceConfig,
+  getCityTimeZone,
+} from '../lib/cities';
 import type { Event } from '../lib/google-sheets';
 import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
-import { getEventSlug, resolveEventBySlug } from './event-helpers';
+import { getCityToday, getEventSlug, resolveEventBySlug } from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -16,6 +29,7 @@ import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
 import styles from './EventsView.module.css';
+const emptySubscribe = () => () => {};
 const DAY_NAMES_LONG = [
   'Sunday',
   'Monday',
@@ -54,7 +68,13 @@ export default function CityEventsView({
   initialEvents?: Event[];
   lastUpdated?: string | null;
 }) {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
+  const timeZone = useMemo(() => getCityTimeZone(city), [city]);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -92,13 +112,13 @@ export default function CityEventsView({
     return map;
   }, [allEvents]);
   const rollingWeek = useMemo(() => {
-    const today = new Date();
+    const today = getCityToday(timeZone);
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
       return d;
     });
-  }, []);
+  }, [timeZone]);
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
@@ -151,8 +171,6 @@ export default function CityEventsView({
     return () => window.cancelAnimationFrame(rafId);
   }, [activeDayIdx, openEventId]);
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
-  const now = new Date();
-  const nowHour = now.getHours() + now.getMinutes() / 60;
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
     allEvents.forEach((ev) => {
@@ -227,13 +245,15 @@ export default function CityEventsView({
     deferredSearchQuery,
   ]);
   const nextUpEventId = useMemo(() => {
-    if (activeDayIdx !== 0) return null;
+    if (!mounted || activeDayIdx !== 0) return null;
+    const now = new Date();
+    const nowHour = now.getHours() + now.getMinutes() / 60;
     const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
     if (!nextEvent) return null;
     const idx = indexedEvents.indexOf(nextEvent);
     const sourceEvent = idx >= 0 ? allEvents[idx] : nextEvent;
     return eventKeyMap.get(sourceEvent) || getEventSlug(nextEvent);
-  }, [activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents, nowHour]);
+  }, [mounted, activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents]);
   const handleToggleEvent = useCallback(
     (ev: Event, uniqueId: string) => {
       if (openEventId === uniqueId) {
