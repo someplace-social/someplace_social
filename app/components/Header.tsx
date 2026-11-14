@@ -145,7 +145,7 @@ export default function Header({
             </Link>
             <ThemeToggle />
             <Link href="/contact?tab=submit" className={styles.addEventBtn}>
-              +Add Event
+              + Add Event
             </Link>
           </nav>
           <div className={styles.navMobileActions}>
@@ -242,7 +242,7 @@ export default function Header({
                 className={styles.drawerAddEventBtn}
                 onClick={() => setMobileDrawerOpen(false)}
               >
-                +Add Event
+                + Add Event
               </Link>
             </div>
           </div>
