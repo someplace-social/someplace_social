@@ -302,7 +302,6 @@ describe('expandEventSchedules', () => {
     assert.equal(commaExpanded[1].startTime, '8p');
     assert.equal(commaExpanded[2].startTime, '8p');
     assert.equal(commaExpanded[0].endTime, '');
-
     const colonEv = makeEvent({
       id: 'E2',
       dayOfWeek: 'Tue, Thu',
@@ -317,7 +316,6 @@ describe('expandEventSchedules', () => {
         ['Thu', '7:30p', '9p'],
       ]
     );
-
     const rangeEv = makeEvent({
       id: 'E3',
       dayOfWeek: 'Mon-Wed',
@@ -348,7 +346,6 @@ describe('expandEventSchedules', () => {
         ['E4-thu', 'Thu', '7p', '9p'],
       ]
     );
-
     const sameDayEv = makeEvent({
       id: 'E5',
       dayOfWeek: 'Sat',
@@ -470,7 +467,7 @@ describe('next occurrence and invite text', () => {
     });
     assert.equal(
       buildEventInviteText(fullEv, 'medellin-colombia'),
-      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/medellin-colombia/events/verb-vibe-game-nite-14'
     );
     const sparseEv = makeEvent({
       id: '2',
@@ -486,7 +483,7 @@ describe('next occurrence and invite text', () => {
     });
     assert.equal(
       buildEventInviteText(sparseEv, 'fort-collins-colorado'),
-      'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
+      'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
     );
   });
   it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
@@ -503,7 +500,7 @@ describe('next occurrence and invite text', () => {
     const ld = buildEventJsonLd(
       ev,
       CITIES['medellin-colombia'],
-      'https://www.someplacesocial.org/events/medellin-colombia/salsa-night-14',
+      'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14',
       occ
     );
     assert.ok(ld);

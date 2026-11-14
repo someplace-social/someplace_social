@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
 import { getCityBySlug } from '../../../lib/cities';
 import { getEvents } from '../../../lib/google-sheets';
-import { isFreePrice } from '../../utils';
-import { buildScheduleLine, resolveEventBySlug } from '../../event-helpers';
+import { isFreePrice } from '../../../events/utils';
+import { buildScheduleLine, resolveEventBySlug } from '../../../events/event-helpers';
 export const revalidate = 3600;
 export const size = {
   width: 1200,

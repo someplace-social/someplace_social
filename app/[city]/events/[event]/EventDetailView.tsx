@@ -1,7 +1,7 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { CityConfig, getAllCities, getCityTimeZone } from '../../../lib/cities';
+import { CityConfig, getCityTimeZone } from '../../../lib/cities';
 import { Event } from '../../../lib/google-sheets';
 import {
   ensureExternalUrl,
@@ -9,13 +9,13 @@ import {
   formatTimeRange,
   getTagStyle,
   isFreePrice,
-} from '../../utils';
-import { buildScheduleLine } from '../../event-helpers';
+} from '../../../events/utils';
+import { buildScheduleLine } from '../../../events/event-helpers';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import ContactButton from '../../components/ContactButton';
-import ShareButton from '../../components/ShareButton';
-import SuggestEditModal from '../../components/SuggestEditModal';
+import ContactButton from '../../../events/components/ContactButton';
+import ShareButton from '../../../events/components/ShareButton';
+import SuggestEditModal from '../../../events/components/SuggestEditModal';
 import {
   CalendarIcon,
   CheckIcon,
@@ -26,7 +26,7 @@ import {
   RepeatIcon,
   SocialIcon,
   TagIcon,
-} from '../../components/EventIcons';
+} from '../../../events/components/EventIcons';
 import NextOccurrenceBadge from './NextOccurrenceBadge';
 import styles from './EventDetail.module.css';
 interface EventDetailViewProps {
@@ -70,7 +70,6 @@ export default function EventDetailView({
   initialNextLabel,
 }: EventDetailViewProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const allCityOptions = useMemo(() => getAllCities(), []);
   const timeZone = getCityTimeZone(city);
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const scheduleSummary = buildScheduleLine(event) || (start && end ? `${start} – ${end}` : start);
@@ -108,9 +107,9 @@ export default function EventDetailView({
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
   return (
     <div className={styles.pageContainer}>
-      <Header city={city} allCityOptions={allCityOptions} />
+      <Header city={city} />
       <main className={styles.main}>
-        <Link href={`/events/${city.slug}`} className={styles.backLink}>
+        <Link href={`/${city.slug}/events`} className={styles.backLink}>
           <span aria-hidden="true">←</span>
           <span>All {city.name} events</span>
         </Link>
@@ -271,7 +270,7 @@ export default function EventDetailView({
           </div>
         </article>
         <div className={styles.bottomCtaWrap}>
-          <Link href={`/events/${city.slug}`} className={styles.bottomCta}>
+          <Link href={`/${city.slug}/events`} className={styles.bottomCta}>
             Explore all {city.name} events →
           </Link>
         </div>

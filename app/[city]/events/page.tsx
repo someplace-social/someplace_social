@@ -1,8 +1,8 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
 import { getEvents, getLastUpdated } from '../../lib/google-sheets';
-import CityEventsView from '../CityEventsView';
+import CityEventsView from '../../events/CityEventsView';
 export const revalidate = 60;
 type PageProps = {
   params: Promise<{ city: string }>;
@@ -25,12 +25,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `/events/${city.slug}`,
+      canonical: `/${city.slug}/events`,
     },
     openGraph: {
       title: `${title} | Someplace Social`,
       description,
-      url: `/events/${city.slug}`,
+      url: `/${city.slug}/events`,
       siteName: 'Someplace Social',
       type: 'website',
     },
@@ -49,6 +49,9 @@ export default async function CityEventsPage({ params }: PageProps) {
   const city = getCityBySlug(citySlug);
   if (!city) {
     notFound();
+  }
+  if (city.slug !== citySlug) {
+    permanentRedirect(`/${city.slug}/events`);
   }
   const [events, lastUpdated] = await Promise.all([
     getEvents(city),

@@ -55,7 +55,7 @@ export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
   return titleSlug || 'event';
 }
 export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
-  return `/events/${citySlug}/${getEventSlug(event)}`;
+  return `/${citySlug}/events/${getEventSlug(event)}`;
 }
 export function getEventAbsoluteUrl(
   citySlug: string,

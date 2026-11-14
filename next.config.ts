@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-
 const nextConfig: NextConfig = {
   async redirects() {
     return [
@@ -10,21 +9,40 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/medellin',
-        destination: '/events/medellin-colombia',
+        destination: '/medellin-colombia/events',
         permanent: true,
       },
       {
         source: '/medellin-v2',
-        destination: '/events/medellin-colombia',
+        destination: '/medellin-colombia/events',
         permanent: true,
       },
       {
         source: '/events/fortcollins-colorado',
-        destination: '/events/fort-collins-colorado',
+        destination: '/fort-collins-colorado/events',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado/:path*',
+        destination: '/fort-collins-colorado/events/:path*',
+        permanent: true,
+      },
+      {
+        source: '/events',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/events/:city',
+        destination: '/:city/events',
+        permanent: true,
+      },
+      {
+        source: '/events/:city/:path*',
+        destination: '/:city/events/:path*',
         permanent: true,
       },
     ];
   },
 };
-
 export default nextConfig;

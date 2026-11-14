@@ -1,8 +1,7 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { getAllCities } from '../../lib/cities';
 import styles from '../Contact.module.css';
-
 const DAYS_OF_WEEK = [
   { id: 'mon', label: 'Mon' },
   { id: 'tue', label: 'Tue' },
@@ -12,77 +11,66 @@ const DAYS_OF_WEEK = [
   { id: 'sat', label: 'Sat' },
   { id: 'sun', label: 'Sun' },
 ] as const;
-
 const PRE_REGISTRATION_OPTIONS = [
   'Drop-in (no RSVP needed)',
   'RSVP recommended',
   'RSVP required',
   'Ticketed / pre-pay',
 ] as const;
-
-export default function EventSubmissionForm() {
-  const [city, setCity] = useState('Medellín, Colombia');
+interface EventSubmissionFormProps {
+  defaultCity?: string;
+}
+export default function EventSubmissionForm({ defaultCity }: EventSubmissionFormProps) {
+  const cityOptions = useMemo(
+    () => getAllCities().map((c) => c.heroLocation),
+    []
+  );
+  const initialCity = defaultCity || cityOptions[0] || 'Medellín, Colombia';
+  const [city, setCity] = useState(initialCity);
   const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
   const [activity, setActivity] = useState('');
   const [otherActivities, setOtherActivities] = useState('');
   const [about, setAbout] = useState('');
-
-  // When & Schedule
   const [frequency, setFrequency] = useState('Weekly');
   const [frequencyNotes, setFrequencyNotes] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-
-  // Where / Location
   const [venue, setVenue] = useState('');
   const [location, setLocation] = useState('');
   const [area, setArea] = useState('');
   const [map, setMap] = useState('');
-
-  // Cost & Pre-Registration
   const [price, setPrice] = useState('');
   const [preRegistrationType, setPreRegistrationType] = useState('Drop-in (no RSVP needed)');
   const [preRegistrationDetails, setPreRegistrationDetails] = useState('');
-
-  // Links & Contact
   const [website, setWebsite] = useState('');
   const [social, setSocial] = useState('');
   const [contact, setContact] = useState('');
-
-  // Submitter Info & Notes
   const [submitterName, setSubmitterName] = useState('');
   const [submitterEmail, setSubmitterEmail] = useState('');
   const [isOrganizer, setIsOrganizer] = useState(false);
   const [adminNotes, setAdminNotes] = useState('');
-
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
-
   const toggleDay = (dayLabel: string) => {
     setSelectedDays((prev) =>
       prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
     );
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
-
     const fullActivity = otherActivities.trim()
       ? activity === 'Other'
         ? otherActivities.trim()
         : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
       : activity || 'Not specified';
-
     const fullPreRegistration = preRegistrationDetails.trim()
       ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
       : preRegistrationType;
-
     const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
-
     const summaryLines = [
       `=== EVENT SUBMISSION ===`,
       `City: ${city}`,
@@ -132,7 +120,6 @@ export default function EventSubmissionForm() {
         about.replace(/[\t\r\n]+/g, ' '),
       ].join('\t'),
     ].filter(Boolean);
-
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -142,13 +129,13 @@ export default function EventSubmissionForm() {
           message: summaryLines.join('\n'),
         }),
       });
-
       const result = await response.json();
       if (result.success) {
         setStatus({
           success: true,
           message: 'Thank you! Your event submission has been sent. We will review and add it shortly.',
         });
+        setCity(initialCity);
         setTitle('');
         setOrganizer('');
         setActivity('');
@@ -188,7 +175,6 @@ export default function EventSubmissionForm() {
       setLoading(false);
     }
   };
-
   return (
     <form
       id="panel-submit"
@@ -219,11 +205,9 @@ export default function EventSubmissionForm() {
           Only the <strong>event title</strong> is required. In-person gatherings only — no virtual events. Share whatever you know!
         </p>
       </div>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>The Event</legend>
         <p className={styles.sectionDescription}>Basic details about the event.</p>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-city" className={styles.label}>
@@ -235,12 +219,14 @@ export default function EventSubmissionForm() {
               onChange={(e) => setCity(e.target.value)}
               className={styles.select}
             >
-              <option value="Medellín, Colombia">Medellín, Colombia</option>
-              <option value="Fort Collins, Colorado">Fort Collins, Colorado</option>
+              {cityOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
               <option value="Other / New City">Other / New City</option>
             </select>
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-title" className={styles.label}>
               Event Title *
@@ -257,7 +243,6 @@ export default function EventSubmissionForm() {
             <span className={styles.helperText}>The only required field! In-person events only.</span>
           </div>
         </div>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-organizer" className={styles.label}>
@@ -272,7 +257,6 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-activity" className={styles.label}>
               Activity / Category <span className={styles.labelSub}>(optional)</span>
@@ -295,7 +279,6 @@ export default function EventSubmissionForm() {
             </select>
           </div>
         </div>
-
         {activity === 'Other' && (
           <div className={styles.field}>
             <label htmlFor="submit-other-act" className={styles.label}>
@@ -311,7 +294,6 @@ export default function EventSubmissionForm() {
             />
           </div>
         )}
-
         <div className={styles.field}>
           <label htmlFor="submit-about" className={styles.label}>
             About the event <span className={styles.labelSub}>(optional)</span>
@@ -325,11 +307,9 @@ export default function EventSubmissionForm() {
           />
         </div>
       </fieldset>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>When &amp; Schedule</legend>
         <p className={styles.sectionDescription}>Help people know when to show up.</p>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-frequency" className={styles.label}>
@@ -347,7 +327,6 @@ export default function EventSubmissionForm() {
               <option value="Seasonal / Irregular">Seasonal / Irregular</option>
             </select>
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-freq-notes" className={styles.label}>
               Frequency notes <span className={styles.labelSub}>(optional)</span>
@@ -362,7 +341,6 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
-
         <div className={styles.field}>
           <span className={styles.label}>
             Day of week <span className={styles.labelSub}>(select all that apply)</span>
@@ -387,7 +365,6 @@ export default function EventSubmissionForm() {
             })}
           </div>
         </div>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-start-time" className={styles.label}>
@@ -402,7 +379,6 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-end-time" className={styles.label}>
               End time <span className={styles.labelSub}>(optional)</span>
@@ -418,11 +394,9 @@ export default function EventSubmissionForm() {
           </div>
         </div>
       </fieldset>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Where / Location</legend>
         <p className={styles.sectionDescription}>Where does the event take place?</p>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-venue" className={styles.label}>
@@ -438,7 +412,6 @@ export default function EventSubmissionForm() {
             />
             <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-area" className={styles.label}>
               Neighborhood / Area <span className={styles.labelSub}>(optional)</span>
@@ -453,7 +426,6 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-location" className={styles.label}>
@@ -468,7 +440,6 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-map" className={styles.label}>
               Google Maps link <span className={styles.labelSub}>(optional)</span>
@@ -484,13 +455,11 @@ export default function EventSubmissionForm() {
           </div>
         </div>
       </fieldset>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Cost &amp; Pre-Registration</legend>
         <p className={styles.sectionDescription}>
           Is it free, paid, or does it require signing up in advance?
         </p>
-
         <div className={styles.field}>
           <label htmlFor="submit-price" className={styles.label}>
             Price <span className={styles.labelSub}>(optional)</span>
@@ -504,7 +473,6 @@ export default function EventSubmissionForm() {
             className={styles.input}
           />
         </div>
-
         <div className={styles.field}>
           <span className={styles.label}>Pre-Registration / RSVP</span>
           <div className={styles.radioGroup}>
@@ -529,7 +497,6 @@ export default function EventSubmissionForm() {
             })}
           </div>
         </div>
-
         <div className={styles.field}>
           <label htmlFor="submit-prereg-details" className={styles.label}>
             Registration link or instructions <span className={styles.labelSub}>(optional)</span>
@@ -544,7 +511,6 @@ export default function EventSubmissionForm() {
           />
         </div>
       </fieldset>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>
           Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
@@ -552,7 +518,6 @@ export default function EventSubmissionForm() {
         <p className={styles.sectionDescription}>
           How people can find more information or reach out to the organizer.
         </p>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-website" className={styles.label}>
@@ -567,7 +532,6 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-social" className={styles.label}>
               Social media / Instagram <span className={styles.labelSub}>(optional)</span>
@@ -582,7 +546,6 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
-
         <div className={styles.field}>
           <label htmlFor="submit-contact" className={styles.label}>
             Organizer contact <span className={styles.labelSub}>(optional)</span>
@@ -600,7 +563,6 @@ export default function EventSubmissionForm() {
           </span>
         </div>
       </fieldset>
-
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>
           About You <span className={styles.legendOptional}>(optional)</span>
@@ -608,7 +570,6 @@ export default function EventSubmissionForm() {
         <p className={styles.sectionDescription}>
           Let us know who is submitting in case we have a question before publishing.
         </p>
-
         <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-name" className={styles.label}>
@@ -623,7 +584,6 @@ export default function EventSubmissionForm() {
               className={styles.input}
             />
           </div>
-
           <div className={styles.field}>
             <label htmlFor="submit-email" className={styles.label}>
               Your email address <span className={styles.labelSub}>(optional)</span>
@@ -638,7 +598,6 @@ export default function EventSubmissionForm() {
             />
           </div>
         </div>
-
         <div className={styles.field}>
           <label className={styles.checkboxContainer}>
             <input
@@ -652,7 +611,6 @@ export default function EventSubmissionForm() {
             </span>
           </label>
         </div>
-
         <div className={styles.field}>
           <label htmlFor="submit-admin-notes" className={styles.label}>
             Note for administrator <span className={styles.labelSub}>(optional)</span>
@@ -666,11 +624,9 @@ export default function EventSubmissionForm() {
           />
         </div>
       </fieldset>
-
       <button type="submit" className={styles.submitBtn} disabled={loading}>
         {loading ? 'Submitting event...' : 'Submit Event'}
       </button>
-
       {status && (
         <div
           className={`${styles.statusAlert} ${

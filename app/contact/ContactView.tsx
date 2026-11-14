@@ -1,15 +1,20 @@
 'use client';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CityConfig } from '../lib/cities';
 import ContactMessageForm from './components/ContactMessageForm';
 import EventSubmissionForm from './components/EventSubmissionForm';
 import styles from './Contact.module.css';
-export default function ContactView() {
+interface ContactViewProps {
+  city?: CityConfig;
+}
+export default function ContactView({ city }: ContactViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const activeTab: 'question' | 'submit' =
     tabParam === 'submit' || tabParam === 'event' ? 'submit' : 'question';
+  const basePath = city ? `/${city.slug}/contact` : '/contact';
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -28,7 +33,7 @@ export default function ContactView() {
               aria-controls="panel-question"
               className={`${styles.pillBtn} ${activeTab === 'question' ? styles.pillBtnActive : ''}`}
               onClick={() => {
-                router.replace('/contact', { scroll: false });
+                router.replace(basePath, { scroll: false });
               }}
             >
               Send a Message
@@ -41,7 +46,7 @@ export default function ContactView() {
               aria-controls="panel-submit"
               className={`${styles.pillBtn} ${activeTab === 'submit' ? styles.pillBtnActive : ''}`}
               onClick={() => {
-                router.replace('/contact?tab=submit', { scroll: false });
+                router.replace(`${basePath}?tab=submit`, { scroll: false });
               }}
             >
               Submit an Event
@@ -61,9 +66,12 @@ export default function ContactView() {
       </section>
       <section className={styles.panel}>
         {activeTab === 'question' ? (
-          <ContactMessageForm />
+          <ContactMessageForm cityName={city?.heroLocation} />
         ) : (
-          <EventSubmissionForm />
+          <EventSubmissionForm
+            key={city?.slug || 'global'}
+            defaultCity={city?.heroLocation}
+          />
         )}
       </section>
     </main>

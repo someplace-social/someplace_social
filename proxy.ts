@@ -12,21 +12,33 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
   const segments = request.nextUrl.pathname.split('/').filter(Boolean);
-  if (segments.length !== 2 || segments[0] !== 'events') {
+  if (segments.length !== 2) {
     return NextResponse.next();
   }
-  const citySlug = segments[1];
+  const citySlug =
+    segments[1] === 'events'
+      ? segments[0]
+      : segments[0] === 'events'
+      ? segments[1]
+      : '';
+  if (!citySlug) {
+    return NextResponse.next();
+  }
   const city = getCityBySlug(citySlug);
   if (!city) {
     return NextResponse.next();
   }
   const destination = request.nextUrl.clone();
-  destination.pathname = `/events/${city.slug}/${encodeURIComponent(rawEvent)}`;
+  destination.pathname = `/${city.slug}/events/${encodeURIComponent(rawEvent)}`;
   destination.searchParams.delete('event');
   return NextResponse.redirect(destination, 307);
 }
 export const config = {
   matcher: [
+    {
+      source: '/:city/events',
+      has: [{ type: 'query', key: 'event' }],
+    },
     {
       source: '/events/:city',
       has: [{ type: 'query', key: 'event' }],

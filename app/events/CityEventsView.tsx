@@ -11,7 +11,6 @@ import {
 import Link from 'next/link';
 import {
   CityConfig,
-  getAllCities,
   getCityPriceConfig,
   getCityTimeZone,
 } from '../lib/cities';
@@ -279,7 +278,6 @@ export default function CityEventsView({
     setSelectedActivities([]);
     setSelectedAreas([]);
   }, []);
-  const allCityOptions = useMemo(() => getAllCities(), []);
   const totalEventsCount = allEvents.length;
   const dayHeading =
     activeDayIdx === 0
@@ -292,10 +290,7 @@ export default function CityEventsView({
   }`;
   return (
     <div className={styles.pageContainer}>
-      <Header
-        city={city}
-        allCityOptions={allCityOptions}
-      />
+      <Header city={city} />
       {city.alertBanner && (
         <div className={styles.alertBanner} role="status">
           <div className={styles.alertBannerInner}>
@@ -384,9 +379,20 @@ export default function CityEventsView({
               <b className={styles.emptyStateTitle}>
                 Nothing listed{hasActiveFilters ? ' with these filters' : ''}
               </b>
-              {hasActiveFilters
-                ? 'Try clearing your filters to see more events.'
-                : 'Know an event or group happening on this day? Submit it above.'}
+              {hasActiveFilters ? (
+                'Try clearing your filters to see more events.'
+              ) : (
+                <>
+                  Know an event or group happening on this day?{' '}
+                  <Link
+                    href={`/${city.slug}/contact?tab=submit`}
+                    className={styles.emptyStateLink}
+                  >
+                    Submit an event
+                  </Link>
+                  .
+                </>
+              )}
             </div>
           ) : (
             TIME_GROUPS.map((group) => {

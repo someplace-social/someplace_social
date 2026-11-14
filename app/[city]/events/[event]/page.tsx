@@ -13,7 +13,7 @@ import {
   getEventSlug,
   getNextEventOccurrence,
   resolveEventBySlug,
-} from '../../event-helpers';
+} from '../../../events/event-helpers';
 import EventDetailView from './EventDetailView';
 export const revalidate = 3600;
 type PageProps = {
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageTitle = `${event.title} — ${city.name} Events`;
   const fullTitle = `${pageTitle} | Someplace Social`;
   const description = buildEventMetaDescription(event, city);
-  const canonicalPath = `/events/${city.slug}/${canonicalSlug}`;
+  const canonicalPath = `/${city.slug}/events/${canonicalSlug}`;
   return {
     title: pageTitle,
     description,
@@ -93,13 +93,13 @@ export default async function EventPage({ params }: PageProps) {
   if (!resolved) {
     notFound();
   }
-  if (!resolved.isCanonical) {
-    redirect(`/events/${city.slug}/${resolved.canonicalSlug}`);
+  if (!resolved.isCanonical || city.slug !== citySlug) {
+    redirect(`/${city.slug}/events/${resolved.canonicalSlug}`);
   }
   const { event, canonicalSlug } = resolved;
   const timeZone = getCityTimeZone(city);
   const nextOccurrence = getNextEventOccurrence(event, timeZone, 90);
-  const canonicalUrl = `${SITE_URL}/events/${city.slug}/${canonicalSlug}`;
+  const canonicalUrl = `${SITE_URL}/${city.slug}/events/${canonicalSlug}`;
   const jsonLd = buildEventJsonLd(event, city, canonicalUrl, nextOccurrence);
   return (
     <>

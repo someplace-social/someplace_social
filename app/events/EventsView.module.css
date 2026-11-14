@@ -193,6 +193,15 @@
   color: var(--ink);
   margin-bottom: 6px;
 }
+.emptyStateLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.emptyStateLink:hover {
+  color: var(--accent);
+}
 @media (max-width: 899px) {
   .heroWrapper {
     padding: 14px 16px 0;

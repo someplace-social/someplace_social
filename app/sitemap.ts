@@ -6,12 +6,26 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
   const cities = getAllCities();
-  const cityUrls = cities.map((city) => ({
-    url: `${baseUrl}/events/${city.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.9,
-  }));
+  const cityUrls: MetadataRoute.Sitemap = cities.flatMap((city) => [
+    {
+      url: `${baseUrl}/${city.slug}/events`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/${city.slug}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/${city.slug}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+  ]);
   const cityEventsList = await Promise.all(
     cities.map(async (city) => ({
       citySlug: city.slug,
@@ -22,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const eventUrls: MetadataRoute.Sitemap = [];
   for (const { citySlug, events } of cityEventsList) {
     for (const ev of events) {
-      const url = `${baseUrl}/events/${citySlug}/${getEventSlug(ev)}`;
+      const url = `${baseUrl}/${citySlug}/events/${getEventSlug(ev)}`;
       if (seenEventUrls.has(url)) continue;
       seenEventUrls.add(url);
       eventUrls.push({
@@ -46,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
-      priority: 0.7,
+      priority: 0.5,
     },
     {
       url: `${baseUrl}/support`,

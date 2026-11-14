@@ -42,7 +42,7 @@ export const CITIES: Record<string, CityConfig> = {
     spreadsheetId: MAIN_SPREADSHEET_ID,
     introTitle: 'Medellin Community Listings',
     introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
     priceConfig: {
       currencyCode: 'COP',
       currencySymbol: '$',
@@ -65,7 +65,7 @@ export const CITIES: Record<string, CityConfig> = {
     spreadsheetId: MAIN_SPREADSHEET_ID,
     introTitle: 'Fort Collins Community Listings',
     introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
     priceConfig: {
       currencyCode: 'USD',
       currencySymbol: '$',
@@ -79,7 +79,7 @@ export const CITIES: Record<string, CityConfig> = {
     alertBanner: {
       message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
       linkText: 'Contact.',
-      linkHref: '/contact',
+      linkHref: '/fort-collins-colorado/contact',
     },
   },
 };

@@ -1,61 +1,53 @@
 'use client';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { CityConfig, getAllCities } from '../lib/cities';
+import { CityConfig } from '../lib/cities';
 import ThemeToggle from './ThemeToggle';
 import styles from './Header.module.css';
-
 interface HeaderProps {
   city?: CityConfig;
-  allCityOptions?: CityConfig[];
 }
-
-export default function Header({
-  city,
-  allCityOptions,
-}: HeaderProps) {
+export default function Header({ city }: HeaderProps) {
   const pathname = usePathname();
-  const [citiesMenuOpen, setCitiesMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const citiesMenuRef = useRef<HTMLDivElement>(null);
-  const citiesList = useMemo(() => {
-    const list = allCityOptions || getAllCities();
-    return [...list].sort((a, b) => a.name.localeCompare(b.name));
-  }, [allCityOptions]);
-
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (citiesMenuRef.current && !citiesMenuRef.current.contains(e.target as Node)) {
-        setCitiesMenuOpen(false);
+    if (!mobileDrawerOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMobileDrawerOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (mobileDrawerOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [mobileDrawerOpen]);
-
-  const isAboutActive = pathname === '/' || pathname === '/about';
-  const isContactActive = pathname === '/contact';
-  const isCityActive = Boolean(city);
-
+  const eventsHref = city ? `/${city.slug}/events` : '';
+  const aboutHref = city ? `/${city.slug}/about` : '/';
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+  const isEventsActive = Boolean(
+    city &&
+      (pathname === `/${city.slug}/events` ||
+        pathname.startsWith(`/${city.slug}/events/`))
+  );
+  const isAboutActive = city
+    ? pathname === `/${city.slug}/about`
+    : pathname === '/' || pathname === '/about';
+  const isContactActive = city
+    ? pathname === `/${city.slug}/contact`
+    : pathname === '/contact';
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.brandCol}>
             <Link
-              href={city ? `/events/${city.slug}` : '/'}
+              href={city ? `/${city.slug}/events` : '/'}
               className={styles.brandLogoLink}
             >
               <Image
@@ -68,85 +60,37 @@ export default function Header({
               />
             </Link>
             {city && (
-              <div className={styles.brandSubtitle}>
-                {city.heroLocation}
-              </div>
+              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
             )}
           </div>
-          <nav className={styles.navDesktop}>
-            <div className={styles.citiesWrapper} ref={citiesMenuRef}>
-              <button
-                type="button"
-                className={`${styles.citiesBtn} ${isCityActive ? styles.citiesBtnActive : ''}`}
-                aria-expanded={citiesMenuOpen}
-                onClick={() => setCitiesMenuOpen(!citiesMenuOpen)}
-              >
-                Cities
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              <div
-                className={`${styles.citiesDropdown} ${
-                  citiesMenuOpen ? '' : styles.citiesDropdownHidden
+          <nav className={styles.navDesktop} aria-label="Primary">
+            {city && (
+              <Link
+                href={eventsHref}
+                className={`${styles.navLink} ${
+                  isEventsActive ? styles.navLinkActive : ''
                 }`}
               >
-                {citiesList.map((c) => {
-                  const isActive = city?.slug === c.slug;
-                  return (
-                    <Link
-                      key={c.slug}
-                      href={`/events/${c.slug}`}
-                      className={`${styles.cityOption} ${
-                        isActive ? styles.cityOptionActive : ''
-                      }`}
-                      onClick={() => setCitiesMenuOpen(false)}
-                    >
-                      <span className={styles.cityName}>{c.name}</span>
-                      {isActive && (
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M5 12.5l4.5 4.5L19 7.5" />
-                        </svg>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+                Events
+              </Link>
+            )}
             <Link
-              href="/"
-              className={`${styles.navLink} ${isAboutActive ? styles.navLinkActive : ''}`}
+              href={aboutHref}
+              className={`${styles.navLink} ${
+                isAboutActive ? styles.navLinkActive : ''
+              }`}
             >
               About
             </Link>
             <Link
-              href="/contact"
-              className={`${styles.navLink} ${isContactActive ? styles.navLinkActive : ''}`}
+              href={contactHref}
+              className={`${styles.navLink} ${
+                isContactActive ? styles.navLinkActive : ''
+              }`}
             >
               Contact
             </Link>
             <ThemeToggle />
-            <Link href="/contact?tab=submit" className={styles.addEventBtn}>
-              + Add Event
-            </Link>
           </nav>
           <div className={styles.navMobileActions}>
             <button
@@ -180,6 +124,7 @@ export default function Header({
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
+            aria-label="Navigation menu"
           >
             <div className={styles.drawerHeader}>
               <div className={styles.drawerTitle}>Someplace Social</div>
@@ -192,29 +137,21 @@ export default function Header({
                 ✕
               </button>
             </div>
-            <div className={styles.drawerSectionTitle}>Choose City</div>
-            <div className={styles.drawerCityList}>
-              {citiesList.map((c) => {
-                const isActive = city?.slug === c.slug;
-                return (
-                  <Link
-                    key={c.slug}
-                    href={`/events/${c.slug}`}
-                    className={`${styles.drawerCityItem} ${
-                      isActive ? styles.drawerCityItemActive : ''
-                    }`}
-                    onClick={() => setMobileDrawerOpen(false)}
-                  >
-                    <span>{c.name}</span>
-                    {isActive && <span>✓</span>}
-                  </Link>
-                );
-              })}
-            </div>
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
+              {city && (
+                <Link
+                  href={eventsHref}
+                  className={`${styles.drawerNavLink} ${
+                    isEventsActive ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Events
+                </Link>
+              )}
               <Link
-                href="/"
+                href={aboutHref}
                 className={`${styles.drawerNavLink} ${
                   isAboutActive ? styles.drawerNavLinkActive : ''
                 }`}
@@ -223,7 +160,7 @@ export default function Header({
                 About
               </Link>
               <Link
-                href="/contact"
+                href={contactHref}
                 className={`${styles.drawerNavLink} ${
                   isContactActive ? styles.drawerNavLinkActive : ''
                 }`}
@@ -235,15 +172,6 @@ export default function Header({
             <div className={styles.drawerSectionTitle}>Preferences</div>
             <div className={styles.drawerNavLinks}>
               <ThemeToggle showLabel />
-            </div>
-            <div className={styles.drawerFooter}>
-              <Link
-                href="/contact?tab=submit"
-                className={styles.drawerAddEventBtn}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                + Add Event
-              </Link>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 import { useSyncExternalStore } from 'react';
 import { Event } from '../../../lib/google-sheets';
-import { getNextEventOccurrence } from '../../event-helpers';
+import { getNextEventOccurrence } from '../../../events/event-helpers';
 const emptySubscribe = () => () => {};
 interface NextOccurrenceBadgeProps {
   event: Event;

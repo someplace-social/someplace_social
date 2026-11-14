@@ -1,36 +1,35 @@
 'use client';
 import { useState } from 'react';
 import styles from '../Contact.module.css';
-
-export default function ContactMessageForm() {
+interface ContactMessageFormProps {
+  cityName?: string;
+}
+export default function ContactMessageForm({ cityName }: ContactMessageFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
-
     const messageLines = [
+      cityName ? `City Page: ${cityName}` : null,
       `Name: ${name}`,
       `Email Address: ${email}`,
       `Message:`,
       message,
-    ];
-
+    ].filter((line): line is string => line !== null);
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formType: 'Question / Message',
+          formType: cityName ? `Question / Message (${cityName})` : 'Question / Message',
           message: messageLines.join('\n'),
         }),
       });
-
       const result = await response.json();
       if (result.success) {
         setStatus({
@@ -55,7 +54,6 @@ export default function ContactMessageForm() {
       setLoading(false);
     }
   };
-
   return (
     <form
       id="panel-question"
