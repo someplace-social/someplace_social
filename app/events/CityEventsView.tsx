@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useDeferredValue, useCallback } from 'react';
+import { useState, useMemo, useDeferredValue, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import type { Event } from '../lib/google-sheets';
@@ -7,6 +7,7 @@ import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
+import { getEventSlug, resolveEventBySlug } from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -66,6 +67,8 @@ export default function CityEventsView({
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  const pendingScrollIdRef = useRef<string | null>(null);
+  const handledInitialParamRef = useRef<string | null>(null);
   const maxPrice =
     selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
       ? selectedMaxPrice.value
@@ -77,6 +80,17 @@ export default function CityEventsView({
     [city.slug]
   );
   const allEvents = initialEvents;
+  const eventKeyMap = useMemo(() => {
+    const map = new Map<Event, string>();
+    const seen = new Map<string, number>();
+    allEvents.forEach((ev) => {
+      const base = getEventSlug(ev);
+      const count = seen.get(base) || 0;
+      seen.set(base, count + 1);
+      map.set(ev, count === 0 ? base : `${base}-${count}`);
+    });
+    return map;
+  }, [allEvents]);
   const rollingWeek = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -88,6 +102,54 @@ export default function CityEventsView({
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
+  const syncEventQueryParam = useCallback((slug: string | null) => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get('event');
+    if (slug === null && current === null) return;
+    if (slug !== null && current === slug) return;
+    if (slug) {
+      url.searchParams.set('event', slug);
+    } else {
+      url.searchParams.delete('event');
+    }
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (handledInitialParamRef.current === city.slug) return;
+    handledInitialParamRef.current = city.slug;
+    const eventParam = new URLSearchParams(window.location.search).get('event');
+    if (!eventParam) return;
+    const resolved = resolveEventBySlug(allEvents, eventParam);
+    if (!resolved) return;
+    const targetIdx = allEvents.indexOf(resolved.event);
+    const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
+    const firstActiveDayIdx = indexedTarget
+      ? indexedTarget.activeDays.findIndex(Boolean)
+      : -1;
+    if (firstActiveDayIdx < 0) return;
+    const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
+    const rafId = window.requestAnimationFrame(() => {
+      setActiveDayIdx(firstActiveDayIdx);
+      setOpenEventId(key);
+      syncEventQueryParam(resolved.canonicalSlug);
+      pendingScrollIdRef.current = `event-card-${key}`;
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, [allEvents, city.slug, eventKeyMap, indexedEvents, syncEventQueryParam]);
+  useEffect(() => {
+    if (!pendingScrollIdRef.current) return;
+    const domId = pendingScrollIdRef.current;
+    const el = document.getElementById(domId);
+    if (!el) return;
+    pendingScrollIdRef.current = null;
+    const rafId = window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, [activeDayIdx, openEventId]);
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
   const now = new Date();
   const nowHour = now.getHours() + now.getMinutes() / 60;
@@ -167,8 +229,23 @@ export default function CityEventsView({
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
     const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
-    return nextEvent ? nextEvent.id || nextEvent.title : null;
-  }, [activeDayIdx, currentList, nowHour]);
+    if (!nextEvent) return null;
+    const idx = indexedEvents.indexOf(nextEvent);
+    const sourceEvent = idx >= 0 ? allEvents[idx] : nextEvent;
+    return eventKeyMap.get(sourceEvent) || getEventSlug(nextEvent);
+  }, [activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents, nowHour]);
+  const handleToggleEvent = useCallback(
+    (ev: Event, uniqueId: string) => {
+      if (openEventId === uniqueId) {
+        setOpenEventId(null);
+        syncEventQueryParam(null);
+      } else {
+        setOpenEventId(uniqueId);
+        syncEventQueryParam(getEventSlug(ev));
+      }
+    },
+    [openEventId, syncEventQueryParam]
+  );
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
     maxPrice < priceConfig.maxPrice ||
@@ -255,6 +332,7 @@ export default function CityEventsView({
             onSelectDay={(idx) => {
               setActiveDayIdx(idx);
               setOpenEventId(null);
+              syncEventQueryParam(null);
             }}
             dayCounts={dayCounts}
           />
@@ -302,18 +380,21 @@ export default function CityEventsView({
                     {group.name}
                     <div className={styles.timeGroupLine} />
                   </div>
-                  {groupEvents.map((ev, i) => {
-                    const uniqueId = ev.id || `${ev.title}-${i}`;
+                  {groupEvents.map((ev) => {
+                    const idx = indexedEvents.indexOf(ev);
+                    const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
+                    const uniqueId =
+                      eventKeyMap.get(sourceEvent) || getEventSlug(ev);
                     return (
                       <EventCard
                         key={uniqueId}
-                        event={ev}
+                        domId={`event-card-${uniqueId}`}
+                        event={sourceEvent}
                         isOpen={openEventId === uniqueId}
                         isNextUp={uniqueId === nextUpEventId}
                         cityName={city.name}
-                        onToggle={() =>
-                          setOpenEventId(openEventId === uniqueId ? null : uniqueId)
-                        }
+                        citySlug={city.slug}
+                        onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
                         onOpenEdit={setEditModalEvent}
                       />
                     );
@@ -334,4 +415,4 @@ export default function CityEventsView({
       )}
     </div>
   );
-} 
+}

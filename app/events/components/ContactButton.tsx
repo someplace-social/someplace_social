@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { parseContactInfo } from '../utils';
+import { copyToClipboard } from '../event-helpers';
 import styles from './ContactButton.module.css';
 const emptySubscribe = () => () => {};
 interface ContactButtonProps {
@@ -52,27 +53,13 @@ export default function ContactButton({
     };
   }, [isOpen]);
   const handleCopy = useCallback(async (text: string) => {
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      setCopied(true);
-      if (copyTimerRef.current) {
-        clearTimeout(copyTimerRef.current);
-      }
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
+    const ok = await copyToClipboard(text);
+    if (!ok) return;
+    setCopied(true);
+    if (copyTimerRef.current) {
+      clearTimeout(copyTimerRef.current);
     }
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, []);
   const handleOpenGmail = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {

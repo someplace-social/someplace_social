@@ -1,7 +1,16 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Event } from '../lib/google-sheets';
+import { CITIES } from '../lib/cities';
 import { isEventActiveOnDate, isMonthActive } from './utils';
+import {
+  slugifyText,
+  getEventSlug,
+  resolveEventBySlug,
+  getNextEventOccurrence,
+  buildEventSharePayload,
+  buildEventJsonLd,
+} from './event-helpers';
 function makeEvent(overrides: Partial<Event>): Event {
   return {
     id: '1',
@@ -257,5 +266,125 @@ describe('isMonthActive', () => {
     assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
+describe('slug generation and event resolution', () => {
+  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
+    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
+    assert.equal(
+      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
+      'verb-vibe-game-nite-14'
+    );
+    assert.equal(
+      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
+      'cafe-revolucion-meetup'
+    );
+    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
+  });
+  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, and rejects deleted IDs', () => {
+    const events = [
+      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
+      makeEvent({ id: '', title: 'Open Air Sketching' }),
+    ];
+    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
+    assert.ok(exact);
+    assert.equal(exact.event.id, '14');
+    assert.equal(exact.isCanonical, true);
+    const renamed = resolveEventBySlug(events, 'old-title-here-14');
+    assert.ok(renamed);
+    assert.equal(renamed.event.id, '14');
+    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
+    assert.equal(renamed.isCanonical, false);
+    const bareId = resolveEventBySlug(events, '14');
+    assert.ok(bareId);
+    assert.equal(bareId.event.id, '14');
+    assert.equal(bareId.isCanonical, false);
+    const missingId = resolveEventBySlug(events, 'open-air-sketching');
+    assert.ok(missingId);
+    assert.equal(missingId.event.title, 'Open Air Sketching');
+    assert.equal(missingId.isCanonical, true);
+    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
+    assert.equal(deletedId, null);
+  });
+});
+describe('next occurrence and share payload', () => {
+  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
+    const monthlyEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(occ);
+    assert.equal(occ.date.getMonth(), 1);
+    assert.equal(occ.date.getDate(), 6);
+    assert.equal(occ.label.startsWith('Next: '), true);
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
+    assert.equal(
+      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
+      null
+    );
+  });
+  it('builds share payload skipping missing fields cleanly without duplicate URLs', () => {
+    const fullEv = makeEvent({
+      id: '14',
+      title: 'Verb & Vibe Game Nite',
+      dayOfWeek: 'Fri',
+      startTime: '7:00 PM',
+      endTime: '9:30 PM',
+      venue: 'Café Revolución',
+      area: 'Laureles',
+      price: 'Free',
+    });
+    const payload = buildEventSharePayload(fullEv, 'medellin-colombia');
+    assert.equal(
+      payload.summaryText,
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free'
+    );
+    assert.equal(
+      payload.fullInviteText,
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
+    );
+    assert.equal(payload.summaryText.includes('https://'), false);
+    const sparseEv = makeEvent({
+      id: '2',
+      title: 'Mystery Gathering',
+      dayOfWeek: '',
+      frequency: '',
+      startTime: '',
+      endTime: '',
+      venue: '',
+      location: '',
+      area: '',
+      price: '',
+    });
+    const sparsePayload = buildEventSharePayload(sparseEv, 'fort-collins-colorado');
+    assert.equal(sparsePayload.summaryText, 'Mystery Gathering');
+    assert.equal(
+      sparsePayload.fullInviteText,
+      'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
+    );
+  });
+  it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
+    const ev = makeEvent({
+      id: '14',
+      title: 'Salsa Night',
+      venue: 'Son Havana',
+      location: 'Cra 73 #44-56',
+      price: 'Free',
+      startTime: '8:00 PM',
+      endTime: '11:00 PM',
+    });
+    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
+    const ld = buildEventJsonLd(
+      ev,
+      CITIES['medellin-colombia'],
+      'https://www.someplacesocial.org/events/medellin-colombia/salsa-night-14',
+      occ
+    );
+    assert.ok(ld);
+    assert.equal(ld['@type'], 'Event');
+    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
+    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
   });
 });

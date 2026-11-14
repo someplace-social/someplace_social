@@ -513,6 +513,8 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }
@@ -590,10 +592,13 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
     };
   }
   if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
-    return {
-      type: 'url',
-      url: ensureExternalUrl(trimmed),
-    };
+    const safeUrl = ensureExternalUrl(trimmed);
+    if (safeUrl) {
+      return {
+        type: 'url',
+        url: safeUrl,
+      };
+    }
   }
   return { type: 'none' };
 }

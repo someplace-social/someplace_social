@@ -1,0 +1,130 @@
+.shareWrapper {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.shareWrapper > button {
+  flex: 1 1 auto;
+}
+.sharePopover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shareHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px 4px;
+}
+.shareHeaderLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.shareHeaderTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shareDivider {
+  height: 1px;
+  background-color: var(--line);
+  margin: 2px 0;
+}
+.shareActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.shareActionBtn,
+.shareActionBtnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+.shareActionBtn {
+  background: transparent;
+  color: var(--ink);
+}
+.shareActionBtn:hover {
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+.shareActionBtnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.shareActionBtnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+.shareActionBtnCopied {
+  background-color: var(--free-bg);
+  color: var(--free);
+}
+.shareActionBtnCopied:hover {
+  background-color: var(--free-bg);
+  color: var(--free);
+  opacity: 1;
+}
+.shareActionLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 899px) {
+  .sharePopover {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    z-index: 100;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+  }
+}

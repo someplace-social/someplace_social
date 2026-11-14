@@ -18,6 +18,7 @@ export type CityConfig = {
   name: string;
   region: string;
   heroLocation: string;
+  timeZone: string;
   sheetTab: string;
   sheetGid?: string;
   spreadsheetId?: string;
@@ -27,6 +28,7 @@ export type CityConfig = {
   priceConfig?: CityPriceConfig;
   alertBanner?: CityAlertBanner;
 };
+export const SITE_URL = 'https://www.someplacesocial.org';
 export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
 export const CITIES: Record<string, CityConfig> = {
   'medellin-colombia': {
@@ -34,6 +36,7 @@ export const CITIES: Record<string, CityConfig> = {
     name: 'Medellín',
     region: 'Colombia',
     heroLocation: 'Medellín, Colombia',
+    timeZone: 'America/Bogota',
     sheetTab: 'Medellin',
     sheetGid: '0',
     spreadsheetId: MAIN_SPREADSHEET_ID,
@@ -56,6 +59,7 @@ export const CITIES: Record<string, CityConfig> = {
     name: 'Fort Collins',
     region: 'Colorado',
     heroLocation: 'Fort Collins, Colorado',
+    timeZone: 'America/Denver',
     sheetTab: 'Fort Collins',
     sheetGid: '466758538',
     spreadsheetId: MAIN_SPREADSHEET_ID,
@@ -95,6 +99,13 @@ export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
     return CITIES['medellin-colombia'].priceConfig!;
   }
   return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityTimeZone(city?: CityConfig): string {
+  if (city?.timeZone) return city.timeZone;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return 'America/Bogota';
+  }
+  return 'America/Denver';
 }
 export function getCityBySlug(slug: string): CityConfig | undefined {
   if (!slug) return undefined;

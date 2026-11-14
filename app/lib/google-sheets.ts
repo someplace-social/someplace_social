@@ -24,11 +24,11 @@ export type Event = {
   notes: string;
   database: string;
 };
-function getFetchOptions(): RequestInit {
+function getFetchOptions(revalidateSeconds: number = 30): RequestInit {
   if (process.env.NODE_ENV === 'development') {
     return { cache: 'no-store' };
   }
-  return { next: { revalidate: 30 } };
+  return { next: { revalidate: revalidateSeconds } };
 }
 function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
   if (city.csvUrl) return [city.csvUrl];
@@ -133,13 +133,13 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
-async function fetchValidSheetText(url: string): Promise<string | null> {
+async function fetchValidSheetText(url: string, revalidateSeconds: number = 30): Promise<string | null> {
   try {
     const response = await fetch(url, {
       headers: {
         Accept: 'text/csv, application/json, text/plain, */*',
       },
-      ...getFetchOptions(),
+      ...getFetchOptions(revalidateSeconds),
     });
     if (!response.ok) {
       console.warn(`[Someplace Social] Sheet request returned HTTP ${response.status} for ${url}`);
@@ -172,9 +172,9 @@ async function fetchValidSheetText(url: string): Promise<string | null> {
   }
   return null;
 }
-async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
+async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number = 30): Promise<string[][]> {
   for (const url of candidateUrls) {
-    const text = await fetchValidSheetText(url);
+    const text = await fetchValidSheetText(url, revalidateSeconds);
     if (!text) continue;
     const parsed = parseSheetData(text);
     if (parsed.length >= 2) {
@@ -252,10 +252,14 @@ function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   }
   return null;
 }
-async function discoverTabGid(targetId: string, tabNames: string[]): Promise<string | null> {
+async function discoverTabGid(
+  targetId: string,
+  tabNames: string[],
+  revalidateSeconds: number = 30
+): Promise<string | null> {
   const htmlviewUrl = `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`;
   try {
-    const response = await fetch(htmlviewUrl, getFetchOptions());
+    const response = await fetch(htmlviewUrl, getFetchOptions(revalidateSeconds));
     if (!response.ok) {
       console.warn(`[Someplace Social] htmlview returned HTTP ${response.status} for ${targetId}`);
       return null;
@@ -329,11 +333,14 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   about: 17,
   notes: 18,
 };
-export async function getLastUpdated(city: CityConfig): Promise<string | null> {
+export async function getLastUpdated(
+  city: CityConfig,
+  revalidateSeconds: number = 30
+): Promise<string | null> {
   try {
     const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
     const tabNames = ['LastUpdate', 'Last Update'];
-    const discoveredGid = await discoverTabGid(targetId, tabNames);
+    const discoveredGid = await discoverTabGid(targetId, tabNames, revalidateSeconds);
     const candidateUrls: string[] = [];
     if (discoveredGid) {
       candidateUrls.push(
@@ -350,7 +357,7 @@ export async function getLastUpdated(city: CityConfig): Promise<string | null> {
     }
     let cityDateMap: Map<string, string> | null = null;
     for (const url of candidateUrls) {
-      const text = await fetchValidSheetText(url);
+      const text = await fetchValidSheetText(url, revalidateSeconds);
       if (!text) continue;
       const parsedMap = parseLastUpdatedRows(parseSheetData(text));
       if (parsedMap) {
@@ -372,7 +379,10 @@ export async function getLastUpdated(city: CityConfig): Promise<string | null> {
     return null;
   }
 }
-export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
+export async function getEvents(
+  cityOrTab?: CityConfig | string,
+  revalidateSeconds: number = 30
+): Promise<Event[]> {
   try {
     let cityConfig: CityConfig;
     if (typeof cityOrTab === 'string') {
@@ -381,6 +391,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         name: cityOrTab,
         region: '',
         heroLocation: cityOrTab,
+        timeZone: 'America/Denver',
         sheetTab: cityOrTab,
       };
     } else if (cityOrTab) {
@@ -391,9 +402,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     const targetId = cityConfig.spreadsheetId || MAIN_SPREADSHEET_ID;
     const discoveredGid = cityConfig.csvUrl
       ? null
-      : await discoverTabGid(targetId, [cityConfig.sheetTab]);
+      : await discoverTabGid(targetId, [cityConfig.sheetTab], revalidateSeconds);
     const candidateUrls = getCandidateUrls(cityConfig, discoveredGid);
-    const rows = await fetchSheetRows(candidateUrls);
+    const rows = await fetchSheetRows(candidateUrls, revalidateSeconds);
     if (rows.length < 2) {
       console.error(`[Someplace Social] No live sheet data found for ${cityConfig.sheetTab} (${targetId})`);
       return [];
