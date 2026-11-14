@@ -1,5 +1,5 @@
 'use client';
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -10,6 +10,9 @@ import {
 } from '../utils';
 import ContactButton from './ContactButton';
 import styles from './EventCard.module.css';
+
+const DRAG_THRESHOLD_PX = 5;
+
 interface EventCardProps {
   event: Event;
   isOpen: boolean;
@@ -55,6 +58,81 @@ function EventCard({
   onToggle,
   onOpenEdit,
 }: EventCardProps) {
+  const headRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const didDragRef = useRef(false);
+  const prevSelectionRef = useRef('');
+
+  const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) {
+      pointerStartRef.current = null;
+      return;
+    }
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    didDragRef.current = false;
+    prevSelectionRef.current = window.getSelection()?.toString() ?? '';
+  };
+
+  const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointerStartRef.current || didDragRef.current) return;
+    const dx = e.clientX - pointerStartRef.current.x;
+    const dy = e.clientY - pointerStartRef.current.y;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+      didDragRef.current = true;
+    }
+  };
+
+  const handleHeadPointerCancel = () => {
+    pointerStartRef.current = null;
+    didDragRef.current = false;
+  };
+
+  const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('button, a')) {
+      return;
+    }
+
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+
+    if (start) {
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+        return;
+      }
+    }
+
+    if (e.detail >= 2) {
+      return;
+    }
+
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() ?? '';
+    if (
+      selectedText.trim().length > 0 &&
+      selectedText !== prevSelectionRef.current &&
+      headRef.current &&
+      selection
+    ) {
+      const { anchorNode, focusNode } = selection;
+      if (
+        (anchorNode && headRef.current.contains(anchorNode)) ||
+        (focusNode && headRef.current.contains(focusNode))
+      ) {
+        return;
+      }
+    }
+
+    onToggle();
+  };
+
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
@@ -238,34 +316,36 @@ function EventCard({
   );
   return (
     <article className={`${styles.card} ${isOpen ? styles.open : ''}`}>
-      <button
-        type="button"
+      <div
+        ref={headRef}
         className={styles.head}
-        aria-expanded={isOpen}
-        onClick={onToggle}
+        onPointerDown={handleHeadPointerDown}
+        onPointerMove={handleHeadPointerMove}
+        onPointerCancel={handleHeadPointerCancel}
+        onClick={handleHeadClick}
       >
-        <span className={styles.time}>
+        <div className={styles.time}>
           <b>{start || '—'}</b>
           {end && <span>to {end}</span>}
-        </span>
-        <span className={styles.main}>
+        </div>
+        <div className={styles.main}>
           {isNextUp && <span className={styles.next}>Next up</span>}
-          <span className={styles.title}>{event.title}</span>
+          <h3 className={styles.title}>{event.title}</h3>
           {displayVenue && (
-            <span className={styles.venue}>
+            <div className={styles.venue}>
               {pinIcon(styles.venueIcon)}
               <span>{displayVenue}</span>
-            </span>
+            </div>
           )}
           {showOrganizer && (
-            <span
+            <div
               className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
             >
               Hosted by {cleanOrg}
-            </span>
+            </div>
           )}
           {hasMeta && (
-            <span className={styles.meta}>
+            <div className={styles.meta}>
               {event.price && (
                 <span
                   className={`${styles.price} ${
@@ -289,7 +369,7 @@ function EventCard({
                 <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
               )}
               {tagList.length > 0 && (
-                <span className={styles.tags}>
+                <div className={styles.tags}>
                   {tagList.map((tag) => {
                     const customStyle = getTagStyle(tag);
                     return (
@@ -305,15 +385,29 @@ function EventCard({
                       </span>
                     );
                   })}
-                </span>
+                </div>
               )}
-            </span>
+            </div>
           )}
-        </span>
-        <span className={styles.chev} aria-hidden="true">
+        </div>
+        <button
+          type="button"
+          className={styles.chev}
+          aria-expanded={isOpen}
+          aria-label={
+            isOpen
+              ? `Collapse details for ${event.title}`
+              : `Expand details for ${event.title}`
+          }
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+        >
           {chevIcon}
-        </span>
-      </button>
+        </button>
+      </div>
       {isOpen && (
         <div className={styles.body}>
           {(event.about || event.notes) && (

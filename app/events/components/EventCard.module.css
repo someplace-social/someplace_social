@@ -85,6 +85,9 @@
     --tag-default-bg: #2c2720;
   }
 }
+.card:not(.open):hover {
+  border-color: var(--line-strong);
+}
 .open {
   border-color: var(--ink);
   box-shadow: var(--shadow-md);
@@ -94,6 +97,8 @@
 }
 .icon {
   flex: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .head {
   display: grid;
@@ -101,14 +106,11 @@
   grid-template-areas: "time main chev";
   gap: 16px;
   padding: 18px 20px;
-  width: 100%;
-  background: none;
-  border: 0;
-  text-align: left;
-  color: inherit;
-  font: inherit;
   cursor: pointer;
   align-items: start;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-tap-highlight-color: transparent;
 }
 .time {
   grid-area: time;
@@ -144,9 +146,12 @@
   border-radius: 5px;
   padding: 2px 6px;
   margin-bottom: 6px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .title {
   display: block;
+  margin: 0;
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -233,17 +238,35 @@
   grid-area: chev;
   width: 34px;
   height: 34px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background-color: var(--topbar-bg);
   color: var(--ink);
   display: grid;
   place-items: center;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+.head:hover .chev,
+.chev:hover {
+  background-color: var(--pill-hover);
+}
+.chev:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 .open .chev {
   background-color: var(--ink);
   color: var(--bg);
   transform: rotate(180deg);
+}
+.open .head:hover .chev,
+.open .chev:hover {
+  background-color: var(--ink);
+  opacity: 0.9;
 }
 .body {
   border-top: 1px solid var(--line);
@@ -305,6 +328,8 @@
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
 }
 .btn:not(.btnDisabled):not(.btnPrimary):hover {
@@ -342,6 +367,8 @@
   padding: 6px 2px;
   cursor: pointer;
   font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .edit:hover {
   color: var(--accent);
