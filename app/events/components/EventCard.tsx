@@ -324,9 +324,7 @@ function EventCard({
           <ShareButton
             event={event}
             citySlug={citySlug}
-            wrapperClassName={styles.shareActionWrapper}
             btnClassName={`${styles.btn} ${styles.shareBtn}`}
-            btnActiveClassName={styles.btnActive}
           />
           <div className={styles.footerLinks}>
             <Link href={eventHref} className={styles.permalink}>

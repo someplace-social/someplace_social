@@ -8,7 +8,7 @@ import {
   getEventSlug,
   resolveEventBySlug,
   getNextEventOccurrence,
-  buildEventSharePayload,
+  buildEventInviteText,
   buildEventJsonLd,
 } from './event-helpers';
 function makeEvent(overrides: Partial<Event>): Event {
@@ -307,7 +307,7 @@ describe('slug generation and event resolution', () => {
     assert.equal(deletedId, null);
   });
 });
-describe('next occurrence and share payload', () => {
+describe('next occurrence and invite text', () => {
   it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
     const monthlyEv = makeEvent({
       frequency: 'Monthly',
@@ -325,7 +325,7 @@ describe('next occurrence and share payload', () => {
       null
     );
   });
-  it('builds share payload skipping missing fields cleanly without duplicate URLs', () => {
+  it('builds formatted invite text skipping missing fields cleanly', () => {
     const fullEv = makeEvent({
       id: '14',
       title: 'Verb & Vibe Game Nite',
@@ -336,16 +336,10 @@ describe('next occurrence and share payload', () => {
       area: 'Laureles',
       price: 'Free',
     });
-    const payload = buildEventSharePayload(fullEv, 'medellin-colombia');
     assert.equal(
-      payload.summaryText,
-      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free'
-    );
-    assert.equal(
-      payload.fullInviteText,
+      buildEventInviteText(fullEv, 'medellin-colombia'),
       'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
     );
-    assert.equal(payload.summaryText.includes('https://'), false);
     const sparseEv = makeEvent({
       id: '2',
       title: 'Mystery Gathering',
@@ -358,10 +352,8 @@ describe('next occurrence and share payload', () => {
       area: '',
       price: '',
     });
-    const sparsePayload = buildEventSharePayload(sparseEv, 'fort-collins-colorado');
-    assert.equal(sparsePayload.summaryText, 'Mystery Gathering');
     assert.equal(
-      sparsePayload.fullInviteText,
+      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
       'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
     );
   });

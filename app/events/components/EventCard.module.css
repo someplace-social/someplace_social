@@ -335,7 +335,7 @@
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 .btn:not(.btnDisabled):not(.btnPrimary):hover {
   border-color: var(--ink);
@@ -357,9 +357,6 @@
 .btnDisabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-.shareActionWrapper {
-  flex: 0 0 auto;
 }
 .shareBtn {
   width: clamp(70px, 11.2cqi, 80px);
@@ -434,11 +431,8 @@
     gap: 6px;
     font-size: 12px;
   }
-  .shareActionWrapper {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
   .shareBtn {
+    grid-column: 1 / -1;
     width: 100%;
     height: 44px;
     flex-direction: row;

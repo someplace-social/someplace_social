@@ -257,9 +257,7 @@ export default function EventDetailView({
               <ShareButton
                 event={event}
                 citySlug={city.slug}
-                wrapperClassName={styles.shareActionWrapper}
                 btnClassName={`${styles.btn} ${styles.shareBtn}`}
-                btnActiveClassName={styles.btnActive}
               />
               <button
                 type="button"

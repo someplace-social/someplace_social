@@ -25,13 +25,6 @@ export type NextOccurrenceResult = {
   isToday: boolean;
   isTomorrow: boolean;
 };
-export type EventSharePayload = {
-  title: string;
-  summaryText: string;
-  fullInviteText: string;
-  url: string;
-  whatsappUrl: string;
-};
 export function slugifyText(text: string): string {
   if (!text) return '';
   return text
@@ -225,10 +218,7 @@ export function buildScheduleLine(event: Event): string {
   }
   return [whenPart, timePart].filter(Boolean).join(' · ');
 }
-export function buildEventSharePayload(
-  event: Event,
-  citySlug: string
-): EventSharePayload {
+export function buildEventInviteText(event: Event, citySlug: string): string {
   const url = getEventAbsoluteUrl(citySlug, event);
   const title = event.title.trim();
   const scheduleLine = buildScheduleLine(event);
@@ -242,17 +232,7 @@ export function buildEventSharePayload(
   }
   const pricePart = (event.price || '').trim();
   const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
-  const summaryLines = [title, scheduleLine, detailsLine].filter(Boolean);
-  const summaryText = summaryLines.join('\n');
-  const fullInviteText = [...summaryLines, url].join('\n');
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullInviteText)}`;
-  return {
-    title,
-    summaryText,
-    fullInviteText,
-    url,
-    whatsappUrl,
-  };
+  return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
 }
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
