@@ -64,7 +64,7 @@ export default function CityHeroCard({
       <div className={styles.descCol}>
         <p className={styles.lead}>
           {introDescription ||
-            `Regular community events, weekly activities, and recurring meetups all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+            `Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including weekly meetups, classes, and fun stuff to do in ${cityName}.`}
         </p>
       </div>
       <div className={styles.chips} role="group" aria-label="Filter by activity">

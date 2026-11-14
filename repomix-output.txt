@@ -1,6 +1,168 @@
 #TASK
 
 
+I want to remove the city drop down. The goal is to make each city feel like it is the whole website, because there’s no reason someone in fort collins needs to easily switch to medellin. It can stay in the about page.
+ 
+Instead of “Cities” it should just say “Events” which brings to the listings city page, but for whatever city we are on. City is marked by what it says under the upper left hand logo. 
+
+The structure becomes /fort-collins-colorado/events, /fort-collins-colorado/about and /fort-collins-colorado/contact . the about and contact page are always the same weather it be medellin-colombia/contact or fort-collins-colorado/contact - really it’s just a way that someone can easily navigate back to their city events because if they are on the contact page and it’s fort-collins-colorado/contact and the click “Events” in the menu then it’s easy to know they want to go to fort-collins-colorado/events
+
+Add auto forwarding from our old URL to new ones correctly mapped.
+
+Also get rid of the “+ Add Event” button from menu entirely.
+
+
+
+
+
+MULTI-STEP PROCESS:
+
+
+1) Make a plan:
+As soon as you get the files, investigate the issue at hand and find the root. 
+#RULES
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan. 
+- Do not over complicate things - keep it simple and robust.
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours. 
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 25k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response. 
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan. 
+
+2) Implement plan: 
+Implement the outline / plan. 
+
+
+
+
+
+
+
+#GUIDELINES
+You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
+1. PROJECT CONTEXT
+Project Name: Someplace Social
+Environment: Windows 11
+Package Manager: PNPM
+2. CORE DIRECTIVES (NON-NEGOTIABLE)
+Full File Output: When modifying a file, output the ENTIRE , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
+Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
+PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
+Response length: If your response contains more than approximately 30k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
+3. RULES
+Security: Security is very important - always keep in mind best practices.
+Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices. 
+DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
+Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
+Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
+Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
+Egress: Keep egress low whenever possible.
+Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
+Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
+Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
+Simple & Robust: Do not over-complicate things. The simplest and most robust solution is best. When building or fixing a problem, always start with what could be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
+Page text: when writing text, choose simple, easy to understand,  straightforward words for page titles, page text, etc. 
+Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
+UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+
+
+4. RESPONSE FORMAT RULES
+Start with a brief explanation of what you are doing.
+Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
+End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
+Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: $targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }
+5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):
+IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow. 
+Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
+File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
+Code Output: A single, complete, full-file code block.
+Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
+Git Commands: The very last item in your response must be a single code block containing the final git commands.
+5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
+- Never provide multiple open commands in a row.
+- Never provide multiple file code blocks in a row.
+- Never list all commands first and all files afterward.
+- Never open several files before showing the first file’s contents.
+- Never skip ahead to later files.
+- Never bundle files together in one code block.
+- The command for file N+1 MUST appear immediately before the code block for file N+1.
+- The ONLY allowed pattern is:
+open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
+5.3 FORBIDDEN PATTERNS:
+- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
+- open 1 -> open 2 -> file 1 -> file 2
+- any response that shows all commands first and all files later 
+
+EXAMPLE OF CORRECT RESPONSE FORMAT:
+This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
+
+Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc… 
+
+```powershell
+pnpx supabase migration new create_example_table
+```
+
+Here is the sql code.
+
+```sql
+-- supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
+create table example (
+  ...
+);
+```
+
+Next we will push to supabase.
+
+```powershell
+pnpx supabase db push
+```
+
+Now we’ll create a new file.
+
+```powershell
+New-Item 'app/index.tsx' -Force
+code 'app/index.tsx'
+```
+
+Here is the full code for our new file.
+
+```typescript
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HelloScreen() {
+  // ...
+  return <Text>hello, world</Text>;
+  // ...
+}
+```
+
+Now we’ll open page2.
+
+```powershell
+code 'app/page2.tsx'
+```
+
+Here is the updated code for page2.
+
+```typescript
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function PageTwoScreen() {
+  // ...
+  return <Text>hello, world page 2</Text>;
+  // ...
+}
+```
+
+Finally, we will commit.
+
+```powershell
+git add .
+git commit -m "feat: Add example migration and pages"
+```
+
+
 
 
 #PROJECT FILES
@@ -23,6 +185,7 @@ Project Structure Map:
 |   |   +--- Footer.tsx
 |   |   +--- Header.module.css
 |   |   +--- Header.tsx
+|   |   +--- ThemeScript.tsx
 |   |   +--- ThemeToggle.module.css
 |   |   \--- ThemeToggle.tsx
 |   +--- contact
@@ -62,6 +225,7 @@ Project Structure Map:
 |   |   +--- CityEventsView.tsx
 |   |   +--- event-helpers.ts
 |   |   +--- EventsView.module.css
+|   |   +--- schedule-splitter.ts
 |   |   +--- utils.test.ts
 |   |   \--- utils.ts
 |   +--- lib
@@ -158,6 +322,7 @@ app/components/Footer.module.css
 app/components/Footer.tsx
 app/components/Header.module.css
 app/components/Header.tsx
+app/components/ThemeScript.tsx
 app/components/ThemeToggle.module.css
 app/components/ThemeToggle.tsx
 app/contact/components/ContactMessageForm.tsx
@@ -191,6 +356,7 @@ app/events/components/SuggestEditModal.module.css
 app/events/components/SuggestEditModal.tsx
 app/events/event-helpers.ts
 app/events/EventsView.module.css
+app/events/schedule-splitter.ts
 app/events/utils.test.ts
 app/events/utils.ts
 app/globals.css
@@ -304,6 +470,45 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+================
+File: tsconfig.json
+================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "types": ["node"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
 
 ================
 File: app/api/send-form/route.ts
@@ -502,6 +707,28 @@ export default function ContactForm({ formType, fields }: ContactFormProps) {
       {status && <p>{status}</p>}
     </form>
   );
+}
+
+================
+File: app/components/ThemeScript.tsx
+================
+'use client';
+import { useRef } from 'react';
+import { useServerInsertedHTML } from 'next/navigation';
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`;
+export default function ThemeScript() {
+  const insertedRef = useRef(false);
+  useServerInsertedHTML(() => {
+    if (insertedRef.current) return null;
+    insertedRef.current = true;
+    return (
+      <script
+        id="theme-init"
+        dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
+      />
+    );
+  });
+  return null;
 }
 
 ================
@@ -1324,6 +1551,303 @@ export function ExternalLinkIcon({ className }: IconProps) {
 }
 
 ================
+File: app/events/schedule-splitter.ts
+================
+import type { Event } from '../lib/google-sheets';
+const ORDERED_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+const DAILY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+const DAY_TOKEN_TO_SHORT: Record<string, string> = {
+  sun: 'Sun',
+  sunday: 'Sun',
+  sundays: 'Sun',
+  mon: 'Mon',
+  monday: 'Mon',
+  mondays: 'Mon',
+  tue: 'Tue',
+  tues: 'Tue',
+  tuesday: 'Tue',
+  tuesdays: 'Tue',
+  wed: 'Wed',
+  weds: 'Wed',
+  wednesday: 'Wed',
+  wednesdays: 'Wed',
+  thu: 'Thu',
+  thur: 'Thu',
+  thurs: 'Thu',
+  thursday: 'Thu',
+  thursdays: 'Thu',
+  fri: 'Fri',
+  friday: 'Fri',
+  fridays: 'Fri',
+  sat: 'Sat',
+  saturday: 'Sat',
+  saturdays: 'Sat',
+};
+type ScheduleSpec = {
+  isDayMapped: boolean;
+  byDay: Map<string, string>;
+  unlabeled: string[];
+};
+function expandDayRange(startDay: string, endDay: string): string[] | null {
+  const startIdx = ORDERED_DAYS.indexOf(startDay as (typeof ORDERED_DAYS)[number]);
+  const endIdx = ORDERED_DAYS.indexOf(endDay as (typeof ORDERED_DAYS)[number]);
+  if (startIdx === -1 || endIdx === -1) return null;
+  const result: string[] = [];
+  if (startIdx <= endIdx) {
+    for (let i = startIdx; i <= endIdx; i++) {
+      result.push(ORDERED_DAYS[i]);
+    }
+  } else {
+    for (let i = startIdx; i < ORDERED_DAYS.length; i++) {
+      result.push(ORDERED_DAYS[i]);
+    }
+    for (let i = 0; i <= endIdx; i++) {
+      result.push(ORDERED_DAYS[i]);
+    }
+  }
+  return result;
+}
+function parseDaysExpression(expr: string): string[] | null {
+  const trimmed = (expr || '').trim();
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  if (lower === 'daily' || lower === 'everyday' || lower === 'every day') {
+    return [...DAILY_DAYS];
+  }
+  const parts = trimmed
+    .split(/\s*(?:,|&|\band\b)\s*/i)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return null;
+  const days: string[] = [];
+  for (const part of parts) {
+    const rangeMatch = part.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
+    if (rangeMatch) {
+      const startShort = DAY_TOKEN_TO_SHORT[rangeMatch[1].toLowerCase()];
+      const endShort = DAY_TOKEN_TO_SHORT[rangeMatch[2].toLowerCase()];
+      if (!startShort || !endShort) return null;
+      const expanded = expandDayRange(startShort, endShort);
+      if (!expanded) return null;
+      for (const d of expanded) {
+        if (!days.includes(d)) days.push(d);
+      }
+      continue;
+    }
+    const short = DAY_TOKEN_TO_SHORT[part.toLowerCase()];
+    if (!short) return null;
+    if (!days.includes(short)) {
+      days.push(short);
+    }
+  }
+  return days.length > 0 ? days : null;
+}
+function splitOutsideParens(input: string, delimiters: Set<string>): string[] {
+  const parts: string[] = [];
+  let current = '';
+  let depth = 0;
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (ch === '(') {
+      depth++;
+      current += ch;
+    } else if (ch === ')') {
+      depth = Math.max(0, depth - 1);
+      current += ch;
+    } else if (depth === 0 && delimiters.has(ch)) {
+      const trimmed = current.trim();
+      if (trimmed) parts.push(trimmed);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  const tail = current.trim();
+  if (tail) parts.push(tail);
+  return parts;
+}
+function isTimeLike(str: string): boolean {
+  return /^\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?$/i.test(str.trim());
+}
+function segmentHasDayAnnotation(seg: string): boolean {
+  const parenMatch = seg.match(/\(([^)]+)\)/);
+  if (parenMatch && parseDaysExpression(parenMatch[1])) {
+    return true;
+  }
+  const colonMatch = seg.match(/^(.+?)\s*:\s*(.+)$/);
+  if (colonMatch && parseDaysExpression(colonMatch[1]) && /\d/.test(colonMatch[2])) {
+    return true;
+  }
+  const leadMatch = seg.match(
+    /^([a-zA-Z,\s&/-]+?)\s+(\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?)$/i
+  );
+  if (leadMatch && parseDaysExpression(leadMatch[1])) {
+    return true;
+  }
+  const trailMatch = seg.match(
+    /^(\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?)\s+([a-zA-Z,\s&/-]+)$/i
+  );
+  if (trailMatch && parseDaysExpression(trailMatch[2])) {
+    return true;
+  }
+  return false;
+}
+function parseScheduleSpec(raw: string): ScheduleSpec {
+  const trimmed = (raw || '').trim();
+  const byDay = new Map<string, string>();
+  const unlabeled: string[] = [];
+  if (!trimmed) {
+    return { isDayMapped: false, byDay, unlabeled };
+  }
+  const primaryChunks = splitOutsideParens(trimmed, new Set(['/', ';', '|']));
+  const segments: string[] = [];
+  for (const chunk of primaryChunks) {
+    const subChunks = splitOutsideParens(chunk, new Set([',', '&']));
+    if (
+      subChunks.length > 1 &&
+      subChunks.every((s) => segmentHasDayAnnotation(s) || isTimeLike(s))
+    ) {
+      segments.push(...subChunks);
+    } else {
+      segments.push(chunk);
+    }
+  }
+  let isDayMapped = false;
+  for (const seg of segments) {
+    const parenMatch = seg.match(/\(([^)]+)\)/);
+    if (parenMatch) {
+      const days = parseDaysExpression(parenMatch[1]);
+      if (days && days.length > 0) {
+        const timeVal = seg
+          .replace(parenMatch[0], '')
+          .replace(/^[\s:,-]+|[\s:,-]+$/g, '')
+          .trim();
+        for (const d of days) {
+          byDay.set(d, timeVal);
+        }
+        isDayMapped = true;
+        continue;
+      }
+    }
+    const colonMatch = seg.match(/^(.+?)\s*:\s*(.+)$/);
+    if (colonMatch) {
+      const days = parseDaysExpression(colonMatch[1]);
+      if (days && /\d/.test(colonMatch[2])) {
+        const timeVal = colonMatch[2].trim();
+        for (const d of days) {
+          byDay.set(d, timeVal);
+        }
+        isDayMapped = true;
+        continue;
+      }
+    }
+    const leadMatch = seg.match(
+      /^([a-zA-Z,\s&/-]+?)\s+(\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?)$/i
+    );
+    if (leadMatch) {
+      const days = parseDaysExpression(leadMatch[1]);
+      if (days) {
+        const timeVal = leadMatch[2].trim();
+        for (const d of days) {
+          byDay.set(d, timeVal);
+        }
+        isDayMapped = true;
+        continue;
+      }
+    }
+    const trailMatch = seg.match(
+      /^(\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?)\s+([a-zA-Z,\s&/-]+)$/i
+    );
+    if (trailMatch) {
+      const days = parseDaysExpression(trailMatch[2]);
+      if (days) {
+        const timeVal = trailMatch[1].trim();
+        for (const d of days) {
+          byDay.set(d, timeVal);
+        }
+        isDayMapped = true;
+        continue;
+      }
+    }
+    unlabeled.push(seg.trim());
+  }
+  return { isDayMapped, byDay, unlabeled };
+}
+export function expandEventSchedules(event: Event): Event[] {
+  const startSpec = parseScheduleSpec(event.startTime);
+  const endSpec = parseScheduleSpec(event.endTime);
+  const hasDayMapped = startSpec.isDayMapped || endSpec.isDayMapped;
+  const hasMultiUnlabeled =
+    startSpec.unlabeled.length > 1 || endSpec.unlabeled.length > 1;
+  if (!hasDayMapped && !hasMultiUnlabeled) {
+    return [event];
+  }
+  const parsedDays = parseDaysExpression(event.dayOfWeek || '');
+  if (hasDayMapped) {
+    const targetDays: string[] =
+      parsedDays && parsedDays.length > 0
+        ? parsedDays
+        : Array.from(new Set([...startSpec.byDay.keys(), ...endSpec.byDay.keys()]));
+    if (targetDays.length === 0) {
+      return [event];
+    }
+    return targetDays.map((day, idx) => {
+      let resolvedStart: string;
+      if (startSpec.isDayMapped) {
+        resolvedStart =
+          startSpec.byDay.get(day) ??
+          (startSpec.unlabeled.length === 1 ? startSpec.unlabeled[0] : '');
+      } else if (startSpec.unlabeled.length === targetDays.length) {
+        resolvedStart = startSpec.unlabeled[idx];
+      } else {
+        resolvedStart = startSpec.unlabeled[0] ?? event.startTime;
+      }
+      let resolvedEnd: string;
+      if (endSpec.isDayMapped) {
+        resolvedEnd =
+          endSpec.byDay.get(day) ??
+          (endSpec.unlabeled.length === 1 ? endSpec.unlabeled[0] : '');
+      } else if (endSpec.unlabeled.length === targetDays.length) {
+        resolvedEnd = endSpec.unlabeled[idx];
+      } else {
+        resolvedEnd = endSpec.unlabeled[0] ?? event.endTime;
+      }
+      const splitId =
+        targetDays.length > 1 && event.id
+          ? `${event.id}-${day.toLowerCase()}`
+          : event.id;
+      return {
+        ...event,
+        id: splitId,
+        dayOfWeek: day,
+        startTime: resolvedStart,
+        endTime: resolvedEnd,
+      };
+    });
+  }
+  const slotCount = Math.max(startSpec.unlabeled.length, endSpec.unlabeled.length);
+  if (parsedDays && parsedDays.length === slotCount) {
+    return parsedDays.map((day, idx) => ({
+      ...event,
+      id: event.id ? `${event.id}-${day.toLowerCase()}` : event.id,
+      dayOfWeek: day,
+      startTime: startSpec.unlabeled[idx] ?? startSpec.unlabeled[0] ?? '',
+      endTime: endSpec.unlabeled[idx] ?? endSpec.unlabeled[0] ?? '',
+    }));
+  }
+  if (parsedDays && parsedDays.length === 1) {
+    const day = parsedDays[0];
+    return Array.from({ length: slotCount }, (_, idx) => ({
+      ...event,
+      id: event.id ? `${event.id}-${day.toLowerCase()}-${idx + 1}` : event.id,
+      dayOfWeek: day,
+      startTime: startSpec.unlabeled[idx] ?? startSpec.unlabeled[0] ?? '',
+      endTime: endSpec.unlabeled[idx] ?? endSpec.unlabeled[0] ?? '',
+    }));
+  }
+  return [event];
+}
+
+================
 File: app/robots.ts
 ================
 import type { MetadataRoute } from 'next';
@@ -1336,45 +1860,6 @@ export default function robots(): MetadataRoute.Robots {
     },
     sitemap: 'https://www.someplacesocial.org/sitemap.xml',
   };
-}
-
-================
-File: tsconfig.json
-================
-{
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "types": ["node"],
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
-  ],
-  "exclude": ["node_modules"]
 }
 
 ================
@@ -3626,6 +4111,146 @@ export default function ShareButton({
 }
 
 ================
+File: app/sitemap.ts
+================
+import type { MetadataRoute } from 'next';
+import { SITE_URL, getAllCities } from './lib/cities';
+import { getEvents } from './lib/google-sheets';
+import { getEventSlug } from './events/event-helpers';
+export const revalidate = 3600;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = SITE_URL;
+  const cities = getAllCities();
+  const cityUrls = cities.map((city) => ({
+    url: `${baseUrl}/events/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+  const cityEventsList = await Promise.all(
+    cities.map(async (city) => ({
+      citySlug: city.slug,
+      events: await getEvents(city, 3600),
+    }))
+  );
+  const seenEventUrls = new Set<string>();
+  const eventUrls: MetadataRoute.Sitemap = [];
+  for (const { citySlug, events } of cityEventsList) {
+    for (const ev of events) {
+      const url = `${baseUrl}/events/${citySlug}/${getEventSlug(ev)}`;
+      if (seenEventUrls.has(url)) continue;
+      seenEventUrls.add(url);
+      eventUrls.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      });
+    }
+  }
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 1.0,
+    },
+    ...cityUrls,
+    ...eventUrls,
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/support`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    },
+  ];
+}
+
+================
+File: app/components/Footer.module.css
+================
+.footer {
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  margin-top: auto;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 24px 36px;
+}
+.footerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.footerSupportText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-subtle);
+}
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+.footerQuoteSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.footerAuthor {
+  font-size: 12px;
+  color: var(--muted);
+}
+.footerCopyright {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+@media (max-width: 899px) {
+  .footerInner {
+    padding: 32px 16px 28px;
+  }
+  .footerContent {
+    gap: 20px;
+  }
+  .footerSupportText {
+    font-size: 13.5px;
+  }
+  .footerQuoteText {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+}
+
+================
 File: app/events/event-helpers.ts
 ================
 import { Event } from '../lib/google-sheets';
@@ -3751,6 +4376,33 @@ export function resolveEventBySlug(
       canonicalSlug,
       isCanonical: canonicalSlug === normalizedSlug,
     };
+  }
+  const barePrefixMatch = events.find((ev) => {
+    const normId = normalizeEventId(ev.id);
+    return Boolean(normId) && normId.startsWith(`${normalizedSlug}-`);
+  });
+  if (barePrefixMatch) {
+    const canonicalSlug = getEventSlug(barePrefixMatch);
+    return {
+      event: barePrefixMatch,
+      canonicalSlug,
+      isCanonical: false,
+    };
+  }
+  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
+    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
+    const trailingPrefixMatch = events.find((ev) => {
+      const normId = normalizeEventId(ev.id);
+      return Boolean(normId) && normId.startsWith(`${trailingId}-`);
+    });
+    if (trailingPrefixMatch) {
+      const canonicalSlug = getEventSlug(trailingPrefixMatch);
+      return {
+        event: trailingPrefixMatch,
+        canonicalSlug,
+        isCanonical: false,
+      };
+    }
   }
   const idLessEvents = events.filter((ev) => !normalizeEventId(ev.id));
   const idLessTitleMatch = idLessEvents.find(
@@ -4046,146 +4698,6 @@ export function buildEventJsonLd(
 }
 
 ================
-File: app/sitemap.ts
-================
-import type { MetadataRoute } from 'next';
-import { SITE_URL, getAllCities } from './lib/cities';
-import { getEvents } from './lib/google-sheets';
-import { getEventSlug } from './events/event-helpers';
-export const revalidate = 3600;
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = SITE_URL;
-  const cities = getAllCities();
-  const cityUrls = cities.map((city) => ({
-    url: `${baseUrl}/events/${city.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.9,
-  }));
-  const cityEventsList = await Promise.all(
-    cities.map(async (city) => ({
-      citySlug: city.slug,
-      events: await getEvents(city, 3600),
-    }))
-  );
-  const seenEventUrls = new Set<string>();
-  const eventUrls: MetadataRoute.Sitemap = [];
-  for (const { citySlug, events } of cityEventsList) {
-    for (const ev of events) {
-      const url = `${baseUrl}/events/${citySlug}/${getEventSlug(ev)}`;
-      if (seenEventUrls.has(url)) continue;
-      seenEventUrls.add(url);
-      eventUrls.push({
-        url,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      });
-    }
-  }
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1.0,
-    },
-    ...cityUrls,
-    ...eventUrls,
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/support`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    },
-  ];
-}
-
-================
-File: app/components/Footer.module.css
-================
-.footer {
-  border-top: 1px solid var(--line);
-  background-color: var(--bg);
-  margin-top: auto;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.footerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 40px 24px 36px;
-}
-.footerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 24px;
-  max-width: 680px;
-  margin: 0 auto;
-}
-.footerSupportText {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--text-subtle);
-}
-.buyDrinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.15s ease;
-}
-.buyDrinkLink:hover {
-  color: var(--accent);
-}
-.footerQuoteSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.footerQuoteText {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink);
-}
-.footerAuthor {
-  font-size: 12px;
-  color: var(--muted);
-}
-.footerCopyright {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-@media (max-width: 899px) {
-  .footerInner {
-    padding: 32px 16px 28px;
-  }
-  .footerContent {
-    gap: 20px;
-  }
-  .footerSupportText {
-    font-size: 13.5px;
-  }
-  .footerQuoteText {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-}
-
-================
 File: app/Page.module.css
 ================
 .page {
@@ -4360,6 +4872,45 @@ export default function SupportPage() {
       <Footer />
     </div>
   );
+}
+
+================
+File: package.json
+================
+{
+  "name": "someplace-social",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "tsx --test app/events/utils.test.ts",
+    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
+    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
+    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
+    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
+    "repomix": "repomix"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "resend": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.4.5",
+    "repomix": "^0.2.32",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
 }
 
 ================
@@ -4594,45 +5145,6 @@ const nextConfig: NextConfig = {
   },
 };
 export default nextConfig;
-
-================
-File: package.json
-================
-{
-  "name": "someplace-social",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "pnpm@9.15.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "tsx --test app/events/utils.test.ts",
-    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
-    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
-    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
-    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
-    "repomix": "repomix"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^1.6.1",
-    "next": "^16.4.5",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "resend": "^6.4.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.4.5",
-    "repomix": "^0.2.32",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
-  }
-}
 
 ================
 File: app/events/components/SuggestEditModal.module.css
@@ -4940,392 +5452,6 @@ File: app/events/components/SuggestEditModal.module.css
     text-align: center;
   }
 }
-
-================
-File: app/events/utils.test.ts
-================
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { Event } from '../lib/google-sheets';
-import { CITIES } from '../lib/cities';
-import { isEventActiveOnDate, isMonthActive } from './utils';
-import {
-  slugifyText,
-  getEventSlug,
-  resolveEventBySlug,
-  getNextEventOccurrence,
-  buildEventInviteText,
-  buildEventJsonLd,
-} from './event-helpers';
-function makeEvent(overrides: Partial<Event>): Event {
-  return {
-    id: '1',
-    title: 'Test Event',
-    venue: 'Test Venue',
-    organization: 'Test Org',
-    location: '123 Main St',
-    area: 'Downtown',
-    activity: 'Social',
-    activities: ['Social'],
-    dayOfWeek: 'Fri',
-    startTime: '7:00 PM',
-    endTime: '9:00 PM',
-    frequency: 'Weekly',
-    frequencyNotes: '',
-    price: 'Free',
-    preRegistration: 'Drop-in',
-    map: '',
-    social: '',
-    website: '',
-    contact: '',
-    about: '',
-    notes: '',
-    database: '',
-    ...overrides,
-  };
-}
-const jan2Fri = new Date(2026, 0, 2);
-const jan3Sat = new Date(2026, 0, 3);
-const jan4Sun = new Date(2026, 0, 4);
-const jan5Mon = new Date(2026, 0, 5);
-const jan7Wed = new Date(2026, 0, 7);
-const jan9Fri = new Date(2026, 0, 9);
-const jan12Mon = new Date(2026, 0, 12);
-const jan16Fri = new Date(2026, 0, 16);
-const jan23Fri = new Date(2026, 0, 23);
-const jan25Sun = new Date(2026, 0, 25);
-const jan30Fri = new Date(2026, 0, 30);
-const feb3Tue = new Date(2026, 1, 3);
-const feb4Wed = new Date(2026, 1, 4);
-const feb5Thu = new Date(2026, 1, 5);
-const feb6Fri = new Date(2026, 1, 6);
-const feb10Tue = new Date(2026, 1, 10);
-const feb13Fri = new Date(2026, 1, 13);
-const feb17Tue = new Date(2026, 1, 17);
-const feb18Wed = new Date(2026, 1, 18);
-const feb19Thu = new Date(2026, 1, 19);
-const feb20Fri = new Date(2026, 1, 20);
-const feb27Fri = new Date(2026, 1, 27);
-const mar3Tue = new Date(2026, 2, 3);
-const mar17Tue = new Date(2026, 2, 17);
-const mar31Tue = new Date(2026, 2, 31);
-describe('isEventActiveOnDate frequency parsing', () => {
-  it('handles Weekly and Weekly, Sat & Sun', () => {
-    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
-    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
-    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
-    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
-  });
-  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
-    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
-    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
-    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
-    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
-  });
-  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
-    const variations = [
-      { frequency: 'Bi-weekly', frequencyNotes: '' },
-      { frequency: 'Biweekly', frequencyNotes: '' },
-      { frequency: 'bi weekly', frequencyNotes: '' },
-      { frequency: 'Every other week', frequencyNotes: '' },
-      { frequency: 'Every 2 weeks', frequencyNotes: '' },
-      { frequency: 'Alternating weeks', frequencyNotes: '' },
-      { frequency: '', frequencyNotes: 'Every other week' },
-    ];
-    for (const v of variations) {
-      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
-    }
-    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
-  });
-  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
-    const oddEv = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: 'Odd weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
-    const evenEv = makeEvent({
-      frequency: 'Biweekly',
-      frequencyNotes: 'Even weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
-  });
-  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
-    const ev = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: '2nd & 4th Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
-    const fifthTueEv = makeEvent({
-      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
-      dayOfWeek: 'Tue',
-    });
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
-  });
-  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
-    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
-    }
-  });
-  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
-    const lastEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Last Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
-    const finalEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Final Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
-    const firstAndLastSun = makeEvent({
-      frequency: 'Monthly, 1st & Last Sun',
-      dayOfWeek: 'Sun',
-    });
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
-  });
-  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
-    const weeksListEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1 & 3',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
-    const slashEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st/3rd',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
-    const commaAndEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1, 3, and 5',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
-  });
-  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
-    const variations = [
-      'Bi-monthly',
-      'Bimonthly',
-      'Bi monthly',
-      'Every other month',
-      'Every 2 months',
-    ];
-    for (const freq of variations) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
-    }
-    const oddMonthsEv = makeEvent({
-      frequency: 'Bi-monthly',
-      frequencyNotes: 'Odd months',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
-    const ordinalBiMonthlyEv = makeEvent({
-      frequency: 'Every 2 months',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
-    const pairedBiMonthlyEv = makeEvent({
-      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
-      dayOfWeek: 'Wed, Thu',
-    });
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
-  });
-  it('handles paused and hiatus statuses', () => {
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
-    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
-  });
-});
-describe('isMonthActive', () => {
-  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
-  });
-});
-describe('slug generation and event resolution', () => {
-  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
-    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
-    assert.equal(
-      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
-      'verb-vibe-game-nite-14'
-    );
-    assert.equal(
-      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
-      'cafe-revolucion-meetup'
-    );
-    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
-  });
-  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, and rejects deleted IDs', () => {
-    const events = [
-      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
-      makeEvent({ id: '', title: 'Open Air Sketching' }),
-    ];
-    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
-    assert.ok(exact);
-    assert.equal(exact.event.id, '14');
-    assert.equal(exact.isCanonical, true);
-    const renamed = resolveEventBySlug(events, 'old-title-here-14');
-    assert.ok(renamed);
-    assert.equal(renamed.event.id, '14');
-    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
-    assert.equal(renamed.isCanonical, false);
-    const bareId = resolveEventBySlug(events, '14');
-    assert.ok(bareId);
-    assert.equal(bareId.event.id, '14');
-    assert.equal(bareId.isCanonical, false);
-    const missingId = resolveEventBySlug(events, 'open-air-sketching');
-    assert.ok(missingId);
-    assert.equal(missingId.event.title, 'Open Air Sketching');
-    assert.equal(missingId.isCanonical, true);
-    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
-    assert.equal(deletedId, null);
-  });
-});
-describe('next occurrence and invite text', () => {
-  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
-    const monthlyEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
-    assert.ok(occ);
-    assert.equal(occ.date.getMonth(), 1);
-    assert.equal(occ.date.getDate(), 6);
-    assert.equal(occ.label.startsWith('Next: '), true);
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
-    assert.equal(
-      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
-      null
-    );
-  });
-  it('builds formatted invite text skipping missing fields cleanly', () => {
-    const fullEv = makeEvent({
-      id: '14',
-      title: 'Verb & Vibe Game Nite',
-      dayOfWeek: 'Fri',
-      startTime: '7:00 PM',
-      endTime: '9:30 PM',
-      venue: 'Café Revolución',
-      area: 'Laureles',
-      price: 'Free',
-    });
-    assert.equal(
-      buildEventInviteText(fullEv, 'medellin-colombia'),
-      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
-    );
-    const sparseEv = makeEvent({
-      id: '2',
-      title: 'Mystery Gathering',
-      dayOfWeek: '',
-      frequency: '',
-      startTime: '',
-      endTime: '',
-      venue: '',
-      location: '',
-      area: '',
-      price: '',
-    });
-    assert.equal(
-      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
-      'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
-    );
-  });
-  it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
-    const ev = makeEvent({
-      id: '14',
-      title: 'Salsa Night',
-      venue: 'Son Havana',
-      location: 'Cra 73 #44-56',
-      price: 'Free',
-      startTime: '8:00 PM',
-      endTime: '11:00 PM',
-    });
-    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
-    const ld = buildEventJsonLd(
-      ev,
-      CITIES['medellin-colombia'],
-      'https://www.someplacesocial.org/events/medellin-colombia/salsa-night-14',
-      occ
-    );
-    assert.ok(ld);
-    assert.equal(ld['@type'], 'Event');
-    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
-    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
-  });
-});
 
 ================
 File: app/events/components/SuggestEditModal.tsx
@@ -5872,6 +5998,521 @@ export default function SuggestEditModal({
 }
 
 ================
+File: app/events/utils.test.ts
+================
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Event } from '../lib/google-sheets';
+import { CITIES } from '../lib/cities';
+import { isEventActiveOnDate, isMonthActive } from './utils';
+import { expandEventSchedules } from './schedule-splitter';
+import {
+  slugifyText,
+  getEventSlug,
+  resolveEventBySlug,
+  getNextEventOccurrence,
+  buildEventInviteText,
+  buildEventJsonLd,
+} from './event-helpers';
+function makeEvent(overrides: Partial<Event>): Event {
+  return {
+    id: '1',
+    title: 'Test Event',
+    venue: 'Test Venue',
+    organization: 'Test Org',
+    location: '123 Main St',
+    area: 'Downtown',
+    activity: 'Social',
+    activities: ['Social'],
+    dayOfWeek: 'Fri',
+    startTime: '7:00 PM',
+    endTime: '9:00 PM',
+    frequency: 'Weekly',
+    frequencyNotes: '',
+    price: 'Free',
+    preRegistration: 'Drop-in',
+    map: '',
+    social: '',
+    website: '',
+    contact: '',
+    about: '',
+    notes: '',
+    database: '',
+    ...overrides,
+  };
+}
+const jan2Fri = new Date(2026, 0, 2);
+const jan3Sat = new Date(2026, 0, 3);
+const jan4Sun = new Date(2026, 0, 4);
+const jan5Mon = new Date(2026, 0, 5);
+const jan7Wed = new Date(2026, 0, 7);
+const jan9Fri = new Date(2026, 0, 9);
+const jan12Mon = new Date(2026, 0, 12);
+const jan16Fri = new Date(2026, 0, 16);
+const jan23Fri = new Date(2026, 0, 23);
+const jan25Sun = new Date(2026, 0, 25);
+const jan30Fri = new Date(2026, 0, 30);
+const feb3Tue = new Date(2026, 1, 3);
+const feb4Wed = new Date(2026, 1, 4);
+const feb5Thu = new Date(2026, 1, 5);
+const feb6Fri = new Date(2026, 1, 6);
+const feb10Tue = new Date(2026, 1, 10);
+const feb13Fri = new Date(2026, 1, 13);
+const feb17Tue = new Date(2026, 1, 17);
+const feb18Wed = new Date(2026, 1, 18);
+const feb19Thu = new Date(2026, 1, 19);
+const feb20Fri = new Date(2026, 1, 20);
+const feb27Fri = new Date(2026, 1, 27);
+const mar3Tue = new Date(2026, 2, 3);
+const mar17Tue = new Date(2026, 2, 17);
+const mar31Tue = new Date(2026, 2, 31);
+describe('isEventActiveOnDate frequency parsing', () => {
+  it('handles Weekly and Weekly, Sat & Sun', () => {
+    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
+    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
+    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
+    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
+  });
+  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
+    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
+    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
+    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
+    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
+  });
+  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
+    const variations = [
+      { frequency: 'Bi-weekly', frequencyNotes: '' },
+      { frequency: 'Biweekly', frequencyNotes: '' },
+      { frequency: 'bi weekly', frequencyNotes: '' },
+      { frequency: 'Every other week', frequencyNotes: '' },
+      { frequency: 'Every 2 weeks', frequencyNotes: '' },
+      { frequency: 'Alternating weeks', frequencyNotes: '' },
+      { frequency: '', frequencyNotes: 'Every other week' },
+    ];
+    for (const v of variations) {
+      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
+    }
+    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
+  });
+  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
+    const oddEv = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: 'Odd weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
+    const evenEv = makeEvent({
+      frequency: 'Biweekly',
+      frequencyNotes: 'Even weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
+  });
+  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
+    const ev = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: '2nd & 4th Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
+    const fifthTueEv = makeEvent({
+      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
+  });
+  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
+    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
+    }
+  });
+  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
+    const lastEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Last Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
+    const finalEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Final Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
+    const firstAndLastSun = makeEvent({
+      frequency: 'Monthly, 1st & Last Sun',
+      dayOfWeek: 'Sun',
+    });
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
+  });
+  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
+    const weeksListEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1 & 3',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
+    const slashEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st/3rd',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
+    const commaAndEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1, 3, and 5',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
+  });
+  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
+    const variations = [
+      'Bi-monthly',
+      'Bimonthly',
+      'Bi monthly',
+      'Every other month',
+      'Every 2 months',
+    ];
+    for (const freq of variations) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
+    }
+    const oddMonthsEv = makeEvent({
+      frequency: 'Bi-monthly',
+      frequencyNotes: 'Odd months',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
+    const ordinalBiMonthlyEv = makeEvent({
+      frequency: 'Every 2 months',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
+    const pairedBiMonthlyEv = makeEvent({
+      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
+      dayOfWeek: 'Wed, Thu',
+    });
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
+  });
+  it('handles paused and hiatus statuses', () => {
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
+    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
+  });
+  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
+    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
+    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
+  });
+});
+describe('expandEventSchedules', () => {
+  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
+    const karaoke = makeEvent({
+      id: 'FOCO0024',
+      title: 'Weekly Karaoke Night',
+      venue: 'R Bar and Lounge',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon) / 8p (Wed, Sat)',
+      endTime: '10p (Mon) / 11p (Wed, Sat)',
+      frequency: 'Weekly',
+    });
+    const expanded = expandEventSchedules(karaoke);
+    assert.equal(expanded.length, 3);
+    assert.deepEqual(
+      expanded.map((e) => ({
+        id: e.id,
+        dayOfWeek: e.dayOfWeek,
+        startTime: e.startTime,
+        endTime: e.endTime,
+      })),
+      [
+        { id: 'FOCO0024-mon', dayOfWeek: 'Mon', startTime: '7p', endTime: '10p' },
+        { id: 'FOCO0024-wed', dayOfWeek: 'Wed', startTime: '8p', endTime: '11p' },
+        { id: 'FOCO0024-sat', dayOfWeek: 'Sat', startTime: '8p', endTime: '11p' },
+      ]
+    );
+  });
+  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
+    const commaEv = makeEvent({
+      id: 'E1',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon), 8p (Wed & Sat)',
+      endTime: '',
+    });
+    const commaExpanded = expandEventSchedules(commaEv);
+    assert.equal(commaExpanded.length, 3);
+    assert.equal(commaExpanded[0].startTime, '7p');
+    assert.equal(commaExpanded[1].startTime, '8p');
+    assert.equal(commaExpanded[2].startTime, '8p');
+    assert.equal(commaExpanded[0].endTime, '');
+    const colonEv = makeEvent({
+      id: 'E2',
+      dayOfWeek: 'Tue, Thu',
+      startTime: 'Tue: 6p / Thu: 7:30p',
+      endTime: '9p',
+    });
+    const colonExpanded = expandEventSchedules(colonEv);
+    assert.deepEqual(
+      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Tue', '6p', '9p'],
+        ['Thu', '7:30p', '9p'],
+      ]
+    );
+    const rangeEv = makeEvent({
+      id: 'E3',
+      dayOfWeek: 'Mon-Wed',
+      startTime: '5p (Mon-Tue) / 6p (Wed)',
+      endTime: '7p (Mon-Tue) / 8p (Wed)',
+    });
+    const rangeExpanded = expandEventSchedules(rangeEv);
+    assert.deepEqual(
+      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Mon', '5p', '7p'],
+        ['Tue', '5p', '7p'],
+        ['Wed', '6p', '8p'],
+      ]
+    );
+  });
+  it('supports parallel unlabeled times and same-day multiple slots', () => {
+    const parallelEv = makeEvent({
+      id: 'E4',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p / 7p',
+      endTime: '8p / 9p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E4-tue', 'Tue', '6p', '8p'],
+        ['E4-thu', 'Thu', '7p', '9p'],
+      ]
+    );
+    const sameDayEv = makeEvent({
+      id: 'E5',
+      dayOfWeek: 'Sat',
+      startTime: '10a / 2p',
+      endTime: '12p / 4p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E5-sat-1', 'Sat', '10a', '12p'],
+        ['E5-sat-2', 'Sat', '2p', '4p'],
+      ]
+    );
+  });
+  it('keeps single-time multi-day events unsplit', () => {
+    const sameTimeMultiDay = makeEvent({
+      id: 'FOCO0020',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p',
+      endTime: '9p',
+    });
+    const result = expandEventSchedules(sameTimeMultiDay);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
+    assert.equal(result[0].startTime, '6p');
+    assert.equal(result[0].endTime, '9p');
+  });
+});
+describe('isMonthActive', () => {
+  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
+describe('slug generation and event resolution', () => {
+  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
+    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
+    assert.equal(
+      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
+      'verb-vibe-game-nite-14'
+    );
+    assert.equal(
+      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
+      'cafe-revolucion-meetup'
+    );
+    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
+  });
+  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
+    const events = [
+      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
+      makeEvent({ id: '', title: 'Open Air Sketching' }),
+      makeEvent({ id: 'FOCO0024-mon', title: 'Weekly Karaoke Night', dayOfWeek: 'Mon' }),
+      makeEvent({ id: 'FOCO0024-wed', title: 'Weekly Karaoke Night', dayOfWeek: 'Wed' }),
+    ];
+    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
+    assert.ok(exact);
+    assert.equal(exact.event.id, '14');
+    assert.equal(exact.isCanonical, true);
+    const renamed = resolveEventBySlug(events, 'old-title-here-14');
+    assert.ok(renamed);
+    assert.equal(renamed.event.id, '14');
+    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
+    assert.equal(renamed.isCanonical, false);
+    const bareId = resolveEventBySlug(events, '14');
+    assert.ok(bareId);
+    assert.equal(bareId.event.id, '14');
+    assert.equal(bareId.isCanonical, false);
+    const splitWed = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024-wed');
+    assert.ok(splitWed);
+    assert.equal(splitWed.event.id, 'FOCO0024-wed');
+    assert.equal(splitWed.isCanonical, true);
+    const legacyUnsplit = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024');
+    assert.ok(legacyUnsplit);
+    assert.equal(legacyUnsplit.event.id, 'FOCO0024-mon');
+    assert.equal(legacyUnsplit.canonicalSlug, 'weekly-karaoke-night-foco0024-mon');
+    assert.equal(legacyUnsplit.isCanonical, false);
+    const missingId = resolveEventBySlug(events, 'open-air-sketching');
+    assert.ok(missingId);
+    assert.equal(missingId.event.title, 'Open Air Sketching');
+    assert.equal(missingId.isCanonical, true);
+    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
+    assert.equal(deletedId, null);
+  });
+});
+describe('next occurrence and invite text', () => {
+  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
+    const monthlyEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(occ);
+    assert.equal(occ.date.getMonth(), 1);
+    assert.equal(occ.date.getDate(), 6);
+    assert.equal(occ.label.startsWith('Next: '), true);
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
+    assert.equal(
+      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
+      null
+    );
+  });
+  it('builds formatted invite text skipping missing fields cleanly', () => {
+    const fullEv = makeEvent({
+      id: '14',
+      title: 'Verb & Vibe Game Nite',
+      dayOfWeek: 'Fri',
+      startTime: '7:00 PM',
+      endTime: '9:30 PM',
+      venue: 'Café Revolución',
+      area: 'Laureles',
+      price: 'Free',
+    });
+    assert.equal(
+      buildEventInviteText(fullEv, 'medellin-colombia'),
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
+    );
+    const sparseEv = makeEvent({
+      id: '2',
+      title: 'Mystery Gathering',
+      dayOfWeek: '',
+      frequency: '',
+      startTime: '',
+      endTime: '',
+      venue: '',
+      location: '',
+      area: '',
+      price: '',
+    });
+    assert.equal(
+      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
+      'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
+    );
+  });
+  it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
+    const ev = makeEvent({
+      id: '14',
+      title: 'Salsa Night',
+      venue: 'Son Havana',
+      location: 'Cra 73 #44-56',
+      price: 'Free',
+      startTime: '8:00 PM',
+      endTime: '11:00 PM',
+    });
+    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
+    const ld = buildEventJsonLd(
+      ev,
+      CITIES['medellin-colombia'],
+      'https://www.someplacesocial.org/events/medellin-colombia/salsa-night-14',
+      occ
+    );
+    assert.ok(ld);
+    assert.equal(ld['@type'], 'Event');
+    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
+    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
+  });
+});
+
+================
 File: app/globals.css
 ================
 :root {
@@ -6053,185 +6694,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-================
-File: app/events/components/CityHeroCard.tsx
-================
-'use client';
-import styles from './CityHeroCard.module.css';
-interface CityHeroCardProps {
-  cityName: string;
-  introTitle?: string;
-  introDescription?: string;
-  eventCount?: number;
-  lastUpdated?: string | null;
-  activities: string[];
-  selectedActivities: string[];
-  onSelectChip: (activity: string) => void;
-  onClearActivities: () => void;
-}
-export default function CityHeroCard({
-  cityName,
-  introTitle,
-  introDescription,
-  eventCount,
-  lastUpdated,
-  activities,
-  selectedActivities,
-  onSelectChip,
-  onClearActivities,
-}: CityHeroCardProps) {
-  const isAllActive = selectedActivities.length === 0;
-  return (
-    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
-      <div className={styles.titleCol}>
-        <p className={styles.eyebrow}>Someplace Social</p>
-        <h1 id="city-intro-heading" className={styles.title}>
-          {introTitle || `${cityName} Community Listings`}
-        </h1>
-        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
-          <div className={styles.metaRow}>
-            {typeof eventCount === 'number' && eventCount > 0 && (
-              <span className={styles.metaSubtitle}>
-                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-              </span>
-            )}
-            {lastUpdated && (
-              <div className={styles.lastUpdatedBadge}>
-                <svg
-                  className={styles.lastUpdatedIcon}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M9 12.5l2 2 4-4.5" />
-                </svg>
-                <span className={styles.lastUpdatedLabel}>Last updated:</span>
-                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className={styles.descCol}>
-        <p className={styles.lead}>
-          {introDescription ||
-            `Community supported events, group activities, and weekly classes all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
-        </p>
-      </div>
-      <div className={styles.chips} role="group" aria-label="Filter by activity">
-        <button
-          type="button"
-          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
-          aria-pressed={isAllActive}
-          onClick={onClearActivities}
-        >
-          All
-        </button>
-        {activities.map((act) => {
-          const isSelected = selectedActivities.includes(act);
-          return (
-            <button
-              key={act}
-              type="button"
-              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectChip(act)}
-            >
-              {act}
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-================
-File: app/layout.tsx
-================
-import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Karla } from 'next/font/google';
-import './globals.css';
-import { Analytics } from '@vercel/analytics/next';
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
-const karla = Karla({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-karla',
-  display: 'swap',
-});
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-};
-export const metadata: Metadata = {
-  metadataBase: new URL('https://www.someplacesocial.org'),
-  title: {
-    default: 'Someplace Social | Community Event Listings',
-    template: '%s | Someplace Social',
-  },
-  description:
-    'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
-  icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  openGraph: {
-    title: 'Someplace Social | Community Event Listings',
-    description:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
-    url: 'https://www.someplacesocial.org',
-    siteName: 'Someplace Social',
-    locale: 'en_US',
-    type: 'website',
-  },
-};
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en" className={`${bricolage.variable} ${karla.variable}`} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`,
-          }}
-        />
-      </head>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
   );
 }
 
@@ -6764,6 +7226,106 @@ export default async function CityEventsPage({ params }: PageProps) {
       initialEvents={events}
       lastUpdated={lastUpdated}
     />
+  );
+}
+
+================
+File: app/events/components/CityHeroCard.tsx
+================
+'use client';
+import styles from './CityHeroCard.module.css';
+interface CityHeroCardProps {
+  cityName: string;
+  introTitle?: string;
+  introDescription?: string;
+  eventCount?: number;
+  lastUpdated?: string | null;
+  activities: string[];
+  selectedActivities: string[];
+  onSelectChip: (activity: string) => void;
+  onClearActivities: () => void;
+}
+export default function CityHeroCard({
+  cityName,
+  introTitle,
+  introDescription,
+  eventCount,
+  lastUpdated,
+  activities,
+  selectedActivities,
+  onSelectChip,
+  onClearActivities,
+}: CityHeroCardProps) {
+  const isAllActive = selectedActivities.length === 0;
+  return (
+    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
+      <div className={styles.titleCol}>
+        <p className={styles.eyebrow}>Someplace Social</p>
+        <h1 id="city-intro-heading" className={styles.title}>
+          {introTitle || `${cityName} Community Listings`}
+        </h1>
+        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
+          <div className={styles.metaRow}>
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
+            {lastUpdated && (
+              <div className={styles.lastUpdatedBadge}>
+                <svg
+                  className={styles.lastUpdatedIcon}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 12.5l2 2 4-4.5" />
+                </svg>
+                <span className={styles.lastUpdatedLabel}>Last updated:</span>
+                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className={styles.descCol}>
+        <p className={styles.lead}>
+          {introDescription ||
+            `Regular community events, weekly activities, and recurring meetups all in one place. Find weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+        </p>
+      </div>
+      <div className={styles.chips} role="group" aria-label="Filter by activity">
+        <button
+          type="button"
+          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
+          aria-pressed={isAllActive}
+          onClick={onClearActivities}
+        >
+          All
+        </button>
+        {activities.map((act) => {
+          const isSelected = selectedActivities.includes(act);
+          return (
+            <button
+              key={act}
+              type="button"
+              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectChip(act)}
+            >
+              {act}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -7360,182 +7922,77 @@ export default function ContactView() {
 }
 
 ================
-File: app/events/components/CityHeroCard.module.css
+File: app/layout.tsx
 ================
-.heroCard {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 16px 0 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
-  gap: 16px 48px;
-  align-items: start;
-}
-.titleCol {
-  display: flex;
-  flex-direction: column;
-}
-.descCol {
-  display: flex;
-  flex-direction: column;
-  padding-top: 24px;
-}
-.eyebrow {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 12px;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 44px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-}
-.metaRow {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
-}
-.lastUpdatedBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border-radius: 8px;
-  background-color: var(--free-bg);
-  border: 1px solid var(--line-strong);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13px;
-  line-height: 1.2;
-}
-.lastUpdatedIcon {
-  color: var(--free);
-  flex-shrink: 0;
-}
-.lastUpdatedLabel {
-  font-weight: 600;
-  color: var(--text-subtle);
-}
-.lastUpdatedDate {
-  font-weight: 700;
-  color: var(--ink);
-}
-.metaSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  line-height: 1.35;
-}
-.lead {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-}
-.chips {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--topbar-bg);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-  min-height: 38px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.chip:hover {
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-  color: var(--ink);
-}
-.chipActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.chipActive:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .heroCard {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 8px 0 0;
-  }
-  .descCol {
-    padding-top: 0;
-  }
-  .title {
-    font-size: 32px;
-  }
-  .metaRow {
-    margin-top: 6px;
-    gap: 6px;
-  }
-  .lastUpdatedBadge {
-    font-size: 12.5px;
-    padding: 4px 9px;
-  }
-  .metaSubtitle {
-    font-size: 13.5px;
-  }
-  .lead {
-    font-size: 15px;
-    line-height: 1.55;
-  }
-  .chips {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 8px;
-    margin-top: 4px;
-    padding-bottom: 4px;
-  }
-  .chips::-webkit-scrollbar {
-    display: none;
-  }
-  .chip {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 7px 14px;
-    font-size: 13.5px;
-    min-height: 36px;
-  }
-}
-@media (max-width: 480px) {
-  .title {
-    font-size: 28px;
-  }
+import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque, Karla } from 'next/font/google';
+import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
+import ThemeScript from './components/ThemeScript';
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['500', '700', '800'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
+const karla = Karla({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-karla',
+  display: 'swap',
+});
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.someplacesocial.org'),
+  title: {
+    default: 'Someplace Social | Community Event Listings',
+    template: '%s | Someplace Social',
+  },
+  description:
+    'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'Someplace Social | Community Event Listings',
+    description:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+    url: 'https://www.someplacesocial.org',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
+};
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`${bricolage.variable} ${karla.variable}`} suppressHydrationWarning>
+      <body>
+        <ThemeScript />
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
 }
 
 ================
@@ -7786,6 +8243,185 @@ File: app/about/About.module.css
 }
 @media (max-width: 480px) {
   .heroTitle {
+    font-size: 28px;
+  }
+}
+
+================
+File: app/events/components/CityHeroCard.module.css
+================
+.heroCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
+  gap: 16px 48px;
+  align-items: start;
+}
+.titleCol {
+  display: flex;
+  flex-direction: column;
+}
+.descCol {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 12px;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+}
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.lastUpdatedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background-color: var(--free-bg);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.lastUpdatedIcon {
+  color: var(--free);
+  flex-shrink: 0;
+}
+.lastUpdatedLabel {
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+.lastUpdatedDate {
+  font-weight: 700;
+  color: var(--ink);
+}
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+}
+.chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  min-height: 38px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.chip:hover {
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.chipActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chipActive:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 8px 0 0;
+  }
+  .descCol {
+    padding-top: 0;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .metaRow {
+    margin-top: 6px;
+    gap: 6px;
+  }
+  .lastUpdatedBadge {
+    font-size: 12.5px;
+    padding: 4px 9px;
+  }
+  .metaSubtitle {
+    font-size: 13.5px;
+  }
+  .lead {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+    margin-top: 4px;
+    padding-bottom: 4px;
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 14px;
+    font-size: 13.5px;
+    min-height: 36px;
+  }
+}
+@media (max-width: 480px) {
+  .title {
     font-size: 28px;
   }
 }
@@ -8221,136 +8857,6 @@ function FilterControls({
   );
 }
 export default memo(FilterControls);
-
-================
-File: app/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import styles from './about/About.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Community Events, Social Clubs & Weekly Activities',
-  description:
-    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
-};
-const CRITERIA_ITEMS = [
-  {
-    number: '01',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
-  },
-  {
-    number: '02',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No private or one-on-one sessions.',
-  },
-  {
-    number: '03',
-    title: 'Open & Inclusive',
-    description: 'Must be welcoming and open to anyone who wishes to attend.',
-  },
-  {
-    number: '04',
-    title: 'Affordable',
-    description: 'Must be free, donation-based, or reasonably priced for the community.',
-  },
-  {
-    number: '05',
-    title: 'In-Person Only',
-    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
-  },
-] as const;
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: 'Weekly Updates',
-    description: 'Listings are updated once per week.',
-  },
-  {
-    title: 'Community Sourced',
-    description: 'Anyone can submit new recurring activities.',
-  },
-  {
-    title: '100% Free & Ad-Free',
-    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
-  },
-] as const;
-export default function Home() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <p className={styles.eyebrow}>ABOUT</p>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
-            <p className={styles.heroDescription}>
-              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: More clubs, classes, art, and parties.
-            </p>
-            <div className={styles.heroCityLinks}>
-              <Link href="/events/medellin-colombia" className={styles.cityPill}>
-                Medellín Events →
-              </Link>
-              <Link href="/events/fort-collins-colorado" className={styles.cityPill}>
-                Fort Collins Events →
-              </Link>
-            </div>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
-              How It Works
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <div className={styles.howItWorksGrid}>
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <div key={step.title} className={styles.howItWorksItem}>
-                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
-                <p className={styles.howItWorksDescription}>{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <ol className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <li key={item.number} className={styles.criteriaListItem}>
-                <span className={styles.criteriaListNumber} aria-hidden="true">
-                  {item.number}
-                </span>
-                <div className={styles.criteriaListContent}>
-                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
-                  <p className={styles.criteriaListDescription}>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
 
 ================
 File: app/events/components/EventCard.module.css
@@ -8805,6 +9311,136 @@ File: app/events/components/EventCard.module.css
     justify-content: center;
     gap: 18px;
   }
+}
+
+================
+File: app/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import styles from './about/About.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Community Events, Social Clubs & Weekly Activities',
+  description:
+    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
+};
+const CRITERIA_ITEMS = [
+  {
+    number: '01',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
+  },
+  {
+    number: '02',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No private or one-on-one sessions.',
+  },
+  {
+    number: '03',
+    title: 'Open & Inclusive',
+    description: 'Must be welcoming and open to anyone who wishes to attend.',
+  },
+  {
+    number: '04',
+    title: 'Affordable',
+    description: 'Must be free, donation-based, or reasonably priced for the community.',
+  },
+  {
+    number: '05',
+    title: 'In-Person Only',
+    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
+  },
+] as const;
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Weekly Updates',
+    description: 'Listings are updated once per week.',
+  },
+  {
+    title: 'Community Supported',
+    description: 'Anyone can submit new recurring activities.',
+  },
+  {
+    title: '100% Free & Ad-Free',
+    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
+  },
+] as const;
+export default function Home() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, art, and parties.
+            </p>
+            <div className={styles.heroCityLinks}>
+              <Link href="/events/medellin-colombia" className={styles.cityPill}>
+                Medellín Events →
+              </Link>
+              <Link href="/events/fort-collins-colorado" className={styles.cityPill}>
+                Fort Collins Events →
+              </Link>
+            </div>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
+              How It Works
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <div className={styles.howItWorksGrid}>
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <div key={step.title} className={styles.howItWorksItem}>
+                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
+                <p className={styles.howItWorksDescription}>{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <ol className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <li key={item.number} className={styles.criteriaListItem}>
+                <span className={styles.criteriaListNumber} aria-hidden="true">
+                  {item.number}
+                </span>
+                <div className={styles.criteriaListContent}>
+                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
+                  <p className={styles.criteriaListDescription}>{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 ================
@@ -9297,7 +9933,7 @@ export default function Header({
             </Link>
             <ThemeToggle />
             <Link href="/contact?tab=submit" className={styles.addEventBtn}>
-              +Add Event
+              + Add Event
             </Link>
           </nav>
           <div className={styles.navMobileActions}>
@@ -9394,7 +10030,7 @@ export default function Header({
                 className={styles.drawerAddEventBtn}
                 onClick={() => setMobileDrawerOpen(false)}
               >
-                +Add Event
+                + Add Event
               </Link>
             </div>
           </div>
@@ -9760,7 +10396,7 @@ export const CITIES: Record<string, CityConfig> = {
     spreadsheetId: MAIN_SPREADSHEET_ID,
     introTitle: 'Medellin Community Listings',
     introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
     priceConfig: {
       currencyCode: 'COP',
       currencySymbol: '$',
@@ -9783,7 +10419,7 @@ export const CITIES: Record<string, CityConfig> = {
     spreadsheetId: MAIN_SPREADSHEET_ID,
     introTitle: 'Fort Collins Community Listings',
     introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
     priceConfig: {
       currencyCode: 'USD',
       currencySymbol: '$',
@@ -10064,7 +10700,6 @@ export function normalizeDayOfWeek(dayStr: string): string {
   if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
     return 'Daily';
   }
-  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
   const DAY_TO_SHORT: Record<string, string> = {
     sun: 'Sun',
     sunday: 'Sun',
@@ -10085,6 +10720,15 @@ export function normalizeDayOfWeek(dayStr: string): string {
     sat: 'Sat',
     saturday: 'Sat',
   };
+  const rangeMatch = trimmed.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
+  if (rangeMatch) {
+    const startShort = DAY_TO_SHORT[rangeMatch[1].toLowerCase()];
+    const endShort = DAY_TO_SHORT[rangeMatch[2].toLowerCase()];
+    if (startShort && endShort) {
+      return `${startShort}-${endShort}`;
+    }
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
   const normalized: string[] = [];
   for (const token of tokens) {
     const short = DAY_TO_SHORT[token.toLowerCase()];
@@ -10277,8 +10921,10 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const dayIdx = targetDate.getDay();
   const targetDayName = DAY_NAMES[dayIdx];
   const targetDayShort = DAY_SHORT_NAMES[dayIdx];
-  const baseDaySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`.trim();
-  const daySpec = baseDaySpec || event.frequencyNotes || '';
+  const daySpec =
+    (event.dayOfWeek || '').trim() ||
+    (event.frequency || '').trim() ||
+    (event.frequencyNotes || '').trim();
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }
@@ -10583,362 +11229,11 @@ export function filterAndCountEvents(
 }
 
 ================
-File: app/events/components/EventCard.tsx
-================
-'use client';
-import { memo, useId, useRef } from 'react';
-import Link from 'next/link';
-import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  formatRecurrenceText,
-  isFreePrice,
-  ensureExternalUrl,
-  getTagStyle,
-} from '../utils';
-import { getEventPath } from '../event-helpers';
-import ContactButton from './ContactButton';
-import ShareButton from './ShareButton';
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  CompassIcon,
-  ExternalLinkIcon,
-  GlobeIcon,
-  PenIcon,
-  PinIcon,
-  RepeatIcon,
-  SocialIcon,
-  TagIcon,
-} from './EventIcons';
-import styles from './EventCard.module.css';
-const DRAG_THRESHOLD_PX = 5;
-interface EventCardProps {
-  event: Event;
-  isOpen: boolean;
-  isNextUp: boolean;
-  cityName: string;
-  citySlug: string;
-  domId?: string;
-  onToggle: () => void;
-  onOpenEdit: (ev: Event) => void;
-}
-function ActionButton({
-  href,
-  label,
-  icon,
-}: {
-  href?: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  const safeHref = href ? ensureExternalUrl(href) : '';
-  if (safeHref) {
-    return (
-      <a
-        href={safeHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.btn}
-      >
-        {icon}
-        {label}
-      </a>
-    );
-  }
-  return (
-    <div className={`${styles.btn} ${styles.btnDisabled}`} aria-disabled="true">
-      {icon}
-      {label}
-    </div>
-  );
-}
-function EventCard({
-  event,
-  isOpen,
-  isNextUp,
-  cityName,
-  citySlug,
-  domId,
-  onToggle,
-  onOpenEdit,
-}: EventCardProps) {
-  const bodyId = useId();
-  const headRef = useRef<HTMLDivElement>(null);
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-  const didDragRef = useRef(false);
-  const prevSelectionRef = useRef('');
-  const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) {
-      pointerStartRef.current = null;
-      return;
-    }
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
-    didDragRef.current = false;
-    prevSelectionRef.current = window.getSelection()?.toString() ?? '';
-  };
-  const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!pointerStartRef.current || didDragRef.current) return;
-    const dx = e.clientX - pointerStartRef.current.x;
-    const dy = e.clientY - pointerStartRef.current.y;
-    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
-      didDragRef.current = true;
-    }
-  };
-  const handleHeadPointerCancel = () => {
-    pointerStartRef.current = null;
-    didDragRef.current = false;
-  };
-  const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement | null;
-    if (target?.closest('button, a')) {
-      return;
-    }
-    const start = pointerStartRef.current;
-    pointerStartRef.current = null;
-    if (didDragRef.current) {
-      didDragRef.current = false;
-      return;
-    }
-    if (start) {
-      const dx = e.clientX - start.x;
-      const dy = e.clientY - start.y;
-      if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
-        return;
-      }
-    }
-    if (e.detail >= 2) {
-      return;
-    }
-    const selection = window.getSelection();
-    const selectedText = selection?.toString() ?? '';
-    if (
-      selectedText.trim().length > 0 &&
-      selectedText !== prevSelectionRef.current &&
-      headRef.current &&
-      selection
-    ) {
-      const { anchorNode, focusNode } = selection;
-      if (
-        (anchorNode && headRef.current.contains(anchorNode)) ||
-        (focusNode && headRef.current.contains(focusNode))
-      ) {
-        return;
-      }
-    }
-    onToggle();
-  };
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities || [];
-  const displayVenue = event.venue || event.location;
-  const cleanOrg = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const showOrganizer = Boolean(
-    cleanOrg && cleanOrg.toLowerCase() !== (displayVenue || '').trim().toLowerCase()
-  );
-  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
-  const regLower = (event.preRegistration || '').trim().toLowerCase();
-  const needsSignupIcon =
-    !regLower.startsWith('drop') &&
-    !regLower.startsWith('no ') &&
-    !regLower.includes('no rsvp') &&
-    !regLower.includes('not required') &&
-    /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
-  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const hasFacts = Boolean(recurrenceText || event.preRegistration);
-  const mapsHref =
-    (event.map ? ensureExternalUrl(event.map) : '') ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      `${displayVenue || event.title}, ${cityName}`
-    )}`;
-  const eventHref = getEventPath(citySlug, event);
-  return (
-    <article
-      id={domId}
-      className={`${styles.card} ${isOpen ? styles.open : ''}`}
-    >
-      <div
-        ref={headRef}
-        className={styles.head}
-        onPointerDown={handleHeadPointerDown}
-        onPointerMove={handleHeadPointerMove}
-        onPointerCancel={handleHeadPointerCancel}
-        onClick={handleHeadClick}
-      >
-        <div className={styles.time}>
-          <b>{start || '—'}</b>
-          {end && <span>to {end}</span>}
-        </div>
-        <div className={styles.main}>
-          {isNextUp && <span className={styles.next}>Next up</span>}
-          <h3 className={styles.title}>{event.title}</h3>
-          {displayVenue && (
-            <div className={styles.venue}>
-              <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
-              <span>{displayVenue}</span>
-            </div>
-          )}
-          {showOrganizer && (
-            <div
-              className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
-            >
-              Hosted by {cleanOrg}
-            </div>
-          )}
-          {hasMeta && (
-            <div className={styles.meta}>
-              {event.price && (
-                <span
-                  className={`${styles.price} ${
-                    isFree ? styles.priceFree : styles.pricePaid
-                  }`}
-                >
-                  <TagIcon className={styles.icon} />
-                  <span>{event.price}</span>
-                </span>
-              )}
-              {event.price && event.area && (
-                <span className={styles.dot} aria-hidden="true" />
-              )}
-              {event.area && (
-                <span className={styles.area}>
-                  <CompassIcon className={styles.icon} />
-                  <span>{event.area}</span>
-                </span>
-              )}
-              {(event.price || event.area) && tagList.length > 0 && (
-                <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
-              )}
-              {tagList.length > 0 && (
-                <div className={styles.tags}>
-                  {tagList.map((tag) => {
-                    const customStyle = getTagStyle(tag);
-                    return (
-                      <span
-                        key={tag}
-                        className={styles.tag}
-                        style={{
-                          color: customStyle.color,
-                          backgroundColor: customStyle.background,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          className={styles.chev}
-          aria-expanded={isOpen}
-          aria-controls={bodyId}
-          aria-label={
-            isOpen
-              ? `Collapse details for ${event.title}`
-              : `Expand details for ${event.title}`
-          }
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-        >
-          <ChevronDownIcon className={styles.icon} />
-        </button>
-      </div>
-      <div
-        id={bodyId}
-        className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
-        aria-hidden={!isOpen}
-      >
-        {(event.about || event.notes) && (
-          <p className={styles.desc}>{event.about || event.notes}</p>
-        )}
-        {hasFacts && (
-          <div className={styles.facts}>
-            {recurrenceText && (
-              <span className={styles.fact}>
-                <RepeatIcon className={`${styles.icon} ${styles.factIcon}`} />
-                <span>{recurrenceText}</span>
-              </span>
-            )}
-            {event.preRegistration && (
-              <span className={styles.fact}>
-                {needsSignupIcon ? (
-                  <PenIcon className={`${styles.icon} ${styles.factIcon}`} />
-                ) : (
-                  <CheckIcon className={`${styles.icon} ${styles.factIcon}`} />
-                )}
-                <span>{event.preRegistration}</span>
-              </span>
-            )}
-          </div>
-        )}
-        <div className={styles.actions}>
-          <a
-            href={mapsHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            aria-label="Open in Maps"
-          >
-            <PinIcon className={styles.icon} />
-            Maps
-          </a>
-          <ActionButton
-            href={event.website}
-            label="Website"
-            icon={<GlobeIcon className={styles.icon} />}
-          />
-          <ActionButton
-            href={event.social}
-            label="Social"
-            icon={<SocialIcon className={styles.icon} />}
-          />
-          <ContactButton
-            contact={event.contact}
-            btnClassName={styles.btn}
-            btnActiveClassName={styles.btnActive}
-            btnDisabledClassName={styles.btnDisabled}
-          />
-          <ShareButton
-            event={event}
-            citySlug={citySlug}
-            btnClassName={`${styles.btn} ${styles.shareBtn}`}
-          />
-          <div className={styles.footerLinks}>
-            <Link href={eventHref} className={styles.permalink}>
-              Open page
-              <ExternalLinkIcon />
-            </Link>
-            <button
-              type="button"
-              className={styles.edit}
-              onClick={() => onOpenEdit(event)}
-            >
-              <PenIcon className={styles.icon} />
-              Suggest edit
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-export default memo(EventCard);
-
-================
 File: app/lib/google-sheets.ts
 ================
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
+import { expandEventSchedules } from '../events/schedule-splitter';
 export type Event = {
   id: string;
   title: string;
@@ -11424,7 +11719,9 @@ export async function getEvents(
         };
       })
       .filter((event): event is Event => event !== null);
-    return events.filter((event) => Boolean(event.title));
+    return events
+      .filter((event) => Boolean(event.title))
+      .flatMap(expandEventSchedules);
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
@@ -11432,18 +11729,383 @@ export async function getEvents(
 }
 
 ================
+File: app/events/components/EventCard.tsx
+================
+'use client';
+import { memo, useId, useRef } from 'react';
+import Link from 'next/link';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  formatRecurrenceText,
+  isFreePrice,
+  ensureExternalUrl,
+  getTagStyle,
+} from '../utils';
+import { getEventPath } from '../event-helpers';
+import ContactButton from './ContactButton';
+import ShareButton from './ShareButton';
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CompassIcon,
+  ExternalLinkIcon,
+  GlobeIcon,
+  PenIcon,
+  PinIcon,
+  RepeatIcon,
+  SocialIcon,
+  TagIcon,
+} from './EventIcons';
+import styles from './EventCard.module.css';
+const DRAG_THRESHOLD_PX = 5;
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  citySlug: string;
+  domId?: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
+}
+function ActionButton({
+  href,
+  label,
+  icon,
+}: {
+  href?: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  const safeHref = href ? ensureExternalUrl(href) : '';
+  if (safeHref) {
+    return (
+      <a
+        href={safeHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.btn}
+      >
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <div className={`${styles.btn} ${styles.btnDisabled}`} aria-disabled="true">
+      {icon}
+      {label}
+    </div>
+  );
+}
+function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  citySlug,
+  domId,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const bodyId = useId();
+  const headRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const didDragRef = useRef(false);
+  const prevSelectionRef = useRef('');
+  const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) {
+      pointerStartRef.current = null;
+      return;
+    }
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    didDragRef.current = false;
+    prevSelectionRef.current = window.getSelection()?.toString() ?? '';
+  };
+  const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointerStartRef.current || didDragRef.current) return;
+    const dx = e.clientX - pointerStartRef.current.x;
+    const dy = e.clientY - pointerStartRef.current.y;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+      didDragRef.current = true;
+    }
+  };
+  const handleHeadPointerCancel = () => {
+    pointerStartRef.current = null;
+    didDragRef.current = false;
+  };
+  const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('button, a')) {
+      return;
+    }
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+    if (start) {
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+        return;
+      }
+    }
+    if (e.detail >= 2) {
+      return;
+    }
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() ?? '';
+    if (
+      selectedText.trim().length > 0 &&
+      selectedText !== prevSelectionRef.current &&
+      headRef.current &&
+      selection
+    ) {
+      const { anchorNode, focusNode } = selection;
+      if (
+        (anchorNode && headRef.current.contains(anchorNode)) ||
+        (focusNode && headRef.current.contains(focusNode))
+      ) {
+        return;
+      }
+    }
+    onToggle();
+  };
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList = event.activities || [];
+  const displayVenue = event.venue || event.location;
+  const cleanOrg = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const showOrganizer = Boolean(
+    cleanOrg && cleanOrg.toLowerCase() !== (displayVenue || '').trim().toLowerCase()
+  );
+  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
+  const regLower = (event.preRegistration || '').trim().toLowerCase();
+  const needsSignupIcon =
+    !regLower.startsWith('drop') &&
+    !regLower.startsWith('no ') &&
+    !regLower.includes('no rsvp') &&
+    !regLower.includes('not required') &&
+    /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
+  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
+  const hasFacts = Boolean(recurrenceText || event.preRegistration);
+  const mapsHref =
+    (event.map ? ensureExternalUrl(event.map) : '') ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${displayVenue || event.title}, ${cityName}`
+    )}`;
+  const eventHref = getEventPath(citySlug, event);
+  return (
+    <article
+      id={domId}
+      className={`${styles.card} ${isOpen ? styles.open : ''}`}
+    >
+      <div
+        ref={headRef}
+        className={styles.head}
+        onPointerDown={handleHeadPointerDown}
+        onPointerMove={handleHeadPointerMove}
+        onPointerCancel={handleHeadPointerCancel}
+        onClick={handleHeadClick}
+      >
+        <div className={styles.time}>
+          <b>{start || '—'}</b>
+          {end && <span>to {end}</span>}
+        </div>
+        <div className={styles.main}>
+          {isNextUp && <span className={styles.next}>Next up</span>}
+          <h3 className={styles.title}>{event.title}</h3>
+          {displayVenue && (
+            <div className={styles.venue}>
+              <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
+              <span>{displayVenue}</span>
+            </div>
+          )}
+          {showOrganizer && (
+            <div
+              className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
+            >
+              Hosted by {cleanOrg}
+            </div>
+          )}
+          {hasMeta && (
+            <div className={styles.meta}>
+              {event.price && (
+                <span
+                  className={`${styles.price} ${
+                    isFree ? styles.priceFree : styles.pricePaid
+                  }`}
+                >
+                  <TagIcon className={styles.icon} />
+                  <span>{event.price}</span>
+                </span>
+              )}
+              {event.price && event.area && (
+                <span className={styles.dot} aria-hidden="true" />
+              )}
+              {event.area && (
+                <span className={styles.area}>
+                  <CompassIcon className={styles.icon} />
+                  <span>{event.area}</span>
+                </span>
+              )}
+              {(event.price || event.area) && tagList.length > 0 && (
+                <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
+              )}
+              {tagList.length > 0 && (
+                <div className={styles.tags}>
+                  {tagList.map((tag) => {
+                    const customStyle = getTagStyle(tag);
+                    return (
+                      <span
+                        key={tag}
+                        className={styles.tag}
+                        style={{
+                          color: customStyle.color,
+                          backgroundColor: customStyle.background,
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <button
+          type="button"
+          className={styles.chev}
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          aria-label={
+            isOpen
+              ? `Collapse details for ${event.title}`
+              : `Expand details for ${event.title}`
+          }
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+        >
+          <ChevronDownIcon className={styles.icon} />
+        </button>
+      </div>
+      <div
+        id={bodyId}
+        className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
+        aria-hidden={!isOpen}
+      >
+        {(event.about || event.notes) && (
+          <p className={styles.desc}>{event.about || event.notes}</p>
+        )}
+        {hasFacts && (
+          <div className={styles.facts}>
+            {recurrenceText && (
+              <span className={styles.fact}>
+                <RepeatIcon className={`${styles.icon} ${styles.factIcon}`} />
+                <span>{recurrenceText}</span>
+              </span>
+            )}
+            {event.preRegistration && (
+              <span className={styles.fact}>
+                {needsSignupIcon ? (
+                  <PenIcon className={`${styles.icon} ${styles.factIcon}`} />
+                ) : (
+                  <CheckIcon className={`${styles.icon} ${styles.factIcon}`} />
+                )}
+                <span>{event.preRegistration}</span>
+              </span>
+            )}
+          </div>
+        )}
+        <div className={styles.actions}>
+          <a
+            href={mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            aria-label="Open in Maps"
+          >
+            <PinIcon className={styles.icon} />
+            Maps
+          </a>
+          <ActionButton
+            href={event.website}
+            label="Website"
+            icon={<GlobeIcon className={styles.icon} />}
+          />
+          <ActionButton
+            href={event.social}
+            label="Social"
+            icon={<SocialIcon className={styles.icon} />}
+          />
+          <ContactButton
+            contact={event.contact}
+            btnClassName={styles.btn}
+            btnActiveClassName={styles.btnActive}
+            btnDisabledClassName={styles.btnDisabled}
+          />
+          <ShareButton
+            event={event}
+            citySlug={citySlug}
+            btnClassName={`${styles.btn} ${styles.shareBtn}`}
+          />
+          <div className={styles.footerLinks}>
+            <Link href={eventHref} className={styles.permalink}>
+              Open page
+              <ExternalLinkIcon />
+            </Link>
+            <button
+              type="button"
+              className={styles.edit}
+              onClick={() => onOpenEdit(event)}
+            >
+              <PenIcon className={styles.icon} />
+              Suggest edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+export default memo(EventCard);
+
+================
 File: app/events/CityEventsView.tsx
 ================
 'use client';
-import { useState, useMemo, useDeferredValue, useCallback, useEffect, useRef } from 'react';
+import {
+  useState,
+  useMemo,
+  useDeferredValue,
+  useCallback,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import Link from 'next/link';
-import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
+import {
+  CityConfig,
+  getAllCities,
+  getCityPriceConfig,
+  getCityTimeZone,
+} from '../lib/cities';
 import type { Event } from '../lib/google-sheets';
 import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
-import { getEventSlug, resolveEventBySlug } from './event-helpers';
+import { getCityToday, getEventSlug, resolveEventBySlug } from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -11452,6 +12114,7 @@ import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
 import styles from './EventsView.module.css';
+const emptySubscribe = () => () => {};
 const DAY_NAMES_LONG = [
   'Sunday',
   'Monday',
@@ -11490,7 +12153,13 @@ export default function CityEventsView({
   initialEvents?: Event[];
   lastUpdated?: string | null;
 }) {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
+  const timeZone = useMemo(() => getCityTimeZone(city), [city]);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -11528,13 +12197,13 @@ export default function CityEventsView({
     return map;
   }, [allEvents]);
   const rollingWeek = useMemo(() => {
-    const today = new Date();
+    const today = getCityToday(timeZone);
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
       return d;
     });
-  }, []);
+  }, [timeZone]);
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
@@ -11587,8 +12256,6 @@ export default function CityEventsView({
     return () => window.cancelAnimationFrame(rafId);
   }, [activeDayIdx, openEventId]);
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
-  const now = new Date();
-  const nowHour = now.getHours() + now.getMinutes() / 60;
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
     allEvents.forEach((ev) => {
@@ -11663,13 +12330,15 @@ export default function CityEventsView({
     deferredSearchQuery,
   ]);
   const nextUpEventId = useMemo(() => {
-    if (activeDayIdx !== 0) return null;
+    if (!mounted || activeDayIdx !== 0) return null;
+    const now = new Date();
+    const nowHour = now.getHours() + now.getMinutes() / 60;
     const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
     if (!nextEvent) return null;
     const idx = indexedEvents.indexOf(nextEvent);
     const sourceEvent = idx >= 0 ? allEvents[idx] : nextEvent;
     return eventKeyMap.get(sourceEvent) || getEventSlug(nextEvent);
-  }, [activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents, nowHour]);
+  }, [mounted, activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents]);
   const handleToggleEvent = useCallback(
     (ev: Event, uniqueId: string) => {
       if (openEventId === uniqueId) {

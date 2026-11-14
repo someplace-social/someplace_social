@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: '%s | Someplace Social',
   },
   description:
-    'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+    'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
   icons: {
     icon: '/icon.png',
     apple: '/apple-icon.png',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Someplace Social | Community Event Listings',
     description:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, and more.',
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
     url: 'https://www.someplacesocial.org',
     siteName: 'Someplace Social',
     locale: 'en_US',
