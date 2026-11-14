@@ -1,8 +1,8 @@
 'use client';
-import { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
+import { useState, useMemo, useDeferredValue, useCallback } from 'react';
 import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
-import { getEvents, Event } from '../lib/google-sheets';
+import type { Event } from '../lib/google-sheets';
 import {
   indexEvents,
   filterAndCountEvents,
@@ -54,10 +54,6 @@ export default function CityEventsView({
   lastUpdated?: string | null;
 }) {
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
-  const [fetchedState, setFetchedState] = useState<{
-    citySlug: string;
-    events: Event[];
-  } | null>(null);
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -80,32 +76,7 @@ export default function CityEventsView({
     },
     [city.slug]
   );
-  const hasInitialEvents = initialEvents.length > 0;
-  const hasFetchedForCity = fetchedState?.citySlug === city.slug;
-  const allEvents = useMemo(() => {
-    if (hasInitialEvents) return initialEvents;
-    if (hasFetchedForCity && fetchedState) return fetchedState.events;
-    return [];
-  }, [hasInitialEvents, initialEvents, hasFetchedForCity, fetchedState]);
-  const loading = !hasInitialEvents && !hasFetchedForCity;
-  useEffect(() => {
-    if (hasInitialEvents) return;
-    let cancelled = false;
-    getEvents(city)
-      .then((data) => {
-        if (!cancelled) {
-          setFetchedState({ citySlug: city.slug, events: data });
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setFetchedState({ citySlug: city.slug, events: [] });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [city, hasInitialEvents]);
+  const allEvents = initialEvents;
   const rollingWeek = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -212,7 +183,7 @@ export default function CityEventsView({
     setSelectedAreas([]);
   }, []);
   const allCityOptions = useMemo(() => getAllCities(), []);
-  const totalEventsCount = allEvents.length || initialEvents.length;
+  const totalEventsCount = allEvents.length;
   const dayHeading =
     activeDayIdx === 0
       ? 'Today'
@@ -310,12 +281,7 @@ export default function CityEventsView({
           />
         </aside>
         <section className={styles.contentCol}>
-          {loading ? (
-            <div className={styles.emptyState}>
-              <b className={styles.emptyStateTitle}>Loading {city.name} events...</b>
-              Gathering up-to-date weekly community activities.
-            </div>
-          ) : currentList.length === 0 ? (
+          {currentList.length === 0 ? (
             <div className={styles.emptyState}>
               <b className={styles.emptyStateTitle}>
                 Nothing listed{hasActiveFilters ? ' with these filters' : ''}

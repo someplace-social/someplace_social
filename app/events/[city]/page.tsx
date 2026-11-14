@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
 import { getEvents, getLastUpdated } from '../../lib/google-sheets';
 import CityEventsView from '../CityEventsView';
-export const revalidate = 3600;
+export const revalidate = 60;
 type PageProps = {
   params: Promise<{ city: string }>;
 };

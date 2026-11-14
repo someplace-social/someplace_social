@@ -24,49 +24,42 @@ export type Event = {
   notes: string;
   database: string;
 };
-const BASE_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2zEDH8-8__S6s0_a0evopp5lh0e34Tv0_fPcPQetnhed1kXHCCGNhIsXen_za-xB8SpS9CIdZaH9C/pub';
-const eventCache = new Map<string, { timestamp: number; data: Event[] }>();
-const lastUpdatedCache = new Map<string, { timestamp: number; data: Map<string, string> }>();
-const CACHE_TTL_MS = 60 * 1000;
-function getCandidateUrls(city: CityConfig): string[] {
+function getFetchOptions(): RequestInit {
+  if (process.env.NODE_ENV === 'development') {
+    return { cache: 'no-store' };
+  }
+  return { next: { revalidate: 30 } };
+}
+function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
   if (city.csvUrl) return [city.csvUrl];
   const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
   const urls: string[] = [];
-  urls.push(
+  const addUrl = (url: string) => {
+    if (!urls.includes(url)) {
+      urls.push(url);
+    }
+  };
+  if (discoveredGid) {
+    addUrl(
+      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${discoveredGid}`
+    );
+  }
+  if (city.sheetGid) {
+    addUrl(
+      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
+    );
+  }
+  addUrl(
     `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
       city.sheetTab
     )}`
   );
-  if (city.sheetGid) {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${city.sheetGid}`
-    );
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${city.sheetGid}`
+  const fallbackGid = discoveredGid || city.sheetGid;
+  if (fallbackGid) {
+    addUrl(
+      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${fallbackGid}`
     );
   }
-  if (city.sheetTab.toLowerCase() === 'medellin') {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-        'Medellín'
-      )}`
-    );
-  } else if (city.sheetTab.toLowerCase() === 'fort collins') {
-    urls.push(
-      `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=FortCollins`
-    );
-  }
-  urls.push(
-    `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
-      city.sheetTab
-    )}`
-  );
-  if (city.sheetGid) {
-    urls.push(`${BASE_PUB_URL}?gid=${city.sheetGid}&single=true&output=csv`);
-  }
-  urls.push(
-    `${BASE_PUB_URL}?sheet=${encodeURIComponent(city.sheetTab)}&single=true&output=csv`
-  );
   return urls;
 }
 function parseCsv(csvText: string): string[][] {
@@ -117,12 +110,16 @@ function parseSheetData(rawText: string): string[][] {
         if (data.table) {
           const cols: { label?: string; id?: string }[] = data.table.cols || [];
           const headerRow: string[] = cols.map((col) => col.label || col.id || '');
-          const dataRows: string[][] = (data.table.rows || []).map((row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
-            return (row.c || []).map((cell) => {
-              if (!cell || (cell.v === null && !cell.f) || (cell.v === undefined && !cell.f)) return '';
-              return String(cell.f ?? cell.v ?? '').trim();
-            });
-          });
+          const dataRows: string[][] = (data.table.rows || []).map(
+            (row: { c?: ({ v?: unknown; f?: string } | null)[] }) => {
+              return (row.c || []).map((cell) => {
+                if (!cell || (cell.v === null && !cell.f) || (cell.v === undefined && !cell.f)) {
+                  return '';
+                }
+                return String(cell.f ?? cell.v ?? '').trim();
+              });
+            }
+          );
           if (headerRow.some((h: string) => Boolean(h && !h.match(/^[A-Z]$/)))) {
             return [headerRow, ...dataRows];
           } else if (dataRows.length > 0) {
@@ -137,28 +134,39 @@ function parseSheetData(rawText: string): string[][] {
   return parseCsv(rawText);
 }
 async function fetchValidSheetText(url: string): Promise<string | null> {
-  const isDev = process.env.NODE_ENV === 'development';
   try {
     const response = await fetch(url, {
       headers: {
         Accept: 'text/csv, application/json, text/plain, */*',
       },
-      cache: isDev ? 'no-store' : 'default',
-      next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
+      ...getFetchOptions(),
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn(`[Someplace Social] Sheet request returned HTTP ${response.status} for ${url}`);
+      return null;
+    }
     const text = await response.text();
     const trimmed = text.trim();
-    if (
-      trimmed &&
-      !trimmed.startsWith('<!DOCTYPE html') &&
-      !trimmed.startsWith('<html') &&
-      !trimmed.includes('accounts.google.com') &&
-      !trimmed.includes('"status":"error"') &&
-      !trimmed.includes('INVALID_QUERY')
-    ) {
-      return trimmed;
+    if (!trimmed) {
+      console.warn(`[Someplace Social] Empty sheet response from ${url}`);
+      return null;
     }
+    const lowerPrefix = trimmed.slice(0, 200).toLowerCase();
+    if (
+      lowerPrefix.startsWith('<!doctype html') ||
+      lowerPrefix.startsWith('<html') ||
+      trimmed.includes('accounts.google.com')
+    ) {
+      console.warn(
+        `[Someplace Social] Received HTML/sign-in page for ${url}. Verify spreadsheet ID and "Anyone with the link" sharing.`
+      );
+      return null;
+    }
+    if (trimmed.includes('"status":"error"') || trimmed.includes('INVALID_QUERY')) {
+      console.warn(`[Someplace Social] GViz query error for ${url}`);
+      return null;
+    }
+    return trimmed;
   } catch (fetchErr) {
     console.warn(`[Someplace Social] Fetch error on ${url}:`, fetchErr);
   }
@@ -175,7 +183,12 @@ async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
   }
   return [];
 }
-const normalizeHeader = (header: string): string => header.toLowerCase().replace(/[^a-z0-9]/g, '');
+const normalizeHeader = (header: string): string =>
+  header
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
 const normalizeCityKey = (value: string): string =>
   value
     .toLowerCase()
@@ -218,14 +231,20 @@ function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
 }
 function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   const targets = new Set(tabNames.map((n) => normalizeHeader(n)));
-  const itemRegex = /name:\s*["']([^"']+)["'][\s\S]{0,400}?gid:\s*["'](\d+)["']/gi;
+  const itemNameFirstRegex = /\{[^{}]*?name:\s*["']([^"']+)["'][^{}]*?gid:\s*["'](\d+)["']/gi;
   let match: RegExpExecArray | null;
-  while ((match = itemRegex.exec(html)) !== null) {
+  while ((match = itemNameFirstRegex.exec(html)) !== null) {
     if (targets.has(normalizeHeader(match[1]))) {
       return match[2];
     }
   }
-  const buttonRegex = /id=["']sheet-button-(\d+)["'][^>]*>\s*<a[^>]*>([^<]+)<\/a>/gi;
+  const itemGidFirstRegex = /\{[^{}]*?gid:\s*["'](\d+)["'][^{}]*?name:\s*["']([^"']+)["']/gi;
+  while ((match = itemGidFirstRegex.exec(html)) !== null) {
+    if (targets.has(normalizeHeader(match[2]))) {
+      return match[1];
+    }
+  }
+  const buttonRegex = /id=["']sheet-button-(\d+)["'][^>]*>[\s\S]{0,120}?<a[^>]*>([^<]+)<\/a>/gi;
   while ((match = buttonRegex.exec(html)) !== null) {
     if (targets.has(normalizeHeader(match[2]))) {
       return match[1];
@@ -234,26 +253,25 @@ function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   return null;
 }
 async function discoverTabGid(targetId: string, tabNames: string[]): Promise<string | null> {
-  const isDev = process.env.NODE_ENV === 'development';
-  const indexUrls = [
-    BASE_PUB_URL,
-    `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`,
-  ];
-  for (const url of indexUrls) {
-    try {
-      const response = await fetch(url, {
-        cache: isDev ? 'no-store' : 'default',
-        next: isDev ? { revalidate: 0 } : { revalidate: 3600 },
-      });
-      if (!response.ok) continue;
-      const html = await response.text();
-      if (!html || html.includes('accounts.google.com')) continue;
-      const gid = findTabGidInHtml(html, tabNames);
-      if (gid) return gid;
-    } catch {
+  const htmlviewUrl = `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`;
+  try {
+    const response = await fetch(htmlviewUrl, getFetchOptions());
+    if (!response.ok) {
+      console.warn(`[Someplace Social] htmlview returned HTTP ${response.status} for ${targetId}`);
+      return null;
     }
+    const html = await response.text();
+    if (!html || html.includes('accounts.google.com')) {
+      console.warn(
+        `[Someplace Social] htmlview redirected to Google login for ${targetId}. Verify "Anyone with the link" sharing.`
+      );
+      return null;
+    }
+    return findTabGidInHtml(html, tabNames);
+  } catch (err) {
+    console.warn(`[Someplace Social] Failed to inspect sheet tabs for ${targetId}:`, err);
+    return null;
   }
-  return null;
 }
 const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
@@ -314,58 +332,34 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
 export async function getLastUpdated(city: CityConfig): Promise<string | null> {
   try {
     const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
-    const isDev = process.env.NODE_ENV === 'development';
-    const cached = !isDev ? lastUpdatedCache.get(targetId) : undefined;
+    const tabNames = ['LastUpdate', 'Last Update'];
+    const discoveredGid = await discoverTabGid(targetId, tabNames);
+    const candidateUrls: string[] = [];
+    if (discoveredGid) {
+      candidateUrls.push(
+        `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${discoveredGid}`,
+        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${discoveredGid}`
+      );
+    }
+    for (const tabName of tabNames) {
+      candidateUrls.push(
+        `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+          tabName
+        )}`
+      );
+    }
     let cityDateMap: Map<string, string> | null = null;
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      cityDateMap = cached.data;
-    } else {
-      const tabNames = ['LastUpdate', 'Last Update'];
-      const directUrls: string[] = [];
-      for (const tabName of tabNames) {
-        directUrls.push(
-          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-            tabName
-          )}`
-        );
-        directUrls.push(
-          `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?sheet=${encodeURIComponent(
-            tabName
-          )}`
-        );
+    for (const url of candidateUrls) {
+      const text = await fetchValidSheetText(url);
+      if (!text) continue;
+      const parsedMap = parseLastUpdatedRows(parseSheetData(text));
+      if (parsedMap) {
+        cityDateMap = parsedMap;
+        break;
       }
-      for (const url of directUrls) {
-        const text = await fetchValidSheetText(url);
-        if (!text) continue;
-        const parsedMap = parseLastUpdatedRows(parseSheetData(text));
-        if (parsedMap) {
-          cityDateMap = parsedMap;
-          break;
-        }
-      }
-      if (!cityDateMap) {
-        const discoveredGid = await discoverTabGid(targetId, tabNames);
-        if (discoveredGid) {
-          const gidUrls = [
-            `${BASE_PUB_URL}?gid=${discoveredGid}&single=true&output=csv`,
-            `https://docs.google.com/spreadsheets/d/${targetId}/export?format=csv&gid=${discoveredGid}`,
-            `https://docs.google.com/spreadsheets/d/${targetId}/gviz/tq?tqx=out:csv&gid=${discoveredGid}`,
-          ];
-          for (const url of gidUrls) {
-            const text = await fetchValidSheetText(url);
-            if (!text) continue;
-            const parsedMap = parseLastUpdatedRows(parseSheetData(text));
-            if (parsedMap) {
-              cityDateMap = parsedMap;
-              break;
-            }
-          }
-        }
-      }
-      if (!cityDateMap) {
-        return null;
-      }
-      lastUpdatedCache.set(targetId, { timestamp: Date.now(), data: cityDateMap });
+    }
+    if (!cityDateMap) {
+      return null;
     }
     return (
       cityDateMap.get(normalizeCityKey(city.sheetTab)) ??
@@ -394,14 +388,14 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     } else {
       cityConfig = CITIES['medellin-colombia'];
     }
-    const cached = eventCache.get(cityConfig.slug);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data;
-    }
-    const candidateUrls = getCandidateUrls(cityConfig);
+    const targetId = cityConfig.spreadsheetId || MAIN_SPREADSHEET_ID;
+    const discoveredGid = cityConfig.csvUrl
+      ? null
+      : await discoverTabGid(targetId, [cityConfig.sheetTab]);
+    const candidateUrls = getCandidateUrls(cityConfig, discoveredGid);
     const rows = await fetchSheetRows(candidateUrls);
     if (rows.length < 2) {
-      console.warn(`[Someplace Social] No sheet data found for ${cityConfig.sheetTab}`);
+      console.error(`[Someplace Social] No live sheet data found for ${cityConfig.sheetTab} (${targetId})`);
       return [];
     }
     const headerRow = rows[0].map((h: string) => normalizeHeader(h));
@@ -423,11 +417,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
       .map((row): Event | null => {
         if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
         const getValue = (field: string): string => {
-          const colIdx =
-            headerIndexMap[field] ??
-            (hasHeaderMap && field === 'organization'
-              ? undefined
-              : DEFAULT_INDEX_FALLBACK[field]);
+          const colIdx = hasHeaderMap ? headerIndexMap[field] : DEFAULT_INDEX_FALLBACK[field];
           if (colIdx !== undefined && colIdx < row.length) {
             return cleanCell(row[colIdx]);
           }
@@ -484,9 +474,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         };
       })
       .filter((event): event is Event => event !== null);
-    const validEvents = events.filter((event) => Boolean(event.title));
-    eventCache.set(cityConfig.slug, { timestamp: Date.now(), data: validEvents });
-    return validEvents;
+    return events.filter((event) => Boolean(event.title));
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];

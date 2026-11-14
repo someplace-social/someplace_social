@@ -8,13 +8,11 @@ export type CityPriceConfig = {
   underLabel: string;
   midLabel: string;
 };
-
 export type CityAlertBanner = {
   message: string;
   linkText?: string;
   linkHref?: string;
 };
-
 export type CityConfig = {
   slug: string;
   name: string;
@@ -29,9 +27,7 @@ export type CityConfig = {
   priceConfig?: CityPriceConfig;
   alertBanner?: CityAlertBanner;
 };
-
-export const MAIN_SPREADSHEET_ID = '1dl6clB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-
+export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
 export const CITIES: Record<string, CityConfig> = {
   'medellin-colombia': {
     slug: 'medellin-colombia',
@@ -83,7 +79,6 @@ export const CITIES: Record<string, CityConfig> = {
     },
   },
 };
-
 export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
   currencyCode: 'USD',
   currencySymbol: '$',
@@ -94,7 +89,6 @@ export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
   underLabel: 'Under $10',
   midLabel: '$25',
 };
-
 export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
   if (city?.priceConfig) return city.priceConfig;
   if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
@@ -102,17 +96,14 @@ export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
   }
   return DEFAULT_USD_PRICE_CONFIG;
 }
-
 export function getCityBySlug(slug: string): CityConfig | undefined {
   if (!slug) return undefined;
   const normalized = slug.toLowerCase().trim();
   return CITIES[normalized];
 }
-
 export function getAllCitySlugs(): string[] {
   return Object.keys(CITIES);
 }
-
 export function getAllCities(): CityConfig[] {
   return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
