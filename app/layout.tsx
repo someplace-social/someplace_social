@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Karla } from 'next/font/google';
 import './globals.css';
-import GoogleAnalytics from './components/GoogleAnalytics';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -10,7 +9,6 @@ const bricolage = Bricolage_Grotesque({
   variable: '--font-bricolage',
   display: 'swap',
 });
-
 const karla = Karla({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
@@ -74,7 +72,6 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-NSETWN0K9W'} />
         <Analytics />
       </body>
     </html>

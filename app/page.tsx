@@ -50,7 +50,7 @@ const HOW_IT_WORKS_STEPS = [
   },
   {
     title: '100% Free & Ad-Free',
-    description: 'No accounts, no sponsors, no tracking, and no paywalls.',
+    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
   },
 ] as const;
 
