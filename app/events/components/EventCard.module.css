@@ -315,16 +315,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  width: 92px;
-  width: clamp(82px, 14cqi, 92px);
-  padding: 11px 4px 9px;
+  gap: 6px;
+  width: 80px;
+  width: clamp(72px, 11.4cqi, 80px);
+  height: 58px;
+  padding: 0 4px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background-color: var(--card);
   font-family: inherit;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.15;
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
@@ -403,16 +405,17 @@
   }
   .actions {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
   }
   .btn {
     width: 100%;
-    aspect-ratio: 1;
+    min-width: 0;
+    height: 58px;
     justify-content: center;
     padding: 0 2px;
-    gap: 6px;
-    font-size: 12px;
+    gap: 5px;
+    font-size: 11px;
   }
   .edit {
     grid-column: 1 / -1;
@@ -420,8 +423,11 @@
   }
 }
 @container (min-width: 461px) and (max-width: 600px) {
+  .actions {
+    gap: 8px;
+  }
   .btn {
-    aspect-ratio: auto;
-    height: 76px;
+    gap: 6px;
+    font-size: 12px;
   }
 }

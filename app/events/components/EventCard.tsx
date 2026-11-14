@@ -10,9 +10,7 @@ import {
 } from '../utils';
 import ContactButton from './ContactButton';
 import styles from './EventCard.module.css';
-
 const DRAG_THRESHOLD_PX = 5;
-
 interface EventCardProps {
   event: Event;
   isOpen: boolean;
@@ -62,7 +60,6 @@ function EventCard({
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const didDragRef = useRef(false);
   const prevSelectionRef = useRef('');
-
   const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
       pointerStartRef.current = null;
@@ -72,7 +69,6 @@ function EventCard({
     didDragRef.current = false;
     prevSelectionRef.current = window.getSelection()?.toString() ?? '';
   };
-
   const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!pointerStartRef.current || didDragRef.current) return;
     const dx = e.clientX - pointerStartRef.current.x;
@@ -81,26 +77,21 @@ function EventCard({
       didDragRef.current = true;
     }
   };
-
   const handleHeadPointerCancel = () => {
     pointerStartRef.current = null;
     didDragRef.current = false;
   };
-
   const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement | null;
     if (target?.closest('button, a')) {
       return;
     }
-
     const start = pointerStartRef.current;
     pointerStartRef.current = null;
-
     if (didDragRef.current) {
       didDragRef.current = false;
       return;
     }
-
     if (start) {
       const dx = e.clientX - start.x;
       const dy = e.clientY - start.y;
@@ -108,11 +99,9 @@ function EventCard({
         return;
       }
     }
-
     if (e.detail >= 2) {
       return;
     }
-
     const selection = window.getSelection();
     const selectedText = selection?.toString() ?? '';
     if (
@@ -129,10 +118,8 @@ function EventCard({
         return;
       }
     }
-
     onToggle();
   };
-
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
@@ -296,7 +283,7 @@ function EventCard({
       <path d="M2 12h20" />
     </svg>
   );
-  const instaIcon = (
+  const socialIcon = (
     <svg
       className={styles.icon}
       width="16"
@@ -309,9 +296,28 @@ function EventCard({
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect width="20" height="20" x="2" y="2" rx="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+  const shareIcon = (
+    <svg
+      className={styles.icon}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <polyline points="16 6 12 2 8 6" />
+      <line x1="12" x2="12" y1="2" y2="15" />
     </svg>
   );
   return (
@@ -441,13 +447,21 @@ function EventCard({
               Maps
             </a>
             <ActionButton href={event.website} label="Website" icon={globeIcon} />
-            <ActionButton href={event.social} label="Instagram" icon={instaIcon} />
+            <ActionButton href={event.social} label="Social" icon={socialIcon} />
             <ContactButton
               contact={event.contact}
               btnClassName={styles.btn}
               btnActiveClassName={styles.btnActive}
               btnDisabledClassName={styles.btnDisabled}
             />
+            <button
+              type="button"
+              className={styles.btn}
+              aria-label={`Share ${event.title}`}
+            >
+              {shareIcon}
+              Share
+            </button>
             <button
               type="button"
               className={styles.edit}
