@@ -431,7 +431,7 @@ export default function CityEventsView({
           )}
         </section>
       </main>
-      <Footer />
+      <Footer city={city} />
       {editModalEvent && (
         <SuggestEditModal
           event={editModalEvent}

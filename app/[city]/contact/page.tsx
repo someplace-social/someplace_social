@@ -43,7 +43,7 @@ export default async function CityContactPage({ params }: PageProps) {
       <Suspense fallback={null}>
         <ContactView city={city} />
       </Suspense>
-      <Footer />
+      <Footer city={city} />
     </div>
   );
 }

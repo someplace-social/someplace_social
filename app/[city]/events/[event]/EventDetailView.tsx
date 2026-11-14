@@ -275,7 +275,7 @@ export default function EventDetailView({
           </Link>
         </div>
       </main>
-      <Footer />
+      <Footer city={city} />
       {editModalOpen && (
         <SuggestEditModal
           event={event}

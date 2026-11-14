@@ -122,7 +122,7 @@ export default function AboutView({ city }: AboutViewProps) {
           </ol>
         </section>
       </main>
-      <Footer />
+      <Footer city={city} />
     </div>
   );
 }
