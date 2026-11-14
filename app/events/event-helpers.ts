@@ -122,6 +122,33 @@ export function resolveEventBySlug(
       isCanonical: canonicalSlug === normalizedSlug,
     };
   }
+  const barePrefixMatch = events.find((ev) => {
+    const normId = normalizeEventId(ev.id);
+    return Boolean(normId) && normId.startsWith(`${normalizedSlug}-`);
+  });
+  if (barePrefixMatch) {
+    const canonicalSlug = getEventSlug(barePrefixMatch);
+    return {
+      event: barePrefixMatch,
+      canonicalSlug,
+      isCanonical: false,
+    };
+  }
+  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
+    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
+    const trailingPrefixMatch = events.find((ev) => {
+      const normId = normalizeEventId(ev.id);
+      return Boolean(normId) && normId.startsWith(`${trailingId}-`);
+    });
+    if (trailingPrefixMatch) {
+      const canonicalSlug = getEventSlug(trailingPrefixMatch);
+      return {
+        event: trailingPrefixMatch,
+        canonicalSlug,
+        isCanonical: false,
+      };
+    }
+  }
   const idLessEvents = events.filter((ev) => !normalizeEventId(ev.id));
   const idLessTitleMatch = idLessEvents.find(
     (ev) => slugifyText(ev.title) === normalizedSlug

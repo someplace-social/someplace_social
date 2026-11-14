@@ -222,7 +222,6 @@ export function normalizeDayOfWeek(dayStr: string): string {
   if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
     return 'Daily';
   }
-  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
   const DAY_TO_SHORT: Record<string, string> = {
     sun: 'Sun',
     sunday: 'Sun',
@@ -243,6 +242,15 @@ export function normalizeDayOfWeek(dayStr: string): string {
     sat: 'Sat',
     saturday: 'Sat',
   };
+  const rangeMatch = trimmed.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
+  if (rangeMatch) {
+    const startShort = DAY_TO_SHORT[rangeMatch[1].toLowerCase()];
+    const endShort = DAY_TO_SHORT[rangeMatch[2].toLowerCase()];
+    if (startShort && endShort) {
+      return `${startShort}-${endShort}`;
+    }
+  }
+  const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
   const normalized: string[] = [];
   for (const token of tokens) {
     const short = DAY_TO_SHORT[token.toLowerCase()];
@@ -435,8 +443,10 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const dayIdx = targetDate.getDay();
   const targetDayName = DAY_NAMES[dayIdx];
   const targetDayShort = DAY_SHORT_NAMES[dayIdx];
-  const baseDaySpec = `${event.dayOfWeek || ''} ${event.frequency || ''}`.trim();
-  const daySpec = baseDaySpec || event.frequencyNotes || '';
+  const daySpec =
+    (event.dayOfWeek || '').trim() ||
+    (event.frequency || '').trim() ||
+    (event.frequencyNotes || '').trim();
   if (!matchesDay(daySpec, targetDayName)) {
     return false;
   }

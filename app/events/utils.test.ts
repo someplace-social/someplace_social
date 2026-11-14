@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Event } from '../lib/google-sheets';
 import { CITIES } from '../lib/cities';
 import { isEventActiveOnDate, isMonthActive } from './utils';
+import { expandEventSchedules } from './schedule-splitter';
 import {
   slugifyText,
   getEventSlug,
@@ -255,6 +256,126 @@ describe('isEventActiveOnDate frequency parsing', () => {
     const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
     assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
   });
+  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
+    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
+    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
+  });
+});
+describe('expandEventSchedules', () => {
+  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
+    const karaoke = makeEvent({
+      id: 'FOCO0024',
+      title: 'Weekly Karaoke Night',
+      venue: 'R Bar and Lounge',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon) / 8p (Wed, Sat)',
+      endTime: '10p (Mon) / 11p (Wed, Sat)',
+      frequency: 'Weekly',
+    });
+    const expanded = expandEventSchedules(karaoke);
+    assert.equal(expanded.length, 3);
+    assert.deepEqual(
+      expanded.map((e) => ({
+        id: e.id,
+        dayOfWeek: e.dayOfWeek,
+        startTime: e.startTime,
+        endTime: e.endTime,
+      })),
+      [
+        { id: 'FOCO0024-mon', dayOfWeek: 'Mon', startTime: '7p', endTime: '10p' },
+        { id: 'FOCO0024-wed', dayOfWeek: 'Wed', startTime: '8p', endTime: '11p' },
+        { id: 'FOCO0024-sat', dayOfWeek: 'Sat', startTime: '8p', endTime: '11p' },
+      ]
+    );
+  });
+  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
+    const commaEv = makeEvent({
+      id: 'E1',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon), 8p (Wed & Sat)',
+      endTime: '',
+    });
+    const commaExpanded = expandEventSchedules(commaEv);
+    assert.equal(commaExpanded.length, 3);
+    assert.equal(commaExpanded[0].startTime, '7p');
+    assert.equal(commaExpanded[1].startTime, '8p');
+    assert.equal(commaExpanded[2].startTime, '8p');
+    assert.equal(commaExpanded[0].endTime, '');
+
+    const colonEv = makeEvent({
+      id: 'E2',
+      dayOfWeek: 'Tue, Thu',
+      startTime: 'Tue: 6p / Thu: 7:30p',
+      endTime: '9p',
+    });
+    const colonExpanded = expandEventSchedules(colonEv);
+    assert.deepEqual(
+      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Tue', '6p', '9p'],
+        ['Thu', '7:30p', '9p'],
+      ]
+    );
+
+    const rangeEv = makeEvent({
+      id: 'E3',
+      dayOfWeek: 'Mon-Wed',
+      startTime: '5p (Mon-Tue) / 6p (Wed)',
+      endTime: '7p (Mon-Tue) / 8p (Wed)',
+    });
+    const rangeExpanded = expandEventSchedules(rangeEv);
+    assert.deepEqual(
+      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Mon', '5p', '7p'],
+        ['Tue', '5p', '7p'],
+        ['Wed', '6p', '8p'],
+      ]
+    );
+  });
+  it('supports parallel unlabeled times and same-day multiple slots', () => {
+    const parallelEv = makeEvent({
+      id: 'E4',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p / 7p',
+      endTime: '8p / 9p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E4-tue', 'Tue', '6p', '8p'],
+        ['E4-thu', 'Thu', '7p', '9p'],
+      ]
+    );
+
+    const sameDayEv = makeEvent({
+      id: 'E5',
+      dayOfWeek: 'Sat',
+      startTime: '10a / 2p',
+      endTime: '12p / 4p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E5-sat-1', 'Sat', '10a', '12p'],
+        ['E5-sat-2', 'Sat', '2p', '4p'],
+      ]
+    );
+  });
+  it('keeps single-time multi-day events unsplit', () => {
+    const sameTimeMultiDay = makeEvent({
+      id: 'FOCO0020',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p',
+      endTime: '9p',
+    });
+    const result = expandEventSchedules(sameTimeMultiDay);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
+    assert.equal(result[0].startTime, '6p');
+    assert.equal(result[0].endTime, '9p');
+  });
 });
 describe('isMonthActive', () => {
   it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
@@ -281,10 +402,12 @@ describe('slug generation and event resolution', () => {
     );
     assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
   });
-  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, and rejects deleted IDs', () => {
+  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
     const events = [
       makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
       makeEvent({ id: '', title: 'Open Air Sketching' }),
+      makeEvent({ id: 'FOCO0024-mon', title: 'Weekly Karaoke Night', dayOfWeek: 'Mon' }),
+      makeEvent({ id: 'FOCO0024-wed', title: 'Weekly Karaoke Night', dayOfWeek: 'Wed' }),
     ];
     const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
     assert.ok(exact);
@@ -299,6 +422,15 @@ describe('slug generation and event resolution', () => {
     assert.ok(bareId);
     assert.equal(bareId.event.id, '14');
     assert.equal(bareId.isCanonical, false);
+    const splitWed = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024-wed');
+    assert.ok(splitWed);
+    assert.equal(splitWed.event.id, 'FOCO0024-wed');
+    assert.equal(splitWed.isCanonical, true);
+    const legacyUnsplit = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024');
+    assert.ok(legacyUnsplit);
+    assert.equal(legacyUnsplit.event.id, 'FOCO0024-mon');
+    assert.equal(legacyUnsplit.canonicalSlug, 'weekly-karaoke-night-foco0024-mon');
+    assert.equal(legacyUnsplit.isCanonical, false);
     const missingId = resolveEventBySlug(events, 'open-air-sketching');
     assert.ok(missingId);
     assert.equal(missingId.event.title, 'Open Air Sketching');

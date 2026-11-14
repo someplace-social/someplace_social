@@ -34,6 +34,12 @@ Project Structure Map:
 |   |   \--- page.tsx
 |   +--- events
 |   |   +--- [city]
+|   |   |   +--- [event]
+|   |   |   |   +--- EventDetail.module.css
+|   |   |   |   +--- EventDetailView.tsx
+|   |   |   |   +--- NextOccurrenceBadge.tsx
+|   |   |   |   +--- opengraph-image.tsx
+|   |   |   |   \--- page.tsx
 |   |   |   +--- layout.tsx
 |   |   |   \--- page.tsx
 |   |   +--- components
@@ -44,13 +50,17 @@ Project Structure Map:
 |   |   |   +--- DayPicker.tsx
 |   |   |   +--- EventCard.module.css
 |   |   |   +--- EventCard.tsx
+|   |   |   +--- EventIcons.tsx
 |   |   |   +--- FilterControls.module.css
 |   |   |   +--- FilterControls.tsx
 |   |   |   +--- FilterDropdown.tsx
 |   |   |   +--- PriceFilterDropdown.tsx
+|   |   |   +--- ShareButton.module.css
+|   |   |   +--- ShareButton.tsx
 |   |   |   +--- SuggestEditModal.module.css
 |   |   |   \--- SuggestEditModal.tsx
 |   |   +--- CityEventsView.tsx
+|   |   +--- event-helpers.ts
 |   |   +--- EventsView.module.css
 |   |   +--- utils.test.ts
 |   |   \--- utils.ts
@@ -77,6 +87,7 @@ Project Structure Map:
 +--- next-env.d.ts
 +--- next.config.ts
 +--- package.json
++--- proxy.ts
 +--- README.md
 +--- repomix-output.txt
 +--- repomix.config.json
@@ -154,6 +165,11 @@ app/contact/components/EventSubmissionForm.tsx
 app/contact/Contact.module.css
 app/contact/ContactView.tsx
 app/contact/page.tsx
+app/events/[city]/[event]/EventDetail.module.css
+app/events/[city]/[event]/EventDetailView.tsx
+app/events/[city]/[event]/NextOccurrenceBadge.tsx
+app/events/[city]/[event]/opengraph-image.tsx
+app/events/[city]/[event]/page.tsx
 app/events/[city]/layout.tsx
 app/events/[city]/page.tsx
 app/events/CityEventsView.tsx
@@ -164,12 +180,16 @@ app/events/components/ContactButton.tsx
 app/events/components/DayPicker.tsx
 app/events/components/EventCard.module.css
 app/events/components/EventCard.tsx
+app/events/components/EventIcons.tsx
 app/events/components/FilterControls.module.css
 app/events/components/FilterControls.tsx
 app/events/components/FilterDropdown.tsx
 app/events/components/PriceFilterDropdown.tsx
+app/events/components/ShareButton.module.css
+app/events/components/ShareButton.tsx
 app/events/components/SuggestEditModal.module.css
 app/events/components/SuggestEditModal.tsx
+app/events/event-helpers.ts
 app/events/EventsView.module.css
 app/events/utils.test.ts
 app/events/utils.ts
@@ -217,6 +237,11 @@ export default function Accordion({ title, children }: AccordionProps) {
     </div>
   );
 }
+
+================
+File: app/globals.d.ts
+================
+declare module '*.css';
 
 ================
 File: eslint.config.mjs
@@ -667,99 +692,394 @@ export default function ContactMessageForm() {
 }
 
 ================
-File: app/events/components/ContactButton.tsx
+File: app/events/[city]/[event]/NextOccurrenceBadge.tsx
 ================
 'use client';
-import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
-import { parseContactInfo } from '../utils';
-import styles from './ContactButton.module.css';
+import { useSyncExternalStore } from 'react';
+import { Event } from '../../../lib/google-sheets';
+import { getNextEventOccurrence } from '../../event-helpers';
 const emptySubscribe = () => () => {};
-interface ContactButtonProps {
-  contact?: string;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
+interface NextOccurrenceBadgeProps {
+  event: Event;
+  timeZone: string;
+  initialLabel: string | null;
+  className: string;
+  todayClassName?: string;
 }
-export default function ContactButton({
-  contact,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-}: ContactButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isAndroid = useSyncExternalStore(
+export default function NextOccurrenceBadge({
+  event,
+  timeZone,
+  initialLabel,
+  className,
+  todayClassName,
+}: NextOccurrenceBadgeProps) {
+  const label = useSyncExternalStore(
     emptySubscribe,
-    () => /android/i.test(navigator.userAgent || ''),
-    () => false
+    () => getNextEventOccurrence(event, timeZone, 90)?.label ?? null,
+    () => initialLabel
   );
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-  useEffect(() => {
-    return () => {
-      if (copyTimerRef.current) {
-        clearTimeout(copyTimerRef.current);
-      }
+  if (!label) return null;
+  const isToday = label === 'Today';
+  return (
+    <span className={`${className} ${isToday && todayClassName ? todayClassName : ''}`}>
+      {label}
+    </span>
+  );
+}
+
+================
+File: app/events/[city]/[event]/opengraph-image.tsx
+================
+import { ImageResponse } from 'next/og';
+import { getCityBySlug } from '../../../lib/cities';
+import { getEvents } from '../../../lib/google-sheets';
+import { isFreePrice } from '../../utils';
+import { buildScheduleLine, resolveEventBySlug } from '../../event-helpers';
+export const revalidate = 3600;
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = 'image/png';
+export const alt = 'Someplace Social Event Listing';
+function truncateText(text: string, maxLen: number): string {
+  const cleaned = text.trim();
+  if (cleaned.length <= maxLen) return cleaned;
+  return `${cleaned.slice(0, maxLen - 1).trimEnd()}…`;
+}
+export default async function EventOpenGraphImage({
+  params,
+}: {
+  params: Promise<{ city: string; event: string }>;
+}) {
+  const { city: citySlug, event: eventSlug } = await params;
+  const city = getCityBySlug(citySlug);
+  const events = city ? await getEvents(city, 3600) : [];
+  const resolved = city ? resolveEventBySlug(events, eventSlug) : null;
+  if (!city || !resolved) {
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '72px',
+            backgroundColor: '#fff9ec',
+            color: '#1f1b16',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: '#1f7a4d',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              marginBottom: 16,
+            }}
+          >
+            Someplace Social
+          </div>
+          <div style={{ fontSize: 60, fontWeight: 800, lineHeight: 1.1 }}>
+            Community Events &amp; Gatherings
+          </div>
+        </div>
+      ),
+      { ...size }
+    );
+  }
+  const { event } = resolved;
+  const titleText = truncateText(event.title, 78);
+  const scheduleLine = truncateText(buildScheduleLine(event), 48);
+  const venueName = (event.venue || event.location || '').trim();
+  const areaName = (event.area || '').trim();
+  const placeLine = truncateText(
+    venueName && areaName && venueName.toLowerCase() !== areaName.toLowerCase()
+      ? `${venueName} · ${areaName}`
+      : venueName || areaName || city.heroLocation,
+    50
+  );
+  const priceText = (event.price || '').trim();
+  const freeHighlight = Boolean(priceText && isFreePrice(priceText));
+  const eyebrowText = areaName
+    ? `Someplace Social · ${city.name} · ${areaName}`
+    : `Someplace Social · ${city.name}`;
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '60px 68px',
+          backgroundColor: '#fff9ec',
+          color: '#1f1b16',
+          fontFamily: 'sans-serif',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+            border: '2px solid #eadfc8',
+            borderRadius: '28px',
+            padding: '52px 56px',
+            flex: 1,
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: 22,
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#1f7a4d',
+                marginBottom: 24,
+              }}
+            >
+              {eyebrowText}
+            </div>
+            <div
+              style={{
+                fontSize: titleText.length > 48 ? 52 : 62,
+                fontWeight: 800,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                color: '#1f1b16',
+              }}
+            >
+              {titleText}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '14px',
+              alignItems: 'center',
+            }}
+          >
+            {scheduleLine && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#f3ead4',
+                  border: '1.5px solid #d6c8ad',
+                  borderRadius: '14px',
+                  padding: '12px 22px',
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: '#1f1b16',
+                }}
+              >
+                {scheduleLine}
+              </div>
+            )}
+            {placeLine && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#faf4e6',
+                  border: '1.5px solid #eadfc8',
+                  borderRadius: '14px',
+                  padding: '12px 22px',
+                  fontSize: 24,
+                  fontWeight: 600,
+                  color: '#4f483e',
+                }}
+              >
+                {placeLine}
+              </div>
+            )}
+            {priceText && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: freeHighlight ? '#e4f4ea' : '#f3ead4',
+                  border: freeHighlight ? '1.5px solid #1f7a4d' : '1.5px solid #d6c8ad',
+                  borderRadius: '14px',
+                  padding: '12px 22px',
+                  fontSize: 24,
+                  fontWeight: 800,
+                  color: freeHighlight ? '#1f7a4d' : '#1f1b16',
+                }}
+              >
+                {priceText}
+              </div>
+            )}
+          </div>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '22px',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            fontSize: 20,
+            fontWeight: 600,
+            color: '#6f675c',
+          }}
+        >
+          <span>someplacesocial.org</span>
+          <span>Weekly community events · Free &amp; ad-free</span>
+        </div>
+      </div>
+    ),
+    { ...size }
+  );
+}
+
+================
+File: app/events/[city]/[event]/page.tsx
+================
+import { notFound, redirect } from 'next/navigation';
+import type { Metadata } from 'next';
+import {
+  SITE_URL,
+  getAllCities,
+  getCityBySlug,
+  getCityTimeZone,
+} from '../../../lib/cities';
+import { getEvents } from '../../../lib/google-sheets';
+import {
+  buildEventJsonLd,
+  buildEventMetaDescription,
+  getEventSlug,
+  getNextEventOccurrence,
+  resolveEventBySlug,
+} from '../../event-helpers';
+import EventDetailView from './EventDetailView';
+export const revalidate = 3600;
+type PageProps = {
+  params: Promise<{ city: string; event: string }>;
+};
+export async function generateStaticParams() {
+  const cities = getAllCities();
+  const allParams = await Promise.all(
+    cities.map(async (city) => {
+      const events = await getEvents(city, 3600);
+      return events.map((ev) => ({
+        city: city.slug,
+        event: getEventSlug(ev),
+      }));
+    })
+  );
+  return allParams.flat();
+}
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { city: citySlug, event: eventSlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    return {
+      title: 'Event Not Found',
+      robots: { index: false, follow: false },
     };
-  }, []);
-  useEffect(() => {
-    if (!isOpen) return;
-    function handlePointerDown(e: PointerEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('keydown', handleKeyDown);
+  }
+  const events = await getEvents(city, 3600);
+  const resolved = resolveEventBySlug(events, eventSlug);
+  if (!resolved) {
+    return {
+      title: 'Event Not Found',
+      robots: { index: false, follow: false },
     };
-  }, [isOpen]);
-  const handleCopy = useCallback(async (text: string) => {
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      setCopied(true);
-      if (copyTimerRef.current) {
-        clearTimeout(copyTimerRef.current);
-      }
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
-    }
-  }, []);
-  const handleOpenGmail = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      if (contactInfo.type !== 'email') return;
-      if (isAndroid) {
-        e.preventDefault();
-        window.location.href = contactInfo.androidIntentUrl;
-        setIsOpen(false);
-      } else {
-        setIsOpen(false);
-      }
+  }
+  const { event, canonicalSlug } = resolved;
+  const pageTitle = `${event.title} — ${city.name} Events`;
+  const fullTitle = `${pageTitle} | Someplace Social`;
+  const description = buildEventMetaDescription(event, city);
+  const canonicalPath = `/events/${city.slug}/${canonicalSlug}`;
+  return {
+    title: pageTitle,
+    description,
+    alternates: {
+      canonical: canonicalPath,
     },
-    [contactInfo, isAndroid]
+    openGraph: {
+      title: fullTitle,
+      description,
+      url: canonicalPath,
+      siteName: 'Someplace Social',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: fullTitle,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
+  };
+}
+export default async function EventPage({ params }: PageProps) {
+  const { city: citySlug, event: eventSlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    notFound();
+  }
+  const events = await getEvents(city, 3600);
+  const resolved = resolveEventBySlug(events, eventSlug);
+  if (!resolved) {
+    notFound();
+  }
+  if (!resolved.isCanonical) {
+    redirect(`/events/${city.slug}/${resolved.canonicalSlug}`);
+  }
+  const { event, canonicalSlug } = resolved;
+  const timeZone = getCityTimeZone(city);
+  const nextOccurrence = getNextEventOccurrence(event, timeZone, 90);
+  const canonicalUrl = `${SITE_URL}/events/${city.slug}/${canonicalSlug}`;
+  const jsonLd = buildEventJsonLd(event, city, canonicalUrl, nextOccurrence);
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+      )}
+      <EventDetailView
+        city={city}
+        event={event}
+        initialNextLabel={nextOccurrence?.label ?? null}
+      />
+    </>
   );
-  const mailIcon = (
+}
+
+================
+File: app/events/components/EventIcons.tsx
+================
+interface IconProps {
+  className?: string;
+}
+export function PinIcon({ className }: IconProps) {
+  return (
     <svg
+      className={className}
       width="16"
       height="16"
       viewBox="0 0 24 24"
@@ -771,225 +1091,237 @@ export default function ContactButton({
       style={{ flex: 'none' }}
       aria-hidden="true"
     >
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
     </svg>
   );
-  if (contactInfo.type === 'none') {
-    return (
-      <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
-        {mailIcon}
-        Contact
-      </div>
-    );
-  }
-  if (contactInfo.type === 'url') {
-    return (
-      <a
-        href={contactInfo.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnClassName}
-      >
-        {mailIcon}
-        Contact
-      </a>
-    );
-  }
+}
+export function TagIcon({ className }: IconProps) {
   return (
-    <div className={styles.contactWrapper} ref={popoverRef}>
-      <button
-        type="button"
-        className={`${btnClassName} ${isOpen ? btnActiveClassName : ''}`}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-      >
-        {mailIcon}
-        Contact
-      </button>
-      {isOpen && (
-        <div className={styles.contactPopover} role="dialog" aria-label="Contact options">
-          {contactInfo.type === 'email' && (
-            <>
-              <div className={styles.contactHeader}>
-                <span className={styles.contactHeaderLabel}>Email</span>
-                <div className={styles.contactInlineRow}>
-                  <span className={styles.contactHeaderValue} title={contactInfo.email}>
-                    {contactInfo.email}
-                  </span>
-                  <button
-                    type="button"
-                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                    onClick={() => handleCopy(contactInfo.email)}
-                    title={copied ? 'Copied to clipboard' : 'Copy email'}
-                    aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
-                  >
-                    {copied ? (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div className={styles.contactDivider} />
-              <div className={styles.contactActions}>
-                <a
-                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
-                  target={isAndroid ? undefined : '_blank'}
-                  rel="noopener noreferrer"
-                  className={styles.contactActionLink}
-                  onClick={handleOpenGmail}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 7l9 6 9-6" />
-                  </svg>
-                  Open in Gmail
-                </a>
-                <a
-                  href={contactInfo.mailtoUrl}
-                  className={styles.contactActionLink}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                  Default Mail App
-                </a>
-              </div>
-            </>
-          )}
-          {contactInfo.type === 'phone' && (
-            <>
-              <div className={styles.contactHeader}>
-                <span className={styles.contactHeaderLabel}>Phone</span>
-                <div className={styles.contactInlineRow}>
-                  <span className={styles.contactHeaderValue} title={contactInfo.displayPhone}>
-                    {contactInfo.displayPhone}
-                  </span>
-                  <button
-                    type="button"
-                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                    onClick={() => handleCopy(contactInfo.displayPhone)}
-                    title={copied ? 'Copied to clipboard' : 'Copy phone number'}
-                    aria-label={copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'}
-                  >
-                    {copied ? (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div className={styles.contactDivider} />
-              <div className={styles.contactActions}>
-                <a
-                  href={contactInfo.telUrl}
-                  className={styles.contactActionLinkPrimary}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-                  </svg>
-                  Call {contactInfo.displayPhone}
-                </a>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+    </svg>
   );
 }
-
-================
-File: app/globals.d.ts
-================
-declare module '*.css';
+export function CompassIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
+    </svg>
+  );
+}
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+export function RepeatIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m17 2 4 4-4 4" />
+      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+      <path d="m7 22-4-4 4-4" />
+      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+    </svg>
+  );
+}
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+export function PenIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
+    </svg>
+  );
+}
+export function GlobeIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+      <path d="M2 12h20" />
+    </svg>
+  );
+}
+export function SocialIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+export function ShareIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <polyline points="16 6 12 2 8 6" />
+      <line x1="12" x2="12" y1="2" y2="15" />
+    </svg>
+  );
+}
+export function CalendarIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  );
+}
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M7 17 17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
+  );
+}
 
 ================
 File: app/robots.ts
@@ -1004,42 +1336,6 @@ export default function robots(): MetadataRoute.Robots {
     },
     sitemap: 'https://www.someplacesocial.org/sitemap.xml',
   };
-}
-
-================
-File: app/sitemap.ts
-================
-import type { MetadataRoute } from 'next';
-import { getAllCitySlugs } from './lib/cities';
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.someplacesocial.org';
-  const cityUrls = getAllCitySlugs().map((slug) => ({
-    url: `${baseUrl}/events/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.9,
-  }));
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1.0,
-    },
-    ...cityUrls,
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/support`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    },
-  ];
 }
 
 ================
@@ -1839,6 +2135,729 @@ export default function EventSubmissionForm() {
 }
 
 ================
+File: app/events/[city]/[event]/EventDetail.module.css
+================
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+  box-sizing: border-box;
+}
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  margin-bottom: 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.backLink:hover {
+  color: var(--ink);
+}
+.card {
+  container-type: inline-size;
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  --fact-bg: #faf4e6;
+  --tag-science-ink: #0f5c5c;
+  --tag-science-bg: #d3efec;
+  --tag-craft-ink: #8a3d0c;
+  --tag-craft-bg: #fde4cf;
+  --tag-food-ink: #6b5200;
+  --tag-food-bg: #f4eab8;
+  --tag-community-ink: #3b4a54;
+  --tag-community-bg: #e1e7ea;
+  --tag-music-ink: #5b2a86;
+  --tag-music-bg: #ecdcf7;
+  --tag-trivia-ink: #2d3f7a;
+  --tag-trivia-bg: #dde4f7;
+  --tag-comedy-ink: #8a1f4f;
+  --tag-comedy-bg: #fbdce9;
+  --tag-dance-ink: #852b2b;
+  --tag-dance-bg: #f9dede;
+  --tag-sport-ink: #1f6a42;
+  --tag-sport-bg: #d7f0df;
+  --tag-language-ink: #2c4f7c;
+  --tag-language-bg: #dbe5f7;
+  --tag-default-ink: #4f483e;
+  --tag-default-bg: #f3ead4;
+}
+:global(html[data-theme='dark']) .card {
+  --fact-bg: #25221d;
+  --tag-science-ink: #5eead4;
+  --tag-science-bg: #133330;
+  --tag-craft-ink: #fdba74;
+  --tag-craft-bg: #361c0c;
+  --tag-food-ink: #fde047;
+  --tag-food-bg: #33280c;
+  --tag-community-ink: #cbd5e1;
+  --tag-community-bg: #222b33;
+  --tag-music-ink: #d8b4fe;
+  --tag-music-bg: #2f1847;
+  --tag-trivia-ink: #93c5fd;
+  --tag-trivia-bg: #1c284d;
+  --tag-comedy-ink: #f472b6;
+  --tag-comedy-bg: #3d1427;
+  --tag-dance-ink: #fca5a5;
+  --tag-dance-bg: #3d1919;
+  --tag-sport-ink: #86efac;
+  --tag-sport-bg: #143823;
+  --tag-language-ink: #93c5fd;
+  --tag-language-bg: #1c2b45;
+  --tag-default-ink: #d6cbbe;
+  --tag-default-bg: #2c2720;
+}
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme='light'])) .card {
+    --fact-bg: #25221d;
+    --tag-science-ink: #5eead4;
+    --tag-science-bg: #133330;
+    --tag-craft-ink: #fdba74;
+    --tag-craft-bg: #361c0c;
+    --tag-food-ink: #fde047;
+    --tag-food-bg: #33280c;
+    --tag-community-ink: #cbd5e1;
+    --tag-community-bg: #222b33;
+    --tag-music-ink: #d8b4fe;
+    --tag-music-bg: #2f1847;
+    --tag-trivia-ink: #93c5fd;
+    --tag-trivia-bg: #1c284d;
+    --tag-comedy-ink: #f472b6;
+    --tag-comedy-bg: #3d1427;
+    --tag-dance-ink: #fca5a5;
+    --tag-dance-bg: #3d1919;
+    --tag-sport-ink: #86efac;
+    --tag-sport-bg: #143823;
+    --tag-language-ink: #93c5fd;
+    --tag-language-bg: #1c2b45;
+    --tag-default-ink: #d6cbbe;
+    --tag-default-bg: #2c2720;
+  }
+}
+.head {
+  padding: 26px 28px 22px;
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+.scheduleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+}
+.scheduleText {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.scheduleIcon {
+  color: var(--muted);
+}
+.nextBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.nextBadgeToday {
+  background-color: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+.venueBlock {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+.address,
+.host {
+  margin-left: 23px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.hostFlush {
+  margin-left: 0;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+.priceFree {
+  color: var(--free);
+}
+.pricePaid {
+  color: var(--ink);
+}
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+.sep2 {
+  display: inline-block;
+}
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.body {
+  border-top: 1px solid var(--line);
+  padding: 22px 28px 26px;
+}
+.desc {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text-subtle);
+  margin: 0 0 18px;
+  white-space: pre-line;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--fact-bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 7px 13px 7px 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.factIcon {
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 82px;
+  height: 58px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--card);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+.btn:not(.btnDisabled):not(.btnPrimary):hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.btnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.btnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+.btnActive {
+  border-color: var(--ink);
+  background-color: var(--topbar-bg);
+}
+.btnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.shareBtn {
+  width: 82px;
+}
+.edit {
+  margin-left: auto;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.edit:hover {
+  color: var(--accent);
+}
+.bottomCtaWrap {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+.bottomCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background-color: var(--ink);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.bottomCta:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+@container (max-width: 600px) {
+  .head {
+    padding: 20px 16px 18px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+  .body {
+    padding: 18px 16px 20px;
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .btn {
+    width: 100%;
+    min-width: 0;
+    height: 58px;
+    font-size: 12px;
+  }
+  .shareBtn {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 44px;
+    flex-direction: row;
+    gap: 8px;
+    font-size: 13.5px;
+    background-color: var(--topbar-bg);
+    border-color: var(--line-strong);
+  }
+  .edit {
+    grid-column: 1 / -1;
+    margin: 4px auto 0;
+  }
+}
+@media (max-width: 899px) {
+  .main {
+    padding: 18px 16px 52px;
+  }
+  .bottomCta {
+    width: 100%;
+  }
+}
+
+================
+File: app/events/[city]/[event]/EventDetailView.tsx
+================
+'use client';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { CityConfig, getAllCities, getCityTimeZone } from '../../../lib/cities';
+import { Event } from '../../../lib/google-sheets';
+import {
+  ensureExternalUrl,
+  formatRecurrenceText,
+  formatTimeRange,
+  getTagStyle,
+  isFreePrice,
+} from '../../utils';
+import { buildScheduleLine } from '../../event-helpers';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
+import ContactButton from '../../components/ContactButton';
+import ShareButton from '../../components/ShareButton';
+import SuggestEditModal from '../../components/SuggestEditModal';
+import {
+  CalendarIcon,
+  CheckIcon,
+  CompassIcon,
+  GlobeIcon,
+  PenIcon,
+  PinIcon,
+  RepeatIcon,
+  SocialIcon,
+  TagIcon,
+} from '../../components/EventIcons';
+import NextOccurrenceBadge from './NextOccurrenceBadge';
+import styles from './EventDetail.module.css';
+interface EventDetailViewProps {
+  city: CityConfig;
+  event: Event;
+  initialNextLabel: string | null;
+}
+function DetailActionButton({
+  href,
+  label,
+  icon,
+}: {
+  href?: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  const safeHref = href ? ensureExternalUrl(href) : '';
+  if (safeHref) {
+    return (
+      <a
+        href={safeHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.btn}
+      >
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <div className={`${styles.btn} ${styles.btnDisabled}`} aria-disabled="true">
+      {icon}
+      {label}
+    </div>
+  );
+}
+export default function EventDetailView({
+  city,
+  event,
+  initialNextLabel,
+}: EventDetailViewProps) {
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const allCityOptions = useMemo(() => getAllCities(), []);
+  const timeZone = getCityTimeZone(city);
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const scheduleSummary = buildScheduleLine(event) || (start && end ? `${start} – ${end}` : start);
+  const displayVenue = event.venue || event.location;
+  const showDistinctAddress = Boolean(
+    event.venue &&
+      event.location &&
+      event.venue.trim().toLowerCase() !== event.location.trim().toLowerCase()
+  );
+  const cleanOrg = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const showOrganizer = Boolean(
+    cleanOrg && cleanOrg.toLowerCase() !== (displayVenue || '').trim().toLowerCase()
+  );
+  const isFree = isFreePrice(event.price);
+  const tagList = event.activities || [];
+  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
+  const regLower = (event.preRegistration || '').trim().toLowerCase();
+  const needsSignupIcon =
+    !regLower.startsWith('drop') &&
+    !regLower.startsWith('no ') &&
+    !regLower.includes('no rsvp') &&
+    !regLower.includes('not required') &&
+    /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
+  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
+  const hasFacts = Boolean(recurrenceText || event.preRegistration);
+  const hasDescription = Boolean((event.about || event.notes || '').trim());
+  const mapsHref =
+    (event.map ? ensureExternalUrl(event.map) : '') ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${displayVenue || event.title}, ${city.name}`
+    )}`;
+  const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
+  return (
+    <div className={styles.pageContainer}>
+      <Header city={city} allCityOptions={allCityOptions} />
+      <main className={styles.main}>
+        <Link href={`/events/${city.slug}`} className={styles.backLink}>
+          <span aria-hidden="true">←</span>
+          <span>All {city.name} events</span>
+        </Link>
+        <article className={styles.card}>
+          <div className={styles.head}>
+            <p className={styles.eyebrow}>{eyebrowText}</p>
+            <h1 className={styles.title}>{event.title}</h1>
+            {(scheduleSummary || initialNextLabel) && (
+              <div className={styles.scheduleRow}>
+                {scheduleSummary && (
+                  <span className={styles.scheduleText}>
+                    <CalendarIcon className={styles.scheduleIcon} />
+                    <span>{scheduleSummary}</span>
+                  </span>
+                )}
+                <NextOccurrenceBadge
+                  event={event}
+                  timeZone={timeZone}
+                  initialLabel={initialNextLabel}
+                  className={styles.nextBadge}
+                  todayClassName={styles.nextBadgeToday}
+                />
+              </div>
+            )}
+            {(displayVenue || showOrganizer) && (
+              <div className={styles.venueBlock}>
+                {displayVenue && (
+                  <div className={styles.venue}>
+                    <PinIcon className={styles.venueIcon} />
+                    <span>{displayVenue}</span>
+                  </div>
+                )}
+                {showDistinctAddress && (
+                  <div className={styles.address}>{event.location}</div>
+                )}
+                {showOrganizer && (
+                  <div
+                    className={`${styles.host} ${
+                      !displayVenue ? styles.hostFlush : ''
+                    }`}
+                  >
+                    Hosted by {cleanOrg}
+                  </div>
+                )}
+              </div>
+            )}
+            {hasMeta && (
+              <div className={styles.meta}>
+                {event.price && (
+                  <span
+                    className={`${styles.price} ${
+                      isFree ? styles.priceFree : styles.pricePaid
+                    }`}
+                  >
+                    <TagIcon />
+                    <span>{event.price}</span>
+                  </span>
+                )}
+                {event.price && event.area && (
+                  <span className={styles.dot} aria-hidden="true" />
+                )}
+                {event.area && (
+                  <span className={styles.area}>
+                    <CompassIcon />
+                    <span>{event.area}</span>
+                  </span>
+                )}
+                {(event.price || event.area) && tagList.length > 0 && (
+                  <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
+                )}
+                {tagList.length > 0 && (
+                  <div className={styles.tags}>
+                    {tagList.map((tag) => {
+                      const customStyle = getTagStyle(tag);
+                      return (
+                        <span
+                          key={tag}
+                          className={styles.tag}
+                          style={{
+                            color: customStyle.color,
+                            backgroundColor: customStyle.background,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div className={styles.body}>
+            {hasDescription && (
+              <p className={styles.desc}>{event.about || event.notes}</p>
+            )}
+            {hasFacts && (
+              <div className={styles.facts}>
+                {recurrenceText && (
+                  <span className={styles.fact}>
+                    <RepeatIcon className={styles.factIcon} />
+                    <span>{recurrenceText}</span>
+                  </span>
+                )}
+                {event.preRegistration && (
+                  <span className={styles.fact}>
+                    {needsSignupIcon ? (
+                      <PenIcon className={styles.factIcon} />
+                    ) : (
+                      <CheckIcon className={styles.factIcon} />
+                    )}
+                    <span>{event.preRegistration}</span>
+                  </span>
+                )}
+              </div>
+            )}
+            <div className={styles.actions}>
+              <a
+                href={mapsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                aria-label="Open in Maps"
+              >
+                <PinIcon />
+                Maps
+              </a>
+              <DetailActionButton
+                href={event.website}
+                label="Website"
+                icon={<GlobeIcon />}
+              />
+              <DetailActionButton
+                href={event.social}
+                label="Social"
+                icon={<SocialIcon />}
+              />
+              <ContactButton
+                contact={event.contact}
+                btnClassName={styles.btn}
+                btnActiveClassName={styles.btnActive}
+                btnDisabledClassName={styles.btnDisabled}
+              />
+              <ShareButton
+                event={event}
+                citySlug={city.slug}
+                btnClassName={`${styles.btn} ${styles.shareBtn}`}
+              />
+              <button
+                type="button"
+                className={styles.edit}
+                onClick={() => setEditModalOpen(true)}
+              >
+                <PenIcon />
+                Suggest edit
+              </button>
+            </div>
+          </div>
+        </article>
+        <div className={styles.bottomCtaWrap}>
+          <Link href={`/events/${city.slug}`} className={styles.bottomCta}>
+            Explore all {city.name} events →
+          </Link>
+        </div>
+      </main>
+      <Footer />
+      {editModalOpen && (
+        <SuggestEditModal
+          event={event}
+          cityName={city.name}
+          onClose={() => setEditModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+================
 File: app/events/[city]/layout.tsx
 ================
 export default function CityLayout({
@@ -1993,6 +3012,313 @@ File: app/events/components/ContactButton.module.css
     border-radius: 16px;
     box-shadow: var(--shadow-lg);
   }
+}
+
+================
+File: app/events/components/ContactButton.tsx
+================
+'use client';
+import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
+import { parseContactInfo } from '../utils';
+import { copyToClipboard } from '../event-helpers';
+import styles from './ContactButton.module.css';
+const emptySubscribe = () => () => {};
+interface ContactButtonProps {
+  contact?: string;
+  btnClassName: string;
+  btnActiveClassName: string;
+  btnDisabledClassName: string;
+}
+export default function ContactButton({
+  contact,
+  btnClassName,
+  btnActiveClassName,
+  btnDisabledClassName,
+}: ContactButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAndroid = useSyncExternalStore(
+    emptySubscribe,
+    () => /android/i.test(navigator.userAgent || ''),
+    () => false
+  );
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (!isOpen) return;
+    function handlePointerDown(e: PointerEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+  const handleCopy = useCallback(async (text: string) => {
+    const ok = await copyToClipboard(text);
+    if (!ok) return;
+    setCopied(true);
+    if (copyTimerRef.current) {
+      clearTimeout(copyTimerRef.current);
+    }
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  }, []);
+  const handleOpenGmail = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (contactInfo.type !== 'email') return;
+      if (isAndroid) {
+        e.preventDefault();
+        window.location.href = contactInfo.androidIntentUrl;
+        setIsOpen(false);
+      } else {
+        setIsOpen(false);
+      }
+    },
+    [contactInfo, isAndroid]
+  );
+  const mailIcon = (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  );
+  if (contactInfo.type === 'none') {
+    return (
+      <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
+        {mailIcon}
+        Contact
+      </div>
+    );
+  }
+  if (contactInfo.type === 'url') {
+    return (
+      <a
+        href={contactInfo.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={btnClassName}
+      >
+        {mailIcon}
+        Contact
+      </a>
+    );
+  }
+  return (
+    <div className={styles.contactWrapper} ref={popoverRef}>
+      <button
+        type="button"
+        className={`${btnClassName} ${isOpen ? btnActiveClassName : ''}`}
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        {mailIcon}
+        Contact
+      </button>
+      {isOpen && (
+        <div className={styles.contactPopover} role="dialog" aria-label="Contact options">
+          {contactInfo.type === 'email' && (
+            <>
+              <div className={styles.contactHeader}>
+                <span className={styles.contactHeaderLabel}>Email</span>
+                <div className={styles.contactInlineRow}>
+                  <span className={styles.contactHeaderValue} title={contactInfo.email}>
+                    {contactInfo.email}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                    onClick={() => handleCopy(contactInfo.email)}
+                    title={copied ? 'Copied to clipboard' : 'Copy email'}
+                    aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
+                  >
+                    {copied ? (
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.contactDivider} />
+              <div className={styles.contactActions}>
+                <a
+                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
+                  target={isAndroid ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  className={styles.contactActionLink}
+                  onClick={handleOpenGmail}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3 7l9 6 9-6" />
+                  </svg>
+                  Open in Gmail
+                </a>
+                <a
+                  href={contactInfo.mailtoUrl}
+                  className={styles.contactActionLink}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                  Default Mail App
+                </a>
+              </div>
+            </>
+          )}
+          {contactInfo.type === 'phone' && (
+            <>
+              <div className={styles.contactHeader}>
+                <span className={styles.contactHeaderLabel}>Phone</span>
+                <div className={styles.contactInlineRow}>
+                  <span className={styles.contactHeaderValue} title={contactInfo.displayPhone}>
+                    {contactInfo.displayPhone}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                    onClick={() => handleCopy(contactInfo.displayPhone)}
+                    title={copied ? 'Copied to clipboard' : 'Copy phone number'}
+                    aria-label={copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'}
+                  >
+                    {copied ? (
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.contactDivider} />
+              <div className={styles.contactActions}>
+                <a
+                  href={contactInfo.telUrl}
+                  className={styles.contactActionLinkPrimary}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                  </svg>
+                  Call {contactInfo.displayPhone}
+                </a>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 ================
@@ -2215,6 +3541,573 @@ export default function FilterDropdown({
 }
 
 ================
+File: app/events/components/ShareButton.module.css
+================
+button.copied,
+button.copied:hover {
+  background-color: var(--free-bg);
+  color: var(--free);
+  border-color: var(--free);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+================
+File: app/events/components/ShareButton.tsx
+================
+'use client';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { Event } from '../../lib/google-sheets';
+import { buildEventInviteText, copyToClipboard } from '../event-helpers';
+import { CheckIcon, ShareIcon } from './EventIcons';
+import styles from './ShareButton.module.css';
+interface ShareButtonProps {
+  event: Event;
+  citySlug: string;
+  btnClassName: string;
+}
+export default function ShareButton({
+  event,
+  citySlug,
+  btnClassName,
+}: ShareButtonProps) {
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inviteText = useMemo(
+    () => buildEventInviteText(event, citySlug),
+    [event, citySlug]
+  );
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+  const handleCopyInvite = useCallback(async () => {
+    const ok = await copyToClipboard(inviteText);
+    if (!ok) return;
+    setCopied(true);
+    if (copyTimerRef.current) {
+      clearTimeout(copyTimerRef.current);
+    }
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  }, [inviteText]);
+  return (
+    <>
+      <button
+        type="button"
+        className={`${btnClassName} ${copied ? styles.copied : ''}`}
+        onClick={handleCopyInvite}
+        title={copied ? 'Copied invite and link' : 'Copy invite and link'}
+        aria-label={
+          copied
+            ? `Copied invite and link for ${event.title}`
+            : `Share ${event.title}`
+        }
+      >
+        {copied ? <CheckIcon /> : <ShareIcon />}
+        {copied ? 'Copied!' : 'Share'}
+      </button>
+      <span className={styles.srOnly} role="status" aria-live="polite">
+        {copied ? 'Event invite and link copied to clipboard.' : ''}
+      </span>
+    </>
+  );
+}
+
+================
+File: app/events/event-helpers.ts
+================
+import { Event } from '../lib/google-sheets';
+import {
+  CityConfig,
+  SITE_URL,
+  getCityPriceConfig,
+  getCityTimeZone,
+} from '../lib/cities';
+import {
+  formatRecurrenceText,
+  formatTimeRange,
+  isEventActiveOnDate,
+  isFreeOrDonation,
+  parseEventPrice,
+  parseHour,
+} from './utils';
+export type EventResolutionResult = {
+  event: Event;
+  canonicalSlug: string;
+  isCanonical: boolean;
+};
+export type NextOccurrenceResult = {
+  date: Date;
+  offsetDays: number;
+  label: string;
+  isToday: boolean;
+  isTomorrow: boolean;
+};
+export function slugifyText(text: string): string {
+  if (!text) return '';
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’‘`]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+function normalizeEventId(id?: string): string {
+  if (!id) return '';
+  return id
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
+  const titleSlug = slugifyText(event.title);
+  const idPart = normalizeEventId(event.id);
+  if (idPart && titleSlug) {
+    return `${titleSlug}-${idPart}`;
+  }
+  if (idPart) {
+    return `event-${idPart}`;
+  }
+  return titleSlug || 'event';
+}
+export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
+  return `/events/${citySlug}/${getEventSlug(event)}`;
+}
+export function getEventAbsoluteUrl(
+  citySlug: string,
+  event: Pick<Event, 'id' | 'title'>
+): string {
+  return `${SITE_URL}${getEventPath(citySlug, event)}`;
+}
+export function resolveEventBySlug(
+  events: Event[],
+  rawSlug: string
+): EventResolutionResult | null {
+  if (!rawSlug || events.length === 0) return null;
+  let decoded = rawSlug;
+  try {
+    decoded = decodeURIComponent(rawSlug);
+  } catch {
+  }
+  const normalizedSlug = decoded.trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+  if (!normalizedSlug) return null;
+  for (const ev of events) {
+    const canonicalSlug = getEventSlug(ev);
+    if (canonicalSlug === normalizedSlug) {
+      return { event: ev, canonicalSlug, isCanonical: true };
+    }
+  }
+  for (const ev of events) {
+    const normId = normalizeEventId(ev.id);
+    if (!normId) continue;
+    if (normId === normalizedSlug) {
+      const canonicalSlug = getEventSlug(ev);
+      return { event: ev, canonicalSlug, isCanonical: false };
+    }
+  }
+  const lastDashIdx = normalizedSlug.lastIndexOf('-');
+  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
+    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
+    const exactTrailingMatch = events.find(
+      (ev) => normalizeEventId(ev.id) === trailingId
+    );
+    if (exactTrailingMatch) {
+      const canonicalSlug = getEventSlug(exactTrailingMatch);
+      return {
+        event: exactTrailingMatch,
+        canonicalSlug,
+        isCanonical: canonicalSlug === normalizedSlug,
+      };
+    }
+  }
+  let bestHyphenatedMatch: Event | null = null;
+  let bestIdLen = 0;
+  for (const ev of events) {
+    const normId = normalizeEventId(ev.id);
+    if (!normId || !normId.includes('-')) continue;
+    if (normalizedSlug.endsWith(`-${normId}`) && normId.length > bestIdLen) {
+      bestHyphenatedMatch = ev;
+      bestIdLen = normId.length;
+    }
+  }
+  if (bestHyphenatedMatch) {
+    const canonicalSlug = getEventSlug(bestHyphenatedMatch);
+    return {
+      event: bestHyphenatedMatch,
+      canonicalSlug,
+      isCanonical: canonicalSlug === normalizedSlug,
+    };
+  }
+  const idLessEvents = events.filter((ev) => !normalizeEventId(ev.id));
+  const idLessTitleMatch = idLessEvents.find(
+    (ev) => slugifyText(ev.title) === normalizedSlug
+  );
+  if (idLessTitleMatch) {
+    const canonicalSlug = getEventSlug(idLessTitleMatch);
+    return {
+      event: idLessTitleMatch,
+      canonicalSlug,
+      isCanonical: canonicalSlug === normalizedSlug,
+    };
+  }
+  const hasTrailingNumericId = /-\d+$/.test(normalizedSlug);
+  if (!hasTrailingNumericId) {
+    const titleMatch = events.find((ev) => slugifyText(ev.title) === normalizedSlug);
+    if (titleMatch) {
+      const canonicalSlug = getEventSlug(titleMatch);
+      return {
+        event: titleMatch,
+        canonicalSlug,
+        isCanonical: canonicalSlug === normalizedSlug,
+      };
+    }
+  }
+  return null;
+}
+export function getCityToday(timeZone: string, now: Date = new Date()): Date {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    }).formatToParts(now);
+    const year = Number(parts.find((p) => p.type === 'year')?.value);
+    const month = Number(parts.find((p) => p.type === 'month')?.value);
+    const day = Number(parts.find((p) => p.type === 'day')?.value);
+    if (year && month && day) {
+      return new Date(year, month - 1, day);
+    }
+  } catch {
+  }
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
+  if (offsetDays === 0) return 'Today';
+  if (offsetDays === 1) return 'Tomorrow';
+  const formatted = date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  return `Next: ${formatted}`;
+}
+export function getNextEventOccurrence(
+  event: Event,
+  timeZone: string,
+  maxDays: number = 90,
+  now: Date = new Date()
+): NextOccurrenceResult | null {
+  const startDay = getCityToday(timeZone, now);
+  for (let offset = 0; offset <= maxDays; offset++) {
+    const candidate = new Date(startDay);
+    candidate.setDate(startDay.getDate() + offset);
+    if (isEventActiveOnDate(event, candidate)) {
+      return {
+        date: candidate,
+        offsetDays: offset,
+        label: formatOccurrenceLabel(candidate, offset),
+        isToday: offset === 0,
+        isTomorrow: offset === 1,
+      };
+    }
+  }
+  return null;
+}
+export function buildScheduleLine(event: Event): string {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const timePart = start && end ? `${start} – ${end}` : start || '';
+  const freqRaw = (event.frequency || '').trim();
+  const notesRaw = (event.frequencyNotes || '').trim();
+  const isPlainWeekly = /^weekly$/i.test(freqRaw) && !notesRaw;
+  const recurrencePart = formatRecurrenceText(freqRaw, notesRaw);
+  const dayRaw = (event.dayOfWeek || '').trim();
+  let whenPart = '';
+  if (dayRaw && recurrencePart && !isPlainWeekly) {
+    if (recurrencePart.toLowerCase().includes(dayRaw.toLowerCase())) {
+      whenPart = recurrencePart;
+    } else {
+      whenPart = `${dayRaw} (${recurrencePart})`;
+    }
+  } else {
+    whenPart = dayRaw || recurrencePart;
+  }
+  return [whenPart, timePart].filter(Boolean).join(' · ');
+}
+export function buildEventInviteText(event: Event, citySlug: string): string {
+  const url = getEventAbsoluteUrl(citySlug, event);
+  const title = event.title.trim();
+  const scheduleLine = buildScheduleLine(event);
+  const venue = (event.venue || event.location || '').trim();
+  const area = (event.area || '').trim();
+  let placePart = '';
+  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
+    placePart = `${venue} (${area})`;
+  } else {
+    placePart = venue || area;
+  }
+  const pricePart = (event.price || '').trim();
+  const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
+  return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
+}
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    if (typeof document !== 'undefined') {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return ok;
+    }
+  } catch {
+  }
+  return false;
+}
+export function buildEventMetaDescription(event: Event, city: CityConfig): string {
+  const schedule = buildScheduleLine(event);
+  const venue = (event.venue || event.location || '').trim();
+  const area = (event.area || '').trim();
+  const price = (event.price || '').trim();
+  const about = (event.about || event.notes || '').replace(/\s+/g, ' ').trim();
+  let locationPhrase = '';
+  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
+    locationPhrase = `${venue} (${area})`;
+  } else {
+    locationPhrase = venue || area || city.heroLocation;
+  }
+  const headParts: string[] = [];
+  if (schedule && locationPhrase) {
+    headParts.push(`${schedule} at ${locationPhrase}`);
+  } else if (schedule) {
+    headParts.push(schedule);
+  } else if (locationPhrase) {
+    headParts.push(`${locationPhrase}, ${city.name}`);
+  }
+  if (price) {
+    headParts.push(price);
+  }
+  const headerSummary = headParts.join(' · ');
+  const full = [headerSummary ? `${headerSummary}.` : '', about]
+    .filter(Boolean)
+    .join(' ');
+  if (full.length <= 160) return full;
+  const sliced = full.slice(0, 157);
+  const lastSpace = sliced.lastIndexOf(' ');
+  const trimmed = lastSpace > 90 ? sliced.slice(0, lastSpace) : sliced;
+  return `${trimmed.replace(/[.,;:\s]+$/, '')}…`;
+}
+function getTimeZoneOffsetString(date: Date, timeZone: string): string {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'longOffset',
+    }).formatToParts(date);
+    const tzName = parts.find((p) => p.type === 'timeZoneName')?.value || '';
+    const match = tzName.match(/GMT([+-]\d{2}):?(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
+    }
+    if (tzName === 'GMT') return 'Z';
+  } catch {
+  }
+  return timeZone === 'America/Bogota' ? '-05:00' : '-07:00';
+}
+function formatLocalIsoDateTime(
+  date: Date,
+  decimalHour: number,
+  timeZone: string
+): string {
+  const totalMinutes = Math.round(decimalHour * 60);
+  const hours = Math.floor(totalMinutes / 60) % 24;
+  const minutes = totalMinutes % 60;
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(hours).padStart(2, '0');
+  const min = String(minutes).padStart(2, '0');
+  const offset = getTimeZoneOffsetString(
+    new Date(Date.UTC(yyyy, date.getMonth(), date.getDate(), 12, 0, 0)),
+    timeZone
+  );
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:00${offset}`;
+}
+function formatLocalIsoDate(date: Date): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+export function buildEventJsonLd(
+  event: Event,
+  city: CityConfig,
+  canonicalUrl: string,
+  occurrence: NextOccurrenceResult | null
+): Record<string, unknown> | null {
+  const venueName = (event.venue || event.location || '').trim();
+  if (!occurrence || (!venueName && !city.name)) {
+    return null;
+  }
+  const timeZone = getCityTimeZone(city);
+  const hasStartTime = Boolean((event.startTime || '').trim());
+  const startHour = parseHour(event.startTime);
+  const startDate = hasStartTime
+    ? formatLocalIsoDateTime(occurrence.date, startHour, timeZone)
+    : formatLocalIsoDate(occurrence.date);
+  let endDate: string | undefined;
+  if (hasStartTime && (event.endTime || '').trim()) {
+    const endHour = parseHour(event.endTime);
+    const endDay = new Date(occurrence.date);
+    if (endHour < startHour) {
+      endDay.setDate(endDay.getDate() + 1);
+    }
+    endDate = formatLocalIsoDateTime(endDay, endHour, timeZone);
+  }
+  const cleanOrg = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const priceConfig = getCityPriceConfig(city);
+  const freeOrDonation = isFreeOrDonation(event.price);
+  const numericPrice = freeOrDonation
+    ? 0
+    : parseEventPrice(event.price, priceConfig.currencyCode);
+  const resolvedOfferPrice =
+    numericPrice !== null
+      ? priceConfig.currencyCode === 'COP' && !freeOrDonation
+        ? Math.round(numericPrice * 1000)
+        : numericPrice
+      : null;
+  const description = (event.about || event.notes || '').trim();
+  const streetAddress = (event.location || '').trim();
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title.trim(),
+    startDate,
+    ...(endDate ? { endDate } : {}),
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    url: canonicalUrl,
+    location: {
+      '@type': 'Place',
+      name: venueName || city.heroLocation,
+      address: {
+        '@type': 'PostalAddress',
+        ...(streetAddress ? { streetAddress } : {}),
+        addressLocality: city.name,
+        ...(city.region ? { addressRegion: city.region } : {}),
+      },
+    },
+    ...(description ? { description } : {}),
+    ...(cleanOrg
+      ? {
+          organizer: {
+            '@type': 'Organization',
+            name: cleanOrg,
+          },
+        }
+      : {}),
+    ...(resolvedOfferPrice !== null
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: resolvedOfferPrice,
+            priceCurrency: priceConfig.currencyCode,
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl,
+          },
+        }
+      : {}),
+  };
+  return jsonLd;
+}
+
+================
+File: app/sitemap.ts
+================
+import type { MetadataRoute } from 'next';
+import { SITE_URL, getAllCities } from './lib/cities';
+import { getEvents } from './lib/google-sheets';
+import { getEventSlug } from './events/event-helpers';
+export const revalidate = 3600;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = SITE_URL;
+  const cities = getAllCities();
+  const cityUrls = cities.map((city) => ({
+    url: `${baseUrl}/events/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+  const cityEventsList = await Promise.all(
+    cities.map(async (city) => ({
+      citySlug: city.slug,
+      events: await getEvents(city, 3600),
+    }))
+  );
+  const seenEventUrls = new Set<string>();
+  const eventUrls: MetadataRoute.Sitemap = [];
+  for (const { citySlug, events } of cityEventsList) {
+    for (const ev of events) {
+      const url = `${baseUrl}/events/${citySlug}/${getEventSlug(ev)}`;
+      if (seenEventUrls.has(url)) continue;
+      seenEventUrls.add(url);
+      eventUrls.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      });
+    }
+  }
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 1.0,
+    },
+    ...cityUrls,
+    ...eventUrls,
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/support`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    },
+  ];
+}
+
+================
 File: app/components/Footer.module.css
 ================
 .footer {
@@ -2291,271 +4184,6 @@ File: app/components/Footer.module.css
     line-height: 1.55;
   }
 }
-
-================
-File: app/events/utils.test.ts
-================
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { Event } from '../lib/google-sheets';
-import { isEventActiveOnDate, isMonthActive } from './utils';
-function makeEvent(overrides: Partial<Event>): Event {
-  return {
-    id: '1',
-    title: 'Test Event',
-    venue: 'Test Venue',
-    organization: 'Test Org',
-    location: '123 Main St',
-    area: 'Downtown',
-    activity: 'Social',
-    activities: ['Social'],
-    dayOfWeek: 'Fri',
-    startTime: '7:00 PM',
-    endTime: '9:00 PM',
-    frequency: 'Weekly',
-    frequencyNotes: '',
-    price: 'Free',
-    preRegistration: 'Drop-in',
-    map: '',
-    social: '',
-    website: '',
-    contact: '',
-    about: '',
-    notes: '',
-    database: '',
-    ...overrides,
-  };
-}
-const jan2Fri = new Date(2026, 0, 2);
-const jan3Sat = new Date(2026, 0, 3);
-const jan4Sun = new Date(2026, 0, 4);
-const jan5Mon = new Date(2026, 0, 5);
-const jan7Wed = new Date(2026, 0, 7);
-const jan9Fri = new Date(2026, 0, 9);
-const jan12Mon = new Date(2026, 0, 12);
-const jan16Fri = new Date(2026, 0, 16);
-const jan23Fri = new Date(2026, 0, 23);
-const jan25Sun = new Date(2026, 0, 25);
-const jan30Fri = new Date(2026, 0, 30);
-const feb3Tue = new Date(2026, 1, 3);
-const feb4Wed = new Date(2026, 1, 4);
-const feb5Thu = new Date(2026, 1, 5);
-const feb6Fri = new Date(2026, 1, 6);
-const feb10Tue = new Date(2026, 1, 10);
-const feb13Fri = new Date(2026, 1, 13);
-const feb17Tue = new Date(2026, 1, 17);
-const feb18Wed = new Date(2026, 1, 18);
-const feb19Thu = new Date(2026, 1, 19);
-const feb20Fri = new Date(2026, 1, 20);
-const feb27Fri = new Date(2026, 1, 27);
-const mar3Tue = new Date(2026, 2, 3);
-const mar17Tue = new Date(2026, 2, 17);
-const mar31Tue = new Date(2026, 2, 31);
-describe('isEventActiveOnDate frequency parsing', () => {
-  it('handles Weekly and Weekly, Sat & Sun', () => {
-    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
-    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
-    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
-    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
-  });
-  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
-    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
-    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
-    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
-    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
-  });
-  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
-    const variations = [
-      { frequency: 'Bi-weekly', frequencyNotes: '' },
-      { frequency: 'Biweekly', frequencyNotes: '' },
-      { frequency: 'bi weekly', frequencyNotes: '' },
-      { frequency: 'Every other week', frequencyNotes: '' },
-      { frequency: 'Every 2 weeks', frequencyNotes: '' },
-      { frequency: 'Alternating weeks', frequencyNotes: '' },
-      { frequency: '', frequencyNotes: 'Every other week' },
-    ];
-    for (const v of variations) {
-      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
-    }
-    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
-  });
-  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
-    const oddEv = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: 'Odd weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
-    const evenEv = makeEvent({
-      frequency: 'Biweekly',
-      frequencyNotes: 'Even weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
-  });
-  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
-    const ev = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: '2nd & 4th Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
-    const fifthTueEv = makeEvent({
-      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
-      dayOfWeek: 'Tue',
-    });
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
-  });
-  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
-    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
-    }
-  });
-  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
-    const lastEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Last Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
-    const finalEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Final Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
-    const firstAndLastSun = makeEvent({
-      frequency: 'Monthly, 1st & Last Sun',
-      dayOfWeek: 'Sun',
-    });
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
-  });
-  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
-    const weeksListEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1 & 3',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
-    const slashEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st/3rd',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
-    const commaAndEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1, 3, and 5',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
-  });
-  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
-    const variations = [
-      'Bi-monthly',
-      'Bimonthly',
-      'Bi monthly',
-      'Every other month',
-      'Every 2 months',
-    ];
-    for (const freq of variations) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
-    }
-    const oddMonthsEv = makeEvent({
-      frequency: 'Bi-monthly',
-      frequencyNotes: 'Odd months',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
-    const ordinalBiMonthlyEv = makeEvent({
-      frequency: 'Every 2 months',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
-    const pairedBiMonthlyEv = makeEvent({
-      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
-      dayOfWeek: 'Wed, Thu',
-    });
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
-  });
-  it('handles paused and hiatus statuses', () => {
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
-    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
-  });
-});
-describe('isMonthActive', () => {
-  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
-  });
-});
 
 ================
 File: app/Page.module.css
@@ -3312,6 +4940,392 @@ File: app/events/components/SuggestEditModal.module.css
     text-align: center;
   }
 }
+
+================
+File: app/events/utils.test.ts
+================
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Event } from '../lib/google-sheets';
+import { CITIES } from '../lib/cities';
+import { isEventActiveOnDate, isMonthActive } from './utils';
+import {
+  slugifyText,
+  getEventSlug,
+  resolveEventBySlug,
+  getNextEventOccurrence,
+  buildEventInviteText,
+  buildEventJsonLd,
+} from './event-helpers';
+function makeEvent(overrides: Partial<Event>): Event {
+  return {
+    id: '1',
+    title: 'Test Event',
+    venue: 'Test Venue',
+    organization: 'Test Org',
+    location: '123 Main St',
+    area: 'Downtown',
+    activity: 'Social',
+    activities: ['Social'],
+    dayOfWeek: 'Fri',
+    startTime: '7:00 PM',
+    endTime: '9:00 PM',
+    frequency: 'Weekly',
+    frequencyNotes: '',
+    price: 'Free',
+    preRegistration: 'Drop-in',
+    map: '',
+    social: '',
+    website: '',
+    contact: '',
+    about: '',
+    notes: '',
+    database: '',
+    ...overrides,
+  };
+}
+const jan2Fri = new Date(2026, 0, 2);
+const jan3Sat = new Date(2026, 0, 3);
+const jan4Sun = new Date(2026, 0, 4);
+const jan5Mon = new Date(2026, 0, 5);
+const jan7Wed = new Date(2026, 0, 7);
+const jan9Fri = new Date(2026, 0, 9);
+const jan12Mon = new Date(2026, 0, 12);
+const jan16Fri = new Date(2026, 0, 16);
+const jan23Fri = new Date(2026, 0, 23);
+const jan25Sun = new Date(2026, 0, 25);
+const jan30Fri = new Date(2026, 0, 30);
+const feb3Tue = new Date(2026, 1, 3);
+const feb4Wed = new Date(2026, 1, 4);
+const feb5Thu = new Date(2026, 1, 5);
+const feb6Fri = new Date(2026, 1, 6);
+const feb10Tue = new Date(2026, 1, 10);
+const feb13Fri = new Date(2026, 1, 13);
+const feb17Tue = new Date(2026, 1, 17);
+const feb18Wed = new Date(2026, 1, 18);
+const feb19Thu = new Date(2026, 1, 19);
+const feb20Fri = new Date(2026, 1, 20);
+const feb27Fri = new Date(2026, 1, 27);
+const mar3Tue = new Date(2026, 2, 3);
+const mar17Tue = new Date(2026, 2, 17);
+const mar31Tue = new Date(2026, 2, 31);
+describe('isEventActiveOnDate frequency parsing', () => {
+  it('handles Weekly and Weekly, Sat & Sun', () => {
+    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
+    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
+    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
+    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
+  });
+  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
+    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
+    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
+    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
+    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
+  });
+  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
+    const variations = [
+      { frequency: 'Bi-weekly', frequencyNotes: '' },
+      { frequency: 'Biweekly', frequencyNotes: '' },
+      { frequency: 'bi weekly', frequencyNotes: '' },
+      { frequency: 'Every other week', frequencyNotes: '' },
+      { frequency: 'Every 2 weeks', frequencyNotes: '' },
+      { frequency: 'Alternating weeks', frequencyNotes: '' },
+      { frequency: '', frequencyNotes: 'Every other week' },
+    ];
+    for (const v of variations) {
+      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
+    }
+    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
+  });
+  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
+    const oddEv = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: 'Odd weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
+    const evenEv = makeEvent({
+      frequency: 'Biweekly',
+      frequencyNotes: 'Even weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
+  });
+  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
+    const ev = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: '2nd & 4th Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
+    const fifthTueEv = makeEvent({
+      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
+  });
+  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
+    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
+    }
+  });
+  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
+    const lastEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Last Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
+    const finalEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Final Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
+    const firstAndLastSun = makeEvent({
+      frequency: 'Monthly, 1st & Last Sun',
+      dayOfWeek: 'Sun',
+    });
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
+  });
+  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
+    const weeksListEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1 & 3',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
+    const slashEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st/3rd',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
+    const commaAndEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1, 3, and 5',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
+  });
+  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
+    const variations = [
+      'Bi-monthly',
+      'Bimonthly',
+      'Bi monthly',
+      'Every other month',
+      'Every 2 months',
+    ];
+    for (const freq of variations) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
+    }
+    const oddMonthsEv = makeEvent({
+      frequency: 'Bi-monthly',
+      frequencyNotes: 'Odd months',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
+    const ordinalBiMonthlyEv = makeEvent({
+      frequency: 'Every 2 months',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
+    const pairedBiMonthlyEv = makeEvent({
+      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
+      dayOfWeek: 'Wed, Thu',
+    });
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
+  });
+  it('handles paused and hiatus statuses', () => {
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
+    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
+  });
+});
+describe('isMonthActive', () => {
+  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
+describe('slug generation and event resolution', () => {
+  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
+    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
+    assert.equal(
+      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
+      'verb-vibe-game-nite-14'
+    );
+    assert.equal(
+      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
+      'cafe-revolucion-meetup'
+    );
+    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
+  });
+  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, and rejects deleted IDs', () => {
+    const events = [
+      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
+      makeEvent({ id: '', title: 'Open Air Sketching' }),
+    ];
+    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
+    assert.ok(exact);
+    assert.equal(exact.event.id, '14');
+    assert.equal(exact.isCanonical, true);
+    const renamed = resolveEventBySlug(events, 'old-title-here-14');
+    assert.ok(renamed);
+    assert.equal(renamed.event.id, '14');
+    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
+    assert.equal(renamed.isCanonical, false);
+    const bareId = resolveEventBySlug(events, '14');
+    assert.ok(bareId);
+    assert.equal(bareId.event.id, '14');
+    assert.equal(bareId.isCanonical, false);
+    const missingId = resolveEventBySlug(events, 'open-air-sketching');
+    assert.ok(missingId);
+    assert.equal(missingId.event.title, 'Open Air Sketching');
+    assert.equal(missingId.isCanonical, true);
+    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
+    assert.equal(deletedId, null);
+  });
+});
+describe('next occurrence and invite text', () => {
+  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
+    const monthlyEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(occ);
+    assert.equal(occ.date.getMonth(), 1);
+    assert.equal(occ.date.getDate(), 6);
+    assert.equal(occ.label.startsWith('Next: '), true);
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
+    assert.equal(
+      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
+      null
+    );
+  });
+  it('builds formatted invite text skipping missing fields cleanly', () => {
+    const fullEv = makeEvent({
+      id: '14',
+      title: 'Verb & Vibe Game Nite',
+      dayOfWeek: 'Fri',
+      startTime: '7:00 PM',
+      endTime: '9:30 PM',
+      venue: 'Café Revolución',
+      area: 'Laureles',
+      price: 'Free',
+    });
+    assert.equal(
+      buildEventInviteText(fullEv, 'medellin-colombia'),
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/events/medellin-colombia/verb-vibe-game-nite-14'
+    );
+    const sparseEv = makeEvent({
+      id: '2',
+      title: 'Mystery Gathering',
+      dayOfWeek: '',
+      frequency: '',
+      startTime: '',
+      endTime: '',
+      venue: '',
+      location: '',
+      area: '',
+      price: '',
+    });
+    assert.equal(
+      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
+      'Mystery Gathering\nhttps://www.someplacesocial.org/events/fort-collins-colorado/mystery-gathering-2'
+    );
+  });
+  it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
+    const ev = makeEvent({
+      id: '14',
+      title: 'Salsa Night',
+      venue: 'Son Havana',
+      location: 'Cra 73 #44-56',
+      price: 'Free',
+      startTime: '8:00 PM',
+      endTime: '11:00 PM',
+    });
+    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
+    const ld = buildEventJsonLd(
+      ev,
+      CITIES['medellin-colombia'],
+      'https://www.someplacesocial.org/events/medellin-colombia/salsa-night-14',
+      occ
+    );
+    assert.ok(ld);
+    assert.equal(ld['@type'], 'Event');
+    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
+    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
+  });
+});
 
 ================
 File: app/events/components/SuggestEditModal.tsx
@@ -5525,443 +7539,6 @@ File: app/events/components/CityHeroCard.module.css
 }
 
 ================
-File: app/events/components/EventCard.module.css
-================
-.card {
-  container-type: inline-size;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  margin-bottom: 14px;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 110px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-  --fact-bg: #faf4e6;
-  --tag-science-ink: #0f5c5c;
-  --tag-science-bg: #d3efec;
-  --tag-craft-ink: #8a3d0c;
-  --tag-craft-bg: #fde4cf;
-  --tag-food-ink: #6b5200;
-  --tag-food-bg: #f4eab8;
-  --tag-community-ink: #3b4a54;
-  --tag-community-bg: #e1e7ea;
-  --tag-music-ink: #5b2a86;
-  --tag-music-bg: #ecdcf7;
-  --tag-trivia-ink: #2d3f7a;
-  --tag-trivia-bg: #dde4f7;
-  --tag-comedy-ink: #8a1f4f;
-  --tag-comedy-bg: #fbdce9;
-  --tag-dance-ink: #852b2b;
-  --tag-dance-bg: #f9dede;
-  --tag-sport-ink: #1f6a42;
-  --tag-sport-bg: #d7f0df;
-  --tag-language-ink: #2c4f7c;
-  --tag-language-bg: #dbe5f7;
-  --tag-default-ink: #4f483e;
-  --tag-default-bg: #f3ead4;
-}
-:global(html[data-theme='dark']) .card {
-  --fact-bg: #25221d;
-  --tag-science-ink: #5eead4;
-  --tag-science-bg: #133330;
-  --tag-craft-ink: #fdba74;
-  --tag-craft-bg: #361c0c;
-  --tag-food-ink: #fde047;
-  --tag-food-bg: #33280c;
-  --tag-community-ink: #cbd5e1;
-  --tag-community-bg: #222b33;
-  --tag-music-ink: #d8b4fe;
-  --tag-music-bg: #2f1847;
-  --tag-trivia-ink: #93c5fd;
-  --tag-trivia-bg: #1c284d;
-  --tag-comedy-ink: #f472b6;
-  --tag-comedy-bg: #3d1427;
-  --tag-dance-ink: #fca5a5;
-  --tag-dance-bg: #3d1919;
-  --tag-sport-ink: #86efac;
-  --tag-sport-bg: #143823;
-  --tag-language-ink: #93c5fd;
-  --tag-language-bg: #1c2b45;
-  --tag-default-ink: #d6cbbe;
-  --tag-default-bg: #2c2720;
-}
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .card {
-    --fact-bg: #25221d;
-    --tag-science-ink: #5eead4;
-    --tag-science-bg: #133330;
-    --tag-craft-ink: #fdba74;
-    --tag-craft-bg: #361c0c;
-    --tag-food-ink: #fde047;
-    --tag-food-bg: #33280c;
-    --tag-community-ink: #cbd5e1;
-    --tag-community-bg: #222b33;
-    --tag-music-ink: #d8b4fe;
-    --tag-music-bg: #2f1847;
-    --tag-trivia-ink: #93c5fd;
-    --tag-trivia-bg: #1c284d;
-    --tag-comedy-ink: #f472b6;
-    --tag-comedy-bg: #3d1427;
-    --tag-dance-ink: #fca5a5;
-    --tag-dance-bg: #3d1919;
-    --tag-sport-ink: #86efac;
-    --tag-sport-bg: #143823;
-    --tag-language-ink: #93c5fd;
-    --tag-language-bg: #1c2b45;
-    --tag-default-ink: #d6cbbe;
-    --tag-default-bg: #2c2720;
-  }
-}
-.card:not(.open):hover {
-  border-color: var(--line-strong);
-}
-.open {
-  border-color: var(--ink);
-  box-shadow: var(--shadow-md);
-  overflow: visible;
-  content-visibility: visible;
-  z-index: 10;
-}
-.icon {
-  flex: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.head {
-  display: grid;
-  grid-template-columns: 84px 1fr 34px;
-  grid-template-areas: "time main chev";
-  gap: 16px;
-  padding: 18px 20px;
-  cursor: pointer;
-  align-items: start;
-  user-select: text;
-  -webkit-user-select: text;
-  -webkit-tap-highlight-color: transparent;
-}
-.time {
-  grid-area: time;
-}
-.time b {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--ink);
-}
-.time span {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1.2;
-  color: var(--muted);
-}
-.main {
-  grid-area: main;
-  min-width: 0;
-}
-.next {
-  display: inline-block;
-  background-color: var(--accent);
-  color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 700;
-  border-radius: 5px;
-  padding: 2px 6px;
-  margin-bottom: 6px;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.title {
-  display: block;
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  color: var(--ink);
-}
-.venue {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 5px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ink);
-}
-.venueIcon {
-  color: var(--muted);
-  margin-top: 2px;
-}
-.host {
-  display: block;
-  margin-top: 2px;
-  margin-left: 22px;
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--muted);
-}
-.hostFlush {
-  margin-left: 0;
-}
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 11px;
-  font-size: 13.5px;
-  line-height: 1.3;
-}
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-}
-.priceFree {
-  color: var(--free);
-}
-.pricePaid {
-  color: var(--ink);
-}
-.area {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-weight: 500;
-}
-.dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--line-strong);
-  flex-shrink: 0;
-}
-.sep2 {
-  display: inline-block;
-}
-.tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.tag {
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 3px 8px;
-  white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.chev {
-  grid-area: chev;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
-}
-.head:hover .chev,
-.chev:hover {
-  background-color: var(--pill-hover);
-}
-.chev:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-.open .chev {
-  background-color: var(--ink);
-  color: var(--bg);
-  transform: rotate(180deg);
-}
-.open .head:hover .chev,
-.open .chev:hover {
-  background-color: var(--ink);
-  opacity: 0.9;
-}
-.body {
-  border-top: 1px solid var(--line);
-  padding: 18px 20px 20px 120px;
-}
-.desc {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-  margin: 0 0 16px;
-  max-width: 580px;
-}
-.facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 18px;
-}
-.desc + .facts {
-  margin-top: -2px;
-}
-.fact {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background-color: var(--fact-bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 7px 13px 7px 11px;
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ink);
-}
-.factIcon {
-  color: var(--muted);
-}
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 80px;
-  width: clamp(72px, 11.4cqi, 80px);
-  height: 58px;
-  padding: 0 4px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background-color: var(--card);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1.15;
-  color: var(--ink);
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
-}
-.btn:not(.btnDisabled):not(.btnPrimary):hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-.btnPrimary {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.btnPrimary:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-.btnActive {
-  border-color: var(--ink);
-  background-color: var(--topbar-bg);
-}
-.btnDisabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.edit {
-  margin-left: auto;
-  font-size: 13px;
-  color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  background: none;
-  border: 0;
-  padding: 6px 2px;
-  cursor: pointer;
-  font-family: inherit;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.edit:hover {
-  color: var(--accent);
-}
-@container (max-width: 600px) {
-  .head {
-    grid-template-columns: 62px 1fr 30px;
-    gap: 10px;
-    padding: 16px 14px;
-  }
-  .time b {
-    font-size: 21px;
-  }
-  .time span {
-    font-size: 12px;
-  }
-  .chev {
-    width: 30px;
-    height: 30px;
-  }
-  .meta {
-    gap: 8px 10px;
-  }
-  .body {
-    padding: 16px 14px;
-  }
-  .tags {
-    flex-basis: 100%;
-  }
-  .sep2 {
-    display: none;
-  }
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 6px;
-  }
-  .btn {
-    width: 100%;
-    min-width: 0;
-    height: 58px;
-    justify-content: center;
-    padding: 0 2px;
-    gap: 5px;
-    font-size: 11px;
-  }
-  .edit {
-    grid-column: 1 / -1;
-    margin: 6px auto 0;
-  }
-}
-@container (min-width: 461px) and (max-width: 600px) {
-  .actions {
-    gap: 8px;
-  }
-  .btn {
-    gap: 6px;
-    font-size: 12px;
-  }
-}
-
-================
 File: app/about/About.module.css
 ================
 .page {
@@ -6776,6 +8353,461 @@ export default function Home() {
 }
 
 ================
+File: app/events/components/EventCard.module.css
+================
+.card {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  margin-bottom: 14px;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 110px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  --fact-bg: #faf4e6;
+  --tag-science-ink: #0f5c5c;
+  --tag-science-bg: #d3efec;
+  --tag-craft-ink: #8a3d0c;
+  --tag-craft-bg: #fde4cf;
+  --tag-food-ink: #6b5200;
+  --tag-food-bg: #f4eab8;
+  --tag-community-ink: #3b4a54;
+  --tag-community-bg: #e1e7ea;
+  --tag-music-ink: #5b2a86;
+  --tag-music-bg: #ecdcf7;
+  --tag-trivia-ink: #2d3f7a;
+  --tag-trivia-bg: #dde4f7;
+  --tag-comedy-ink: #8a1f4f;
+  --tag-comedy-bg: #fbdce9;
+  --tag-dance-ink: #852b2b;
+  --tag-dance-bg: #f9dede;
+  --tag-sport-ink: #1f6a42;
+  --tag-sport-bg: #d7f0df;
+  --tag-language-ink: #2c4f7c;
+  --tag-language-bg: #dbe5f7;
+  --tag-default-ink: #4f483e;
+  --tag-default-bg: #f3ead4;
+}
+:global(html[data-theme='dark']) .card {
+  --fact-bg: #25221d;
+  --tag-science-ink: #5eead4;
+  --tag-science-bg: #133330;
+  --tag-craft-ink: #fdba74;
+  --tag-craft-bg: #361c0c;
+  --tag-food-ink: #fde047;
+  --tag-food-bg: #33280c;
+  --tag-community-ink: #cbd5e1;
+  --tag-community-bg: #222b33;
+  --tag-music-ink: #d8b4fe;
+  --tag-music-bg: #2f1847;
+  --tag-trivia-ink: #93c5fd;
+  --tag-trivia-bg: #1c284d;
+  --tag-comedy-ink: #f472b6;
+  --tag-comedy-bg: #3d1427;
+  --tag-dance-ink: #fca5a5;
+  --tag-dance-bg: #3d1919;
+  --tag-sport-ink: #86efac;
+  --tag-sport-bg: #143823;
+  --tag-language-ink: #93c5fd;
+  --tag-language-bg: #1c2b45;
+  --tag-default-ink: #d6cbbe;
+  --tag-default-bg: #2c2720;
+}
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme='light'])) .card {
+    --fact-bg: #25221d;
+    --tag-science-ink: #5eead4;
+    --tag-science-bg: #133330;
+    --tag-craft-ink: #fdba74;
+    --tag-craft-bg: #361c0c;
+    --tag-food-ink: #fde047;
+    --tag-food-bg: #33280c;
+    --tag-community-ink: #cbd5e1;
+    --tag-community-bg: #222b33;
+    --tag-music-ink: #d8b4fe;
+    --tag-music-bg: #2f1847;
+    --tag-trivia-ink: #93c5fd;
+    --tag-trivia-bg: #1c284d;
+    --tag-comedy-ink: #f472b6;
+    --tag-comedy-bg: #3d1427;
+    --tag-dance-ink: #fca5a5;
+    --tag-dance-bg: #3d1919;
+    --tag-sport-ink: #86efac;
+    --tag-sport-bg: #143823;
+    --tag-language-ink: #93c5fd;
+    --tag-language-bg: #1c2b45;
+    --tag-default-ink: #d6cbbe;
+    --tag-default-bg: #2c2720;
+  }
+}
+.card:not(.open):hover {
+  border-color: var(--line-strong);
+}
+.open {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-md);
+  overflow: visible;
+  content-visibility: visible;
+  z-index: 10;
+}
+.icon {
+  flex: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.head {
+  display: grid;
+  grid-template-columns: 84px 1fr 34px;
+  grid-template-areas: "time main chev";
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  align-items: start;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+.time {
+  grid-area: time;
+}
+.time b {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+.time span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--muted);
+}
+.main {
+  grid-area: main;
+  min-width: 0;
+}
+.next {
+  display: inline-block;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.title {
+  display: block;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+.host {
+  display: block;
+  margin-top: 2px;
+  margin-left: 22px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.hostFlush {
+  margin-left: 0;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 11px;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+.priceFree {
+  color: var(--free);
+}
+.pricePaid {
+  color: var(--ink);
+}
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+.sep2 {
+  display: inline-block;
+}
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.chev {
+  grid-area: chev;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+.head:hover .chev,
+.chev:hover {
+  background-color: var(--pill-hover);
+}
+.chev:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.open .chev {
+  background-color: var(--ink);
+  color: var(--bg);
+  transform: rotate(180deg);
+}
+.open .head:hover .chev,
+.open .chev:hover {
+  background-color: var(--ink);
+  opacity: 0.9;
+}
+.body {
+  border-top: 1px solid var(--line);
+  padding: 18px 20px 20px 120px;
+}
+.bodyHidden {
+  display: none;
+}
+.desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+  margin: 0 0 16px;
+  max-width: 580px;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.desc + .facts {
+  margin-top: -2px;
+}
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--fact-bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 7px 13px 7px 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.factIcon {
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 80px;
+  width: clamp(70px, 11.2cqi, 80px);
+  height: 58px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--card);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+.btn:not(.btnDisabled):not(.btnPrimary):hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.btnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.btnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+.btnActive {
+  border-color: var(--ink);
+  background-color: var(--topbar-bg);
+}
+.btnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.shareBtn {
+  width: clamp(70px, 11.2cqi, 80px);
+}
+.footerLinks {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.permalink,
+.edit {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+}
+.permalink:hover,
+.edit:hover {
+  color: var(--accent);
+}
+@container (max-width: 600px) {
+  .head {
+    grid-template-columns: 62px 1fr 30px;
+    gap: 10px;
+    padding: 16px 14px;
+  }
+  .time b {
+    font-size: 21px;
+  }
+  .time span {
+    font-size: 12px;
+  }
+  .chev {
+    width: 30px;
+    height: 30px;
+  }
+  .meta {
+    gap: 8px 10px;
+  }
+  .body {
+    padding: 16px 14px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .btn {
+    width: 100%;
+    min-width: 0;
+    height: 58px;
+    justify-content: center;
+    padding: 0 4px;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .shareBtn {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 44px;
+    flex-direction: row;
+    gap: 8px;
+    font-size: 13.5px;
+    border-radius: 12px;
+    background-color: var(--topbar-bg);
+    border-color: var(--line-strong);
+  }
+  .footerLinks {
+    grid-column: 1 / -1;
+    margin: 4px auto 0;
+    justify-content: center;
+    gap: 18px;
+  }
+}
+
+================
 File: app/components/Header.module.css
 ================
 .header {
@@ -7373,119 +9405,6 @@ export default function Header({
 }
 
 ================
-File: app/lib/cities.ts
-================
-export type CityPriceConfig = {
-  currencyCode: string;
-  currencySymbol: string;
-  unitSuffix: string;
-  maxPrice: number;
-  step: number;
-  underValue: number;
-  underLabel: string;
-  midLabel: string;
-};
-export type CityAlertBanner = {
-  message: string;
-  linkText?: string;
-  linkHref?: string;
-};
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-  priceConfig?: CityPriceConfig;
-  alertBanner?: CityAlertBanner;
-};
-export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-    priceConfig: {
-      currencyCode: 'COP',
-      currencySymbol: '$',
-      unitSuffix: 'k',
-      maxPrice: 100,
-      step: 5,
-      underValue: 40,
-      underLabel: 'Under 40k',
-      midLabel: '50k',
-    },
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-    priceConfig: {
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      unitSuffix: '',
-      maxPrice: 50,
-      step: 5,
-      underValue: 10,
-      underLabel: 'Under $10',
-      midLabel: '$25',
-    },
-    alertBanner: {
-      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
-      linkText: 'Contact.',
-      linkHref: '/contact',
-    },
-  },
-};
-export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
-  currencyCode: 'USD',
-  currencySymbol: '$',
-  unitSuffix: '',
-  maxPrice: 50,
-  step: 5,
-  underValue: 10,
-  underLabel: 'Under $10',
-  midLabel: '$25',
-};
-export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
-  if (city?.priceConfig) return city.priceConfig;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return CITIES['medellin-colombia'].priceConfig!;
-  }
-  return DEFAULT_USD_PRICE_CONFIG;
-}
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-================
 File: app/events/EventsView.module.css
 ================
 .pageContainer {
@@ -7792,6 +9711,130 @@ File: app/events/EventsView.module.css
   .timeGroupHeader {
     margin: 18px 0 8px;
   }
+}
+
+================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityAlertBanner = {
+  message: string;
+  linkText?: string;
+  linkHref?: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  timeZone: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+  alertBanner?: CityAlertBanner;
+};
+export const SITE_URL = 'https://www.someplacesocial.org';
+export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    timeZone: 'America/Bogota',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    timeZone: 'America/Denver',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Community supported events, group activities, and weekly classes all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+    alertBanner: {
+      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
+      linkText: 'Contact.',
+      linkHref: '/contact',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
+  }
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityTimeZone(city?: CityConfig): string {
+  if (city?.timeZone) return city.timeZone;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return 'America/Bogota';
+  }
+  return 'America/Denver';
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 ================
@@ -8312,6 +10355,8 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }
@@ -8389,10 +10434,13 @@ export function parseContactInfo(rawContact?: string): ContactInfo {
     };
   }
   if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
-    return {
-      type: 'url',
-      url: ensureExternalUrl(trimmed),
-    };
+    const safeUrl = ensureExternalUrl(trimmed);
+    if (safeUrl) {
+      return {
+        type: 'url',
+        url: safeUrl,
+      };
+    }
   }
   return { type: 'none' };
 }
@@ -8538,7 +10586,8 @@ export function filterAndCountEvents(
 File: app/events/components/EventCard.tsx
 ================
 'use client';
-import { memo, useRef } from 'react';
+import { memo, useId, useRef } from 'react';
+import Link from 'next/link';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -8547,7 +10596,21 @@ import {
   ensureExternalUrl,
   getTagStyle,
 } from '../utils';
+import { getEventPath } from '../event-helpers';
 import ContactButton from './ContactButton';
+import ShareButton from './ShareButton';
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CompassIcon,
+  ExternalLinkIcon,
+  GlobeIcon,
+  PenIcon,
+  PinIcon,
+  RepeatIcon,
+  SocialIcon,
+  TagIcon,
+} from './EventIcons';
 import styles from './EventCard.module.css';
 const DRAG_THRESHOLD_PX = 5;
 interface EventCardProps {
@@ -8555,6 +10618,8 @@ interface EventCardProps {
   isOpen: boolean;
   isNextUp: boolean;
   cityName: string;
+  citySlug: string;
+  domId?: string;
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;
 }
@@ -8567,10 +10632,11 @@ function ActionButton({
   label: string;
   icon: React.ReactNode;
 }) {
-  if (href) {
+  const safeHref = href ? ensureExternalUrl(href) : '';
+  if (safeHref) {
     return (
       <a
-        href={ensureExternalUrl(href)}
+        href={safeHref}
         target="_blank"
         rel="noopener noreferrer"
         className={styles.btn}
@@ -8592,9 +10658,12 @@ function EventCard({
   isOpen,
   isNextUp,
   cityName,
+  citySlug,
+  domId,
   onToggle,
   onOpenEdit,
 }: EventCardProps) {
+  const bodyId = useId();
   const headRef = useRef<HTMLDivElement>(null);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const didDragRef = useRef(false);
@@ -8680,187 +10749,17 @@ function EventCard({
     /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
   const hasFacts = Boolean(recurrenceText || event.preRegistration);
-  const mapsHref = event.map
-    ? ensureExternalUrl(event.map)
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        `${displayVenue || event.title}, ${cityName}`
-      )}`;
-  const pinIcon = (className?: string) => (
-    <svg
-      className={className ? `${styles.icon} ${className}` : styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-  const tagIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
-      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
-    </svg>
-  );
-  const compassIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
-    </svg>
-  );
-  const chevIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-  const repeatIcon = (
-    <svg
-      className={`${styles.icon} ${styles.factIcon}`}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m17 2 4 4-4 4" />
-      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-      <path d="m7 22-4-4 4-4" />
-      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
-  const checkIcon = (
-    <svg
-      className={`${styles.icon} ${styles.factIcon}`}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-  const penIcon = (className?: string) => (
-    <svg
-      className={className ? `${styles.icon} ${className}` : styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
-    </svg>
-  );
-  const globeIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-      <path d="M2 12h20" />
-    </svg>
-  );
-  const socialIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-  const shareIcon = (
-    <svg
-      className={styles.icon}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-      <polyline points="16 6 12 2 8 6" />
-      <line x1="12" x2="12" y1="2" y2="15" />
-    </svg>
-  );
+  const mapsHref =
+    (event.map ? ensureExternalUrl(event.map) : '') ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${displayVenue || event.title}, ${cityName}`
+    )}`;
+  const eventHref = getEventPath(citySlug, event);
   return (
-    <article className={`${styles.card} ${isOpen ? styles.open : ''}`}>
+    <article
+      id={domId}
+      className={`${styles.card} ${isOpen ? styles.open : ''}`}
+    >
       <div
         ref={headRef}
         className={styles.head}
@@ -8878,7 +10777,7 @@ function EventCard({
           <h3 className={styles.title}>{event.title}</h3>
           {displayVenue && (
             <div className={styles.venue}>
-              {pinIcon(styles.venueIcon)}
+              <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
               <span>{displayVenue}</span>
             </div>
           )}
@@ -8897,7 +10796,7 @@ function EventCard({
                     isFree ? styles.priceFree : styles.pricePaid
                   }`}
                 >
-                  {tagIcon}
+                  <TagIcon className={styles.icon} />
                   <span>{event.price}</span>
                 </span>
               )}
@@ -8906,7 +10805,7 @@ function EventCard({
               )}
               {event.area && (
                 <span className={styles.area}>
-                  {compassIcon}
+                  <CompassIcon className={styles.icon} />
                   <span>{event.area}</span>
                 </span>
               )}
@@ -8939,6 +10838,7 @@ function EventCard({
           type="button"
           className={styles.chev}
           aria-expanded={isOpen}
+          aria-controls={bodyId}
           aria-label={
             isOpen
               ? `Collapse details for ${event.title}`
@@ -8950,68 +10850,85 @@ function EventCard({
             onToggle();
           }}
         >
-          {chevIcon}
+          <ChevronDownIcon className={styles.icon} />
         </button>
       </div>
-      {isOpen && (
-        <div className={styles.body}>
-          {(event.about || event.notes) && (
-            <p className={styles.desc}>{event.about || event.notes}</p>
-          )}
-          {hasFacts && (
-            <div className={styles.facts}>
-              {recurrenceText && (
-                <span className={styles.fact}>
-                  {repeatIcon}
-                  <span>{recurrenceText}</span>
-                </span>
-              )}
-              {event.preRegistration && (
-                <span className={styles.fact}>
-                  {needsSignupIcon ? penIcon(styles.factIcon) : checkIcon}
-                  <span>{event.preRegistration}</span>
-                </span>
-              )}
-            </div>
-          )}
-          <div className={styles.actions}>
-            <a
-              href={mapsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${styles.btn} ${styles.btnPrimary}`}
-              aria-label="Open in Maps"
-            >
-              {pinIcon()}
-              Maps
-            </a>
-            <ActionButton href={event.website} label="Website" icon={globeIcon} />
-            <ActionButton href={event.social} label="Social" icon={socialIcon} />
-            <ContactButton
-              contact={event.contact}
-              btnClassName={styles.btn}
-              btnActiveClassName={styles.btnActive}
-              btnDisabledClassName={styles.btnDisabled}
-            />
-            <button
-              type="button"
-              className={styles.btn}
-              aria-label={`Share ${event.title}`}
-            >
-              {shareIcon}
-              Share
-            </button>
+      <div
+        id={bodyId}
+        className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
+        aria-hidden={!isOpen}
+      >
+        {(event.about || event.notes) && (
+          <p className={styles.desc}>{event.about || event.notes}</p>
+        )}
+        {hasFacts && (
+          <div className={styles.facts}>
+            {recurrenceText && (
+              <span className={styles.fact}>
+                <RepeatIcon className={`${styles.icon} ${styles.factIcon}`} />
+                <span>{recurrenceText}</span>
+              </span>
+            )}
+            {event.preRegistration && (
+              <span className={styles.fact}>
+                {needsSignupIcon ? (
+                  <PenIcon className={`${styles.icon} ${styles.factIcon}`} />
+                ) : (
+                  <CheckIcon className={`${styles.icon} ${styles.factIcon}`} />
+                )}
+                <span>{event.preRegistration}</span>
+              </span>
+            )}
+          </div>
+        )}
+        <div className={styles.actions}>
+          <a
+            href={mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            aria-label="Open in Maps"
+          >
+            <PinIcon className={styles.icon} />
+            Maps
+          </a>
+          <ActionButton
+            href={event.website}
+            label="Website"
+            icon={<GlobeIcon className={styles.icon} />}
+          />
+          <ActionButton
+            href={event.social}
+            label="Social"
+            icon={<SocialIcon className={styles.icon} />}
+          />
+          <ContactButton
+            contact={event.contact}
+            btnClassName={styles.btn}
+            btnActiveClassName={styles.btnActive}
+            btnDisabledClassName={styles.btnDisabled}
+          />
+          <ShareButton
+            event={event}
+            citySlug={citySlug}
+            btnClassName={`${styles.btn} ${styles.shareBtn}`}
+          />
+          <div className={styles.footerLinks}>
+            <Link href={eventHref} className={styles.permalink}>
+              Open page
+              <ExternalLinkIcon />
+            </Link>
             <button
               type="button"
               className={styles.edit}
               onClick={() => onOpenEdit(event)}
             >
-              {penIcon()}
+              <PenIcon className={styles.icon} />
               Suggest edit
             </button>
           </div>
         </div>
-      )}
+      </div>
     </article>
   );
 }
@@ -9046,11 +10963,11 @@ export type Event = {
   notes: string;
   database: string;
 };
-function getFetchOptions(): RequestInit {
+function getFetchOptions(revalidateSeconds: number = 30): RequestInit {
   if (process.env.NODE_ENV === 'development') {
     return { cache: 'no-store' };
   }
-  return { next: { revalidate: 30 } };
+  return { next: { revalidate: revalidateSeconds } };
 }
 function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
   if (city.csvUrl) return [city.csvUrl];
@@ -9155,13 +11072,13 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
-async function fetchValidSheetText(url: string): Promise<string | null> {
+async function fetchValidSheetText(url: string, revalidateSeconds: number = 30): Promise<string | null> {
   try {
     const response = await fetch(url, {
       headers: {
         Accept: 'text/csv, application/json, text/plain, */*',
       },
-      ...getFetchOptions(),
+      ...getFetchOptions(revalidateSeconds),
     });
     if (!response.ok) {
       console.warn(`[Someplace Social] Sheet request returned HTTP ${response.status} for ${url}`);
@@ -9194,9 +11111,9 @@ async function fetchValidSheetText(url: string): Promise<string | null> {
   }
   return null;
 }
-async function fetchSheetRows(candidateUrls: string[]): Promise<string[][]> {
+async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number = 30): Promise<string[][]> {
   for (const url of candidateUrls) {
-    const text = await fetchValidSheetText(url);
+    const text = await fetchValidSheetText(url, revalidateSeconds);
     if (!text) continue;
     const parsed = parseSheetData(text);
     if (parsed.length >= 2) {
@@ -9274,10 +11191,14 @@ function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   }
   return null;
 }
-async function discoverTabGid(targetId: string, tabNames: string[]): Promise<string | null> {
+async function discoverTabGid(
+  targetId: string,
+  tabNames: string[],
+  revalidateSeconds: number = 30
+): Promise<string | null> {
   const htmlviewUrl = `https:
   try {
-    const response = await fetch(htmlviewUrl, getFetchOptions());
+    const response = await fetch(htmlviewUrl, getFetchOptions(revalidateSeconds));
     if (!response.ok) {
       console.warn(`[Someplace Social] htmlview returned HTTP ${response.status} for ${targetId}`);
       return null;
@@ -9351,11 +11272,14 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   about: 17,
   notes: 18,
 };
-export async function getLastUpdated(city: CityConfig): Promise<string | null> {
+export async function getLastUpdated(
+  city: CityConfig,
+  revalidateSeconds: number = 30
+): Promise<string | null> {
   try {
     const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
     const tabNames = ['LastUpdate', 'Last Update'];
-    const discoveredGid = await discoverTabGid(targetId, tabNames);
+    const discoveredGid = await discoverTabGid(targetId, tabNames, revalidateSeconds);
     const candidateUrls: string[] = [];
     if (discoveredGid) {
       candidateUrls.push(
@@ -9372,7 +11296,7 @@ export async function getLastUpdated(city: CityConfig): Promise<string | null> {
     }
     let cityDateMap: Map<string, string> | null = null;
     for (const url of candidateUrls) {
-      const text = await fetchValidSheetText(url);
+      const text = await fetchValidSheetText(url, revalidateSeconds);
       if (!text) continue;
       const parsedMap = parseLastUpdatedRows(parseSheetData(text));
       if (parsedMap) {
@@ -9394,7 +11318,10 @@ export async function getLastUpdated(city: CityConfig): Promise<string | null> {
     return null;
   }
 }
-export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[]> {
+export async function getEvents(
+  cityOrTab?: CityConfig | string,
+  revalidateSeconds: number = 30
+): Promise<Event[]> {
   try {
     let cityConfig: CityConfig;
     if (typeof cityOrTab === 'string') {
@@ -9403,6 +11330,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
         name: cityOrTab,
         region: '',
         heroLocation: cityOrTab,
+        timeZone: 'America/Denver',
         sheetTab: cityOrTab,
       };
     } else if (cityOrTab) {
@@ -9413,9 +11341,9 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
     const targetId = cityConfig.spreadsheetId || MAIN_SPREADSHEET_ID;
     const discoveredGid = cityConfig.csvUrl
       ? null
-      : await discoverTabGid(targetId, [cityConfig.sheetTab]);
+      : await discoverTabGid(targetId, [cityConfig.sheetTab], revalidateSeconds);
     const candidateUrls = getCandidateUrls(cityConfig, discoveredGid);
-    const rows = await fetchSheetRows(candidateUrls);
+    const rows = await fetchSheetRows(candidateUrls, revalidateSeconds);
     if (rows.length < 2) {
       console.error(`[Someplace Social] No live sheet data found for ${cityConfig.sheetTab} (${targetId})`);
       return [];
@@ -9507,7 +11435,7 @@ export async function getEvents(cityOrTab?: CityConfig | string): Promise<Event[
 File: app/events/CityEventsView.tsx
 ================
 'use client';
-import { useState, useMemo, useDeferredValue, useCallback } from 'react';
+import { useState, useMemo, useDeferredValue, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { CityConfig, getAllCities, getCityPriceConfig } from '../lib/cities';
 import type { Event } from '../lib/google-sheets';
@@ -9515,6 +11443,7 @@ import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
+import { getEventSlug, resolveEventBySlug } from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -9574,6 +11503,8 @@ export default function CityEventsView({
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
+  const pendingScrollIdRef = useRef<string | null>(null);
+  const handledInitialParamRef = useRef<string | null>(null);
   const maxPrice =
     selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
       ? selectedMaxPrice.value
@@ -9585,6 +11516,17 @@ export default function CityEventsView({
     [city.slug]
   );
   const allEvents = initialEvents;
+  const eventKeyMap = useMemo(() => {
+    const map = new Map<Event, string>();
+    const seen = new Map<string, number>();
+    allEvents.forEach((ev) => {
+      const base = getEventSlug(ev);
+      const count = seen.get(base) || 0;
+      seen.set(base, count + 1);
+      map.set(ev, count === 0 ? base : `${base}-${count}`);
+    });
+    return map;
+  }, [allEvents]);
   const rollingWeek = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -9596,6 +11538,54 @@ export default function CityEventsView({
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
+  const syncEventQueryParam = useCallback((slug: string | null) => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get('event');
+    if (slug === null && current === null) return;
+    if (slug !== null && current === slug) return;
+    if (slug) {
+      url.searchParams.set('event', slug);
+    } else {
+      url.searchParams.delete('event');
+    }
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (handledInitialParamRef.current === city.slug) return;
+    handledInitialParamRef.current = city.slug;
+    const eventParam = new URLSearchParams(window.location.search).get('event');
+    if (!eventParam) return;
+    const resolved = resolveEventBySlug(allEvents, eventParam);
+    if (!resolved) return;
+    const targetIdx = allEvents.indexOf(resolved.event);
+    const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
+    const firstActiveDayIdx = indexedTarget
+      ? indexedTarget.activeDays.findIndex(Boolean)
+      : -1;
+    if (firstActiveDayIdx < 0) return;
+    const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
+    const rafId = window.requestAnimationFrame(() => {
+      setActiveDayIdx(firstActiveDayIdx);
+      setOpenEventId(key);
+      syncEventQueryParam(resolved.canonicalSlug);
+      pendingScrollIdRef.current = `event-card-${key}`;
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, [allEvents, city.slug, eventKeyMap, indexedEvents, syncEventQueryParam]);
+  useEffect(() => {
+    if (!pendingScrollIdRef.current) return;
+    const domId = pendingScrollIdRef.current;
+    const el = document.getElementById(domId);
+    if (!el) return;
+    pendingScrollIdRef.current = null;
+    const rafId = window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    return () => window.cancelAnimationFrame(rafId);
+  }, [activeDayIdx, openEventId]);
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
   const now = new Date();
   const nowHour = now.getHours() + now.getMinutes() / 60;
@@ -9675,8 +11665,23 @@ export default function CityEventsView({
   const nextUpEventId = useMemo(() => {
     if (activeDayIdx !== 0) return null;
     const nextEvent = currentList.find((ev) => ev.parsedHour >= nowHour);
-    return nextEvent ? nextEvent.id || nextEvent.title : null;
-  }, [activeDayIdx, currentList, nowHour]);
+    if (!nextEvent) return null;
+    const idx = indexedEvents.indexOf(nextEvent);
+    const sourceEvent = idx >= 0 ? allEvents[idx] : nextEvent;
+    return eventKeyMap.get(sourceEvent) || getEventSlug(nextEvent);
+  }, [activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents, nowHour]);
+  const handleToggleEvent = useCallback(
+    (ev: Event, uniqueId: string) => {
+      if (openEventId === uniqueId) {
+        setOpenEventId(null);
+        syncEventQueryParam(null);
+      } else {
+        setOpenEventId(uniqueId);
+        syncEventQueryParam(getEventSlug(ev));
+      }
+    },
+    [openEventId, syncEventQueryParam]
+  );
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
     maxPrice < priceConfig.maxPrice ||
@@ -9763,6 +11768,7 @@ export default function CityEventsView({
             onSelectDay={(idx) => {
               setActiveDayIdx(idx);
               setOpenEventId(null);
+              syncEventQueryParam(null);
             }}
             dayCounts={dayCounts}
           />
@@ -9810,18 +11816,21 @@ export default function CityEventsView({
                     {group.name}
                     <div className={styles.timeGroupLine} />
                   </div>
-                  {groupEvents.map((ev, i) => {
-                    const uniqueId = ev.id || `${ev.title}-${i}`;
+                  {groupEvents.map((ev) => {
+                    const idx = indexedEvents.indexOf(ev);
+                    const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
+                    const uniqueId =
+                      eventKeyMap.get(sourceEvent) || getEventSlug(ev);
                     return (
                       <EventCard
                         key={uniqueId}
-                        event={ev}
+                        domId={`event-card-${uniqueId}`}
+                        event={sourceEvent}
                         isOpen={openEventId === uniqueId}
                         isNextUp={uniqueId === nextUpEventId}
                         cityName={city.name}
-                        onToggle={() =>
-                          setOpenEventId(openEventId === uniqueId ? null : uniqueId)
-                        }
+                        citySlug={city.slug}
+                        onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
                         onOpenEdit={setEditModalEvent}
                       />
                     );

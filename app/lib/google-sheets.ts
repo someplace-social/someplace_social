@@ -1,5 +1,6 @@
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
+import { expandEventSchedules } from '../events/schedule-splitter';
 export type Event = {
   id: string;
   title: string;
@@ -485,7 +486,9 @@ export async function getEvents(
         };
       })
       .filter((event): event is Event => event !== null);
-    return events.filter((event) => Boolean(event.title));
+    return events
+      .filter((event) => Boolean(event.title))
+      .flatMap(expandEventSchedules);
   } catch (error) {
     console.error('Error fetching events:', error);
     return [];
