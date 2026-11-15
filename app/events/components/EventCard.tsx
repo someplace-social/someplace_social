@@ -7,7 +7,7 @@ import {
   isFreePrice,
   getTagStyle,
 } from '../utils';
-import { getEventDisplayDetails, getEventPath } from '../event-helpers';
+import { getEventDisplayDetails } from '../event-helpers';
 import EventActions from './EventActions';
 import EventFacts from './EventFacts';
 import InlineExternalLink from './InlineExternalLink';
@@ -118,6 +118,7 @@ function EventCard({
   const {
     displayVenue,
     venueUrl,
+    showDistinctAddress,
     organizerName,
     organizerUrl,
     showOrganizer,
@@ -128,7 +129,6 @@ function EventCard({
     mapsHref,
   } = getEventDisplayDetails(event, city.name);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const eventHref = getEventPath(city.slug, event);
 
   return (
     <article
@@ -241,6 +241,12 @@ function EventCard({
         className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
         aria-hidden={!isOpen}
       >
+        {showDistinctAddress && (
+          <div className={styles.address}>
+            <PinIcon className={styles.icon} />
+            <span>{event.location}</span>
+          </div>
+        )}
         {(event.about || event.notes) && (
           <p className={styles.desc}>{event.about || event.notes}</p>
         )}
@@ -256,7 +262,6 @@ function EventCard({
           city={city}
           selectedDate={selectedDate}
           mapsHref={mapsHref}
-          eventHref={eventHref}
           onOpenEdit={() => onOpenEdit(event)}
         />
       </div>

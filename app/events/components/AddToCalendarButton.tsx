@@ -55,13 +55,15 @@ export default function AddToCalendarButton({
 
   if (!details) {
     return (
-      <div
+      <button
+        type="button"
+        disabled
         className={`${btnClassName} ${btnDisabledClassName} ${wrapperClassName || ''}`}
-        aria-disabled="true"
+        title="No upcoming date available"
       >
         <CalendarPlusIcon />
         Add to Calendar
-      </div>
+      </button>
     );
   }
 
