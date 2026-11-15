@@ -10,7 +10,6 @@ interface ProveItButtonProps {
   btnClassName: string;
   btnActiveClassName: string;
   btnDisabledClassName: string;
-  slotClassName?: string;
 }
 
 export default function ProveItButton({
@@ -18,18 +17,16 @@ export default function ProveItButton({
   btnClassName,
   btnActiveClassName,
   btnDisabledClassName,
-  slotClassName,
 }: ProveItButtonProps) {
   const cleanText = useMemo(() => normalizeProveItText(proveIt), [proveIt]);
   const segments = useMemo(
     () => (cleanText ? parseTextWithLinks(cleanText) : []),
     [cleanText]
   );
-
   if (!cleanText) {
     return (
       <div
-        className={`${btnClassName} ${btnDisabledClassName} ${slotClassName || ''}`}
+        className={`${btnClassName} ${btnDisabledClassName}`}
         aria-disabled="true"
       >
         <ShieldCheckIcon />
@@ -37,14 +34,12 @@ export default function ProveItButton({
       </div>
     );
   }
-
   return (
     <ActionPopover
       triggerLabel="Prove It"
       triggerIcon={<ShieldCheckIcon />}
       btnClassName={btnClassName}
       btnActiveClassName={btnActiveClassName}
-      wrapperClassName={slotClassName}
       dialogLabel="Event source and verification details"
       headerLabel="Prove It"
       wide

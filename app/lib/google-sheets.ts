@@ -6,7 +6,9 @@ export type Event = {
   id: string;
   title: string;
   venue: string;
+  venueUrl: string;
   organization: string;
+  organizerUrl: string;
   location: string;
   area: string;
   activity: string;
@@ -18,9 +20,8 @@ export type Event = {
   frequencyNotes: string;
   price: string;
   preRegistration: string;
+  registrationUrl: string;
   map: string;
-  social: string;
-  website: string;
   contact: string;
   proveIt: string;
   about: string;
@@ -297,7 +298,16 @@ const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
   title: ['title', 'eventname', 'name'],
   venue: ['venue', 'place'],
+  venueUrl: ['venueurl', 'venuelink', 'placeurl'],
   organization: ['organization', 'organizer', 'host', 'hostedby', 'organizerhost', 'hostorganization'],
+  organizerUrl: [
+    'organizerurl',
+    'organizationurl',
+    'hosturl',
+    'organizerlink',
+    'organizationlink',
+    'hostlink',
+  ],
   location: ['location', 'address'],
   area: ['area', 'neighborhood'],
   activity: ['activity', 'activities'],
@@ -319,37 +329,22 @@ const HEADER_ALIASES: Record<string, string[]> = {
   ],
   price: ['price', 'cost'],
   preRegistration: ['preregistration', 'prereg', 'registration', 'rsvp', 'preregister'],
+  registrationUrl: [
+    'registrationurl',
+    'preregistrationurl',
+    'preregurl',
+    'rsvpurl',
+    'regurl',
+    'registrationlink',
+    'preregistrationlink',
+    'rsvplink',
+  ],
   map: ['map', 'googlemap', 'googlemaplink', 'maps'],
-  social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
-  website: ['website', 'site', 'url'],
   contact: ['contact', 'whatsapp', 'phone'],
   proveIt: ['proveit', 'proof', 'provelink', 'verification'],
   about: ['about', 'description'],
   notes: ['notes', 'note'],
   database: ['database', 'db', 'sheet'],
-};
-
-const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
-  id: 0,
-  title: 1,
-  venue: 2,
-  organization: 2,
-  location: 3,
-  area: 4,
-  activity: 5,
-  dayOfWeek: 6,
-  startTime: 7,
-  endTime: 8,
-  frequency: 9,
-  frequencyNotes: 10,
-  price: 11,
-  preRegistration: 12,
-  map: 13,
-  social: 14,
-  website: 15,
-  contact: 16,
-  about: 17,
-  notes: 18,
 };
 
 export async function getLastUpdated(
@@ -438,7 +433,10 @@ export async function getEvents(
         headerIndexMap[field] = foundIdx;
       }
     });
-    const hasHeaderMap = Object.keys(headerIndexMap).length > 0;
+    if (Object.keys(headerIndexMap).length === 0) {
+      console.error(`[Someplace Social] Missing recognizable header row for ${cityConfig.sheetTab} (${targetId})`);
+      return [];
+    }
     const cleanCell = (cell: string): string => {
       const trimmed = (cell || '').trim();
       return trimmed.toLowerCase() === 'x' ? '' : trimmed;
@@ -448,15 +446,12 @@ export async function getEvents(
       .map((row): Event | null => {
         if (row.length === 0 || row.every((cell) => cleanCell(cell) === '')) return null;
         const getValue = (field: string): string => {
-          const colIdx = hasHeaderMap ? headerIndexMap[field] : DEFAULT_INDEX_FALLBACK[field];
+          const colIdx = headerIndexMap[field];
           if (colIdx !== undefined && colIdx < row.length) {
             return cleanCell(row[colIdx]);
           }
           return '';
         };
-        const venueVal = getValue('venue');
-        const orgVal = getValue('organization');
-        const locVal = getValue('location');
         const rawActivity = getValue('activity');
         const act1 = getValue('activity1');
         const act2 = getValue('activity2');
@@ -482,9 +477,11 @@ export async function getEvents(
         return {
           id: getValue('id'),
           title: getValue('title'),
-          venue: venueVal,
-          organization: orgVal || venueVal,
-          location: locVal || venueVal,
+          venue: getValue('venue'),
+          venueUrl: getValue('venueUrl'),
+          organization: getValue('organization'),
+          organizerUrl: getValue('organizerUrl'),
+          location: getValue('location'),
           area: getValue('area'),
           activity: activityStr,
           activities: uniqueActs,
@@ -495,9 +492,8 @@ export async function getEvents(
           frequencyNotes: getValue('frequencyNotes'),
           price: getValue('price'),
           preRegistration: getValue('preRegistration'),
+          registrationUrl: getValue('registrationUrl'),
           map: getValue('map'),
-          social: getValue('social'),
-          website: getValue('website'),
           contact: getValue('contact'),
           proveIt: getValue('proveIt'),
           about: getValue('about'),

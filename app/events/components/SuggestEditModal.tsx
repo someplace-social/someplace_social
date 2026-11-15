@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useMemo, useEffect } from 'react';
 import { Event } from '../../lib/google-sheets';
 import styles from './SuggestEditModal.module.css';
@@ -13,9 +12,12 @@ interface SuggestEditModalProps {
 interface FormValues {
   title: string;
   organization: string;
+  organizerUrl: string;
   venue: string;
+  venueUrl: string;
   location: string;
   area: string;
+  map: string;
   dayOfWeek: string;
   startTime: string;
   endTime: string;
@@ -23,17 +25,18 @@ interface FormValues {
   frequencyNotes: string;
   price: string;
   preRegistration: string;
-  map: string;
-  website: string;
-  social: string;
+  registrationUrl: string;
 }
 
 const FIELD_LABELS: Record<keyof FormValues, string> = {
   title: 'Event Title',
   organization: 'Organizer / Host',
+  organizerUrl: 'Organizer URL',
   venue: 'Venue',
+  venueUrl: 'Venue URL',
   location: 'Address / Location',
   area: 'Neighborhood / Area',
+  map: 'Google Maps Link',
   dayOfWeek: 'Day of Week',
   startTime: 'Start Time',
   endTime: 'End Time',
@@ -41,10 +44,43 @@ const FIELD_LABELS: Record<keyof FormValues, string> = {
   frequencyNotes: 'Frequency Notes',
   price: 'Price',
   preRegistration: 'Pre-Registration',
-  map: 'Google Maps Link',
-  website: 'Website',
-  social: 'Social Media / Instagram',
+  registrationUrl: 'Registration URL',
 };
+
+function EditField({
+  id,
+  label,
+  value,
+  changed,
+  placeholder,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  changed: boolean;
+  placeholder?: string;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div className={styles.field}>
+      <div className={styles.fieldHeader}>
+        <label htmlFor={id} className={styles.label}>
+          {label}
+        </label>
+        {changed && <span className={styles.changedBadge}>Edited</span>}
+      </div>
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`${styles.input} ${changed ? styles.inputChanged : ''}`}
+      />
+    </div>
+  );
+}
 
 export default function SuggestEditModal({
   event,
@@ -55,9 +91,12 @@ export default function SuggestEditModal({
     () => ({
       title: event.title || '',
       organization: event.organization || '',
-      venue: event.venue || event.location || '',
+      organizerUrl: event.organizerUrl || '',
+      venue: event.venue || '',
+      venueUrl: event.venueUrl || '',
       location: event.location || '',
       area: event.area || '',
+      map: event.map || '',
       dayOfWeek: event.dayOfWeek || '',
       startTime: event.startTime || '',
       endTime: event.endTime || '',
@@ -65,13 +104,10 @@ export default function SuggestEditModal({
       frequencyNotes: event.frequencyNotes || '',
       price: event.price || '',
       preRegistration: event.preRegistration || '',
-      map: event.map || '',
-      website: event.website || '',
-      social: event.social || '',
+      registrationUrl: event.registrationUrl || '',
     }),
     [event]
   );
-
   const [values, setValues] = useState<FormValues>(initialValues);
   const [notes, setNotes] = useState('');
   const [email, setEmail] = useState('');
@@ -83,13 +119,11 @@ export default function SuggestEditModal({
     const originalTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
-
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && !isSubmitting) {
         onClose();
       }
     }
-
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = originalOverflow;
@@ -109,7 +143,6 @@ export default function SuggestEditModal({
       original: string;
       updated: string;
     }[] = [];
-
     (Object.keys(initialValues) as (keyof FormValues)[]).forEach((key) => {
       const orig = (initialValues[key] || '').trim();
       const curr = (values[key] || '').trim();
@@ -122,7 +155,6 @@ export default function SuggestEditModal({
         });
       }
     });
-
     return diffs;
   }, [initialValues, values]);
 
@@ -131,17 +163,14 @@ export default function SuggestEditModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasChanges) return;
-
     setIsSubmitting(true);
     setStatus(null);
-
     const messageLines: string[] = [
       `Event: ${event.title}`,
       `City: ${cityName}`,
       `Submitter Email: ${email.trim() || 'Not provided'}`,
       '',
     ];
-
     if (changedFields.length > 0) {
       messageLines.push(`EDITED FIELDS (${changedFields.length}):`);
       messageLines.push('────────────────────────────────────────');
@@ -154,13 +183,11 @@ export default function SuggestEditModal({
     } else {
       messageLines.push('No individual field changes detected.');
     }
-
     if (notes.trim()) {
       messageLines.push('');
       messageLines.push('Additional Notes / Context:');
       messageLines.push(notes.trim());
     }
-
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -170,7 +197,6 @@ export default function SuggestEditModal({
           message: messageLines.join('\n'),
         }),
       });
-
       const res = await response.json();
       if (res.success) {
         setStatus({
@@ -225,7 +251,6 @@ export default function SuggestEditModal({
             ✕
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           <div className={styles.modalScrollArea}>
             <div className={styles.section}>
@@ -233,268 +258,153 @@ export default function SuggestEditModal({
                 <span className={styles.sectionTitle}>Event Info</span>
                 <div className={styles.sectionLine} aria-hidden="true" />
               </div>
+              <EditField
+                id="edit-title"
+                label="Event Title"
+                value={values.title}
+                changed={isFieldChanged('title')}
+                onChange={(v) => handleChange('title', v)}
+              />
               <div className={styles.gridRow}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-title" className={styles.label}>
-                      Event Title
-                    </label>
-                    {isFieldChanged('title') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-title"
-                    type="text"
-                    value={values.title}
-                    onChange={(e) => handleChange('title', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('title') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-org" className={styles.label}>
-                      Organizer / Host
-                    </label>
-                    {isFieldChanged('organization') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-org"
-                    type="text"
-                    value={values.organization}
-                    onChange={(e) => handleChange('organization', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('organization') ? styles.inputChanged : ''}`}
-                  />
-                </div>
+                <EditField
+                  id="edit-org"
+                  label="Organizer / Host"
+                  value={values.organization}
+                  changed={isFieldChanged('organization')}
+                  onChange={(v) => handleChange('organization', v)}
+                />
+                <EditField
+                  id="edit-org-url"
+                  label="Organizer URL"
+                  value={values.organizerUrl}
+                  changed={isFieldChanged('organizerUrl')}
+                  placeholder="Website or social profile"
+                  onChange={(v) => handleChange('organizerUrl', v)}
+                />
               </div>
             </div>
-
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>Venue &amp; Location</span>
                 <div className={styles.sectionLine} aria-hidden="true" />
               </div>
               <div className={styles.gridRow}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-venue" className={styles.label}>
-                      Venue
-                    </label>
-                    {isFieldChanged('venue') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-venue"
-                    type="text"
-                    value={values.venue}
-                    onChange={(e) => handleChange('venue', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('venue') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-area" className={styles.label}>
-                      Neighborhood / Area
-                    </label>
-                    {isFieldChanged('area') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-area"
-                    type="text"
-                    value={values.area}
-                    onChange={(e) => handleChange('area', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('area') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.field}>
-                <div className={styles.fieldHeader}>
-                  <label htmlFor="edit-location" className={styles.label}>
-                    Address / Full Location
-                  </label>
-                  {isFieldChanged('location') && <span className={styles.changedBadge}>Edited</span>}
-                </div>
-                <input
-                  id="edit-location"
-                  type="text"
-                  value={values.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
-                  className={`${styles.input} ${isFieldChanged('location') ? styles.inputChanged : ''}`}
+                <EditField
+                  id="edit-venue"
+                  label="Venue"
+                  value={values.venue}
+                  changed={isFieldChanged('venue')}
+                  onChange={(v) => handleChange('venue', v)}
+                />
+                <EditField
+                  id="edit-venue-url"
+                  label="Venue URL"
+                  value={values.venueUrl}
+                  changed={isFieldChanged('venueUrl')}
+                  placeholder="Website or social profile"
+                  onChange={(v) => handleChange('venueUrl', v)}
                 />
               </div>
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-area"
+                  label="Neighborhood / Area"
+                  value={values.area}
+                  changed={isFieldChanged('area')}
+                  onChange={(v) => handleChange('area', v)}
+                />
+                <EditField
+                  id="edit-map"
+                  label="Google Maps Link"
+                  value={values.map}
+                  changed={isFieldChanged('map')}
+                  onChange={(v) => handleChange('map', v)}
+                />
+              </div>
+              <EditField
+                id="edit-location"
+                label="Address / Full Location"
+                value={values.location}
+                changed={isFieldChanged('location')}
+                onChange={(v) => handleChange('location', v)}
+              />
             </div>
-
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>Time &amp; Schedule</span>
                 <div className={styles.sectionLine} aria-hidden="true" />
               </div>
               <div className={styles.gridRow3}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-day" className={styles.label}>
-                      Day of Week
-                    </label>
-                    {isFieldChanged('dayOfWeek') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-day"
-                    type="text"
-                    value={values.dayOfWeek}
-                    onChange={(e) => handleChange('dayOfWeek', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('dayOfWeek') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-start" className={styles.label}>
-                      Start Time
-                    </label>
-                    {isFieldChanged('startTime') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-start"
-                    type="text"
-                    value={values.startTime}
-                    onChange={(e) => handleChange('startTime', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('startTime') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-end" className={styles.label}>
-                      End Time
-                    </label>
-                    {isFieldChanged('endTime') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-end"
-                    type="text"
-                    value={values.endTime}
-                    onChange={(e) => handleChange('endTime', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('endTime') ? styles.inputChanged : ''}`}
-                  />
-                </div>
+                <EditField
+                  id="edit-day"
+                  label="Day of Week"
+                  value={values.dayOfWeek}
+                  changed={isFieldChanged('dayOfWeek')}
+                  onChange={(v) => handleChange('dayOfWeek', v)}
+                />
+                <EditField
+                  id="edit-start"
+                  label="Start Time"
+                  value={values.startTime}
+                  changed={isFieldChanged('startTime')}
+                  onChange={(v) => handleChange('startTime', v)}
+                />
+                <EditField
+                  id="edit-end"
+                  label="End Time"
+                  value={values.endTime}
+                  changed={isFieldChanged('endTime')}
+                  onChange={(v) => handleChange('endTime', v)}
+                />
               </div>
-
               <div className={styles.gridRow}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-freq" className={styles.label}>
-                      Frequency
-                    </label>
-                    {isFieldChanged('frequency') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-freq"
-                    type="text"
-                    value={values.frequency}
-                    onChange={(e) => handleChange('frequency', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('frequency') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-freq-notes" className={styles.label}>
-                      Frequency Notes
-                    </label>
-                    {isFieldChanged('frequencyNotes') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-freq-notes"
-                    type="text"
-                    value={values.frequencyNotes}
-                    onChange={(e) => handleChange('frequencyNotes', e.target.value)}
-                    placeholder="e.g. Even weeks, May-Sep"
-                    className={`${styles.input} ${isFieldChanged('frequencyNotes') ? styles.inputChanged : ''}`}
-                  />
-                </div>
+                <EditField
+                  id="edit-freq"
+                  label="Frequency"
+                  value={values.frequency}
+                  changed={isFieldChanged('frequency')}
+                  onChange={(v) => handleChange('frequency', v)}
+                />
+                <EditField
+                  id="edit-freq-notes"
+                  label="Frequency Notes"
+                  value={values.frequencyNotes}
+                  changed={isFieldChanged('frequencyNotes')}
+                  placeholder="e.g. Even weeks, May-Sep"
+                  onChange={(v) => handleChange('frequencyNotes', v)}
+                />
               </div>
             </div>
-
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>Price &amp; Registration</span>
                 <div className={styles.sectionLine} aria-hidden="true" />
               </div>
               <div className={styles.gridRow}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-price" className={styles.label}>
-                      Price
-                    </label>
-                    {isFieldChanged('price') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-price"
-                    type="text"
-                    value={values.price}
-                    onChange={(e) => handleChange('price', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('price') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-prereg" className={styles.label}>
-                      Pre-Registration / RSVP
-                    </label>
-                    {isFieldChanged('preRegistration') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-prereg"
-                    type="text"
-                    value={values.preRegistration}
-                    onChange={(e) => handleChange('preRegistration', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('preRegistration') ? styles.inputChanged : ''}`}
-                  />
-                </div>
+                <EditField
+                  id="edit-price"
+                  label="Price"
+                  value={values.price}
+                  changed={isFieldChanged('price')}
+                  onChange={(v) => handleChange('price', v)}
+                />
+                <EditField
+                  id="edit-prereg"
+                  label="Pre-Registration / RSVP"
+                  value={values.preRegistration}
+                  changed={isFieldChanged('preRegistration')}
+                  onChange={(v) => handleChange('preRegistration', v)}
+                />
               </div>
+              <EditField
+                id="edit-reg-url"
+                label="Registration URL"
+                value={values.registrationUrl}
+                changed={isFieldChanged('registrationUrl')}
+                placeholder="Only if registration is required or recommended"
+                onChange={(v) => handleChange('registrationUrl', v)}
+              />
             </div>
-
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Links &amp; Social</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <div className={styles.gridRow}>
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-map" className={styles.label}>
-                      Google Maps Link
-                    </label>
-                    {isFieldChanged('map') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-map"
-                    type="text"
-                    value={values.map}
-                    onChange={(e) => handleChange('map', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('map') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.fieldHeader}>
-                    <label htmlFor="edit-social" className={styles.label}>
-                      Instagram / Social Link
-                    </label>
-                    {isFieldChanged('social') && <span className={styles.changedBadge}>Edited</span>}
-                  </div>
-                  <input
-                    id="edit-social"
-                    type="text"
-                    value={values.social}
-                    onChange={(e) => handleChange('social', e.target.value)}
-                    className={`${styles.input} ${isFieldChanged('social') ? styles.inputChanged : ''}`}
-                  />
-                </div>
-              </div>
-            </div>
-
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>Notes &amp; Submitter Info</span>
@@ -512,7 +422,6 @@ export default function SuggestEditModal({
                   className={styles.textarea}
                 />
               </div>
-
               <div className={styles.field}>
                 <label htmlFor="edit-email" className={styles.label}>
                   Your Email (optional)
@@ -527,7 +436,6 @@ export default function SuggestEditModal({
                 />
               </div>
             </div>
-
             {status && (
               <div
                 className={`${styles.statusAlert} ${
@@ -539,7 +447,6 @@ export default function SuggestEditModal({
               </div>
             )}
           </div>
-
           <div className={styles.modalFooter}>
             <div
               className={`${styles.changeSummary} ${

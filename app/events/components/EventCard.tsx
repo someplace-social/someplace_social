@@ -4,25 +4,21 @@ import Link from 'next/link';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
-  formatRecurrenceText,
   isFreePrice,
-  ensureExternalUrl,
   getTagStyle,
 } from '../utils';
-import { getEventPath } from '../event-helpers';
+import { getEventDisplayDetails, getEventPath } from '../event-helpers';
 import ContactButton from './ContactButton';
+import EventFacts from './EventFacts';
+import InlineExternalLink from './InlineExternalLink';
 import ProveItButton from './ProveItButton';
 import ShareButton from './ShareButton';
 import {
-  CheckIcon,
   ChevronDownIcon,
   CompassIcon,
   ExternalLinkIcon,
-  GlobeIcon,
   PenIcon,
   PinIcon,
-  RepeatIcon,
-  SocialIcon,
   TagIcon,
 } from './EventIcons';
 import styles from './EventCard.module.css';
@@ -38,37 +34,6 @@ interface EventCardProps {
   domId?: string;
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;
-}
-
-function ActionButton({
-  href,
-  label,
-  icon,
-}: {
-  href?: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  const safeHref = href ? ensureExternalUrl(href) : '';
-  if (safeHref) {
-    return (
-      <a
-        href={safeHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.btn}
-      >
-        {icon}
-        {label}
-      </a>
-    );
-  }
-  return (
-    <div className={`${styles.btn} ${styles.btnDisabled}`} aria-disabled="true">
-      {icon}
-      {label}
-    </div>
-  );
 }
 
 function EventCard({
@@ -154,29 +119,19 @@ function EventCard({
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
-  const displayVenue = event.venue || event.location;
-  const cleanOrg = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const showOrganizer = Boolean(
-    cleanOrg && cleanOrg.toLowerCase() !== (displayVenue || '').trim().toLowerCase()
-  );
-  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
-  const regLower = (event.preRegistration || '').trim().toLowerCase();
-  const needsSignupIcon =
-    !regLower.startsWith('drop') &&
-    !regLower.startsWith('no ') &&
-    !regLower.includes('no rsvp') &&
-    !regLower.includes('not required') &&
-    /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
+  const {
+    displayVenue,
+    venueUrl,
+    organizerName,
+    organizerUrl,
+    showOrganizer,
+    recurrenceText,
+    preRegistrationText,
+    registrationUrl,
+    needsSignupIcon,
+    mapsHref,
+  } = getEventDisplayDetails(event, cityName);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const hasFacts = Boolean(recurrenceText || event.preRegistration);
-  const mapsHref =
-    (event.map ? ensureExternalUrl(event.map) : '') ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      `${displayVenue || event.title}, ${cityName}`
-    )}`;
   const eventHref = getEventPath(citySlug, event);
 
   return (
@@ -202,14 +157,22 @@ function EventCard({
           {displayVenue && (
             <div className={styles.venue}>
               <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
-              <span>{displayVenue}</span>
+              <InlineExternalLink href={venueUrl}>
+                {displayVenue}
+              </InlineExternalLink>
             </div>
           )}
           {showOrganizer && (
             <div
               className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
             >
-              Hosted by {cleanOrg}
+              Hosted by{' '}
+              <InlineExternalLink
+                href={organizerUrl}
+                className={organizerUrl ? styles.hostLink : undefined}
+              >
+                {organizerName}
+              </InlineExternalLink>
             </div>
           )}
           {hasMeta && (
@@ -285,26 +248,13 @@ function EventCard({
         {(event.about || event.notes) && (
           <p className={styles.desc}>{event.about || event.notes}</p>
         )}
-        {hasFacts && (
-          <div className={styles.facts}>
-            {recurrenceText && (
-              <span className={styles.fact}>
-                <RepeatIcon className={`${styles.icon} ${styles.factIcon}`} />
-                <span>{recurrenceText}</span>
-              </span>
-            )}
-            {event.preRegistration && (
-              <span className={styles.fact}>
-                {needsSignupIcon ? (
-                  <PenIcon className={`${styles.icon} ${styles.factIcon}`} />
-                ) : (
-                  <CheckIcon className={`${styles.icon} ${styles.factIcon}`} />
-                )}
-                <span>{event.preRegistration}</span>
-              </span>
-            )}
-          </div>
-        )}
+        <EventFacts
+          recurrenceText={recurrenceText}
+          preRegistrationText={preRegistrationText}
+          registrationUrl={registrationUrl}
+          needsSignupIcon={needsSignupIcon}
+          className={styles.facts}
+        />
         <div className={styles.actions}>
           <a
             href={mapsHref}
@@ -316,16 +266,6 @@ function EventCard({
             <PinIcon className={styles.icon} />
             Maps
           </a>
-          <ActionButton
-            href={event.website}
-            label="Website"
-            icon={<GlobeIcon className={styles.icon} />}
-          />
-          <ActionButton
-            href={event.social}
-            label="Social"
-            icon={<SocialIcon className={styles.icon} />}
-          />
           <ContactButton
             contact={event.contact}
             btnClassName={styles.btn}
@@ -334,15 +274,14 @@ function EventCard({
           />
           <ProveItButton
             proveIt={event.proveIt}
-            btnClassName={`${styles.btn} ${styles.proveItBtn}`}
+            btnClassName={styles.btn}
             btnActiveClassName={styles.btnActive}
             btnDisabledClassName={styles.btnDisabled}
-            slotClassName={styles.proveItSlot}
           />
           <ShareButton
             event={event}
             citySlug={citySlug}
-            btnClassName={`${styles.btn} ${styles.shareBtn}`}
+            btnClassName={styles.btn}
           />
           <div className={styles.footerLinks}>
             <Link href={eventHref} className={styles.permalink}>

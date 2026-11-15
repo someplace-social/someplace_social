@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react';
 import { getAllCities } from '../../lib/cities';
 import styles from '../Contact.module.css';
+
 const DAYS_OF_WEEK = [
   { id: 'mon', label: 'Mon' },
   { id: 'tue', label: 'Tue' },
@@ -11,15 +12,18 @@ const DAYS_OF_WEEK = [
   { id: 'sat', label: 'Sat' },
   { id: 'sun', label: 'Sun' },
 ] as const;
+
 const PRE_REGISTRATION_OPTIONS = [
   'Drop-in (no RSVP needed)',
   'RSVP recommended',
   'RSVP required',
   'Ticketed / pre-pay',
 ] as const;
+
 interface EventSubmissionFormProps {
   defaultCity?: string;
 }
+
 export default function EventSubmissionForm({ defaultCity }: EventSubmissionFormProps) {
   const cityOptions = useMemo(
     () => getAllCities().map((c) => c.heroLocation),
@@ -29,6 +33,7 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
   const [city, setCity] = useState(initialCity);
   const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
+  const [organizerUrl, setOrganizerUrl] = useState('');
   const [activity, setActivity] = useState('');
   const [otherActivities, setOtherActivities] = useState('');
   const [about, setAbout] = useState('');
@@ -38,14 +43,13 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [venue, setVenue] = useState('');
+  const [venueUrl, setVenueUrl] = useState('');
   const [location, setLocation] = useState('');
   const [area, setArea] = useState('');
   const [map, setMap] = useState('');
   const [price, setPrice] = useState('');
   const [preRegistrationType, setPreRegistrationType] = useState('Drop-in (no RSVP needed)');
-  const [preRegistrationDetails, setPreRegistrationDetails] = useState('');
-  const [website, setWebsite] = useState('');
-  const [social, setSocial] = useState('');
+  const [registrationUrl, setRegistrationUrl] = useState('');
   const [contact, setContact] = useState('');
   const [submitterName, setSubmitterName] = useState('');
   const [submitterEmail, setSubmitterEmail] = useState('');
@@ -53,11 +57,13 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
   const [adminNotes, setAdminNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+
   const toggleDay = (dayLabel: string) => {
     setSelectedDays((prev) =>
       prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
     );
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -67,15 +73,16 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
         ? otherActivities.trim()
         : `${activity ? `${activity}, ` : ''}${otherActivities.trim()}`
       : activity || 'Not specified';
-    const fullPreRegistration = preRegistrationDetails.trim()
-      ? `${preRegistrationType} - ${preRegistrationDetails.trim()}`
-      : preRegistrationType;
     const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
+    const cleanCell = (val: string) => val.replace(/[\t\r\n]+/g, ' ').trim();
     const summaryLines = [
       `=== EVENT SUBMISSION ===`,
       `City: ${city}`,
       `Title: ${title}`,
+      `Organizer: ${organizer || 'Not specified'}`,
+      organizerUrl ? `Organizer URL: ${organizerUrl}` : null,
       `Venue: ${venue || 'Not specified'}`,
+      venueUrl ? `Venue URL: ${venueUrl}` : null,
       `Location / Address: ${location || 'Not specified'}`,
       `Area / Neighborhood: ${area || 'Not specified'}`,
       `Activity: ${fullActivity}`,
@@ -85,10 +92,9 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
       `Frequency: ${frequency}`,
       frequencyNotes ? `Frequency Notes: ${frequencyNotes}` : null,
       `Price: ${price || 'Not specified'}`,
-      `Pre-Registration: ${fullPreRegistration}`,
+      `Pre-Registration: ${preRegistrationType}`,
+      registrationUrl ? `Registration URL: ${registrationUrl}` : null,
       map ? `Google Maps Link: ${map}` : null,
-      social ? `Social Media: ${social}` : null,
-      website ? `Website: ${website}` : null,
       contact ? `Contact (Email / Phone / WhatsApp / Form): ${contact}` : null,
       about ? `About / Description:\n${about}` : null,
       ``,
@@ -99,27 +105,30 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
       adminNotes ? `Notes for Admin:\n${adminNotes}` : null,
       ``,
       `=== COPY-PASTE GOOGLE SHEET ROW (TSV) ===`,
-      `Title\tVenue\tLocation\tArea\tActivity\tDay of Week\tStart Time\tEnd Time\tFrequency\tFrequency Notes\tPrice\tPre-Registration\tMap\tSocial\tWebsite\tContact\tAbout`,
+      `Title\tOrganizer\tOrganizer URL\tVenue\tVenue URL\tLocation\tArea\tActivity\tDay of Week\tStart Time\tEnd Time\tFrequency\tFrequency Notes\tPrice\tPre-Registration\tRegistration URL\tMap\tContact\tAbout`,
       [
-        title.replace(/[\t\r\n]+/g, ' '),
-        venue.replace(/[\t\r\n]+/g, ' '),
-        location.replace(/[\t\r\n]+/g, ' '),
-        area.replace(/[\t\r\n]+/g, ' '),
-        fullActivity.replace(/[\t\r\n]+/g, ' '),
-        daysText.replace(/[\t\r\n]+/g, ' '),
-        startTime.replace(/[\t\r\n]+/g, ' '),
-        endTime.replace(/[\t\r\n]+/g, ' '),
-        frequency.replace(/[\t\r\n]+/g, ' '),
-        frequencyNotes.replace(/[\t\r\n]+/g, ' '),
-        price.replace(/[\t\r\n]+/g, ' '),
-        fullPreRegistration.replace(/[\t\r\n]+/g, ' '),
-        map.replace(/[\t\r\n]+/g, ' '),
-        social.replace(/[\t\r\n]+/g, ' '),
-        website.replace(/[\t\r\n]+/g, ' '),
-        contact.replace(/[\t\r\n]+/g, ' '),
-        about.replace(/[\t\r\n]+/g, ' '),
+        cleanCell(title),
+        cleanCell(organizer),
+        cleanCell(organizerUrl),
+        cleanCell(venue),
+        cleanCell(venueUrl),
+        cleanCell(location),
+        cleanCell(area),
+        cleanCell(fullActivity),
+        cleanCell(daysText),
+        cleanCell(startTime),
+        cleanCell(endTime),
+        cleanCell(frequency),
+        cleanCell(frequencyNotes),
+        cleanCell(price),
+        cleanCell(preRegistrationType),
+        cleanCell(registrationUrl),
+        cleanCell(map),
+        cleanCell(contact),
+        cleanCell(about),
       ].join('\t'),
-    ].filter(Boolean);
+    ].filter((line): line is string => line !== null);
+
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -138,6 +147,7 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
         setCity(initialCity);
         setTitle('');
         setOrganizer('');
+        setOrganizerUrl('');
         setActivity('');
         setOtherActivities('');
         setAbout('');
@@ -147,14 +157,13 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
         setStartTime('');
         setEndTime('');
         setVenue('');
+        setVenueUrl('');
         setLocation('');
         setArea('');
         setMap('');
         setPrice('');
         setPreRegistrationType('Drop-in (no RSVP needed)');
-        setPreRegistrationDetails('');
-        setWebsite('');
-        setSocial('');
+        setRegistrationUrl('');
         setContact('');
         setSubmitterName('');
         setSubmitterEmail('');
@@ -175,6 +184,7 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
       setLoading(false);
     }
   };
+
   return (
     <form
       id="panel-submit"
@@ -258,26 +268,40 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
             />
           </div>
           <div className={styles.field}>
-            <label htmlFor="submit-activity" className={styles.label}>
-              Activity / Category <span className={styles.labelSub}>(optional)</span>
+            <label htmlFor="submit-organizer-url" className={styles.label}>
+              Organizer URL <span className={styles.labelSub}>(optional)</span>
             </label>
-            <select
-              id="submit-activity"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              className={styles.select}
-            >
-              <option value="">Select an activity…</option>
-              <option value="Language exchange">Language exchange</option>
-              <option value="Dance">Dance (Salsa, Bachata, etc.)</option>
-              <option value="Games">Games &amp; Trivia</option>
-              <option value="Music">Live Music &amp; Jam</option>
-              <option value="Social">Social &amp; Drinks</option>
-              <option value="Fitness">Fitness, Sports &amp; Yoga</option>
-              <option value="Art & Craft">Art &amp; Crafts</option>
-              <option value="Other">Other</option>
-            </select>
+            <input
+              id="submit-organizer-url"
+              type="text"
+              value={organizerUrl}
+              onChange={(e) => setOrganizerUrl(e.target.value)}
+              placeholder="e.g. ourgroup.com or instagram.com/ourgroup"
+              className={styles.input}
+            />
+            <span className={styles.helperText}>Website or main social media profile</span>
           </div>
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="submit-activity" className={styles.label}>
+            Activity / Category <span className={styles.labelSub}>(optional)</span>
+          </label>
+          <select
+            id="submit-activity"
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
+            className={styles.select}
+          >
+            <option value="">Select an activity…</option>
+            <option value="Language exchange">Language exchange</option>
+            <option value="Dance">Dance (Salsa, Bachata, etc.)</option>
+            <option value="Games">Games &amp; Trivia</option>
+            <option value="Music">Live Music &amp; Jam</option>
+            <option value="Social">Social &amp; Drinks</option>
+            <option value="Fitness">Fitness, Sports &amp; Yoga</option>
+            <option value="Art & Craft">Art &amp; Crafts</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         {activity === 'Other' && (
           <div className={styles.field}>
@@ -413,6 +437,22 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
             <span className={styles.helperText}>Name of the café, bar, studio, or park</span>
           </div>
           <div className={styles.field}>
+            <label htmlFor="submit-venue-url" className={styles.label}>
+              Venue URL <span className={styles.labelSub}>(optional)</span>
+            </label>
+            <input
+              id="submit-venue-url"
+              type="text"
+              value={venueUrl}
+              onChange={(e) => setVenueUrl(e.target.value)}
+              placeholder="e.g. caferevolucion.com or instagram.com/venue"
+              className={styles.input}
+            />
+            <span className={styles.helperText}>Website or main social media profile</span>
+          </div>
+        </div>
+        <div className={styles.row}>
+          <div className={styles.field}>
             <label htmlFor="submit-area" className={styles.label}>
               Neighborhood / Area <span className={styles.labelSub}>(optional)</span>
             </label>
@@ -425,8 +465,6 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
               className={styles.input}
             />
           </div>
-        </div>
-        <div className={styles.row}>
           <div className={styles.field}>
             <label htmlFor="submit-location" className={styles.label}>
               Address / Specific location <span className={styles.labelSub}>(optional)</span>
@@ -440,19 +478,19 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
               className={styles.input}
             />
           </div>
-          <div className={styles.field}>
-            <label htmlFor="submit-map" className={styles.label}>
-              Google Maps link <span className={styles.labelSub}>(optional)</span>
-            </label>
-            <input
-              id="submit-map"
-              type="text"
-              value={map}
-              onChange={(e) => setMap(e.target.value)}
-              placeholder="e.g. maps.app.goo.gl/…"
-              className={styles.input}
-            />
-          </div>
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="submit-map" className={styles.label}>
+            Google Maps link <span className={styles.labelSub}>(optional)</span>
+          </label>
+          <input
+            id="submit-map"
+            type="text"
+            value={map}
+            onChange={(e) => setMap(e.target.value)}
+            placeholder="e.g. maps.app.goo.gl/…"
+            className={styles.input}
+          />
         </div>
       </fieldset>
       <fieldset className={styles.fieldset}>
@@ -498,54 +536,29 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
           </div>
         </div>
         <div className={styles.field}>
-          <label htmlFor="submit-prereg-details" className={styles.label}>
-            Registration link or instructions <span className={styles.labelSub}>(optional)</span>
+          <label htmlFor="submit-reg-url" className={styles.label}>
+            Registration URL <span className={styles.labelSub}>(optional)</span>
           </label>
           <input
-            id="submit-prereg-details"
+            id="submit-reg-url"
             type="text"
-            value={preRegistrationDetails}
-            onChange={(e) => setPreRegistrationDetails(e.target.value)}
-            placeholder="e.g. eventbrite.com/... or DM @account on Instagram"
+            value={registrationUrl}
+            onChange={(e) => setRegistrationUrl(e.target.value)}
+            placeholder="e.g. eventbrite.com/..."
             className={styles.input}
           />
+          <span className={styles.helperText}>
+            Only needed if registration is required or recommended.
+          </span>
         </div>
       </fieldset>
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>
-          Links &amp; Contact <span className={styles.legendOptional}>(optional)</span>
+          Contact <span className={styles.legendOptional}>(optional)</span>
         </legend>
         <p className={styles.sectionDescription}>
-          How people can find more information or reach out to the organizer.
+          How people can reach out to the organizer with questions.
         </p>
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <label htmlFor="submit-website" className={styles.label}>
-              Website link <span className={styles.labelSub}>(optional)</span>
-            </label>
-            <input
-              id="submit-website"
-              type="text"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="e.g. somedomain.com/event"
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.field}>
-            <label htmlFor="submit-social" className={styles.label}>
-              Social media / Instagram <span className={styles.labelSub}>(optional)</span>
-            </label>
-            <input
-              id="submit-social"
-              type="text"
-              value={social}
-              onChange={(e) => setSocial(e.target.value)}
-              placeholder="e.g. instagram.com/ourgroup or @ourgroup"
-              className={styles.input}
-            />
-          </div>
-        </div>
         <div className={styles.field}>
           <label htmlFor="submit-contact" className={styles.label}>
             Organizer contact <span className={styles.labelSub}>(optional)</span>

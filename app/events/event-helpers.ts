@@ -6,6 +6,7 @@ import {
   getCityTimeZone,
 } from '../lib/cities';
 import {
+  ensureExternalUrl,
   formatRecurrenceText,
   formatTimeRange,
   isEventActiveOnDate,
@@ -13,11 +14,13 @@ import {
   parseEventPrice,
   parseHour,
 } from './utils';
+
 export type EventResolutionResult = {
   event: Event;
   canonicalSlug: string;
   isCanonical: boolean;
 };
+
 export type NextOccurrenceResult = {
   date: Date;
   offsetDays: number;
@@ -25,6 +28,88 @@ export type NextOccurrenceResult = {
   isToday: boolean;
   isTomorrow: boolean;
 };
+
+export type EventDisplayDetails = {
+  displayVenue: string;
+  venueUrl: string;
+  showDistinctAddress: boolean;
+  organizerName: string;
+  organizerUrl: string;
+  showOrganizer: boolean;
+  recurrenceText: string;
+  preRegistrationText: string;
+  registrationUrl: string;
+  needsSignupIcon: boolean;
+  mapsHref: string;
+};
+
+export function getEventDisplayDetails(
+  event: Event,
+  cityName: string
+): EventDisplayDetails {
+  const displayVenue = (event.venue || event.location || '').trim();
+  const venueUrl =
+    displayVenue && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
+  const showDistinctAddress = Boolean(
+    event.venue.trim() &&
+      event.location.trim() &&
+      event.venue.trim().toLowerCase() !== event.location.trim().toLowerCase()
+  );
+  const organizerName = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const organizerUrl =
+    organizerName && event.organizerUrl
+      ? ensureExternalUrl(event.organizerUrl)
+      : '';
+  const showOrganizer = Boolean(
+    organizerName &&
+      organizerName.toLowerCase() !== displayVenue.toLowerCase()
+  );
+  const recurrenceText = formatRecurrenceText(
+    event.frequency,
+    event.frequencyNotes
+  );
+  const rawPreReg = (event.preRegistration || '').trim();
+  const registrationUrl = event.registrationUrl
+    ? ensureExternalUrl(event.registrationUrl)
+    : '';
+  const preRegistrationText = rawPreReg || (registrationUrl ? 'Registration' : '');
+  const regLower = preRegistrationText.toLowerCase();
+  const isDropInOrNoReg =
+    regLower.startsWith('drop') ||
+    regLower.startsWith('no ') ||
+    regLower.includes('no rsvp') ||
+    regLower.includes('no registration') ||
+    regLower.includes('not required') ||
+    regLower.includes('not needed');
+  const needsSignupIcon =
+    Boolean(registrationUrl) ||
+    (!isDropInOrNoReg &&
+      /\b(reg|register|registration|pre-?registration|rsvp|ticket|ticketed|pre-?pay|required|recommended|sign[\s-]?up)\b/i.test(
+        regLower
+      ));
+  const mapsHref =
+    (event.map ? ensureExternalUrl(event.map) : '') ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${displayVenue || event.title}, ${cityName}`
+    )}`;
+  return {
+    displayVenue,
+    venueUrl,
+    showDistinctAddress,
+    organizerName,
+    organizerUrl,
+    showOrganizer,
+    recurrenceText,
+    preRegistrationText,
+    registrationUrl,
+    needsSignupIcon,
+    mapsHref,
+  };
+}
+
 export function slugifyText(text: string): string {
   if (!text) return '';
   return text
@@ -35,6 +120,7 @@ export function slugifyText(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
 function normalizeEventId(id?: string): string {
   if (!id) return '';
   return id
@@ -43,6 +129,7 @@ function normalizeEventId(id?: string): string {
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
 }
+
 export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
   const titleSlug = slugifyText(event.title);
   const idPart = normalizeEventId(event.id);
@@ -54,15 +141,18 @@ export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
   }
   return titleSlug || 'event';
 }
+
 export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
   return `/${citySlug}/events/${getEventSlug(event)}`;
 }
+
 export function getEventAbsoluteUrl(
   citySlug: string,
   event: Pick<Event, 'id' | 'title'>
 ): string {
   return `${SITE_URL}${getEventPath(citySlug, event)}`;
 }
+
 export function resolveEventBySlug(
   events: Event[],
   rawSlug: string
@@ -175,6 +265,7 @@ export function resolveEventBySlug(
   }
   return null;
 }
+
 export function getCityToday(timeZone: string, now: Date = new Date()): Date {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -193,6 +284,7 @@ export function getCityToday(timeZone: string, now: Date = new Date()): Date {
   }
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
+
 export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
   if (offsetDays === 0) return 'Today';
   if (offsetDays === 1) return 'Tomorrow';
@@ -203,6 +295,7 @@ export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
   });
   return `Next: ${formatted}`;
 }
+
 export function getNextEventOccurrence(
   event: Event,
   timeZone: string,
@@ -225,6 +318,7 @@ export function getNextEventOccurrence(
   }
   return null;
 }
+
 export function buildScheduleLine(event: Event): string {
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const timePart = start && end ? `${start} – ${end}` : start || '';
@@ -245,6 +339,7 @@ export function buildScheduleLine(event: Event): string {
   }
   return [whenPart, timePart].filter(Boolean).join(' · ');
 }
+
 export function buildEventInviteText(event: Event, citySlug: string): string {
   const url = getEventAbsoluteUrl(citySlug, event);
   const title = event.title.trim();
@@ -261,6 +356,7 @@ export function buildEventInviteText(event: Event, citySlug: string): string {
   const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
   return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
 }
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -283,6 +379,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
   return false;
 }
+
 export function buildEventMetaDescription(event: Event, city: CityConfig): string {
   const schedule = buildScheduleLine(event);
   const venue = (event.venue || event.location || '').trim();
@@ -316,6 +413,7 @@ export function buildEventMetaDescription(event: Event, city: CityConfig): strin
   const trimmed = lastSpace > 90 ? sliced.slice(0, lastSpace) : sliced;
   return `${trimmed.replace(/[.,;:\s]+$/, '')}…`;
 }
+
 function getTimeZoneOffsetString(date: Date, timeZone: string): string {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -332,6 +430,7 @@ function getTimeZoneOffsetString(date: Date, timeZone: string): string {
   }
   return timeZone === 'America/Bogota' ? '-05:00' : '-07:00';
 }
+
 function formatLocalIsoDateTime(
   date: Date,
   decimalHour: number,
@@ -351,12 +450,14 @@ function formatLocalIsoDateTime(
   );
   return `${yyyy}-${mm}-${dd}T${hh}:${min}:00${offset}`;
 }
+
 function formatLocalIsoDate(date: Date): string {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
+
 export function buildEventJsonLd(
   event: Event,
   city: CityConfig,
@@ -386,6 +487,13 @@ export function buildEventJsonLd(
     .trim()
     .replace(/^hosted\s+by\s+/i, '')
     .trim();
+  const venueUrl =
+    venueName && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
+  const organizerUrl =
+    cleanOrg && event.organizerUrl ? ensureExternalUrl(event.organizerUrl) : '';
+  const registrationUrl = event.registrationUrl
+    ? ensureExternalUrl(event.registrationUrl)
+    : '';
   const priceConfig = getCityPriceConfig(city);
   const freeOrDonation = isFreeOrDonation(event.price);
   const numericPrice = freeOrDonation
@@ -411,6 +519,7 @@ export function buildEventJsonLd(
     location: {
       '@type': 'Place',
       name: venueName || city.heroLocation,
+      ...(venueUrl ? { url: venueUrl } : {}),
       address: {
         '@type': 'PostalAddress',
         ...(streetAddress ? { streetAddress } : {}),
@@ -424,6 +533,7 @@ export function buildEventJsonLd(
           organizer: {
             '@type': 'Organization',
             name: cleanOrg,
+            ...(organizerUrl ? { url: organizerUrl } : {}),
           },
         }
       : {}),
@@ -434,7 +544,7 @@ export function buildEventJsonLd(
             price: resolvedOfferPrice,
             priceCurrency: priceConfig.currencyCode,
             availability: 'https://schema.org/InStock',
-            url: canonicalUrl,
+            url: registrationUrl || canonicalUrl,
           },
         }
       : {}),

@@ -4,28 +4,27 @@ import Link from 'next/link';
 import { CityConfig, getCityTimeZone } from '../../../lib/cities';
 import { Event } from '../../../lib/google-sheets';
 import {
-  ensureExternalUrl,
-  formatRecurrenceText,
   formatTimeRange,
   getTagStyle,
   isFreePrice,
 } from '../../../events/utils';
-import { buildScheduleLine } from '../../../events/event-helpers';
+import {
+  buildScheduleLine,
+  getEventDisplayDetails,
+} from '../../../events/event-helpers';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import ContactButton from '../../../events/components/ContactButton';
+import EventFacts from '../../../events/components/EventFacts';
+import InlineExternalLink from '../../../events/components/InlineExternalLink';
 import ProveItButton from '../../../events/components/ProveItButton';
 import ShareButton from '../../../events/components/ShareButton';
 import SuggestEditModal from '../../../events/components/SuggestEditModal';
 import {
   CalendarIcon,
-  CheckIcon,
   CompassIcon,
-  GlobeIcon,
   PenIcon,
   PinIcon,
-  RepeatIcon,
-  SocialIcon,
   TagIcon,
 } from '../../../events/components/EventIcons';
 import NextOccurrenceBadge from './NextOccurrenceBadge';
@@ -37,37 +36,6 @@ interface EventDetailViewProps {
   initialNextLabel: string | null;
 }
 
-function DetailActionButton({
-  href,
-  label,
-  icon,
-}: {
-  href?: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  const safeHref = href ? ensureExternalUrl(href) : '';
-  if (safeHref) {
-    return (
-      <a
-        href={safeHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.btn}
-      >
-        {icon}
-        {label}
-      </a>
-    );
-  }
-  return (
-    <div className={`${styles.btn} ${styles.btnDisabled}`} aria-disabled="true">
-      {icon}
-      {label}
-    </div>
-  );
-}
-
 export default function EventDetailView({
   city,
   event,
@@ -76,38 +44,25 @@ export default function EventDetailView({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const timeZone = getCityTimeZone(city);
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const scheduleSummary = buildScheduleLine(event) || (start && end ? `${start} – ${end}` : start);
-  const displayVenue = event.venue || event.location;
-  const showDistinctAddress = Boolean(
-    event.venue &&
-      event.location &&
-      event.venue.trim().toLowerCase() !== event.location.trim().toLowerCase()
-  );
-  const cleanOrg = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const showOrganizer = Boolean(
-    cleanOrg && cleanOrg.toLowerCase() !== (displayVenue || '').trim().toLowerCase()
-  );
+  const scheduleSummary =
+    buildScheduleLine(event) || (start && end ? `${start} – ${end}` : start);
+  const {
+    displayVenue,
+    venueUrl,
+    showDistinctAddress,
+    organizerName,
+    organizerUrl,
+    showOrganizer,
+    recurrenceText,
+    preRegistrationText,
+    registrationUrl,
+    needsSignupIcon,
+    mapsHref,
+  } = getEventDisplayDetails(event, city.name);
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
-  const recurrenceText = formatRecurrenceText(event.frequency, event.frequencyNotes);
-  const regLower = (event.preRegistration || '').trim().toLowerCase();
-  const needsSignupIcon =
-    !regLower.startsWith('drop') &&
-    !regLower.startsWith('no ') &&
-    !regLower.includes('no rsvp') &&
-    !regLower.includes('not required') &&
-    /\b(reg|rsvp|ticket|pre-?pay|required|recommended)\b/i.test(regLower);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const hasFacts = Boolean(recurrenceText || event.preRegistration);
   const hasDescription = Boolean((event.about || event.notes || '').trim());
-  const mapsHref =
-    (event.map ? ensureExternalUrl(event.map) : '') ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      `${displayVenue || event.title}, ${city.name}`
-    )}`;
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
 
   return (
@@ -144,7 +99,9 @@ export default function EventDetailView({
                 {displayVenue && (
                   <div className={styles.venue}>
                     <PinIcon className={styles.venueIcon} />
-                    <span>{displayVenue}</span>
+                    <InlineExternalLink href={venueUrl}>
+                      {displayVenue}
+                    </InlineExternalLink>
                   </div>
                 )}
                 {showDistinctAddress && (
@@ -156,7 +113,13 @@ export default function EventDetailView({
                       !displayVenue ? styles.hostFlush : ''
                     }`}
                   >
-                    Hosted by {cleanOrg}
+                    Hosted by{' '}
+                    <InlineExternalLink
+                      href={organizerUrl}
+                      className={organizerUrl ? styles.hostLink : undefined}
+                    >
+                      {organizerName}
+                    </InlineExternalLink>
                   </div>
                 )}
               </div>
@@ -211,26 +174,13 @@ export default function EventDetailView({
             {hasDescription && (
               <p className={styles.desc}>{event.about || event.notes}</p>
             )}
-            {hasFacts && (
-              <div className={styles.facts}>
-                {recurrenceText && (
-                  <span className={styles.fact}>
-                    <RepeatIcon className={styles.factIcon} />
-                    <span>{recurrenceText}</span>
-                  </span>
-                )}
-                {event.preRegistration && (
-                  <span className={styles.fact}>
-                    {needsSignupIcon ? (
-                      <PenIcon className={styles.factIcon} />
-                    ) : (
-                      <CheckIcon className={styles.factIcon} />
-                    )}
-                    <span>{event.preRegistration}</span>
-                  </span>
-                )}
-              </div>
-            )}
+            <EventFacts
+              recurrenceText={recurrenceText}
+              preRegistrationText={preRegistrationText}
+              registrationUrl={registrationUrl}
+              needsSignupIcon={needsSignupIcon}
+              className={styles.facts}
+            />
             <div className={styles.actions}>
               <a
                 href={mapsHref}
@@ -242,16 +192,6 @@ export default function EventDetailView({
                 <PinIcon />
                 Maps
               </a>
-              <DetailActionButton
-                href={event.website}
-                label="Website"
-                icon={<GlobeIcon />}
-              />
-              <DetailActionButton
-                href={event.social}
-                label="Social"
-                icon={<SocialIcon />}
-              />
               <ContactButton
                 contact={event.contact}
                 btnClassName={styles.btn}
@@ -260,15 +200,14 @@ export default function EventDetailView({
               />
               <ProveItButton
                 proveIt={event.proveIt}
-                btnClassName={`${styles.btn} ${styles.proveItBtn}`}
+                btnClassName={styles.btn}
                 btnActiveClassName={styles.btnActive}
                 btnDisabledClassName={styles.btnDisabled}
-                slotClassName={styles.proveItSlot}
               />
               <ShareButton
                 event={event}
                 citySlug={city.slug}
-                btnClassName={`${styles.btn} ${styles.shareBtn}`}
+                btnClassName={styles.btn}
               />
               <button
                 type="button"

@@ -1,0 +1,67 @@
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--fact-bg, var(--topbar-bg));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 7px 13px 7px 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.factIcon {
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.factLink {
+  text-decoration: none;
+  cursor: pointer;
+  border-color: var(--line-strong);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.factLinkText {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color 0.15s ease;
+}
+
+.factExternalIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+  flex: none;
+  transition: color 0.15s ease;
+}
+
+.factLink:hover {
+  border-color: var(--ink);
+  background-color: var(--card-hover);
+  color: var(--accent);
+}
+
+.factLink:hover .factLinkText {
+  text-decoration-color: var(--accent);
+}
+
+.factLink:hover .factIcon,
+.factLink:hover .factExternalIcon {
+  color: var(--accent);
+}
+
+.factLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}

@@ -12,6 +12,7 @@ import {
   getNextEventOccurrence,
   buildEventInviteText,
   buildEventJsonLd,
+  getEventDisplayDetails,
 } from './event-helpers';
 
 function makeEvent(overrides: Partial<Event>): Event {
@@ -19,7 +20,9 @@ function makeEvent(overrides: Partial<Event>): Event {
     id: '1',
     title: 'Test Event',
     venue: 'Test Venue',
+    venueUrl: '',
     organization: 'Test Org',
+    organizerUrl: '',
     location: '123 Main St',
     area: 'Downtown',
     activity: 'Social',
@@ -31,9 +34,8 @@ function makeEvent(overrides: Partial<Event>): Event {
     frequencyNotes: '',
     price: 'Free',
     preRegistration: 'Drop-in',
+    registrationUrl: '',
     map: '',
-    social: '',
-    website: '',
     contact: '',
     proveIt: '',
     about: '',
@@ -80,7 +82,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
     assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
   });
-
   it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
     const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
     assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
@@ -91,7 +92,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
     assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
   });
-
   it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
     const variations = [
       { frequency: 'Bi-weekly', frequencyNotes: '' },
@@ -113,7 +113,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
     assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
   });
-
   it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
     const oddEv = makeEvent({
       frequency: 'Bi-weekly',
@@ -132,7 +131,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
     assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
   });
-
   it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
     const ev = makeEvent({
       frequency: 'Bi-weekly',
@@ -156,7 +154,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
     assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
   });
-
   it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
     for (const freq of ['Monthly', 'Once a month', 'Every month']) {
       const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
@@ -168,7 +165,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
       assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
     }
   });
-
   it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
     const lastEv = makeEvent({
       frequency: 'Monthly',
@@ -195,7 +191,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
     assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
   });
-
   it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
     const weeksListEv = makeEvent({
       frequency: 'Monthly',
@@ -224,7 +219,6 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
     assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
   });
-
   it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
     const variations = [
       'Bi-monthly',
@@ -265,12 +259,10 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
     assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
   });
-
   it('handles paused and hiatus statuses', () => {
     const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
     assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
   });
-
   it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
     const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
     assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
@@ -284,6 +276,8 @@ describe('expandEventSchedules', () => {
       id: 'FOCO0024',
       title: 'Weekly Karaoke Night',
       venue: 'R Bar and Lounge',
+      venueUrl: 'rbar.com',
+      organizerUrl: 'instagram.com/rbar',
       dayOfWeek: 'Mon, Wed, Sat',
       startTime: '7p (Mon) / 8p (Wed, Sat)',
       endTime: '10p (Mon) / 11p (Wed, Sat)',
@@ -297,15 +291,37 @@ describe('expandEventSchedules', () => {
         dayOfWeek: e.dayOfWeek,
         startTime: e.startTime,
         endTime: e.endTime,
+        venueUrl: e.venueUrl,
+        organizerUrl: e.organizerUrl,
       })),
       [
-        { id: 'FOCO0024-mon', dayOfWeek: 'Mon', startTime: '7p', endTime: '10p' },
-        { id: 'FOCO0024-wed', dayOfWeek: 'Wed', startTime: '8p', endTime: '11p' },
-        { id: 'FOCO0024-sat', dayOfWeek: 'Sat', startTime: '8p', endTime: '11p' },
+        {
+          id: 'FOCO0024-mon',
+          dayOfWeek: 'Mon',
+          startTime: '7p',
+          endTime: '10p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+        },
+        {
+          id: 'FOCO0024-wed',
+          dayOfWeek: 'Wed',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+        },
+        {
+          id: 'FOCO0024-sat',
+          dayOfWeek: 'Sat',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+        },
       ]
     );
   });
-
   it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
     const commaEv = makeEvent({
       id: 'E1',
@@ -349,7 +365,6 @@ describe('expandEventSchedules', () => {
       ]
     );
   });
-
   it('supports parallel unlabeled times and same-day multiple slots', () => {
     const parallelEv = makeEvent({
       id: 'E4',
@@ -378,7 +393,6 @@ describe('expandEventSchedules', () => {
       ]
     );
   });
-
   it('keeps single-time multi-day events unsplit', () => {
     const sameTimeMultiDay = makeEvent({
       id: 'FOCO0020',
@@ -420,7 +434,6 @@ describe('slug generation and event resolution', () => {
     );
     assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
   });
-
   it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
     const events = [
       makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
@@ -459,7 +472,7 @@ describe('slug generation and event resolution', () => {
   });
 });
 
-describe('next occurrence and invite text', () => {
+describe('next occurrence, invite text, and JSON-LD', () => {
   it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
     const monthlyEv = makeEvent({
       frequency: 'Monthly',
@@ -477,7 +490,6 @@ describe('next occurrence and invite text', () => {
       null
     );
   });
-
   it('builds formatted invite text skipping missing fields cleanly', () => {
     const fullEv = makeEvent({
       id: '14',
@@ -510,12 +522,15 @@ describe('next occurrence and invite text', () => {
       'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
     );
   });
-
-  it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
+  it('builds valid schema.org/Event JSON-LD including venue, organizer, and registration URLs', () => {
     const ev = makeEvent({
       id: '14',
       title: 'Salsa Night',
       venue: 'Son Havana',
+      venueUrl: 'sonhavana.com',
+      organization: 'Medellín Salsa Collective',
+      organizerUrl: 'instagram.com/medellinsalsa',
+      registrationUrl: 'eventbrite.com/e/salsa-14',
       location: 'Cra 73 #44-56',
       price: 'Free',
       startTime: '8:00 PM',
@@ -527,11 +542,60 @@ describe('next occurrence and invite text', () => {
       CITIES['medellin-colombia'],
       'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14',
       occ
-    );
+    ) as Record<string, unknown>;
     assert.ok(ld);
     assert.equal(ld['@type'], 'Event');
     assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
     assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
+    assert.equal((ld['location'] as Record<string, unknown>)['url'], 'https://sonhavana.com');
+    assert.equal(
+      (ld['organizer'] as Record<string, unknown>)['url'],
+      'https://instagram.com/medellinsalsa'
+    );
+    assert.equal(
+      (ld['offers'] as Record<string, unknown>)['url'],
+      'https://eventbrite.com/e/salsa-14'
+    );
+  });
+});
+
+describe('getEventDisplayDetails', () => {
+  it('normalizes venue, organizer, and registration URLs and falls back to plain text when blank or unsafe', () => {
+    const linked = getEventDisplayDetails(
+      makeEvent({
+        venue: 'Maxline Brewing',
+        venueUrl: 'maxlinebrewing.com',
+        organization: 'Hosted by Geeks Who Drink',
+        organizerUrl: 'https://instagram.com/geekswhodrink',
+        preRegistration: 'Registration required.',
+        registrationUrl: 'geekswhodrink.com/register',
+      }),
+      'Fort Collins'
+    );
+    assert.equal(linked.displayVenue, 'Maxline Brewing');
+    assert.equal(linked.venueUrl, 'https://maxlinebrewing.com');
+    assert.equal(linked.organizerName, 'Geeks Who Drink');
+    assert.equal(linked.organizerUrl, 'https://instagram.com/geekswhodrink');
+    assert.equal(linked.showOrganizer, true);
+    assert.equal(linked.preRegistrationText, 'Registration required.');
+    assert.equal(linked.registrationUrl, 'https://geekswhodrink.com/register');
+    assert.equal(linked.needsSignupIcon, true);
+
+    const blankAndUnsafe = getEventDisplayDetails(
+      makeEvent({
+        venue: 'City Park',
+        venueUrl: 'javascript:alert(1)',
+        organization: '',
+        organizerUrl: '',
+        preRegistration: 'Drop-in (no RSVP needed)',
+        registrationUrl: '',
+      }),
+      'Fort Collins'
+    );
+    assert.equal(blankAndUnsafe.venueUrl, '');
+    assert.equal(blankAndUnsafe.showOrganizer, false);
+    assert.equal(blankAndUnsafe.registrationUrl, '');
+    assert.equal(blankAndUnsafe.needsSignupIcon, false);
   });
 });
 
@@ -543,7 +607,6 @@ describe('linkify Prove It text', () => {
     assert.equal(normalizeProveItText('X'), '');
     assert.equal(normalizeProveItText('  maxlinebrewing.com  '), 'maxlinebrewing.com');
   });
-
   it('links bare URLs in all provided Prove It examples', () => {
     const ex1 = parseTextWithLinks(
       'Go to maxlinebrewing.com/whats-happening , click on the "Community Events" tab. Also, at instagram.com/p/De-X7zOMr6n'
@@ -562,7 +625,6 @@ describe('linkify Prove It text', () => {
         href: 'https://instagram.com/p/De-X7zOMr6n',
       },
     ]);
-
     const ex2 = parseTextWithLinks(
       'Go to breckbrew.com/events/y2k-bingo-night . Also, at instagram.com/p/DfV0gzJjq-e/?img_index=2'
     );
@@ -580,7 +642,6 @@ describe('linkify Prove It text', () => {
         href: 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2',
       },
     ]);
-
     const ex3 = parseTextWithLinks(
       'Go to comedyfortcollins.com/events/142205 , click on "Biography" link for further details like price. Also, at instagram.com/p/DfiPohTlspn'
     );
@@ -599,7 +660,6 @@ describe('linkify Prove It text', () => {
       },
     ]);
   });
-
   it('handles protocols, emails, query params, multi-part TLDs, curly quotes, and ignores non-URLs', () => {
     const mixed = parseTextWithLinks(
       '(See https://www.example.com/events?id=1, or maxlinebrewing.com.) Email info@venue.com at 7:30 p.m. e.g. $12.50.'
@@ -625,7 +685,6 @@ describe('linkify Prove It text', () => {
       },
       { type: 'text', text: ' at 7:30 p.m. e.g. $12.50.' },
     ]);
-
     const extra = parseTextWithLinks(
       'Check “sub.example.com.co” and maxlinebrewing.com?tab=events.'
     );
@@ -644,7 +703,6 @@ describe('linkify Prove It text', () => {
       },
       { type: 'text', text: '.' },
     ]);
-
     const wiki = parseTextWithLinks('Look at en.wikipedia.org/wiki/Pub_quiz_(game).');
     assert.deepEqual(wiki, [
       { type: 'text', text: 'Look at ' },
@@ -655,7 +713,6 @@ describe('linkify Prove It text', () => {
       },
       { type: 'text', text: '.' },
     ]);
-
     const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
     assert.deepEqual(unsafe, [
       { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
