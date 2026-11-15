@@ -502,8 +502,9 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
-  if (!trimmed) return '';
+  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
   if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
+  if (trimmed.startsWith('//')) return `https:${trimmed}`;
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }

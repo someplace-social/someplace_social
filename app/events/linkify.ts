@@ -5,7 +5,7 @@ export type TextSegment =
   | { type: 'link'; text: string; href: string };
 
 const COMMON_TLDS =
-  'co\\.uk|com\\.co|org\\.co|com\\.mx|com\\.au|co\\.nz|com|org|net|edu|gov|io|co|us|uk|ca|de|es|fr|mx|me|tv|fm|gg|ly|ee|gl|app|dev|ai|info|biz|club|events|social|bar|beer|cafe|live|nyc|studio|shop|store|site|online|space|world|today|guide|news|media|blog|page|link|tech';
+  'co\\.uk|com\\.co|org\\.co|com\\.mx|com\\.au|co\\.nz|com|org|net|edu|gov|io|co|us|uk|ca|de|es|fr|mx|me|tv|fm|gg|ly|ee|gl|ma|cc|to|so|ws|sh|xyz|app|dev|ai|info|biz|club|events|social|bar|beer|pub|cafe|live|nyc|studio|shop|store|site|online|space|world|today|guide|news|media|blog|page|link|tech|art|fun|run|bio|life|yoga|dance|music|party|team|work|chat|vip|community';
 
 const EXCLUDED_URL_CHARS = '\\s<>"\'\\u201c\\u201d\\u2018\\u2019';
 
@@ -20,17 +20,16 @@ const TOKEN_REGEX = new RegExp(
   'gi'
 );
 
+const STANDALONE_URL_REGEX =
+  /^(?:https?:\/\/)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(?::\d+)?(?:[/?#]\S*)?$/;
+
 const PHONE_REGEX = /(?:\+\s*)?(?:\(\d{2,4}\)|\d)[\d\s().-]{4,17}\d/g;
 
-export function normalizeProveItText(raw?: string): string {
+export function normalizeContactText(raw?: string): string {
   if (!raw) return '';
   const trimmed = raw.trim();
   if (!trimmed || trimmed.toLowerCase() === 'x') return '';
   return trimmed;
-}
-
-export function normalizeContactText(raw?: string): string {
-  return normalizeProveItText(raw);
 }
 
 function splitTrailingPunctuation(raw: string): { clean: string; trailing: string } {
@@ -166,6 +165,13 @@ export function parseContactWithLinks(rawText: string): TextSegment[] {
     const cleanDigits = display.replace(/[^\d+]/g, '');
     if (cleanDigits.replace(/\D/g, '').length >= 7) {
       return [{ type: 'link', text: display, href: `tel:${cleanDigits}` }];
+    }
+  }
+
+  if (!/^(?:javascript|data|vbscript):/i.test(cleaned) && STANDALONE_URL_REGEX.test(cleaned)) {
+    const href = ensureExternalUrl(cleaned);
+    if (href) {
+      return [{ type: 'link', text: cleaned, href }];
     }
   }
 

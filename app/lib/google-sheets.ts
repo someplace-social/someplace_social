@@ -23,7 +23,10 @@ export type Event = {
   registrationUrl: string;
   map: string;
   contact: string;
-  proveIt: string;
+  url1: string;
+  url1Notes: string;
+  url2: string;
+  url2Notes: string;
   about: string;
   notes: string;
   database: string;
@@ -341,7 +344,10 @@ const HEADER_ALIASES: Record<string, string[]> = {
   ],
   map: ['map', 'googlemap', 'googlemaplink', 'maps'],
   contact: ['contact', 'whatsapp', 'phone'],
-  proveIt: ['proveit', 'proof', 'provelink', 'verification'],
+  url1: ['url1', 'primaryurl', 'mainurl'],
+  url1Notes: ['url1notes', 'url1note'],
+  url2: ['url2', 'secondaryurl'],
+  url2Notes: ['url2notes', 'url2note'],
   about: ['about', 'description'],
   notes: ['notes', 'note'],
   database: ['database', 'db', 'sheet'],
@@ -495,7 +501,10 @@ export async function getEvents(
           registrationUrl: getValue('registrationUrl'),
           map: getValue('map'),
           contact: getValue('contact'),
-          proveIt: getValue('proveIt'),
+          url1: getValue('url1'),
+          url1Notes: getValue('url1Notes'),
+          url2: getValue('url2'),
+          url2Notes: getValue('url2Notes'),
           about: getValue('about'),
           notes: getValue('notes'),
           database: getValue('database'),

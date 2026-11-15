@@ -41,7 +41,53 @@ export type EventDisplayDetails = {
   registrationUrl: string;
   needsSignupIcon: boolean;
   mapsHref: string;
+  moreDetailsUrl: string;
 };
+
+export type ProveItSource = {
+  prefix: 'Listed at ' | 'Also, at ';
+  url: string;
+  href: string;
+  notes: string;
+};
+
+function cleanOptionalField(raw?: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
+  return trimmed;
+}
+
+export function buildProveItSources(
+  event: Pick<Event, 'url1' | 'url1Notes' | 'url2' | 'url2Notes'>
+): ProveItSource[] {
+  const url1 = cleanOptionalField(event.url1);
+  const href1 = url1 ? ensureExternalUrl(url1) : '';
+  const url1Notes = cleanOptionalField(event.url1Notes);
+
+  const url2 = cleanOptionalField(event.url2);
+  const href2 = url2 ? ensureExternalUrl(url2) : '';
+  const url2Notes = cleanOptionalField(event.url2Notes);
+
+  const sources: ProveItSource[] = [];
+  if (url1 && href1) {
+    sources.push({
+      prefix: 'Listed at ',
+      url: url1,
+      href: href1,
+      notes: url1Notes,
+    });
+  }
+  if (url2 && href2) {
+    sources.push({
+      prefix: sources.length === 0 ? 'Listed at ' : 'Also, at ',
+      url: url2,
+      href: href2,
+      notes: url2Notes,
+    });
+  }
+  return sources;
+}
 
 export function getEventDisplayDetails(
   event: Event,
@@ -95,6 +141,9 @@ export function getEventDisplayDetails(
     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       `${displayVenue || event.title}, ${cityName}`
     )}`;
+  const moreDetailsUrl = cleanOptionalField(event.url1)
+    ? ensureExternalUrl(event.url1)
+    : '';
   return {
     displayVenue,
     venueUrl,
@@ -107,6 +156,7 @@ export function getEventDisplayDetails(
     registrationUrl,
     needsSignupIcon,
     mapsHref,
+    moreDetailsUrl,
   };
 }
 
