@@ -1,3 +1,12 @@
+.shareWrapper {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.shareWrapper > button {
+  flex: 1 1 auto;
+}
 button.copied,
 button.copied:hover {
   background-color: var(--free-bg);

@@ -4,11 +4,13 @@ import { Event } from '../../lib/google-sheets';
 import { buildEventInviteText, copyToClipboard } from '../event-helpers';
 import { CheckIcon, ShareIcon } from './EventIcons';
 import styles from './ShareButton.module.css';
+
 interface ShareButtonProps {
   event: Event;
   citySlug: string;
   btnClassName: string;
 }
+
 export default function ShareButton({
   event,
   citySlug,
@@ -20,6 +22,7 @@ export default function ShareButton({
     () => buildEventInviteText(event, citySlug),
     [event, citySlug]
   );
+
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) {
@@ -27,6 +30,7 @@ export default function ShareButton({
       }
     };
   }, []);
+
   const handleCopyInvite = useCallback(async () => {
     const ok = await copyToClipboard(inviteText);
     if (!ok) return;
@@ -36,8 +40,9 @@ export default function ShareButton({
     }
     copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, [inviteText]);
+
   return (
-    <>
+    <div className={styles.shareWrapper}>
       <button
         type="button"
         className={`${btnClassName} ${copied ? styles.copied : ''}`}
@@ -55,6 +60,6 @@ export default function ShareButton({
       <span className={styles.srOnly} role="status" aria-live="polite">
         {copied ? 'Event invite and link copied to clipboard.' : ''}
       </span>
-    </>
+    </div>
   );
 }

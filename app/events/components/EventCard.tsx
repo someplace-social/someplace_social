@@ -1,6 +1,6 @@
 'use client';
 import { memo, useId, useRef } from 'react';
-import Link from 'next/link';
+import type { CityConfig } from '../../lib/cities';
 import { Event } from '../../lib/google-sheets';
 import {
   formatTimeRange,
@@ -8,16 +8,12 @@ import {
   getTagStyle,
 } from '../utils';
 import { getEventDisplayDetails, getEventPath } from '../event-helpers';
-import ContactButton from './ContactButton';
+import EventActions from './EventActions';
 import EventFacts from './EventFacts';
 import InlineExternalLink from './InlineExternalLink';
-import ProveItButton from './ProveItButton';
-import ShareButton from './ShareButton';
 import {
   ChevronDownIcon,
   CompassIcon,
-  ExternalLinkIcon,
-  PenIcon,
   PinIcon,
   TagIcon,
 } from './EventIcons';
@@ -29,8 +25,8 @@ interface EventCardProps {
   event: Event;
   isOpen: boolean;
   isNextUp: boolean;
-  cityName: string;
-  citySlug: string;
+  city: CityConfig;
+  selectedDate: Date;
   domId?: string;
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;
@@ -40,8 +36,8 @@ function EventCard({
   event,
   isOpen,
   isNextUp,
-  cityName,
-  citySlug,
+  city,
+  selectedDate,
   domId,
   onToggle,
   onOpenEdit,
@@ -130,9 +126,9 @@ function EventCard({
     registrationUrl,
     needsSignupIcon,
     mapsHref,
-  } = getEventDisplayDetails(event, cityName);
+  } = getEventDisplayDetails(event, city.name);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const eventHref = getEventPath(citySlug, event);
+  const eventHref = getEventPath(city.slug, event);
 
   return (
     <article
@@ -255,49 +251,14 @@ function EventCard({
           needsSignupIcon={needsSignupIcon}
           className={styles.facts}
         />
-        <div className={styles.actions}>
-          <a
-            href={mapsHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            aria-label="Open in Maps"
-          >
-            <PinIcon className={styles.icon} />
-            Maps
-          </a>
-          <ContactButton
-            contact={event.contact}
-            btnClassName={styles.btn}
-            btnActiveClassName={styles.btnActive}
-            btnDisabledClassName={styles.btnDisabled}
-          />
-          <ProveItButton
-            proveIt={event.proveIt}
-            btnClassName={styles.btn}
-            btnActiveClassName={styles.btnActive}
-            btnDisabledClassName={styles.btnDisabled}
-          />
-          <ShareButton
-            event={event}
-            citySlug={citySlug}
-            btnClassName={styles.btn}
-          />
-          <div className={styles.footerLinks}>
-            <Link href={eventHref} className={styles.permalink}>
-              Open page
-              <ExternalLinkIcon />
-            </Link>
-            <button
-              type="button"
-              className={styles.edit}
-              onClick={() => onOpenEdit(event)}
-            >
-              <PenIcon className={styles.icon} />
-              Suggest edit
-            </button>
-          </div>
-        </div>
+        <EventActions
+          event={event}
+          city={city}
+          selectedDate={selectedDate}
+          mapsHref={mapsHref}
+          eventHref={eventHref}
+          onOpenEdit={() => onOpenEdit(event)}
+        />
       </div>
     </article>
   );

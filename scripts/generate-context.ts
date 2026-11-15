@@ -4,22 +4,31 @@ import process from 'node:process';
 
 const DEFAULT_INCLUDES: string[] = [
   'app/**/*',
-  'components/**/*',
-  'lib/**/*',
+  'proxy.ts',
+  'scripts/**/*',
   'package.json',
   'next.config.ts',
   'tsconfig.json',
   'eslint.config.mjs',
-  'postcss.config.mjs',
-  'README.md'
+  'repomix.config.json'
 ];
 
 const SECTIONS: Record<string, string[]> = {
   app: ['app/**/*'],
-  components: ['app/components/**/*', 'components/**/*'],
+  components: ['app/components/**/*', 'app/events/components/**/*'],
+  events: ['app/events/**/*', 'app/[city]/events/**/*'],
+  city: ['app/[city]/**/*', 'app/lib/cities.ts', 'proxy.ts'],
   api: ['app/api/**/*'],
-  medellin: ['app/medellin/**/*'],
-  core: ['app/layout.tsx', 'app/page.tsx', 'app/globals.css', 'package.json', 'next.config.ts', 'tsconfig.json']
+  core: [
+    'app/layout.tsx',
+    'app/page.tsx',
+    'app/globals.css',
+    'proxy.ts',
+    'package.json',
+    'next.config.ts',
+    'tsconfig.json'
+  ],
+  scripts: ['scripts/**/*', 'repomix.config.json']
 };
 
 const IGNORES: string[] = [
@@ -37,13 +46,18 @@ const IGNORES: string[] = [
   '**/*.ico',
   '**/*.pdf',
   '**/*.lock',
+  '**/*.pem',
+  '**/*.key',
   '**/dist/**',
   'repomix-output.txt',
+  'repomix.temp.*',
   'project-context.txt',
   'ctx-map.txt',
   '.claude/settings.local.json',
   '**/.env*',
-  '.env*'
+  '.env*',
+  '.env.local',
+  '**/.env.local'
 ];
 
 function skeletonize(content: string): string {
@@ -57,8 +71,15 @@ function skeletonize(content: string): string {
 
 function generateProjectTree(dir = '.', prefix = ''): string {
   const ignoredFolders = new Set(['.git', '.next', 'node_modules', 'public', '.vercel', 'dist', 'out']);
+  const ignoredFiles = new Set(['repomix-output.txt', 'next-env.d.ts']);
   const items = fs.readdirSync(dir, { withFileTypes: true })
-    .filter((i: fs.Dirent) => !ignoredFolders.has(i.name) && !i.name.startsWith('.') && !i.name.includes('lock') && !i.name.includes('.temp.'))
+    .filter((i: fs.Dirent) =>
+      !ignoredFolders.has(i.name) &&
+      !ignoredFiles.has(i.name) &&
+      !i.name.startsWith('.') &&
+      !i.name.includes('lock') &&
+      !i.name.includes('.temp.')
+    )
     .sort((a: fs.Dirent, b: fs.Dirent) => (b.isDirectory() ? 1 : 0) - (a.isDirectory() ? 1 : 0) || a.name.localeCompare(b.name));
 
   let output = '';
@@ -134,8 +155,8 @@ async function main(): Promise<void> {
     output: {
       filePath: tempOutputFile,
       style: 'plain',
-      removeComments: true,
-      removeEmptyLines: true,
+      removeComments: false,
+      removeEmptyLines: !isFull,
       showLineNumbers: false,
       topFilesLength: 0,
       showSummary: false,

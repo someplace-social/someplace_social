@@ -14,16 +14,13 @@ import {
 } from '../../../events/event-helpers';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import ContactButton from '../../../events/components/ContactButton';
+import EventActions from '../../../events/components/EventActions';
 import EventFacts from '../../../events/components/EventFacts';
 import InlineExternalLink from '../../../events/components/InlineExternalLink';
-import ProveItButton from '../../../events/components/ProveItButton';
-import ShareButton from '../../../events/components/ShareButton';
 import SuggestEditModal from '../../../events/components/SuggestEditModal';
 import {
   CalendarIcon,
   CompassIcon,
-  PenIcon,
   PinIcon,
   TagIcon,
 } from '../../../events/components/EventIcons';
@@ -181,43 +178,12 @@ export default function EventDetailView({
               needsSignupIcon={needsSignupIcon}
               className={styles.facts}
             />
-            <div className={styles.actions}>
-              <a
-                href={mapsHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                aria-label="Open in Maps"
-              >
-                <PinIcon />
-                Maps
-              </a>
-              <ContactButton
-                contact={event.contact}
-                btnClassName={styles.btn}
-                btnActiveClassName={styles.btnActive}
-                btnDisabledClassName={styles.btnDisabled}
-              />
-              <ProveItButton
-                proveIt={event.proveIt}
-                btnClassName={styles.btn}
-                btnActiveClassName={styles.btnActive}
-                btnDisabledClassName={styles.btnDisabled}
-              />
-              <ShareButton
-                event={event}
-                citySlug={city.slug}
-                btnClassName={styles.btn}
-              />
-              <button
-                type="button"
-                className={styles.edit}
-                onClick={() => setEditModalOpen(true)}
-              >
-                <PenIcon />
-                Suggest edit
-              </button>
-            </div>
+            <EventActions
+              event={event}
+              city={city}
+              mapsHref={mapsHref}
+              onOpenEdit={() => setEditModalOpen(true)}
+            />
           </div>
         </article>
         <div className={styles.bottomCtaWrap}>

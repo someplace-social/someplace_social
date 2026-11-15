@@ -2,19 +2,28 @@
   "output": {
     "filePath": "repomix-output.txt",
     "style": "plain",
-    "removeComments": true,
-    "removeEmptyLines": true,
+    "removeComments": false,
+    "removeEmptyLines": false,
     "showLineNumbers": false,
     "topFilesLength": 0,
     "showSummary": false,
     "showDirectoryStructure": false,
     "headerText": "#TASK\n\n\n\n\n#PROJECT FILES\n\n\n"
   },
+  "include": [
+    "app/**/*",
+    "proxy.ts",
+    "scripts/**/*",
+    "package.json",
+    "next.config.ts",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "repomix.config.json"
+  ],
   "ignore": {
     "useGitignore": true,
     "useDefaultPatterns": true,
     "customPatterns": [
-      "scripts/**/*",
       "node_modules",
       ".next",
       ".git",
@@ -29,13 +38,18 @@
       "**/*.ico",
       "**/*.pdf",
       "**/*.lock",
+      "**/*.pem",
+      "**/*.key",
       "**/dist/**",
       "repomix-output.txt",
+      "repomix.temp.*",
       "project-context.txt",
       "ctx-map.txt",
       ".claude/settings.local.json",
       "**/.env*",
-      ".env*"
+      ".env*",
+      ".env.local",
+      "**/.env.local"
     ]
   }
 }

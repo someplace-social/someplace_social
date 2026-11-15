@@ -1,5 +1,114 @@
-This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
-The content has been processed where comments have been removed, empty lines have been removed.
+#TASK
+
+
+
+
+#PROJECT FILES
+
+Project Structure Map:
++--- root
++--- app
+|   +--- [city]
+|   |   +--- about
+|   |   |   \--- page.tsx
+|   |   +--- contact
+|   |   |   \--- page.tsx
+|   |   +--- events
+|   |   |   +--- [event]
+|   |   |   |   +--- EventDetail.module.css
+|   |   |   |   +--- EventDetailView.tsx
+|   |   |   |   +--- NextOccurrenceBadge.tsx
+|   |   |   |   +--- opengraph-image.tsx
+|   |   |   |   \--- page.tsx
+|   |   |   \--- page.tsx
+|   |   \--- page.tsx
+|   +--- about
+|   |   +--- About.module.css
+|   |   \--- page.tsx
+|   +--- api
+|   |   \--- send-form
+|   |       \--- route.ts
+|   +--- components
+|   |   +--- AboutView.tsx
+|   |   +--- Accordion.module.css
+|   |   +--- Accordion.tsx
+|   |   +--- ContactForm.module.css
+|   |   +--- ContactForm.tsx
+|   |   +--- Footer.module.css
+|   |   +--- Footer.tsx
+|   |   +--- Header.module.css
+|   |   +--- Header.tsx
+|   |   +--- ThemeScript.tsx
+|   |   +--- ThemeToggle.module.css
+|   |   \--- ThemeToggle.tsx
+|   +--- contact
+|   |   +--- components
+|   |   |   +--- ContactMessageForm.tsx
+|   |   |   \--- EventSubmissionForm.tsx
+|   |   +--- Contact.module.css
+|   |   +--- ContactView.tsx
+|   |   \--- page.tsx
+|   +--- events
+|   |   +--- components
+|   |   |   +--- ActionPopover.module.css
+|   |   |   +--- ActionPopover.tsx
+|   |   |   +--- CityHeroCard.module.css
+|   |   |   +--- CityHeroCard.tsx
+|   |   |   +--- ContactButton.tsx
+|   |   |   +--- DayPicker.tsx
+|   |   |   +--- EventCard.module.css
+|   |   |   +--- EventCard.tsx
+|   |   |   +--- EventFacts.module.css
+|   |   |   +--- EventFacts.tsx
+|   |   |   +--- EventIcons.tsx
+|   |   |   +--- FilterControls.module.css
+|   |   |   +--- FilterControls.tsx
+|   |   |   +--- FilterDropdown.tsx
+|   |   |   +--- InlineExternalLink.module.css
+|   |   |   +--- InlineExternalLink.tsx
+|   |   |   +--- PriceFilterDropdown.tsx
+|   |   |   +--- ProveItButton.module.css
+|   |   |   +--- ProveItButton.tsx
+|   |   |   +--- ShareButton.module.css
+|   |   |   +--- ShareButton.tsx
+|   |   |   +--- SuggestEditModal.module.css
+|   |   |   \--- SuggestEditModal.tsx
+|   |   +--- CityEventsView.tsx
+|   |   +--- event-helpers.ts
+|   |   +--- EventsView.module.css
+|   |   +--- linkify.ts
+|   |   +--- schedule-splitter.ts
+|   |   +--- utils.test.ts
+|   |   \--- utils.ts
+|   +--- lib
+|   |   +--- cities.ts
+|   |   \--- google-sheets.ts
+|   +--- support
+|   |   \--- page.tsx
+|   +--- apple-icon.png
+|   +--- favicon-source.png
+|   +--- favicon.ico
+|   +--- globals.css
+|   +--- globals.d.ts
+|   +--- icon.png
+|   +--- layout.tsx
+|   +--- Page.module.css
+|   +--- page.tsx
+|   +--- robots.ts
+|   \--- sitemap.ts
++--- scripts
+|   +--- db.ps1
+|   \--- generate-context.ts
++--- eslint.config.mjs
++--- next.config.ts
++--- package.json
++--- proxy.ts
++--- README.md
++--- repomix.config.json
+\--- tsconfig.json
+
+
+This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
 
 ================================================================
 File Summary
@@ -32,37 +141,23 @@ Usage Guidelines:
   between different files in the repository.
 - Be aware that this file may contain sensitive information. Handle it with
   the same level of security as you would the original repository.
-- Pay special attention to the Repository Description. These contain important context and guidelines specific to this project.
 
 Notes:
 ------
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: scripts/**/*, node_modules, .next, .git, .vercel, pnpm-lock.yaml, package-lock.json, public/**/*, **/*.png, **/*.jpg, **/*.jpeg, **/*.svg, **/*.ico, **/*.pdf, **/*.lock, **/dist/**, repomix-output.txt, project-context.txt, ctx-map.txt, .claude/settings.local.json, **/.env*, .env*
+- Only files matching these patterns are included: app/**/*, proxy.ts, scripts/**/*, package.json, next.config.ts, tsconfig.json, eslint.config.mjs, repomix.config.json
+- Files matching these patterns are excluded: node_modules, .next, .git, .vercel, pnpm-lock.yaml, package-lock.json, public/**/*, **/*.png, **/*.jpg, **/*.jpeg, **/*.svg, **/*.ico, **/*.pdf, **/*.lock, **/*.pem, **/*.key, **/dist/**, repomix-output.txt, repomix.temp.*, project-context.txt, ctx-map.txt, .claude/settings.local.json, **/.env*, .env*, .env.local, **/.env.local
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
-- Code comments have been removed from supported file types
-- Empty lines have been removed from all files
 - Files are sorted by Git change count (files with more changes are at the bottom)
 
 Additional Info:
 ----------------
-User Provided Header:
------------------------
-#TASK
-
-
-
-
-#PROJECT FILES
-
-
-
 
 ================================================================
 Directory Structure
 ================================================================
-.gitignore
 app/[city]/about/page.tsx
 app/[city]/contact/page.tsx
 app/[city]/events/[event]/EventDetail.module.css
@@ -136,8 +231,9 @@ eslint.config.mjs
 next.config.ts
 package.json
 proxy.ts
-README.md
 repomix.config.json
+scripts/db.ps1
+scripts/generate-context.ts
 tsconfig.json
 
 ================================================================
@@ -145,62 +241,21 @@ Files
 ================================================================
 
 ================
-File: .gitignore
-================
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-================
 File: app/components/Accordion.tsx
 ================
 "use client";
+
 import { useState } from 'react';
 import styles from './Accordion.module.css';
+
 type AccordionProps = {
   title: string;
   children: React.ReactNode;
 };
+
 export default function Accordion({ title, children }: AccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div>
       <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
@@ -211,197 +266,6 @@ export default function Accordion({ title, children }: AccordionProps) {
       </div>
       {isOpen && <div className={styles.content}>{children}</div>}
     </div>
-  );
-}
-
-================
-File: app/events/components/EventFacts.module.css
-================
-.facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.fact {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background-color: var(--fact-bg, var(--topbar-bg));
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 7px 13px 7px 11px;
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ink);
-}
-.factIcon {
-  color: var(--muted);
-  transition: color 0.15s ease;
-}
-.factLink {
-  text-decoration: none;
-  cursor: pointer;
-  border-color: var(--line-strong);
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-.factLinkText {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  text-decoration-color: var(--line-strong);
-  transition: text-decoration-color 0.15s ease;
-}
-.factExternalIcon {
-  width: 12px;
-  height: 12px;
-  color: var(--muted);
-  flex: none;
-  transition: color 0.15s ease;
-}
-.factLink:hover {
-  border-color: var(--ink);
-  background-color: var(--card-hover);
-  color: var(--accent);
-}
-.factLink:hover .factLinkText {
-  text-decoration-color: var(--accent);
-}
-.factLink:hover .factIcon,
-.factLink:hover .factExternalIcon {
-  color: var(--accent);
-}
-.factLink:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-================
-File: app/events/components/EventFacts.tsx
-================
-'use client';
-import {
-  CheckIcon,
-  ExternalLinkIcon,
-  PenIcon,
-  RepeatIcon,
-} from './EventIcons';
-import styles from './EventFacts.module.css';
-interface EventFactsProps {
-  recurrenceText: string;
-  preRegistrationText: string;
-  registrationUrl: string;
-  needsSignupIcon: boolean;
-  className?: string;
-}
-export default function EventFacts({
-  recurrenceText,
-  preRegistrationText,
-  registrationUrl,
-  needsSignupIcon,
-  className,
-}: EventFactsProps) {
-  if (!recurrenceText && !preRegistrationText) {
-    return null;
-  }
-  const signupIcon = needsSignupIcon ? (
-    <PenIcon className={styles.factIcon} />
-  ) : (
-    <CheckIcon className={styles.factIcon} />
-  );
-  return (
-    <div className={`${styles.facts} ${className || ''}`}>
-      {recurrenceText && (
-        <span className={styles.fact}>
-          <RepeatIcon className={styles.factIcon} />
-          <span>{recurrenceText}</span>
-        </span>
-      )}
-      {preRegistrationText &&
-        (registrationUrl ? (
-          <a
-            href={registrationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${styles.fact} ${styles.factLink}`}
-          >
-            {signupIcon}
-            <span className={styles.factLinkText}>{preRegistrationText}</span>
-            <ExternalLinkIcon className={styles.factExternalIcon} />
-          </a>
-        ) : (
-          <span className={styles.fact}>
-            {signupIcon}
-            <span>{preRegistrationText}</span>
-          </span>
-        ))}
-    </div>
-  );
-}
-
-================
-File: app/events/components/InlineExternalLink.module.css
-================
-.link {
-  display: inline;
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  text-decoration-color: var(--line-strong);
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
-}
-.link:hover {
-  color: var(--accent);
-  text-decoration-color: var(--accent);
-}
-.link:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-  border-radius: 3px;
-}
-.icon {
-  display: inline-block;
-  width: 11.5px;
-  height: 11.5px;
-  margin-left: 3px;
-  vertical-align: -1px;
-  color: var(--muted);
-  transition: color 0.15s ease;
-}
-.link:hover .icon {
-  color: var(--accent);
-}
-
-================
-File: app/events/components/InlineExternalLink.tsx
-================
-'use client';
-import { ExternalLinkIcon } from './EventIcons';
-import styles from './InlineExternalLink.module.css';
-interface InlineExternalLinkProps {
-  href?: string;
-  children: string;
-  className?: string;
-}
-export default function InlineExternalLink({
-  href,
-  children,
-  className,
-}: InlineExternalLinkProps) {
-  if (!href) {
-    return <span className={className}>{children}</span>;
-  }
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`${styles.link} ${className || ''}`}
-    >
-      <span>{children}</span>
-      <ExternalLinkIcon className={styles.icon} />
-    </a>
   );
 }
 
@@ -433,65 +297,34 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 
 ================
-File: README.md
-================
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started TEST
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-================
 File: repomix.config.json
 ================
 {
   "output": {
     "filePath": "repomix-output.txt",
     "style": "plain",
-    "removeComments": true,
-    "removeEmptyLines": true,
+    "removeComments": false,
+    "removeEmptyLines": false,
     "showLineNumbers": false,
     "topFilesLength": 0,
     "showSummary": false,
     "showDirectoryStructure": false,
     "headerText": "#TASK\n\n\n\n\n#PROJECT FILES\n\n\n"
   },
+  "include": [
+    "app/**/*",
+    "proxy.ts",
+    "scripts/**/*",
+    "package.json",
+    "next.config.ts",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "repomix.config.json"
+  ],
   "ignore": {
     "useGitignore": true,
     "useDefaultPatterns": true,
     "customPatterns": [
-      "scripts/**/*",
       "node_modules",
       ".next",
       ".git",
@@ -506,16 +339,267 @@ File: repomix.config.json
       "**/*.ico",
       "**/*.pdf",
       "**/*.lock",
+      "**/*.pem",
+      "**/*.key",
       "**/dist/**",
       "repomix-output.txt",
+      "repomix.temp.*",
       "project-context.txt",
       "ctx-map.txt",
       ".claude/settings.local.json",
       "**/.env*",
-      ".env*"
+      ".env*",
+      ".env.local",
+      "**/.env.local"
     ]
   }
 }
+
+================
+File: scripts/db.ps1
+================
+# scripts/db.ps1
+param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Requested
+)
+
+if (-not $Requested -or $Requested.Count -eq 0) {
+    $Requested = @('skeleton')
+}
+
+pnpm exec tsx scripts/generate-context.ts @Requested
+
+================
+File: scripts/generate-context.ts
+================
+import { execSync } from 'node:child_process';
+import * as fs from 'node:fs';
+import process from 'node:process';
+
+const DEFAULT_INCLUDES: string[] = [
+  'app/**/*',
+  'proxy.ts',
+  'scripts/**/*',
+  'package.json',
+  'next.config.ts',
+  'tsconfig.json',
+  'eslint.config.mjs',
+  'repomix.config.json'
+];
+
+const SECTIONS: Record<string, string[]> = {
+  app: ['app/**/*'],
+  components: ['app/components/**/*', 'app/events/components/**/*'],
+  events: ['app/events/**/*', 'app/[city]/events/**/*'],
+  city: ['app/[city]/**/*', 'app/lib/cities.ts', 'proxy.ts'],
+  api: ['app/api/**/*'],
+  core: [
+    'app/layout.tsx',
+    'app/page.tsx',
+    'app/globals.css',
+    'proxy.ts',
+    'package.json',
+    'next.config.ts',
+    'tsconfig.json'
+  ],
+  scripts: ['scripts/**/*', 'repomix.config.json']
+};
+
+const IGNORES: string[] = [
+  'node_modules',
+  '.next',
+  '.git',
+  '.vercel',
+  'pnpm-lock.yaml',
+  'package-lock.json',
+  'public/**/*',
+  '**/*.png',
+  '**/*.jpg',
+  '**/*.jpeg',
+  '**/*.svg',
+  '**/*.ico',
+  '**/*.pdf',
+  '**/*.lock',
+  '**/*.pem',
+  '**/*.key',
+  '**/dist/**',
+  'repomix-output.txt',
+  'repomix.temp.*',
+  'project-context.txt',
+  'ctx-map.txt',
+  '.claude/settings.local.json',
+  '**/.env*',
+  '.env*',
+  '.env.local',
+  '**/.env.local'
+];
+
+function skeletonize(content: string): string {
+  return content.replace(/(\s*\{\s*)([\s\S]*?)(\s*\})/g, (match, open, body, close) => {
+    if (body.length > 40 && body.includes('\n')) {
+      return `${open} /* implementation removed */ ${close}`;
+    }
+    return match;
+  });
+}
+
+function generateProjectTree(dir = '.', prefix = ''): string {
+  const ignoredFolders = new Set(['.git', '.next', 'node_modules', 'public', '.vercel', 'dist', 'out']);
+  const ignoredFiles = new Set(['repomix-output.txt', 'next-env.d.ts']);
+  const items = fs.readdirSync(dir, { withFileTypes: true })
+    .filter((i: fs.Dirent) =>
+      !ignoredFolders.has(i.name) &&
+      !ignoredFiles.has(i.name) &&
+      !i.name.startsWith('.') &&
+      !i.name.includes('lock') &&
+      !i.name.includes('.temp.')
+    )
+    .sort((a: fs.Dirent, b: fs.Dirent) => (b.isDirectory() ? 1 : 0) - (a.isDirectory() ? 1 : 0) || a.name.localeCompare(b.name));
+
+  let output = '';
+  for (let idx = 0; idx < items.length; idx++) {
+    const item = items[idx];
+    const isLast = idx === items.length - 1;
+    const marker = isLast ? '\\--- ' : '+--- ';
+    output += `${prefix}${marker}${item.name}\n`;
+
+    if (item.isDirectory()) {
+      const subPrefix = prefix + (isLast ? '    ' : '|   ');
+      output += generateProjectTree(`${dir}/${item.name}`, subPrefix);
+    }
+  }
+  return output;
+}
+
+async function main(): Promise<void> {
+  const startTime = Date.now();
+
+  if (fs.existsSync('repomix-output.txt')) {
+    try {
+      fs.writeFileSync('repomix-output.txt', '', 'utf8');
+    } catch {}
+  }
+
+  const rawArgs = process.argv.slice(2).map((a: string) => a.toLowerCase());
+  const isMap = rawArgs.includes('map');
+  const isFull = rawArgs.includes('full');
+  const isSkeleton = rawArgs.includes('skeleton') || (!isMap && !isFull && rawArgs.length === 0);
+  const domainArgs = rawArgs.filter((a: string) => a !== 'skeleton' && a !== 'map' && a !== 'full' && a !== 'db');
+
+  const isMapOnly = isMap && !isSkeleton && !isFull && domainArgs.length === 0;
+
+  if (isMapOnly) {
+    const tree = generateProjectTree();
+    const output = [
+      '#TASK\n\n\n\n\n',
+      '#PROJECT FILES\n\n',
+      'Project Structure Map:\n+--- root\n',
+      tree,
+      '\n'
+    ].join('');
+
+    fs.writeFileSync('repomix-output.txt', output, 'utf8');
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+    console.log(`Generated fresh repomix-output.txt (Map) in ${elapsed}s.`);
+    try {
+      execSync('code -r "repomix-output.txt"', { stdio: 'ignore' });
+    } catch {
+      try {
+        execSync('code "repomix-output.txt"', { stdio: 'ignore' });
+      } catch {}
+    }
+    return;
+  }
+
+  let includes: string[] = [];
+  if (domainArgs.length === 0 || domainArgs.includes('all')) {
+    includes = DEFAULT_INCLUDES;
+  } else {
+    domainArgs.forEach((arg: string) => {
+      if (SECTIONS[arg]) {
+        includes.push(...SECTIONS[arg]);
+      } else {
+        includes.push(arg);
+      }
+    });
+  }
+
+  const tempOutputFile = 'repomix.temp.out.txt';
+  const repomixConfig = {
+    output: {
+      filePath: tempOutputFile,
+      style: 'plain',
+      removeComments: false,
+      removeEmptyLines: !isFull,
+      showLineNumbers: false,
+      topFilesLength: 0,
+      showSummary: false,
+      showDirectoryStructure: false
+    },
+    include: includes,
+    ignore: {
+      useGitignore: true,
+      useDefaultPatterns: true,
+      customPatterns: IGNORES
+    }
+  };
+
+  fs.writeFileSync('repomix.temp.json', JSON.stringify(repomixConfig, null, 2));
+
+  try {
+    console.log(`Packing files with repomix (Skeleton: ${isSkeleton}, Full: ${isFull})...`);
+    execSync('pnpm exec repomix --config repomix.temp.json', { stdio: 'inherit' });
+
+    let fileContent = '';
+    if (fs.existsSync(tempOutputFile)) {
+      fileContent = fs.readFileSync(tempOutputFile, 'utf8');
+      fs.unlinkSync(tempOutputFile);
+    }
+    if (fs.existsSync('repomix.temp.json')) {
+      fs.unlinkSync('repomix.temp.json');
+    }
+
+    if (isSkeleton) {
+      console.log('Applying skeletonization...');
+      fileContent = skeletonize(fileContent);
+    }
+
+    const chunks: string[] = [];
+    chunks.push('#TASK\n\n\n\n\n');
+    chunks.push('#PROJECT FILES\n\n');
+    chunks.push('Project Structure Map:\n+--- root\n' + generateProjectTree() + '\n\n');
+    chunks.push(fileContent);
+
+    fs.writeFileSync('repomix-output.txt', chunks.join(''), 'utf8');
+
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+    console.log(`Generated fresh repomix-output.txt in ${elapsed}s.`);
+
+    try {
+      execSync('code -r "repomix-output.txt"', { stdio: 'ignore' });
+      console.log('Opened repomix-output.txt in VS Code.');
+    } catch {
+      try {
+        execSync('code "repomix-output.txt"', { stdio: 'ignore' });
+        console.log('Opened repomix-output.txt in VS Code.');
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Execution failed:', error);
+    if (fs.existsSync(tempOutputFile)) {
+      fs.unlinkSync(tempOutputFile);
+    }
+    if (fs.existsSync('repomix.temp.json')) {
+      fs.unlinkSync('repomix.temp.json');
+    }
+  }
+}
+
+main().catch((err: unknown) => {
+  console.error('Error in context generator:', err);
+  process.exit(1);
+});
 
 ================
 File: tsconfig.json
@@ -1303,14 +1387,17 @@ File: app/components/ThemeToggle.module.css
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
+
 .toggleBtn:hover {
   background-color: var(--topbar-bg);
   border-color: var(--line);
   color: var(--accent);
 }
+
 .toggleBtn:active {
   transform: scale(0.95);
 }
+
 .toggleBtnMobile {
   display: flex;
   align-items: center;
@@ -1328,14 +1415,17 @@ File: app/components/ThemeToggle.module.css
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .toggleBtnMobile:hover {
   background-color: var(--topbar-bg);
 }
+
 .mobileLabelRow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .pillBadge {
   font-size: 11.5px;
   font-weight: 700;
@@ -1533,6 +1623,7 @@ File: app/events/components/ActionPopover.tsx
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { CloseIcon } from './EventIcons';
 import styles from './ActionPopover.module.css';
+
 interface ActionPopoverProps {
   triggerLabel: string;
   triggerIcon: React.ReactNode;
@@ -1544,6 +1635,7 @@ interface ActionPopoverProps {
   wide?: boolean;
   children: (close: () => void) => React.ReactNode;
 }
+
 export default function ActionPopover({
   triggerLabel,
   triggerIcon,
@@ -1557,9 +1649,11 @@ export default function ActionPopover({
 }: ActionPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
+
   const close = useCallback(() => {
     setIsOpen(false);
   }, []);
+
   useEffect(() => {
     if (!isOpen) return;
     function handlePointerDown(e: PointerEvent) {
@@ -1579,6 +1673,7 @@ export default function ActionPopover({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
+
   return (
     <div
       className={`${styles.popoverWrapper} ${wrapperClassName || ''}`}
@@ -1617,6 +1712,214 @@ export default function ActionPopover({
         </div>
       )}
     </div>
+  );
+}
+
+================
+File: app/events/components/EventFacts.module.css
+================
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--fact-bg, var(--topbar-bg));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 7px 13px 7px 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.factIcon {
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.factLink {
+  text-decoration: none;
+  cursor: pointer;
+  border-color: var(--line-strong);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.factLinkText {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color 0.15s ease;
+}
+
+.factExternalIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+  flex: none;
+  transition: color 0.15s ease;
+}
+
+.factLink:hover {
+  border-color: var(--ink);
+  background-color: var(--card-hover);
+  color: var(--accent);
+}
+
+.factLink:hover .factLinkText {
+  text-decoration-color: var(--accent);
+}
+
+.factLink:hover .factIcon,
+.factLink:hover .factExternalIcon {
+  color: var(--accent);
+}
+
+.factLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+================
+File: app/events/components/EventFacts.tsx
+================
+'use client';
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  PenIcon,
+  RepeatIcon,
+} from './EventIcons';
+import styles from './EventFacts.module.css';
+
+interface EventFactsProps {
+  recurrenceText: string;
+  preRegistrationText: string;
+  registrationUrl: string;
+  needsSignupIcon: boolean;
+  className?: string;
+}
+
+export default function EventFacts({
+  recurrenceText,
+  preRegistrationText,
+  registrationUrl,
+  needsSignupIcon,
+  className,
+}: EventFactsProps) {
+  if (!recurrenceText && !preRegistrationText) {
+    return null;
+  }
+  const signupIcon = needsSignupIcon ? (
+    <PenIcon className={styles.factIcon} />
+  ) : (
+    <CheckIcon className={styles.factIcon} />
+  );
+  return (
+    <div className={`${styles.facts} ${className || ''}`}>
+      {recurrenceText && (
+        <span className={styles.fact}>
+          <RepeatIcon className={styles.factIcon} />
+          <span>{recurrenceText}</span>
+        </span>
+      )}
+      {preRegistrationText &&
+        (registrationUrl ? (
+          <a
+            href={registrationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.fact} ${styles.factLink}`}
+          >
+            {signupIcon}
+            <span className={styles.factLinkText}>{preRegistrationText}</span>
+            <ExternalLinkIcon className={styles.factExternalIcon} />
+          </a>
+        ) : (
+          <span className={styles.fact}>
+            {signupIcon}
+            <span>{preRegistrationText}</span>
+          </span>
+        ))}
+    </div>
+  );
+}
+
+================
+File: app/events/components/InlineExternalLink.module.css
+================
+.link {
+  display: inline;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--line-strong);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.link:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.icon {
+  display: inline-block;
+  width: 11.5px;
+  height: 11.5px;
+  margin-left: 3px;
+  vertical-align: -1px;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.link:hover .icon {
+  color: var(--accent);
+}
+
+================
+File: app/events/components/InlineExternalLink.tsx
+================
+'use client';
+import { ExternalLinkIcon } from './EventIcons';
+import styles from './InlineExternalLink.module.css';
+
+interface InlineExternalLinkProps {
+  href?: string;
+  children: string;
+  className?: string;
+}
+
+export default function InlineExternalLink({
+  href,
+  children,
+  className,
+}: InlineExternalLinkProps) {
+  if (!href) {
+    return <span className={className}>{children}</span>;
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${styles.link} ${className || ''}`}
+    >
+      <span>{children}</span>
+      <ExternalLinkIcon className={styles.icon} />
+    </a>
   );
 }
 
@@ -1666,90 +1969,19 @@ File: app/events/components/ProveItButton.module.css
 }
 
 ================
-File: app/events/components/ProveItButton.tsx
-================
-'use client';
-import { useMemo } from 'react';
-import { normalizeProveItText, parseTextWithLinks } from '../linkify';
-import ActionPopover from './ActionPopover';
-import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
-import styles from './ProveItButton.module.css';
-interface ProveItButtonProps {
-  proveIt?: string;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
-}
-export default function ProveItButton({
-  proveIt,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-}: ProveItButtonProps) {
-  const cleanText = useMemo(() => normalizeProveItText(proveIt), [proveIt]);
-  const segments = useMemo(
-    () => (cleanText ? parseTextWithLinks(cleanText) : []),
-    [cleanText]
-  );
-  if (!cleanText) {
-    return (
-      <div
-        className={`${btnClassName} ${btnDisabledClassName}`}
-        aria-disabled="true"
-      >
-        <ShieldCheckIcon />
-        Prove It
-      </div>
-    );
-  }
-  return (
-    <ActionPopover
-      triggerLabel="Prove It"
-      triggerIcon={<ShieldCheckIcon />}
-      btnClassName={btnClassName}
-      btnActiveClassName={btnActiveClassName}
-      dialogLabel="Event source and verification details"
-      headerLabel="Prove It"
-      wide
-    >
-      {() => (
-        <div className={styles.proveItBox}>
-          <p className={styles.proveItText}>
-            {segments.map((seg, idx) => {
-              if (seg.type === 'text') {
-                return <span key={idx}>{seg.text}</span>;
-              }
-              const isMailto = seg.href.startsWith('mailto:');
-              return (
-                <a
-                  key={idx}
-                  href={seg.href}
-                  target={isMailto ? undefined : '_blank'}
-                  rel={isMailto ? undefined : 'noopener noreferrer'}
-                  className={styles.proveItLink}
-                >
-                  <span>{seg.text}</span>
-                  {!isMailto && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
-                </a>
-              );
-            })}
-          </p>
-        </div>
-      )}
-    </ActionPopover>
-  );
-}
-
-================
 File: app/events/linkify.ts
 ================
 import { ensureExternalUrl } from './utils';
+
 export type TextSegment =
   | { type: 'text'; text: string }
   | { type: 'link'; text: string; href: string };
+
 const COMMON_TLDS =
   'co\\.uk|com\\.co|org\\.co|com\\.mx|com\\.au|co\\.nz|com|org|net|edu|gov|io|co|us|uk|ca|de|es|fr|mx|me|tv|fm|gg|ly|ee|gl|app|dev|ai|info|biz|club|events|social|bar|beer|cafe|live|nyc|studio|shop|store|site|online|space|world|today|guide|news|media|blog|page|link|tech';
+
 const EXCLUDED_URL_CHARS = '\\s<>"\'\\u201c\\u201d\\u2018\\u2019';
+
 const TOKEN_REGEX = new RegExp(
   [
     '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
@@ -1760,12 +1992,14 @@ const TOKEN_REGEX = new RegExp(
   ].join('|'),
   'gi'
 );
+
 export function normalizeProveItText(raw?: string): string {
   if (!raw) return '';
   const trimmed = raw.trim();
   if (!trimmed || trimmed.toLowerCase() === 'x') return '';
   return trimmed;
 }
+
 function splitTrailingPunctuation(raw: string): { clean: string; trailing: string } {
   let clean = raw;
   let trailing = '';
@@ -1789,6 +2023,7 @@ function splitTrailingPunctuation(raw: string): { clean: string; trailing: strin
   }
   return { clean, trailing };
 }
+
 function appendTextSegment(segments: TextSegment[], text: string) {
   if (!text) return;
   const last = segments[segments.length - 1];
@@ -1798,10 +2033,12 @@ function appendTextSegment(segments: TextSegment[], text: string) {
     segments.push({ type: 'text', text });
   }
 }
+
 export function parseTextWithLinks(text: string): TextSegment[] {
   if (!text) return [];
   const segments: TextSegment[] = [];
   let cursor = 0;
+
   TOKEN_REGEX.lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = TOKEN_REGEX.exec(text)) !== null) {
@@ -1809,6 +2046,7 @@ export function parseTextWithLinks(text: string): TextSegment[] {
     const matchIndex = match.index;
     const isProtocol = /^https?:\/\//i.test(rawMatch);
     const isEmail = !isProtocol && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawMatch);
+
     if (!isProtocol && !isEmail && matchIndex > 0) {
       const prevChar = text[matchIndex - 1];
       const beforeSlice = text.slice(Math.max(0, matchIndex - 12), matchIndex).toLowerCase();
@@ -1816,18 +2054,22 @@ export function parseTextWithLinks(text: string): TextSegment[] {
         continue;
       }
     }
+
     const { clean, trailing } = isEmail
       ? { clean: rawMatch, trailing: '' }
       : splitTrailingPunctuation(rawMatch);
+
     const href = isEmail ? `mailto:${clean}` : ensureExternalUrl(clean);
     if (!clean || !href) {
       continue;
     }
+
     appendTextSegment(segments, text.slice(cursor, matchIndex));
     segments.push({ type: 'link', text: clean, href });
     appendTextSegment(segments, trailing);
     cursor = matchIndex + rawMatch.length;
   }
+
   appendTextSegment(segments, text.slice(cursor));
   return segments;
 }
@@ -1836,8 +2078,10 @@ export function parseTextWithLinks(text: string): TextSegment[] {
 File: app/events/schedule-splitter.ts
 ================
 import type { Event } from '../lib/google-sheets';
+
 const ORDERED_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 const DAILY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+
 const DAY_TOKEN_TO_SHORT: Record<string, string> = {
   sun: 'Sun',
   sunday: 'Sun',
@@ -1865,11 +2109,13 @@ const DAY_TOKEN_TO_SHORT: Record<string, string> = {
   saturday: 'Sat',
   saturdays: 'Sat',
 };
+
 type ScheduleSpec = {
   isDayMapped: boolean;
   byDay: Map<string, string>;
   unlabeled: string[];
 };
+
 function expandDayRange(startDay: string, endDay: string): string[] | null {
   const startIdx = ORDERED_DAYS.indexOf(startDay as (typeof ORDERED_DAYS)[number]);
   const endIdx = ORDERED_DAYS.indexOf(endDay as (typeof ORDERED_DAYS)[number]);
@@ -1889,6 +2135,7 @@ function expandDayRange(startDay: string, endDay: string): string[] | null {
   }
   return result;
 }
+
 function parseDaysExpression(expr: string): string[] | null {
   const trimmed = (expr || '').trim();
   if (!trimmed) return null;
@@ -1923,6 +2170,7 @@ function parseDaysExpression(expr: string): string[] | null {
   }
   return days.length > 0 ? days : null;
 }
+
 function splitOutsideParens(input: string, delimiters: Set<string>): string[] {
   const parts: string[] = [];
   let current = '';
@@ -1947,9 +2195,11 @@ function splitOutsideParens(input: string, delimiters: Set<string>): string[] {
   if (tail) parts.push(tail);
   return parts;
 }
+
 function isTimeLike(str: string): boolean {
   return /^\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?|a|p)?$/i.test(str.trim());
 }
+
 function segmentHasDayAnnotation(seg: string): boolean {
   const parenMatch = seg.match(/\(([^)]+)\)/);
   if (parenMatch && parseDaysExpression(parenMatch[1])) {
@@ -1973,6 +2223,7 @@ function segmentHasDayAnnotation(seg: string): boolean {
   }
   return false;
 }
+
 function parseScheduleSpec(raw: string): ScheduleSpec {
   const trimmed = (raw || '').trim();
   const byDay = new Map<string, string>();
@@ -2054,6 +2305,7 @@ function parseScheduleSpec(raw: string): ScheduleSpec {
   }
   return { isDayMapped, byDay, unlabeled };
 }
+
 export function expandEventSchedules(event: Event): Event[] {
   const startSpec = parseScheduleSpec(event.startTime);
   const endSpec = parseScheduleSpec(event.endTime);
@@ -2083,6 +2335,7 @@ export function expandEventSchedules(event: Event): Event[] {
       } else {
         resolvedStart = startSpec.unlabeled[0] ?? event.startTime;
       }
+
       let resolvedEnd: string;
       if (endSpec.isDayMapped) {
         resolvedEnd =
@@ -2093,10 +2346,12 @@ export function expandEventSchedules(event: Event): Event[] {
       } else {
         resolvedEnd = endSpec.unlabeled[0] ?? event.endTime;
       }
+
       const splitId =
         targetDays.length > 1 && event.id
           ? `${event.id}-${day.toLowerCase()}`
           : event.id;
+
       return {
         ...event,
         id: splitId,
@@ -2133,6 +2388,7 @@ export function expandEventSchedules(event: Event): Event[] {
 File: app/robots.ts
 ================
 import type { MetadataRoute } from 'next';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -2195,417 +2451,6 @@ export default async function CityContactPage({ params }: PageProps) {
       <Footer city={city} />
     </div>
   );
-}
-
-================
-File: app/[city]/events/[event]/EventDetail.module.css
-================
-.pageContainer {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-.main {
-  flex: 1;
-  width: 100%;
-  max-width: 740px;
-  margin: 0 auto;
-  padding: 28px 24px 72px;
-  box-sizing: border-box;
-}
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 36px;
-  margin-bottom: 16px;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-.backLink:hover {
-  color: var(--ink);
-}
-.card {
-  container-type: inline-size;
-  position: relative;
-  background-color: var(--card);
-  border: 1px solid var(--line-strong);
-  border-radius: 20px;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  --fact-bg: #faf4e6;
-  --tag-science-ink: #0f5c5c;
-  --tag-science-bg: #d3efec;
-  --tag-craft-ink: #8a3d0c;
-  --tag-craft-bg: #fde4cf;
-  --tag-food-ink: #6b5200;
-  --tag-food-bg: #f4eab8;
-  --tag-community-ink: #3b4a54;
-  --tag-community-bg: #e1e7ea;
-  --tag-music-ink: #5b2a86;
-  --tag-music-bg: #ecdcf7;
-  --tag-trivia-ink: #2d3f7a;
-  --tag-trivia-bg: #dde4f7;
-  --tag-comedy-ink: #8a1f4f;
-  --tag-comedy-bg: #fbdce9;
-  --tag-dance-ink: #852b2b;
-  --tag-dance-bg: #f9dede;
-  --tag-sport-ink: #1f6a42;
-  --tag-sport-bg: #d7f0df;
-  --tag-language-ink: #2c4f7c;
-  --tag-language-bg: #dbe5f7;
-  --tag-default-ink: #4f483e;
-  --tag-default-bg: #f3ead4;
-}
-:global(html[data-theme='dark']) .card {
-  --fact-bg: #25221d;
-  --tag-science-ink: #5eead4;
-  --tag-science-bg: #133330;
-  --tag-craft-ink: #fdba74;
-  --tag-craft-bg: #361c0c;
-  --tag-food-ink: #fde047;
-  --tag-food-bg: #33280c;
-  --tag-community-ink: #cbd5e1;
-  --tag-community-bg: #222b33;
-  --tag-music-ink: #d8b4fe;
-  --tag-music-bg: #2f1847;
-  --tag-trivia-ink: #93c5fd;
-  --tag-trivia-bg: #1c284d;
-  --tag-comedy-ink: #f472b6;
-  --tag-comedy-bg: #3d1427;
-  --tag-dance-ink: #fca5a5;
-  --tag-dance-bg: #3d1919;
-  --tag-sport-ink: #86efac;
-  --tag-sport-bg: #143823;
-  --tag-language-ink: #93c5fd;
-  --tag-language-bg: #1c2b45;
-  --tag-default-ink: #d6cbbe;
-  --tag-default-bg: #2c2720;
-}
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .card {
-    --fact-bg: #25221d;
-    --tag-science-ink: #5eead4;
-    --tag-science-bg: #133330;
-    --tag-craft-ink: #fdba74;
-    --tag-craft-bg: #361c0c;
-    --tag-food-ink: #fde047;
-    --tag-food-bg: #33280c;
-    --tag-community-ink: #cbd5e1;
-    --tag-community-bg: #222b33;
-    --tag-music-ink: #d8b4fe;
-    --tag-music-bg: #2f1847;
-    --tag-trivia-ink: #93c5fd;
-    --tag-trivia-bg: #1c284d;
-    --tag-comedy-ink: #f472b6;
-    --tag-comedy-bg: #3d1427;
-    --tag-dance-ink: #fca5a5;
-    --tag-dance-bg: #3d1919;
-    --tag-sport-ink: #86efac;
-    --tag-sport-bg: #143823;
-    --tag-language-ink: #93c5fd;
-    --tag-language-bg: #1c2b45;
-    --tag-default-ink: #d6cbbe;
-    --tag-default-bg: #2c2720;
-  }
-}
-.head {
-  padding: 26px 28px 22px;
-}
-.eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 10px;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--ink);
-}
-.scheduleRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-top: 14px;
-}
-.scheduleText {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.scheduleIcon {
-  color: var(--muted);
-}
-.nextBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 700;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 1px solid var(--line-strong);
-}
-.nextBadgeToday {
-  background-color: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-.venueBlock {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.venue {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  font-size: 15.5px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--ink);
-}
-.venueIcon {
-  color: var(--muted);
-  margin-top: 2px;
-}
-.address,
-.host {
-  margin-left: 23px;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--muted);
-}
-.hostFlush {
-  margin-left: 0;
-}
-.hostLink {
-  color: var(--text-subtle);
-  font-weight: 600;
-}
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 14px;
-  font-size: 14px;
-  line-height: 1.3;
-}
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-}
-.priceFree {
-  color: var(--free);
-}
-.pricePaid {
-  color: var(--ink);
-}
-.area {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-weight: 500;
-}
-.dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--line-strong);
-  flex-shrink: 0;
-}
-.sep2 {
-  display: inline-block;
-}
-.tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.tag {
-  font-size: 12.5px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 3px 9px;
-  white-space: nowrap;
-}
-.body {
-  border-top: 1px solid var(--line);
-  padding: 22px 28px 26px;
-}
-.desc {
-  font-size: 15.5px;
-  line-height: 1.65;
-  color: var(--text-subtle);
-  margin: 0 0 18px;
-  white-space: pre-line;
-}
-.facts {
-  margin: 0 0 20px;
-}
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 80px;
-  height: 58px;
-  padding: 0 4px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background-color: var(--card);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1.15;
-  color: var(--ink);
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  white-space: nowrap;
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
-}
-.btn:not(.btnDisabled):not(.btnPrimary):hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-.btnPrimary {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.btnPrimary:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-.btnActive {
-  border-color: var(--ink);
-  background-color: var(--topbar-bg);
-}
-.btnDisabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.edit {
-  margin-left: auto;
-  font-size: 13.5px;
-  color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  background: none;
-  border: 0;
-  padding: 6px 2px;
-  cursor: pointer;
-  font-family: inherit;
-}
-.edit:hover {
-  color: var(--accent);
-}
-.bottomCtaWrap {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-}
-.bottomCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 46px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  background-color: var(--ink);
-  color: var(--bg);
-  font-size: 15px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: opacity 0.15s ease;
-}
-.bottomCta:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-@container (max-width: 600px) {
-  .head {
-    padding: 20px 16px 18px;
-  }
-  .title {
-    font-size: 26px;
-  }
-  .tags {
-    flex-basis: 100%;
-  }
-  .sep2 {
-    display: none;
-  }
-  .body {
-    padding: 18px 16px 20px;
-  }
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-  .btn {
-    width: 100%;
-    min-width: 0;
-    height: 58px;
-    font-size: 12px;
-  }
-  .edit {
-    grid-column: 1 / -1;
-    margin: 4px auto 0;
-  }
-}
-@container (max-width: 340px) {
-  .actions {
-    gap: 6px;
-  }
-  .btn {
-    font-size: 11.5px;
-  }
-}
-@media (max-width: 899px) {
-  .main {
-    padding: 18px 16px 52px;
-  }
-  .bottomCta {
-    width: 100%;
-  }
 }
 
 ================
@@ -2862,7 +2707,9 @@ File: app/events/components/DayPicker.tsx
 'use client';
 import { memo } from 'react';
 import styles from '../EventsView.module.css';
+
 const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 interface DayPickerProps {
   rollingWeek: Date[];
   activeDayIdx: number;
@@ -2870,6 +2717,7 @@ interface DayPickerProps {
   dayCounts?: number[];
   getEventCountForDay?: (idx: number) => number;
 }
+
 function DayPicker({
   rollingWeek,
   activeDayIdx,
@@ -2883,6 +2731,7 @@ function DayPicker({
     }
     return getEventCountForDay ? getEventCountForDay(idx) : 0;
   };
+
   return (
     <>
       <div className={styles.dayListVertical} role="group" aria-label="Day list">
@@ -2952,263 +2801,15 @@ function DayPicker({
     </>
   );
 }
-export default memo(DayPicker);
 
-================
-File: app/events/components/EventIcons.tsx
-================
-interface IconProps {
-  className?: string;
-}
-export function PinIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-export function TagIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
-      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
-    </svg>
-  );
-}
-export function CompassIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
-    </svg>
-  );
-}
-export function ChevronDownIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-export function RepeatIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="m17 2 4 4-4 4" />
-      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-      <path d="m7 22-4-4 4-4" />
-      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
-}
-export function CheckIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-export function PenIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
-    </svg>
-  );
-}
-export function ShareIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-      <polyline points="16 6 12 2 8 6" />
-      <line x1="12" x2="12" y1="2" y2="15" />
-    </svg>
-  );
-}
-export function ShieldCheckIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
-export function CalendarIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-      <line x1="16" x2="16" y1="2" y2="6" />
-      <line x1="8" x2="8" y1="2" y2="6" />
-      <line x1="3" x2="21" y1="10" y2="10" />
-    </svg>
-  );
-}
-export function ExternalLinkIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.1"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M7 17 17 7" />
-      <path d="M7 7h10v10" />
-    </svg>
-  );
-}
-export function CloseIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
-}
+export default memo(DayPicker);
 
 ================
 File: app/events/components/FilterDropdown.tsx
 ================
 'use client';
 import styles from './FilterControls.module.css';
+
 interface FilterDropdownProps {
   icon: React.ReactNode;
   category: string;
@@ -3223,6 +2824,7 @@ interface FilterDropdownProps {
   containerRef?: React.RefObject<HTMLDivElement | null>;
   flexStyle?: boolean;
 }
+
 export default function FilterDropdown({
   icon,
   category,
@@ -3322,6 +2924,83 @@ export default function FilterDropdown({
         </div>
       )}
     </div>
+  );
+}
+
+================
+File: app/events/components/ProveItButton.tsx
+================
+'use client';
+import { useMemo } from 'react';
+import { normalizeProveItText, parseTextWithLinks } from '../linkify';
+import ActionPopover from './ActionPopover';
+import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
+import styles from './ProveItButton.module.css';
+
+interface ProveItButtonProps {
+  proveIt?: string;
+  btnClassName: string;
+  btnActiveClassName: string;
+  btnDisabledClassName: string;
+}
+
+export default function ProveItButton({
+  proveIt,
+  btnClassName,
+  btnActiveClassName,
+  btnDisabledClassName,
+}: ProveItButtonProps) {
+  const cleanText = useMemo(() => normalizeProveItText(proveIt), [proveIt]);
+  const segments = useMemo(
+    () => (cleanText ? parseTextWithLinks(cleanText) : []),
+    [cleanText]
+  );
+  if (!cleanText) {
+    return (
+      <div
+        className={`${btnClassName} ${btnDisabledClassName}`}
+        aria-disabled="true"
+      >
+        <ShieldCheckIcon />
+        Prove It
+      </div>
+    );
+  }
+  return (
+    <ActionPopover
+      triggerLabel="Prove It"
+      triggerIcon={<ShieldCheckIcon />}
+      btnClassName={btnClassName}
+      btnActiveClassName={btnActiveClassName}
+      dialogLabel="Event source and verification details"
+      headerLabel="Prove It"
+      wide
+    >
+      {() => (
+        <div className={styles.proveItBox}>
+          <p className={styles.proveItText}>
+            {segments.map((seg, idx) => {
+              if (seg.type === 'text') {
+                return <span key={idx}>{seg.text}</span>;
+              }
+              const isMailto = seg.href.startsWith('mailto:');
+              return (
+                <a
+                  key={idx}
+                  href={seg.href}
+                  target={isMailto ? undefined : '_blank'}
+                  rel={isMailto ? undefined : 'noopener noreferrer'}
+                  className={styles.proveItLink}
+                >
+                  <span>{seg.text}</span>
+                  {!isMailto && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
+                </a>
+              );
+            })}
+          </p>
+        </div>
+      )}
+    </ActionPopover>
   );
 }
 
@@ -3462,6 +3141,1463 @@ export const config = {
 };
 
 ================
+File: app/[city]/events/[event]/EventDetail.module.css
+================
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+  box-sizing: border-box;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  margin-bottom: 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.backLink:hover {
+  color: var(--ink);
+}
+
+.card {
+  container-type: inline-size;
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  --fact-bg: #faf4e6;
+  --tag-science-ink: #0f5c5c;
+  --tag-science-bg: #d3efec;
+  --tag-craft-ink: #8a3d0c;
+  --tag-craft-bg: #fde4cf;
+  --tag-food-ink: #6b5200;
+  --tag-food-bg: #f4eab8;
+  --tag-community-ink: #3b4a54;
+  --tag-community-bg: #e1e7ea;
+  --tag-music-ink: #5b2a86;
+  --tag-music-bg: #ecdcf7;
+  --tag-trivia-ink: #2d3f7a;
+  --tag-trivia-bg: #dde4f7;
+  --tag-comedy-ink: #8a1f4f;
+  --tag-comedy-bg: #fbdce9;
+  --tag-dance-ink: #852b2b;
+  --tag-dance-bg: #f9dede;
+  --tag-sport-ink: #1f6a42;
+  --tag-sport-bg: #d7f0df;
+  --tag-language-ink: #2c4f7c;
+  --tag-language-bg: #dbe5f7;
+  --tag-default-ink: #4f483e;
+  --tag-default-bg: #f3ead4;
+}
+
+:global(html[data-theme='dark']) .card {
+  --fact-bg: #25221d;
+  --tag-science-ink: #5eead4;
+  --tag-science-bg: #133330;
+  --tag-craft-ink: #fdba74;
+  --tag-craft-bg: #361c0c;
+  --tag-food-ink: #fde047;
+  --tag-food-bg: #33280c;
+  --tag-community-ink: #cbd5e1;
+  --tag-community-bg: #222b33;
+  --tag-music-ink: #d8b4fe;
+  --tag-music-bg: #2f1847;
+  --tag-trivia-ink: #93c5fd;
+  --tag-trivia-bg: #1c284d;
+  --tag-comedy-ink: #f472b6;
+  --tag-comedy-bg: #3d1427;
+  --tag-dance-ink: #fca5a5;
+  --tag-dance-bg: #3d1919;
+  --tag-sport-ink: #86efac;
+  --tag-sport-bg: #143823;
+  --tag-language-ink: #93c5fd;
+  --tag-language-bg: #1c2b45;
+  --tag-default-ink: #d6cbbe;
+  --tag-default-bg: #2c2720;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme='light'])) .card {
+    --fact-bg: #25221d;
+    --tag-science-ink: #5eead4;
+    --tag-science-bg: #133330;
+    --tag-craft-ink: #fdba74;
+    --tag-craft-bg: #361c0c;
+    --tag-food-ink: #fde047;
+    --tag-food-bg: #33280c;
+    --tag-community-ink: #cbd5e1;
+    --tag-community-bg: #222b33;
+    --tag-music-ink: #d8b4fe;
+    --tag-music-bg: #2f1847;
+    --tag-trivia-ink: #93c5fd;
+    --tag-trivia-bg: #1c284d;
+    --tag-comedy-ink: #f472b6;
+    --tag-comedy-bg: #3d1427;
+    --tag-dance-ink: #fca5a5;
+    --tag-dance-bg: #3d1919;
+    --tag-sport-ink: #86efac;
+    --tag-sport-bg: #143823;
+    --tag-language-ink: #93c5fd;
+    --tag-language-bg: #1c2b45;
+    --tag-default-ink: #d6cbbe;
+    --tag-default-bg: #2c2720;
+  }
+}
+
+.head {
+  padding: 26px 28px 22px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+
+.scheduleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+}
+
+.scheduleText {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.scheduleIcon {
+  color: var(--muted);
+}
+
+.nextBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+
+.nextBadgeToday {
+  background-color: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.venueBlock {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.address,
+.host {
+  margin-left: 23px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.hostFlush {
+  margin-left: 0;
+}
+
+.hostLink {
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.priceFree {
+  color: var(--free);
+}
+
+.pricePaid {
+  color: var(--ink);
+}
+
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+
+.sep2 {
+  display: inline-block;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.body {
+  border-top: 1px solid var(--line);
+  padding: 22px 28px 26px;
+}
+
+.desc {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text-subtle);
+  margin: 0 0 18px;
+  white-space: pre-line;
+}
+
+.facts {
+  margin: 0 0 20px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 80px;
+  height: 58px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--card);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:not(.btnDisabled):not(.btnPrimary):hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.btnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+
+.btnActive {
+  border-color: var(--ink);
+  background-color: var(--topbar-bg);
+}
+
+.btnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.edit {
+  margin-left: auto;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.edit:hover {
+  color: var(--accent);
+}
+
+.bottomCtaWrap {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.bottomCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background-color: var(--ink);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.bottomCta:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+
+@container (max-width: 600px) {
+  .head {
+    padding: 20px 16px 18px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+  .body {
+    padding: 18px 16px 20px;
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .btn {
+    width: 100%;
+    min-width: 0;
+    height: 58px;
+    font-size: 12px;
+  }
+  .edit {
+    grid-column: 1 / -1;
+    margin: 4px auto 0;
+  }
+}
+
+@container (max-width: 340px) {
+  .actions {
+    gap: 6px;
+  }
+  .btn {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 899px) {
+  .main {
+    padding: 18px 16px 52px;
+  }
+  .bottomCta {
+    width: 100%;
+  }
+}
+
+================
+File: app/components/AboutView.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import { CityConfig, getAllCities } from '../lib/cities';
+import Header from './Header';
+import Footer from './Footer';
+import styles from '../about/About.module.css';
+const CRITERIA_ITEMS = [
+  {
+    number: '01',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
+  },
+  {
+    number: '02',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No private or one-on-one sessions.',
+  },
+  {
+    number: '03',
+    title: 'Open & Inclusive',
+    description: 'Must be welcoming and open to anyone who wishes to attend.',
+  },
+  {
+    number: '04',
+    title: 'Affordable',
+    description: 'Must be free, donation-based, or reasonably priced for the community.',
+  },
+  {
+    number: '05',
+    title: 'In-Person Only',
+    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
+  },
+] as const;
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Weekly Updates',
+    description: 'Listings are updated once per week.',
+  },
+  {
+    title: 'Community Supported',
+    description: 'Anyone can submit new recurring activities.',
+  },
+  {
+    title: '100% Free & Ad-Free',
+    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
+  },
+] as const;
+interface AboutViewProps {
+  city?: CityConfig;
+}
+export default function AboutView({ city }: AboutViewProps) {
+  const cities = getAllCities();
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header city={city} />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
+            </p>
+            <div className={styles.heroCityLinks}>
+              {cities.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/${c.slug}/events`}
+                  className={styles.cityPill}
+                >
+                  {c.name} Events →
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
+              How It Works
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <div className={styles.howItWorksGrid}>
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <div key={step.title} className={styles.howItWorksItem}>
+                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
+                <p className={styles.howItWorksDescription}>{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <ol className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <li key={item.number} className={styles.criteriaListItem}>
+                <span className={styles.criteriaListNumber} aria-hidden="true">
+                  {item.number}
+                </span>
+                <div className={styles.criteriaListContent}>
+                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
+                  <p className={styles.criteriaListDescription}>{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+      <Footer city={city} />
+    </div>
+  );
+}
+
+================
+File: app/events/components/ContactButton.tsx
+================
+'use client';
+import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
+import { parseContactInfo } from '../utils';
+import { copyToClipboard } from '../event-helpers';
+import ActionPopover from './ActionPopover';
+import styles from './ActionPopover.module.css';
+
+const emptySubscribe = () => () => {};
+
+interface ContactButtonProps {
+  contact?: string;
+  btnClassName: string;
+  btnActiveClassName: string;
+  btnDisabledClassName: string;
+}
+
+export default function ContactButton({
+  contact,
+  btnClassName,
+  btnActiveClassName,
+  btnDisabledClassName,
+}: ContactButtonProps) {
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAndroid = useSyncExternalStore(
+    emptySubscribe,
+    () => /android/i.test(navigator.userAgent || ''),
+    () => false
+  );
+  const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = useCallback(async (text: string) => {
+    const ok = await copyToClipboard(text);
+    if (!ok) return;
+    setCopied(true);
+    if (copyTimerRef.current) {
+      clearTimeout(copyTimerRef.current);
+    }
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  }, []);
+
+  const handleOpenGmail = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, close: () => void) => {
+      if (contactInfo.type !== 'email') return;
+      if (isAndroid) {
+        e.preventDefault();
+        window.location.href = contactInfo.androidIntentUrl;
+      }
+      close();
+    },
+    [contactInfo, isAndroid]
+  );
+
+  const mailIcon = (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  );
+
+  if (contactInfo.type === 'none') {
+    return (
+      <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
+        {mailIcon}
+        Contact
+      </div>
+    );
+  }
+
+  if (contactInfo.type === 'url') {
+    return (
+      <a
+        href={contactInfo.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={btnClassName}
+      >
+        {mailIcon}
+        Contact
+      </a>
+    );
+  }
+
+  const copyIcon = copied ? (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  ) : (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+    </svg>
+  );
+
+  return (
+    <ActionPopover
+      triggerLabel="Contact"
+      triggerIcon={mailIcon}
+      btnClassName={btnClassName}
+      btnActiveClassName={btnActiveClassName}
+      dialogLabel="Contact options"
+      headerLabel={contactInfo.type === 'email' ? 'Email' : 'Phone'}
+    >
+      {(close) => (
+        <>
+          {contactInfo.type === 'email' && (
+            <>
+              <div className={styles.popoverInlineRow}>
+                <span className={styles.popoverHeaderValue} title={contactInfo.email}>
+                  {contactInfo.email}
+                </span>
+                <button
+                  type="button"
+                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                  onClick={() => handleCopy(contactInfo.email)}
+                  title={copied ? 'Copied to clipboard' : 'Copy email'}
+                  aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
+                >
+                  {copyIcon}
+                </button>
+              </div>
+              <div className={styles.popoverDivider} />
+              <div className={styles.popoverActions}>
+                <a
+                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
+                  target={isAndroid ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  className={styles.popoverActionLink}
+                  onClick={(e) => handleOpenGmail(e, close)}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3 7l9 6 9-6" />
+                  </svg>
+                  Open in Gmail
+                </a>
+                <a
+                  href={contactInfo.mailtoUrl}
+                  className={styles.popoverActionLink}
+                  onClick={close}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                  Default Mail App
+                </a>
+              </div>
+            </>
+          )}
+          {contactInfo.type === 'phone' && (
+            <>
+              <div className={styles.popoverInlineRow}>
+                <span className={styles.popoverHeaderValue} title={contactInfo.displayPhone}>
+                  {contactInfo.displayPhone}
+                </span>
+                <button
+                  type="button"
+                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                  onClick={() => handleCopy(contactInfo.displayPhone)}
+                  title={copied ? 'Copied to clipboard' : 'Copy phone number'}
+                  aria-label={
+                    copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'
+                  }
+                >
+                  {copyIcon}
+                </button>
+              </div>
+              <div className={styles.popoverDivider} />
+              <div className={styles.popoverActions}>
+                <a
+                  href={contactInfo.telUrl}
+                  className={styles.popoverActionLinkPrimary}
+                  onClick={close}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                  </svg>
+                  Call {contactInfo.displayPhone}
+                </a>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </ActionPopover>
+  );
+}
+
+================
+File: app/events/components/EventIcons.tsx
+================
+interface IconProps {
+  className?: string;
+}
+
+export function PinIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function CompassIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+export function RepeatIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m17 2 4 4-4 4" />
+      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+      <path d="m7 22-4-4 4-4" />
+      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+    </svg>
+  );
+}
+
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+export function PenIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
+    </svg>
+  );
+}
+
+export function ShareIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <polyline points="16 6 12 2 8 6" />
+      <line x1="12" x2="12" y1="2" y2="15" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+export function CalendarIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M7 17 17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+================
+File: app/Page.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 2.4em;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+.heroText {
+  flex: 1;
+  max-width: 500px;
+}
+.heroText p {
+  color: var(--text-subtle);
+}
+.illustrationContainer {
+  flex: 1;
+  max-width: 400px;
+}
+.contentBox {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.contentBox h2 {
+  color: var(--ink);
+}
+.contentBox p {
+  color: var(--text-subtle);
+}
+.button {
+  background-color: var(--ink);
+  color: var(--bg);
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  min-height: 44px;
+  margin-top: 1rem;
+  transition: opacity 0.15s ease;
+}
+.button:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 20px 16px 48px;
+  }
+  .heroSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .heroText {
+    text-align: left;
+    width: 100%;
+  }
+  .illustrationContainer {
+    width: 100%;
+    max-width: 260px;
+    align-self: center;
+  }
+  .contentBox {
+    padding: 1.25rem;
+  }
+  .button {
+    width: 100%;
+  }
+}
+
+================
+File: app/sitemap.ts
+================
+import type { MetadataRoute } from 'next';
+import { SITE_URL, getAllCities } from './lib/cities';
+import { getEvents } from './lib/google-sheets';
+import { getEventSlug } from './events/event-helpers';
+export const revalidate = 3600;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = SITE_URL;
+  const cities = getAllCities();
+  const cityUrls: MetadataRoute.Sitemap = cities.flatMap((city) => [
+    {
+      url: `${baseUrl}/${city.slug}/events`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/${city.slug}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/${city.slug}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+  ]);
+  const cityEventsList = await Promise.all(
+    cities.map(async (city) => ({
+      citySlug: city.slug,
+      events: await getEvents(city, 3600),
+    }))
+  );
+  const seenEventUrls = new Set<string>();
+  const eventUrls: MetadataRoute.Sitemap = [];
+  for (const { citySlug, events } of cityEventsList) {
+    for (const ev of events) {
+      const url = `${baseUrl}/${citySlug}/events/${getEventSlug(ev)}`;
+      if (seenEventUrls.has(url)) continue;
+      seenEventUrls.add(url);
+      eventUrls.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      });
+    }
+  }
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 1.0,
+    },
+    ...cityUrls,
+    ...eventUrls,
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/support`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    },
+  ];
+}
+
+================
+File: app/support/page.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import styles from '../Page.module.css';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Support Us',
+  description: 'Learn how you can support Someplace Social and keep the community going.',
+};
+export default function SupportPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <h1>Support Someplace Social</h1>
+            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
+              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
+            </p>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-contact.png"
+              alt="Illustration of a capybara drinking a coffee"
+              width={400}
+              height={300}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        </section>
+        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
+            </p>
+            <Link href="/contact?tab=submit" className={styles.button}>
+              Submit or Edit Events
+            </Link>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              If you&apos;ve met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
+            </p>
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Buy Me a Drink
+            </a>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
+            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
+              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
+            </p>
+            <a
+              href="https://sites.google.com/view/starlink-referral-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.button}
+            >
+              Get Starlink Referral
+            </a>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from 'next';
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/medellin',
+        destination: '/medellin-colombia/events',
+        permanent: true,
+      },
+      {
+        source: '/medellin-v2',
+        destination: '/medellin-colombia/events',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/fort-collins-colorado/events',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado/:path*',
+        destination: '/fort-collins-colorado/events/:path*',
+        permanent: true,
+      },
+      {
+        source: '/events',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/events/:city',
+        destination: '/:city/events',
+        permanent: true,
+      },
+      {
+        source: '/events/:city/:path*',
+        destination: '/:city/events/:path*',
+        permanent: true,
+      },
+    ];
+  },
+};
+export default nextConfig;
+
+================
+File: package.json
+================
+{
+  "name": "someplace-social",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "tsx --test app/events/utils.test.ts",
+    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
+    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
+    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
+    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
+    "repomix": "repomix"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "resend": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.4.5",
+    "repomix": "^0.2.32",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
+}
+
+================
 File: app/[city]/events/[event]/EventDetailView.tsx
 ================
 'use client';
@@ -3495,11 +4631,13 @@ import {
 } from '../../../events/components/EventIcons';
 import NextOccurrenceBadge from './NextOccurrenceBadge';
 import styles from './EventDetail.module.css';
+
 interface EventDetailViewProps {
   city: CityConfig;
   event: Event;
   initialNextLabel: string | null;
 }
+
 export default function EventDetailView({
   city,
   event,
@@ -3528,6 +4666,7 @@ export default function EventDetailView({
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
   const hasDescription = Boolean((event.about || event.notes || '').trim());
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
+
   return (
     <div className={styles.pageContainer}>
       <Header city={city} />
@@ -3702,135 +4841,126 @@ export default function EventDetailView({
 }
 
 ================
-File: app/components/AboutView.tsx
+File: app/about/page.tsx
 ================
-import Image from 'next/image';
-import Link from 'next/link';
-import { CityConfig, getAllCities } from '../lib/cities';
-import Header from './Header';
-import Footer from './Footer';
-import styles from '../about/About.module.css';
-const CRITERIA_ITEMS = [
-  {
-    number: '01',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
-  },
-  {
-    number: '02',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No private or one-on-one sessions.',
-  },
-  {
-    number: '03',
-    title: 'Open & Inclusive',
-    description: 'Must be welcoming and open to anyone who wishes to attend.',
-  },
-  {
-    number: '04',
-    title: 'Affordable',
-    description: 'Must be free, donation-based, or reasonably priced for the community.',
-  },
-  {
-    number: '05',
-    title: 'In-Person Only',
-    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
-  },
-] as const;
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: 'Weekly Updates',
-    description: 'Listings are updated once per week.',
-  },
-  {
-    title: 'Community Supported',
-    description: 'Anyone can submit new recurring activities.',
-  },
-  {
-    title: '100% Free & Ad-Free',
-    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
-  },
-] as const;
-interface AboutViewProps {
-  city?: CityConfig;
+import { redirect } from 'next/navigation';
+
+export default function AboutPage() {
+  redirect('/');
 }
-export default function AboutView({ city }: AboutViewProps) {
-  const cities = getAllCities();
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header city={city} />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <p className={styles.eyebrow}>ABOUT</p>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
-            <p className={styles.heroDescription}>
-              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
-            </p>
-            <div className={styles.heroCityLinks}>
-              {cities.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/${c.slug}/events`}
-                  className={styles.cityPill}
-                >
-                  {c.name} Events →
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
-              How It Works
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <div className={styles.howItWorksGrid}>
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <div key={step.title} className={styles.howItWorksItem}>
-                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
-                <p className={styles.howItWorksDescription}>{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <ol className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <li key={item.number} className={styles.criteriaListItem}>
-                <span className={styles.criteriaListNumber} aria-hidden="true">
-                  {item.number}
-                </span>
-                <div className={styles.criteriaListContent}>
-                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
-                  <p className={styles.criteriaListDescription}>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </main>
-      <Footer city={city} />
-    </div>
-  );
+
+================
+File: app/components/Footer.module.css
+================
+.footer {
+  border-top: 1px solid var(--line);
+  background-color: var(--bg);
+  margin-top: auto;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 24px 36px;
+}
+.footerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.footerSupportText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-subtle);
+}
+.buyDrinkLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+.footerQuoteSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.footerAuthor {
+  font-size: 12px;
+  color: var(--muted);
+}
+.footerBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.footerSocialLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.footerIconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--text-subtle);
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.footerIconLink:hover {
+  background-color: var(--topbar-bg);
+  border-color: var(--line);
+  color: var(--accent);
+}
+.footerIconLink:active {
+  transform: scale(0.95);
+}
+.footerIconLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.footerCopyright {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+@media (max-width: 899px) {
+  .footerInner {
+    padding: 32px 16px 28px;
+  }
+  .footerContent {
+    gap: 20px;
+  }
+  .footerSupportText {
+    font-size: 13.5px;
+  }
+  .footerQuoteText {
+    font-size: 13px;
+    line-height: 1.55;
+  }
 }
 
 ================
@@ -3840,6 +4970,7 @@ File: app/contact/components/EventSubmissionForm.tsx
 import { useState, useMemo } from 'react';
 import { getAllCities } from '../../lib/cities';
 import styles from '../Contact.module.css';
+
 const DAYS_OF_WEEK = [
   { id: 'mon', label: 'Mon' },
   { id: 'tue', label: 'Tue' },
@@ -3849,15 +4980,18 @@ const DAYS_OF_WEEK = [
   { id: 'sat', label: 'Sat' },
   { id: 'sun', label: 'Sun' },
 ] as const;
+
 const PRE_REGISTRATION_OPTIONS = [
   'Drop-in (no RSVP needed)',
   'RSVP recommended',
   'RSVP required',
   'Ticketed / pre-pay',
 ] as const;
+
 interface EventSubmissionFormProps {
   defaultCity?: string;
 }
+
 export default function EventSubmissionForm({ defaultCity }: EventSubmissionFormProps) {
   const cityOptions = useMemo(
     () => getAllCities().map((c) => c.heroLocation),
@@ -3891,11 +5025,13 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
   const [adminNotes, setAdminNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+
   const toggleDay = (dayLabel: string) => {
     setSelectedDays((prev) =>
       prev.includes(dayLabel) ? prev.filter((d) => d !== dayLabel) : [...prev, dayLabel]
     );
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -3960,6 +5096,7 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
         cleanCell(about),
       ].join('\t'),
     ].filter((line): line is string => line !== null);
+
     try {
       const response = await fetch('/api/send-form', {
         method: 'POST',
@@ -4015,6 +5152,7 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
       setLoading(false);
     }
   };
+
   return (
     <form
       id="panel-submit"
@@ -4485,722 +5623,6 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
 }
 
 ================
-File: app/events/components/ContactButton.tsx
-================
-'use client';
-import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
-import { parseContactInfo } from '../utils';
-import { copyToClipboard } from '../event-helpers';
-import ActionPopover from './ActionPopover';
-import styles from './ActionPopover.module.css';
-const emptySubscribe = () => () => {};
-interface ContactButtonProps {
-  contact?: string;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
-}
-export default function ContactButton({
-  contact,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-}: ContactButtonProps) {
-  const [copied, setCopied] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isAndroid = useSyncExternalStore(
-    emptySubscribe,
-    () => /android/i.test(navigator.userAgent || ''),
-    () => false
-  );
-  const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-  useEffect(() => {
-    return () => {
-      if (copyTimerRef.current) {
-        clearTimeout(copyTimerRef.current);
-      }
-    };
-  }, []);
-  const handleCopy = useCallback(async (text: string) => {
-    const ok = await copyToClipboard(text);
-    if (!ok) return;
-    setCopied(true);
-    if (copyTimerRef.current) {
-      clearTimeout(copyTimerRef.current);
-    }
-    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-  }, []);
-  const handleOpenGmail = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, close: () => void) => {
-      if (contactInfo.type !== 'email') return;
-      if (isAndroid) {
-        e.preventDefault();
-        window.location.href = contactInfo.androidIntentUrl;
-      }
-      close();
-    },
-    [contactInfo, isAndroid]
-  );
-  const mailIcon = (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  );
-  if (contactInfo.type === 'none') {
-    return (
-      <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
-        {mailIcon}
-        Contact
-      </div>
-    );
-  }
-  if (contactInfo.type === 'url') {
-    return (
-      <a
-        href={contactInfo.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnClassName}
-      >
-        {mailIcon}
-        Contact
-      </a>
-    );
-  }
-  const copyIcon = copied ? (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  ) : (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-    </svg>
-  );
-  return (
-    <ActionPopover
-      triggerLabel="Contact"
-      triggerIcon={mailIcon}
-      btnClassName={btnClassName}
-      btnActiveClassName={btnActiveClassName}
-      dialogLabel="Contact options"
-      headerLabel={contactInfo.type === 'email' ? 'Email' : 'Phone'}
-    >
-      {(close) => (
-        <>
-          {contactInfo.type === 'email' && (
-            <>
-              <div className={styles.popoverInlineRow}>
-                <span className={styles.popoverHeaderValue} title={contactInfo.email}>
-                  {contactInfo.email}
-                </span>
-                <button
-                  type="button"
-                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.email)}
-                  title={copied ? 'Copied to clipboard' : 'Copy email'}
-                  aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
-                >
-                  {copyIcon}
-                </button>
-              </div>
-              <div className={styles.popoverDivider} />
-              <div className={styles.popoverActions}>
-                <a
-                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
-                  target={isAndroid ? undefined : '_blank'}
-                  rel="noopener noreferrer"
-                  className={styles.popoverActionLink}
-                  onClick={(e) => handleOpenGmail(e, close)}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 7l9 6 9-6" />
-                  </svg>
-                  Open in Gmail
-                </a>
-                <a
-                  href={contactInfo.mailtoUrl}
-                  className={styles.popoverActionLink}
-                  onClick={close}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                  Default Mail App
-                </a>
-              </div>
-            </>
-          )}
-          {contactInfo.type === 'phone' && (
-            <>
-              <div className={styles.popoverInlineRow}>
-                <span className={styles.popoverHeaderValue} title={contactInfo.displayPhone}>
-                  {contactInfo.displayPhone}
-                </span>
-                <button
-                  type="button"
-                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.displayPhone)}
-                  title={copied ? 'Copied to clipboard' : 'Copy phone number'}
-                  aria-label={
-                    copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'
-                  }
-                >
-                  {copyIcon}
-                </button>
-              </div>
-              <div className={styles.popoverDivider} />
-              <div className={styles.popoverActions}>
-                <a
-                  href={contactInfo.telUrl}
-                  className={styles.popoverActionLinkPrimary}
-                  onClick={close}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-                  </svg>
-                  Call {contactInfo.displayPhone}
-                </a>
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </ActionPopover>
-  );
-}
-
-================
-File: app/Page.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: left;
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-.page h1 {
-  font-size: 2.4em;
-  margin-bottom: 1rem;
-  color: var(--ink);
-}
-.heroSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  width: 100%;
-  margin-bottom: 4rem;
-}
-.heroText {
-  flex: 1;
-  max-width: 500px;
-}
-.heroText p {
-  color: var(--text-subtle);
-}
-.illustrationContainer {
-  flex: 1;
-  max-width: 400px;
-}
-.contentBox {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.contentBox h2 {
-  color: var(--ink);
-}
-.contentBox p {
-  color: var(--text-subtle);
-}
-.button {
-  background-color: var(--ink);
-  color: var(--bg);
-  padding: 12px 24px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  min-height: 44px;
-  margin-top: 1rem;
-  transition: opacity 0.15s ease;
-}
-.button:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .page {
-    padding: 20px 16px 48px;
-  }
-  .heroSection {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .heroText {
-    text-align: left;
-    width: 100%;
-  }
-  .illustrationContainer {
-    width: 100%;
-    max-width: 260px;
-    align-self: center;
-  }
-  .contentBox {
-    padding: 1.25rem;
-  }
-  .button {
-    width: 100%;
-  }
-}
-
-================
-File: app/sitemap.ts
-================
-import type { MetadataRoute } from 'next';
-import { SITE_URL, getAllCities } from './lib/cities';
-import { getEvents } from './lib/google-sheets';
-import { getEventSlug } from './events/event-helpers';
-export const revalidate = 3600;
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = SITE_URL;
-  const cities = getAllCities();
-  const cityUrls: MetadataRoute.Sitemap = cities.flatMap((city) => [
-    {
-      url: `${baseUrl}/${city.slug}/events`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/${city.slug}/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/${city.slug}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-  ]);
-  const cityEventsList = await Promise.all(
-    cities.map(async (city) => ({
-      citySlug: city.slug,
-      events: await getEvents(city, 3600),
-    }))
-  );
-  const seenEventUrls = new Set<string>();
-  const eventUrls: MetadataRoute.Sitemap = [];
-  for (const { citySlug, events } of cityEventsList) {
-    for (const ev of events) {
-      const url = `${baseUrl}/${citySlug}/events/${getEventSlug(ev)}`;
-      if (seenEventUrls.has(url)) continue;
-      seenEventUrls.add(url);
-      eventUrls.push({
-        url,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      });
-    }
-  }
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1.0,
-    },
-    ...cityUrls,
-    ...eventUrls,
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/support`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    },
-  ];
-}
-
-================
-File: app/support/page.tsx
-================
-import Image from 'next/image';
-import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import styles from '../Page.module.css';
-import type { Metadata } from 'next';
-export const metadata: Metadata = {
-  title: 'Support Us',
-  description: 'Learn how you can support Someplace Social and keep the community going.',
-};
-export default function SupportPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <h1>Support Someplace Social</h1>
-            <p style={{ fontSize: '1.2em', lineHeight: 1.6 }}>
-              This website is 100% free, community-driven, and runs without ads or pop-ups. If you find it valuable, here are a few ways you can help keep it going.
-            </p>
-          </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-contact.png"
-              alt="Illustration of a capybara drinking a coffee"
-              width={400}
-              height={300}
-              style={{ width: '100%', height: 'auto' }}
-            />
-          </div>
-        </section>
-        <section className={styles.contentBox} style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>1. Keep Information Updated</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              The absolute best way to support is to help keep our event listings accurate. Submit new activities you find, or let me know if existing event info needs to be updated.
-            </p>
-            <Link href="/contact?tab=submit" className={styles.button}>
-              Submit or Edit Events
-            </Link>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>2. Buy Me a Drink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              If you&apos;ve met cool people or found fun things to do through the site, consider buying me a coffee (or a beer) to help cover the server costs.
-            </p>
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Buy Me a Drink
-            </a>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '2em', marginBottom: '0.5rem' }}>3. Free Month of Starlink</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: 1.6, marginBottom: '1rem' }}>
-              Need high-speed internet? Use my Starlink referral code. If you sign up using the link, we will both get a free month of service!
-            </p>
-            <a
-              href="https://sites.google.com/view/starlink-referral-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.button}
-            >
-              Get Starlink Referral
-            </a>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-================
-File: next.config.ts
-================
-import type { NextConfig } from 'next';
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/about',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/medellin',
-        destination: '/medellin-colombia/events',
-        permanent: true,
-      },
-      {
-        source: '/medellin-v2',
-        destination: '/medellin-colombia/events',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado',
-        destination: '/fort-collins-colorado/events',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado/:path*',
-        destination: '/fort-collins-colorado/events/:path*',
-        permanent: true,
-      },
-      {
-        source: '/events',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/events/:city',
-        destination: '/:city/events',
-        permanent: true,
-      },
-      {
-        source: '/events/:city/:path*',
-        destination: '/:city/events/:path*',
-        permanent: true,
-      },
-    ];
-  },
-};
-export default nextConfig;
-
-================
-File: package.json
-================
-{
-  "name": "someplace-social",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "pnpm@9.15.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "tsx --test app/events/utils.test.ts",
-    "db": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1",
-    "db:map": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 map",
-    "db:skeleton": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 skeleton",
-    "db:full": "powershell -ExecutionPolicy Bypass -File scripts/db.ps1 full",
-    "repomix": "repomix"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^1.6.1",
-    "next": "^16.4.5",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "resend": "^6.4.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.4.5",
-    "repomix": "^0.2.32",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
-  }
-}
-
-================
-File: app/about/page.tsx
-================
-import { redirect } from 'next/navigation';
-export default function AboutPage() {
-  redirect('/');
-}
-
-================
-File: app/components/Footer.module.css
-================
-.footer {
-  border-top: 1px solid var(--line);
-  background-color: var(--bg);
-  margin-top: auto;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.footerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 40px 24px 36px;
-}
-.footerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 24px;
-  max-width: 680px;
-  margin: 0 auto;
-}
-.footerSupportText {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--text-subtle);
-}
-.buyDrinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.15s ease;
-}
-.buyDrinkLink:hover {
-  color: var(--accent);
-}
-.footerQuoteSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.footerQuoteText {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink);
-}
-.footerAuthor {
-  font-size: 12px;
-  color: var(--muted);
-}
-.footerBottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.footerSocialLinks {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.footerIconLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  color: var(--text-subtle);
-  text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-.footerIconLink:hover {
-  background-color: var(--topbar-bg);
-  border-color: var(--line);
-  color: var(--accent);
-}
-.footerIconLink:active {
-  transform: scale(0.95);
-}
-.footerIconLink:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-.footerCopyright {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-@media (max-width: 899px) {
-  .footerInner {
-    padding: 32px 16px 28px;
-  }
-  .footerContent {
-    gap: 20px;
-  }
-  .footerSupportText {
-    font-size: 13.5px;
-  }
-  .footerQuoteText {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-}
-
-================
 File: app/contact/page.tsx
 ================
 import { Suspense } from 'react';
@@ -5208,10 +5630,12 @@ import type { Metadata } from 'next';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContactView from './ContactView';
+
 export const metadata: Metadata = {
   title: 'Contact Us',
   description: 'Submit a new regularly occurring event or ask us a question.',
 };
+
 export default function ContactPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -5232,6 +5656,7 @@ import { useMemo } from 'react';
 import { CityPriceConfig } from '../../lib/cities';
 import { formatPriceValue, formatPriceReadout } from '../utils';
 import styles from './FilterControls.module.css';
+
 interface PriceFilterDropdownProps {
   priceConfig: CityPriceConfig;
   maxPrice: number;
@@ -5241,6 +5666,7 @@ interface PriceFilterDropdownProps {
   containerRef?: React.RefObject<HTMLDivElement | null>;
   flexStyle?: boolean;
 }
+
 export default function PriceFilterDropdown({
   priceConfig,
   maxPrice,
@@ -5253,24 +5679,30 @@ export default function PriceFilterDropdown({
   const isFreeActive = maxPrice === 0;
   const isUnderActive = maxPrice === priceConfig.underValue;
   const isFiltered = maxPrice < priceConfig.maxPrice;
+
   const priceValue = useMemo(() => {
     if (maxPrice >= priceConfig.maxPrice) return 'All';
     if (maxPrice === 0) return 'Free';
     if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
     return `Up to ${formatPriceValue(maxPrice, priceConfig)}`;
   }, [maxPrice, priceConfig]);
+
   const readoutText = useMemo(() => {
     return formatPriceReadout(maxPrice, priceConfig);
   }, [maxPrice, priceConfig]);
+
   const readoutColor = isFreeActive ? 'var(--free)' : 'var(--ink)';
   const trackFill = isFreeActive ? 'var(--free)' : 'var(--ink)';
   const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
+
   const handleToggleFree = () => {
     onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
   };
+
   const handleToggleUnder = () => {
     onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
   };
+
   return (
     <div
       className={styles.multiSelectWrapper}
@@ -5394,6 +5826,357 @@ export default function PriceFilterDropdown({
 }
 
 ================
+File: app/events/components/SuggestEditModal.module.css
+================
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--backdrop);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+.modalContent {
+  background-color: var(--surface-elevated);
+  color: var(--ink);
+  border-radius: 20px;
+  max-width: 640px;
+  width: 100%;
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--surface-elevated);
+  flex-shrink: 0;
+}
+
+.modalTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modalTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.modalSubtitle {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.modalCloseBtn:hover {
+  color: var(--ink);
+  background-color: var(--topbar-bg);
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.modalScrollArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 20px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gridRow3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.changedBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--changed-badge-bg);
+  color: var(--changed-badge-text);
+  border: 1px solid var(--changed-badge-border);
+}
+
+.input,
+.textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background-color: var(--input-bg);
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  background-color: var(--input-focus-bg);
+  border-color: var(--ink);
+}
+
+.inputChanged,
+.textareaChanged {
+  border-color: #d97706;
+  background-color: var(--input-bg);
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modalFooter {
+  flex-shrink: 0;
+  padding: 16px 24px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background-color: var(--modal-footer-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.changeSummary {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.changeSummaryActive {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modalCancelBtn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.modalCancelBtn:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.modalSubmitBtn {
+  background-color: var(--ink);
+  color: var(--bg);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.modalSubmitBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.modalSubmitBtn:disabled,
+.modalCancelBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.statusAlert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.statusSuccess {
+  background-color: var(--free-bg);
+  border: 1px solid var(--free);
+  color: var(--free);
+}
+
+.statusError {
+  background-color: #fde8e8;
+  border: 1px solid #f8b4b4;
+  color: #9b1c1c;
+}
+
+:global(html[data-theme='dark']) .statusError {
+  background-color: #2b1616;
+  border-color: #4a2121;
+  color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+  .modalBackdrop {
+    padding: 8px;
+  }
+
+  .modalContent {
+    max-height: calc(100dvh - 16px);
+    border-radius: 16px;
+  }
+
+  .modalHeader {
+    padding: 14px 16px;
+  }
+
+  .modalScrollArea {
+    padding: 14px 16px 20px;
+    gap: 14px;
+  }
+
+  .gridRow,
+  .gridRow3 {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+
+  .modalActions {
+    width: 100%;
+  }
+
+  .modalCancelBtn,
+  .modalSubmitBtn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+================
 File: app/events/event-helpers.ts
 ================
 import { Event } from '../lib/google-sheets';
@@ -5412,11 +6195,13 @@ import {
   parseEventPrice,
   parseHour,
 } from './utils';
+
 export type EventResolutionResult = {
   event: Event;
   canonicalSlug: string;
   isCanonical: boolean;
 };
+
 export type NextOccurrenceResult = {
   date: Date;
   offsetDays: number;
@@ -5424,6 +6209,7 @@ export type NextOccurrenceResult = {
   isToday: boolean;
   isTomorrow: boolean;
 };
+
 export type EventDisplayDetails = {
   displayVenue: string;
   venueUrl: string;
@@ -5437,6 +6223,7 @@ export type EventDisplayDetails = {
   needsSignupIcon: boolean;
   mapsHref: string;
 };
+
 export function getEventDisplayDetails(
   event: Event,
   cityName: string
@@ -5503,6 +6290,7 @@ export function getEventDisplayDetails(
     mapsHref,
   };
 }
+
 export function slugifyText(text: string): string {
   if (!text) return '';
   return text
@@ -5513,6 +6301,7 @@ export function slugifyText(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
 function normalizeEventId(id?: string): string {
   if (!id) return '';
   return id
@@ -5521,6 +6310,7 @@ function normalizeEventId(id?: string): string {
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
 }
+
 export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
   const titleSlug = slugifyText(event.title);
   const idPart = normalizeEventId(event.id);
@@ -5532,15 +6322,18 @@ export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
   }
   return titleSlug || 'event';
 }
+
 export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
   return `/${citySlug}/events/${getEventSlug(event)}`;
 }
+
 export function getEventAbsoluteUrl(
   citySlug: string,
   event: Pick<Event, 'id' | 'title'>
 ): string {
   return `${SITE_URL}${getEventPath(citySlug, event)}`;
 }
+
 export function resolveEventBySlug(
   events: Event[],
   rawSlug: string
@@ -5653,6 +6446,7 @@ export function resolveEventBySlug(
   }
   return null;
 }
+
 export function getCityToday(timeZone: string, now: Date = new Date()): Date {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -5671,6 +6465,7 @@ export function getCityToday(timeZone: string, now: Date = new Date()): Date {
   }
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
+
 export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
   if (offsetDays === 0) return 'Today';
   if (offsetDays === 1) return 'Tomorrow';
@@ -5681,6 +6476,7 @@ export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
   });
   return `Next: ${formatted}`;
 }
+
 export function getNextEventOccurrence(
   event: Event,
   timeZone: string,
@@ -5703,6 +6499,7 @@ export function getNextEventOccurrence(
   }
   return null;
 }
+
 export function buildScheduleLine(event: Event): string {
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const timePart = start && end ? `${start} – ${end}` : start || '';
@@ -5723,6 +6520,7 @@ export function buildScheduleLine(event: Event): string {
   }
   return [whenPart, timePart].filter(Boolean).join(' · ');
 }
+
 export function buildEventInviteText(event: Event, citySlug: string): string {
   const url = getEventAbsoluteUrl(citySlug, event);
   const title = event.title.trim();
@@ -5739,6 +6537,7 @@ export function buildEventInviteText(event: Event, citySlug: string): string {
   const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
   return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
 }
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -5761,6 +6560,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
   return false;
 }
+
 export function buildEventMetaDescription(event: Event, city: CityConfig): string {
   const schedule = buildScheduleLine(event);
   const venue = (event.venue || event.location || '').trim();
@@ -5794,6 +6594,7 @@ export function buildEventMetaDescription(event: Event, city: CityConfig): strin
   const trimmed = lastSpace > 90 ? sliced.slice(0, lastSpace) : sliced;
   return `${trimmed.replace(/[.,;:\s]+$/, '')}…`;
 }
+
 function getTimeZoneOffsetString(date: Date, timeZone: string): string {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -5810,6 +6611,7 @@ function getTimeZoneOffsetString(date: Date, timeZone: string): string {
   }
   return timeZone === 'America/Bogota' ? '-05:00' : '-07:00';
 }
+
 function formatLocalIsoDateTime(
   date: Date,
   decimalHour: number,
@@ -5829,12 +6631,14 @@ function formatLocalIsoDateTime(
   );
   return `${yyyy}-${mm}-${dd}T${hh}:${min}:00${offset}`;
 }
+
 function formatLocalIsoDate(date: Date): string {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
+
 export function buildEventJsonLd(
   event: Event,
   city: CityConfig,
@@ -5930,310 +6734,158 @@ export function buildEventJsonLd(
 }
 
 ================
-File: app/events/components/SuggestEditModal.module.css
+File: app/globals.css
 ================
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  height: 100%;
-  height: 100dvh;
-  background-color: var(--backdrop);
-  backdrop-filter: blur(2px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  overscroll-behavior: contain;
-  touch-action: none;
+:root {
+  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
+  --bg: #fff9ec;
+  --card: #ffffff;
+  --card-hover: #faf6ee;
+  --surface-elevated: #ffffff;
+  --ink: #1f1b16;
+  --muted: #6f675c;
+  --text-subtle: #4f483e;
+  --line: #eadfc8;
+  --line-strong: #d6c8ad;
+  --line-light: #f1e7d2;
+  --accent: #d2432f;
+  --accent-hover: #b83220;
+  --topbar-bg: #f3ead4;
+  --sidebar-bg: var(--topbar-bg);
+  --pill-hover: #ebdcb9;
+  --free: #1f7a4d;
+  --free-bg: #e4f4ea;
+  --price-donation: #7a4a00;
+  --chip: #f3ead4;
+  --input-bg: #fffdf7;
+  --input-focus-bg: #ffffff;
+  --modal-footer-bg: #faf6ed;
+  --modal-banner-bg: #f3ead4;
+  --changed-badge-bg: #fef3c7;
+  --changed-badge-text: #92400e;
+  --changed-badge-border: #fde68a;
+  --shadow-sm: 0 1px 3px rgba(31, 27, 22, 0.04);
+  --shadow-md: 0 8px 24px rgba(31, 27, 22, 0.12);
+  --shadow-lg: 0 16px 40px rgba(31, 27, 22, 0.2);
+  --backdrop: rgba(31, 27, 22, 0.6);
+  --logo-filter: brightness(0);
+  --slider-track: #eadfc4;
+  color-scheme: light;
 }
-.modalContent {
-  background-color: var(--surface-elevated);
-  color: var(--ink);
-  border-radius: 20px;
-  max-width: 640px;
-  width: 100%;
-  max-height: calc(100dvh - 32px);
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  overscroll-behavior: contain;
-  touch-action: auto;
+
+html[data-theme='dark'] {
+  --bg: #14120f;
+  --card: #1c1a16;
+  --card-hover: #24211c;
+  --surface-elevated: #24211c;
+  --ink: #f4eee2;
+  --muted: #a49a8c;
+  --text-subtle: #cbc2b3;
+  --line: #332e27;
+  --line-strong: #474036;
+  --line-light: #2a251f;
+  --accent: #ff6854;
+  --accent-hover: #ff8270;
+  --topbar-bg: #1f1c18;
+  --sidebar-bg: var(--topbar-bg);
+  --pill-hover: #2e2922;
+  --free: #4ade80;
+  --free-bg: #132a1b;
+  --price-donation: #e09f3e;
+  --chip: #24211c;
+  --input-bg: #171512;
+  --input-focus-bg: #1c1a16;
+  --modal-footer-bg: #191714;
+  --modal-banner-bg: #221f1a;
+  --changed-badge-bg: #38240d;
+  --changed-badge-text: #fcd34d;
+  --changed-badge-border: #78350f;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --backdrop: rgba(0, 0, 0, 0.75);
+  --logo-filter: brightness(0) invert(0.96);
+  --slider-track: #332e27;
+  color-scheme: dark;
 }
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--surface-elevated);
-  flex-shrink: 0;
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --bg: #14120f;
+    --card: #1c1a16;
+    --card-hover: #24211c;
+    --surface-elevated: #24211c;
+    --ink: #f4eee2;
+    --muted: #a49a8c;
+    --text-subtle: #cbc2b3;
+    --line: #332e27;
+    --line-strong: #474036;
+    --line-light: #2a251f;
+    --accent: #ff6854;
+    --accent-hover: #ff8270;
+    --topbar-bg: #1f1c18;
+    --sidebar-bg: var(--topbar-bg);
+    --pill-hover: #2e2922;
+    --free: #4ade80;
+    --free-bg: #132a1b;
+    --price-donation: #e09f3e;
+    --chip: #24211c;
+    --input-bg: #171512;
+    --input-focus-bg: #1c1a16;
+    --modal-footer-bg: #191714;
+    --modal-banner-bg: #221f1a;
+    --changed-badge-bg: #38240d;
+    --changed-badge-text: #fcd34d;
+    --changed-badge-border: #78350f;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+    --backdrop: rgba(0, 0, 0, 0.75);
+    --logo-filter: brightness(0) invert(0.96);
+    --slider-track: #332e27;
+    color-scheme: dark;
+  }
 }
-.modalTitleGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.modalTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-  line-height: 1.2;
-}
-.modalSubtitle {
-  font-size: 13.5px;
-  color: var(--muted);
-  font-weight: 500;
-}
-.modalCloseBtn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.modalCloseBtn:hover {
-  color: var(--ink);
-  background-color: var(--topbar-bg);
-}
-.modalForm {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-.modalScrollArea {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  padding: 20px 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.sectionTitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.sectionLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-.gridRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.gridRow3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.fieldHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.changedBadge {
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: var(--changed-badge-bg);
-  color: var(--changed-badge-text);
-  border: 1px solid var(--changed-badge-border);
-}
-.input,
-.textarea {
-  font-family: inherit;
-  font-size: 14px;
-  padding: 10px 12px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
-  background-color: var(--input-bg);
-  color: var(--ink);
-  outline: none;
-  width: 100%;
+
+* {
   box-sizing: border-box;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
-.input:focus,
-.textarea:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  background-color: var(--input-focus-bg);
-  border-color: var(--ink);
-}
-.inputChanged,
-.textareaChanged {
-  border-color: #d97706;
-  background-color: var(--input-bg);
-}
-.textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-.modalFooter {
-  flex-shrink: 0;
-  padding: 16px 24px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background-color: var(--modal-footer-bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.changeSummary {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-}
-.changeSummaryActive {
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
   color: var(--ink);
-  font-weight: 700;
+  font-family: var(--font-karla);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
-.modalActions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
-.modalCancelBtn {
-  background: transparent;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  min-height: 44px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+
+@media (max-width: 899px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
-.modalCancelBtn:hover:not(:disabled) {
+
+a {
   color: var(--ink);
-  border-color: var(--ink);
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
-.modalSubmitBtn {
-  background-color: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  min-height: 44px;
-  transition: opacity 0.15s ease;
-}
-.modalSubmitBtn:hover:not(:disabled) {
-  opacity: 0.9;
-}
-.modalSubmitBtn:disabled,
-.modalCancelBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.statusAlert {
-  padding: 12px 14px;
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 600;
-}
-.statusSuccess {
-  background-color: var(--free-bg);
-  border: 1px solid var(--free);
-  color: var(--free);
-}
-.statusError {
-  background-color: #fde8e8;
-  border: 1px solid #f8b4b4;
-  color: #9b1c1c;
-}
-:global(html[data-theme='dark']) .statusError {
-  background-color: #2b1616;
-  border-color: #4a2121;
-  color: #fca5a5;
-}
-@media (max-width: 600px) {
-  .modalBackdrop {
-    padding: 8px;
-  }
-  .modalContent {
-    max-height: calc(100dvh - 16px);
-    border-radius: 16px;
-  }
-  .modalHeader {
-    padding: 14px 16px;
-  }
-  .modalScrollArea {
-    padding: 14px 16px 20px;
-    gap: 14px;
-  }
-  .gridRow,
-  .gridRow3 {
-    grid-template-columns: 1fr;
-  }
-  .modalFooter {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 12px 16px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-    gap: 8px;
-  }
-  .modalActions {
-    width: 100%;
-  }
-  .modalCancelBtn,
-  .modalSubmitBtn {
-    flex: 1;
-    text-align: center;
-  }
+
+a:hover {
+  color: var(--accent);
 }
 
 ================
@@ -6243,11 +6895,13 @@ File: app/events/components/SuggestEditModal.tsx
 import { useState, useMemo, useEffect } from 'react';
 import { Event } from '../../lib/google-sheets';
 import styles from './SuggestEditModal.module.css';
+
 interface SuggestEditModalProps {
   event: Event;
   cityName: string;
   onClose: () => void;
 }
+
 interface FormValues {
   title: string;
   organization: string;
@@ -6266,6 +6920,7 @@ interface FormValues {
   preRegistration: string;
   registrationUrl: string;
 }
+
 const FIELD_LABELS: Record<keyof FormValues, string> = {
   title: 'Event Title',
   organization: 'Organizer / Host',
@@ -6284,6 +6939,7 @@ const FIELD_LABELS: Record<keyof FormValues, string> = {
   preRegistration: 'Pre-Registration',
   registrationUrl: 'Registration URL',
 };
+
 function EditField({
   id,
   label,
@@ -6318,6 +6974,7 @@ function EditField({
     </div>
   );
 }
+
 export default function SuggestEditModal({
   event,
   cityName,
@@ -6349,6 +7006,7 @@ export default function SuggestEditModal({
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     const originalTouchAction = document.body.style.touchAction;
@@ -6366,9 +7024,11 @@ export default function SuggestEditModal({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose, isSubmitting]);
+
   const handleChange = (key: keyof FormValues, val: string) => {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
+
   const changedFields = useMemo(() => {
     const diffs: {
       key: keyof FormValues;
@@ -6390,7 +7050,9 @@ export default function SuggestEditModal({
     });
     return diffs;
   }, [initialValues, values]);
+
   const hasChanges = changedFields.length > 0 || notes.trim().length > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasChanges) return;
@@ -6450,8 +7112,10 @@ export default function SuggestEditModal({
       setIsSubmitting(false);
     }
   };
+
   const isFieldChanged = (key: keyof FormValues) =>
     (initialValues[key] || '').trim() !== (values[key] || '').trim();
+
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div
@@ -6717,163 +7381,19 @@ export default function SuggestEditModal({
 }
 
 ================
-File: app/globals.css
-================
-:root {
-  --font-karla: 'Karla', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
-  --bg: #fff9ec;
-  --card: #ffffff;
-  --card-hover: #faf6ee;
-  --surface-elevated: #ffffff;
-  --ink: #1f1b16;
-  --muted: #6f675c;
-  --text-subtle: #4f483e;
-  --line: #eadfc8;
-  --line-strong: #d6c8ad;
-  --line-light: #f1e7d2;
-  --accent: #d2432f;
-  --accent-hover: #b83220;
-  --topbar-bg: #f3ead4;
-  --sidebar-bg: var(--topbar-bg);
-  --pill-hover: #ebdcb9;
-  --free: #1f7a4d;
-  --free-bg: #e4f4ea;
-  --price-donation: #7a4a00;
-  --chip: #f3ead4;
-  --input-bg: #fffdf7;
-  --input-focus-bg: #ffffff;
-  --modal-footer-bg: #faf6ed;
-  --modal-banner-bg: #f3ead4;
-  --changed-badge-bg: #fef3c7;
-  --changed-badge-text: #92400e;
-  --changed-badge-border: #fde68a;
-  --shadow-sm: 0 1px 3px rgba(31, 27, 22, 0.04);
-  --shadow-md: 0 8px 24px rgba(31, 27, 22, 0.12);
-  --shadow-lg: 0 16px 40px rgba(31, 27, 22, 0.2);
-  --backdrop: rgba(31, 27, 22, 0.6);
-  --logo-filter: brightness(0);
-  --slider-track: #eadfc4;
-  color-scheme: light;
-}
-html[data-theme='dark'] {
-  --bg: #14120f;
-  --card: #1c1a16;
-  --card-hover: #24211c;
-  --surface-elevated: #24211c;
-  --ink: #f4eee2;
-  --muted: #a49a8c;
-  --text-subtle: #cbc2b3;
-  --line: #332e27;
-  --line-strong: #474036;
-  --line-light: #2a251f;
-  --accent: #ff6854;
-  --accent-hover: #ff8270;
-  --topbar-bg: #1f1c18;
-  --sidebar-bg: var(--topbar-bg);
-  --pill-hover: #2e2922;
-  --free: #4ade80;
-  --free-bg: #132a1b;
-  --price-donation: #e09f3e;
-  --chip: #24211c;
-  --input-bg: #171512;
-  --input-focus-bg: #1c1a16;
-  --modal-footer-bg: #191714;
-  --modal-banner-bg: #221f1a;
-  --changed-badge-bg: #38240d;
-  --changed-badge-text: #fcd34d;
-  --changed-badge-border: #78350f;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
-  --backdrop: rgba(0, 0, 0, 0.75);
-  --logo-filter: brightness(0) invert(0.96);
-  --slider-track: #332e27;
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme='light']) {
-    --bg: #14120f;
-    --card: #1c1a16;
-    --card-hover: #24211c;
-    --surface-elevated: #24211c;
-    --ink: #f4eee2;
-    --muted: #a49a8c;
-    --text-subtle: #cbc2b3;
-    --line: #332e27;
-    --line-strong: #474036;
-    --line-light: #2a251f;
-    --accent: #ff6854;
-    --accent-hover: #ff8270;
-    --topbar-bg: #1f1c18;
-    --sidebar-bg: var(--topbar-bg);
-    --pill-hover: #2e2922;
-    --free: #4ade80;
-    --free-bg: #132a1b;
-    --price-donation: #e09f3e;
-    --chip: #24211c;
-    --input-bg: #171512;
-    --input-focus-bg: #1c1a16;
-    --modal-footer-bg: #191714;
-    --modal-banner-bg: #221f1a;
-    --changed-badge-bg: #38240d;
-    --changed-badge-text: #fcd34d;
-    --changed-badge-border: #78350f;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
-    --backdrop: rgba(0, 0, 0, 0.75);
-    --logo-filter: brightness(0) invert(0.96);
-    --slider-track: #332e27;
-    color-scheme: dark;
-  }
-}
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla);
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-button,
-input,
-select,
-textarea {
-  -webkit-tap-highlight-color: transparent;
-}
-@media (max-width: 899px) {
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-}
-a {
-  color: var(--ink);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-a:hover {
-  color: var(--accent);
-}
-
-================
 File: app/components/Footer.tsx
 ================
 import Link from 'next/link';
 import type { CityConfig } from '../lib/cities';
 import styles from './Footer.module.css';
+
 interface FooterProps {
   city?: CityConfig;
 }
+
 export default function Footer({ city }: FooterProps) {
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
@@ -7938,6 +8458,106 @@ File: app/events/components/FilterControls.module.css
 }
 
 ================
+File: app/events/components/CityHeroCard.tsx
+================
+'use client';
+import styles from './CityHeroCard.module.css';
+interface CityHeroCardProps {
+  cityName: string;
+  introTitle?: string;
+  introDescription?: string;
+  eventCount?: number;
+  lastUpdated?: string | null;
+  activities: string[];
+  selectedActivities: string[];
+  onSelectChip: (activity: string) => void;
+  onClearActivities: () => void;
+}
+export default function CityHeroCard({
+  cityName,
+  introTitle,
+  introDescription,
+  eventCount,
+  lastUpdated,
+  activities,
+  selectedActivities,
+  onSelectChip,
+  onClearActivities,
+}: CityHeroCardProps) {
+  const isAllActive = selectedActivities.length === 0;
+  return (
+    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
+      <div className={styles.titleCol}>
+        <p className={styles.eyebrow}>Someplace Social</p>
+        <h1 id="city-intro-heading" className={styles.title}>
+          {introTitle || `${cityName} Community Listings`}
+        </h1>
+        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
+          <div className={styles.metaRow}>
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
+            {lastUpdated && (
+              <div className={styles.lastUpdatedBadge}>
+                <svg
+                  className={styles.lastUpdatedIcon}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 12.5l2 2 4-4.5" />
+                </svg>
+                <span className={styles.lastUpdatedLabel}>Last updated:</span>
+                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className={styles.descCol}>
+        <p className={styles.lead}>
+          {introDescription ||
+            `Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+        </p>
+      </div>
+      <div className={styles.chips} role="group" aria-label="Filter by activity">
+        <button
+          type="button"
+          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
+          aria-pressed={isAllActive}
+          onClick={onClearActivities}
+        >
+          All
+        </button>
+        {activities.map((act) => {
+          const isSelected = selectedActivities.includes(act);
+          return (
+            <button
+              key={act}
+              type="button"
+              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectChip(act)}
+            >
+              {act}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+================
 File: app/events/utils.test.ts
 ================
 import { describe, it } from 'node:test';
@@ -7956,6 +8576,7 @@ import {
   buildEventJsonLd,
   getEventDisplayDetails,
 } from './event-helpers';
+
 function makeEvent(overrides: Partial<Event>): Event {
   return {
     id: '1',
@@ -7985,6 +8606,7 @@ function makeEvent(overrides: Partial<Event>): Event {
     ...overrides,
   };
 }
+
 const jan2Fri = new Date(2026, 0, 2);
 const jan3Sat = new Date(2026, 0, 3);
 const jan4Sun = new Date(2026, 0, 4);
@@ -8010,6 +8632,7 @@ const feb27Fri = new Date(2026, 1, 27);
 const mar3Tue = new Date(2026, 2, 3);
 const mar17Tue = new Date(2026, 2, 17);
 const mar31Tue = new Date(2026, 2, 31);
+
 describe('isEventActiveOnDate frequency parsing', () => {
   it('handles Weekly and Weekly, Sat & Sun', () => {
     const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
@@ -8208,6 +8831,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
   });
 });
+
 describe('expandEventSchedules', () => {
   it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
     const karaoke = makeEvent({
@@ -8345,6 +8969,7 @@ describe('expandEventSchedules', () => {
     assert.equal(result[0].endTime, '9p');
   });
 });
+
 describe('isMonthActive', () => {
   it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
     assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
@@ -8357,6 +8982,7 @@ describe('isMonthActive', () => {
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
   });
 });
+
 describe('slug generation and event resolution', () => {
   it('strips accents, emojis, punctuation, and formats clean slugs', () => {
     assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
@@ -8407,6 +9033,7 @@ describe('slug generation and event resolution', () => {
     assert.equal(deletedId, null);
   });
 });
+
 describe('next occurrence, invite text, and JSON-LD', () => {
   it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
     const monthlyEv = makeEvent({
@@ -8493,6 +9120,7 @@ describe('next occurrence, invite text, and JSON-LD', () => {
     );
   });
 });
+
 describe('getEventDisplayDetails', () => {
   it('normalizes venue, organizer, and registration URLs and falls back to plain text when blank or unsafe', () => {
     const linked = getEventDisplayDetails(
@@ -8514,6 +9142,7 @@ describe('getEventDisplayDetails', () => {
     assert.equal(linked.preRegistrationText, 'Registration required.');
     assert.equal(linked.registrationUrl, 'https://geekswhodrink.com/register');
     assert.equal(linked.needsSignupIcon, true);
+
     const blankAndUnsafe = getEventDisplayDetails(
       makeEvent({
         venue: 'City Park',
@@ -8531,6 +9160,7 @@ describe('getEventDisplayDetails', () => {
     assert.equal(blankAndUnsafe.needsSignupIcon, false);
   });
 });
+
 describe('linkify Prove It text', () => {
   it('normalizes empty and x placeholder values', () => {
     assert.equal(normalizeProveItText(''), '');
@@ -8651,106 +9281,6 @@ describe('linkify Prove It text', () => {
     ]);
   });
 });
-
-================
-File: app/events/components/CityHeroCard.tsx
-================
-'use client';
-import styles from './CityHeroCard.module.css';
-interface CityHeroCardProps {
-  cityName: string;
-  introTitle?: string;
-  introDescription?: string;
-  eventCount?: number;
-  lastUpdated?: string | null;
-  activities: string[];
-  selectedActivities: string[];
-  onSelectChip: (activity: string) => void;
-  onClearActivities: () => void;
-}
-export default function CityHeroCard({
-  cityName,
-  introTitle,
-  introDescription,
-  eventCount,
-  lastUpdated,
-  activities,
-  selectedActivities,
-  onSelectChip,
-  onClearActivities,
-}: CityHeroCardProps) {
-  const isAllActive = selectedActivities.length === 0;
-  return (
-    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
-      <div className={styles.titleCol}>
-        <p className={styles.eyebrow}>Someplace Social</p>
-        <h1 id="city-intro-heading" className={styles.title}>
-          {introTitle || `${cityName} Community Listings`}
-        </h1>
-        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
-          <div className={styles.metaRow}>
-            {typeof eventCount === 'number' && eventCount > 0 && (
-              <span className={styles.metaSubtitle}>
-                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-              </span>
-            )}
-            {lastUpdated && (
-              <div className={styles.lastUpdatedBadge}>
-                <svg
-                  className={styles.lastUpdatedIcon}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M9 12.5l2 2 4-4.5" />
-                </svg>
-                <span className={styles.lastUpdatedLabel}>Last updated:</span>
-                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className={styles.descCol}>
-        <p className={styles.lead}>
-          {introDescription ||
-            `Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including weekly meetups, classes, and fun stuff to do in ${cityName}.`}
-        </p>
-      </div>
-      <div className={styles.chips} role="group" aria-label="Filter by activity">
-        <button
-          type="button"
-          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
-          aria-pressed={isAllActive}
-          onClick={onClearActivities}
-        >
-          All
-        </button>
-        {activities.map((act) => {
-          const isSelected = selectedActivities.includes(act);
-          return (
-            <button
-              key={act}
-              type="button"
-              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectChip(act)}
-            >
-              {act}
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
 
 ================
 File: app/about/About.module.css
@@ -9275,6 +9805,7 @@ import FilterDropdown from './FilterDropdown';
 import PriceFilterDropdown from './PriceFilterDropdown';
 import { CityPriceConfig } from '../../lib/cities';
 import styles from './FilterControls.module.css';
+
 interface FilterControlsProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -9296,6 +9827,7 @@ interface FilterControlsProps {
   hasActiveFilters: boolean;
   onClearAllFilters: () => void;
 }
+
 const activityIcon = (
   <svg
     width="16"
@@ -9311,6 +9843,7 @@ const activityIcon = (
     <path d="M4 6h16M7 12h10M10 18h4" />
   </svg>
 );
+
 const timeIcon = (
   <svg
     width="16"
@@ -9327,6 +9860,7 @@ const timeIcon = (
     <polyline points="12 7 12 12 15 14" />
   </svg>
 );
+
 const areaIcon = (
   <svg
     width="16"
@@ -9343,6 +9877,7 @@ const areaIcon = (
     <circle cx="12" cy="11" r="2.5" />
   </svg>
 );
+
 const filterSliderIcon = (
   <svg
     width="16"
@@ -9366,6 +9901,7 @@ const filterSliderIcon = (
     <line x1="17" y1="16" x2="23" y2="16" />
   </svg>
 );
+
 function FilterControls({
   searchQuery,
   onSearchChange,
@@ -9400,6 +9936,7 @@ function FilterControls({
   const actMobileMenuRef = useRef<HTMLDivElement>(null);
   const areaMenuRef = useRef<HTMLDivElement>(null);
   const areaMobileMenuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as Node;
@@ -9435,6 +9972,7 @@ function FilterControls({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim().length > 0) count++;
@@ -9451,21 +9989,25 @@ function FilterControls({
     selectedActivities.length,
     selectedAreas.length,
   ]);
+
   const timeValue = useMemo(() => {
     if (selectedTimes.length === 0) return 'All';
     if (selectedTimes.length === 1) return selectedTimes[0];
     return `${selectedTimes.length} selected`;
   }, [selectedTimes]);
+
   const activityValue = useMemo(() => {
     if (selectedActivities.length === 0) return 'All';
     if (selectedActivities.length === 1) return selectedActivities[0];
     return `${selectedActivities.length} selected`;
   }, [selectedActivities]);
+
   const areaValue = useMemo(() => {
     if (selectedAreas.length === 0) return 'All';
     if (selectedAreas.length === 1) return selectedAreas[0];
     return `${selectedAreas.length} selected`;
   }, [selectedAreas]);
+
   const renderSearchInput = () => (
     <div className={styles.searchWrapper}>
       <svg
@@ -9516,6 +10058,7 @@ function FilterControls({
       )}
     </div>
   );
+
   return (
     <>
       <div className={styles.filterBlockDesktop}>
@@ -9810,6 +10353,7 @@ File: app/events/components/EventCard.module.css
   --tag-default-ink: #4f483e;
   --tag-default-bg: #f3ead4;
 }
+
 :global(html[data-theme='dark']) .card {
   --fact-bg: #25221d;
   --tag-science-ink: #5eead4;
@@ -9835,6 +10379,7 @@ File: app/events/components/EventCard.module.css
   --tag-default-ink: #d6cbbe;
   --tag-default-bg: #2c2720;
 }
+
 @media (prefers-color-scheme: dark) {
   :global(html:not([data-theme='light'])) .card {
     --fact-bg: #25221d;
@@ -9862,9 +10407,11 @@ File: app/events/components/EventCard.module.css
     --tag-default-bg: #2c2720;
   }
 }
+
 .card:not(.open):hover {
   border-color: var(--line-strong);
 }
+
 .open {
   border-color: var(--ink);
   box-shadow: var(--shadow-md);
@@ -9872,11 +10419,13 @@ File: app/events/components/EventCard.module.css
   content-visibility: visible;
   z-index: 10;
 }
+
 .icon {
   flex: none;
   user-select: none;
   -webkit-user-select: none;
 }
+
 .head {
   display: grid;
   grid-template-columns: 84px 1fr 34px;
@@ -9889,9 +10438,11 @@ File: app/events/components/EventCard.module.css
   -webkit-user-select: text;
   -webkit-tap-highlight-color: transparent;
 }
+
 .time {
   grid-area: time;
 }
+
 .time b {
   display: block;
   font-family: var(--font-bricolage), system-ui, sans-serif;
@@ -9901,6 +10452,7 @@ File: app/events/components/EventCard.module.css
   line-height: 1;
   color: var(--ink);
 }
+
 .time span {
   display: block;
   margin-top: 4px;
@@ -9910,10 +10462,12 @@ File: app/events/components/EventCard.module.css
   line-height: 1.2;
   color: var(--muted);
 }
+
 .main {
   grid-area: main;
   min-width: 0;
 }
+
 .next {
   display: inline-block;
   background-color: var(--accent);
@@ -9926,6 +10480,7 @@ File: app/events/components/EventCard.module.css
   user-select: none;
   -webkit-user-select: none;
 }
+
 .title {
   display: block;
   margin: 0;
@@ -9935,6 +10490,7 @@ File: app/events/components/EventCard.module.css
   line-height: 1.25;
   color: var(--ink);
 }
+
 .venue {
   display: flex;
   align-items: flex-start;
@@ -9945,10 +10501,12 @@ File: app/events/components/EventCard.module.css
   line-height: 1.3;
   color: var(--ink);
 }
+
 .venueIcon {
   color: var(--muted);
   margin-top: 2px;
 }
+
 .host {
   display: block;
   margin-top: 2px;
@@ -9957,13 +10515,16 @@ File: app/events/components/EventCard.module.css
   line-height: 1.35;
   color: var(--muted);
 }
+
 .hostFlush {
   margin-left: 0;
 }
+
 .hostLink {
   color: var(--text-subtle);
   font-weight: 600;
 }
+
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -9973,18 +10534,22 @@ File: app/events/components/EventCard.module.css
   font-size: 13.5px;
   line-height: 1.3;
 }
+
 .price {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-weight: 700;
 }
+
 .priceFree {
   color: var(--free);
 }
+
 .pricePaid {
   color: var(--ink);
 }
+
 .area {
   display: inline-flex;
   align-items: center;
@@ -9992,6 +10557,7 @@ File: app/events/components/EventCard.module.css
   color: var(--muted);
   font-weight: 500;
 }
+
 .dot {
   width: 3px;
   height: 3px;
@@ -9999,14 +10565,17 @@ File: app/events/components/EventCard.module.css
   background-color: var(--line-strong);
   flex-shrink: 0;
 }
+
 .sep2 {
   display: inline-block;
 }
+
 .tags {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
+
 .tag {
   font-size: 12px;
   font-weight: 600;
@@ -10015,6 +10584,7 @@ File: app/events/components/EventCard.module.css
   white-space: nowrap;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .chev {
   grid-area: chev;
   width: 34px;
@@ -10031,31 +10601,38 @@ File: app/events/components/EventCard.module.css
   -webkit-user-select: none;
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
 }
+
 .head:hover .chev,
 .chev:hover {
   background-color: var(--pill-hover);
 }
+
 .chev:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
+
 .open .chev {
   background-color: var(--ink);
   color: var(--bg);
   transform: rotate(180deg);
 }
+
 .open .head:hover .chev,
 .open .chev:hover {
   background-color: var(--ink);
   opacity: 0.9;
 }
+
 .body {
   border-top: 1px solid var(--line);
   padding: 18px 20px 20px 120px;
 }
+
 .bodyHidden {
   display: none;
 }
+
 .desc {
   font-size: 15px;
   line-height: 1.6;
@@ -10063,18 +10640,22 @@ File: app/events/components/EventCard.module.css
   margin: 0 0 16px;
   max-width: 580px;
 }
+
 .facts {
   margin: 0 0 18px;
 }
+
 .desc + .facts {
   margin-top: -2px;
 }
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
+
 .btn {
   display: flex;
   flex-direction: column;
@@ -10100,33 +10681,40 @@ File: app/events/components/EventCard.module.css
   white-space: nowrap;
   transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
+
 .btn:not(.btnDisabled):not(.btnPrimary):hover {
   border-color: var(--ink);
   color: var(--ink);
 }
+
 .btnPrimary {
   background-color: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
 }
+
 .btnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
+
 .btnActive {
   border-color: var(--ink);
   background-color: var(--topbar-bg);
 }
+
 .btnDisabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
 .footerLinks {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 14px;
 }
+
 .permalink,
 .edit {
   font-size: 13px;
@@ -10145,10 +10733,12 @@ File: app/events/components/EventCard.module.css
   -webkit-user-select: none;
   white-space: nowrap;
 }
+
 .permalink:hover,
 .edit:hover {
   color: var(--accent);
 }
+
 @container (max-width: 600px) {
   .head {
     grid-template-columns: 62px 1fr 30px;
@@ -10198,6 +10788,7 @@ File: app/events/components/EventCard.module.css
     gap: 18px;
   }
 }
+
 @container (max-width: 340px) {
   .actions {
     gap: 6px;
@@ -11822,6 +12413,7 @@ File: app/lib/google-sheets.ts
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
 import { expandEventSchedules } from '../events/schedule-splitter';
+
 export type Event = {
   id: string;
   title: string;
@@ -11848,12 +12440,14 @@ export type Event = {
   notes: string;
   database: string;
 };
+
 function getFetchOptions(revalidateSeconds: number = 30): RequestInit {
   if (process.env.NODE_ENV === 'development') {
     return { cache: 'no-store' };
   }
   return { next: { revalidate: revalidateSeconds } };
 }
+
 function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
   if (city.csvUrl) return [city.csvUrl];
   const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
@@ -11886,6 +12480,7 @@ function getCandidateUrls(city: CityConfig, discoveredGid: string | null): strin
   }
   return urls;
 }
+
 function parseCsv(csvText: string): string[][] {
   const rows: string[][] = [];
   let currentRow: string[] = [];
@@ -11919,6 +12514,7 @@ function parseCsv(csvText: string): string[][] {
   rows.push(currentRow);
   return rows;
 }
+
 function parseSheetData(rawText: string): string[][] {
   const trimmed = rawText.trim();
   if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
@@ -11957,6 +12553,7 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
+
 async function fetchValidSheetText(url: string, revalidateSeconds: number = 30): Promise<string | null> {
   try {
     const response = await fetch(url, {
@@ -11996,6 +12593,7 @@ async function fetchValidSheetText(url: string, revalidateSeconds: number = 30):
   }
   return null;
 }
+
 async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number = 30): Promise<string[][]> {
   for (const url of candidateUrls) {
     const text = await fetchValidSheetText(url, revalidateSeconds);
@@ -12007,18 +12605,21 @@ async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number
   }
   return [];
 }
+
 const normalizeHeader = (header: string): string =>
   header
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/g, '');
+
 const normalizeCityKey = (value: string): string =>
   value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
+
 function formatSheetDate(value: string): string {
   const gvizDateMatch = value.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
   if (gvizDateMatch) {
@@ -12034,6 +12635,7 @@ function formatSheetDate(value: string): string {
   }
   return value;
 }
+
 function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
   if (rows.length < 2) return null;
   const headerRow = rows[0].map((h) => normalizeHeader(h));
@@ -12053,6 +12655,7 @@ function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
   }
   return map.size > 0 ? map : null;
 }
+
 function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   const targets = new Set(tabNames.map((n) => normalizeHeader(n)));
   const itemNameFirstRegex = /\{[^{}]*?name:\s*["']([^"']+)["'][^{}]*?gid:\s*["'](\d+)["']/gi;
@@ -12076,12 +12679,13 @@ function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   }
   return null;
 }
+
 async function discoverTabGid(
   targetId: string,
   tabNames: string[],
   revalidateSeconds: number = 30
 ): Promise<string | null> {
-  const htmlviewUrl = `https:
+  const htmlviewUrl = `https://docs.google.com/spreadsheets/d/${targetId}/htmlview`;
   try {
     const response = await fetch(htmlviewUrl, getFetchOptions(revalidateSeconds));
     if (!response.ok) {
@@ -12101,6 +12705,7 @@ async function discoverTabGid(
     return null;
   }
 }
+
 const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
   title: ['title', 'eventname', 'name'],
@@ -12153,6 +12758,7 @@ const HEADER_ALIASES: Record<string, string[]> = {
   notes: ['notes', 'note'],
   database: ['database', 'db', 'sheet'],
 };
+
 export async function getLastUpdated(
   city: CityConfig,
   revalidateSeconds: number = 30
@@ -12199,6 +12805,7 @@ export async function getLastUpdated(
     return null;
   }
 }
+
 export async function getEvents(
   cityOrTab?: CityConfig | string,
   revalidateSeconds: number = 30
@@ -12315,306 +12922,6 @@ export async function getEvents(
     return [];
   }
 }
-
-================
-File: app/events/components/EventCard.tsx
-================
-'use client';
-import { memo, useId, useRef } from 'react';
-import Link from 'next/link';
-import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  isFreePrice,
-  getTagStyle,
-} from '../utils';
-import { getEventDisplayDetails, getEventPath } from '../event-helpers';
-import ContactButton from './ContactButton';
-import EventFacts from './EventFacts';
-import InlineExternalLink from './InlineExternalLink';
-import ProveItButton from './ProveItButton';
-import ShareButton from './ShareButton';
-import {
-  ChevronDownIcon,
-  CompassIcon,
-  ExternalLinkIcon,
-  PenIcon,
-  PinIcon,
-  TagIcon,
-} from './EventIcons';
-import styles from './EventCard.module.css';
-const DRAG_THRESHOLD_PX = 5;
-interface EventCardProps {
-  event: Event;
-  isOpen: boolean;
-  isNextUp: boolean;
-  cityName: string;
-  citySlug: string;
-  domId?: string;
-  onToggle: () => void;
-  onOpenEdit: (ev: Event) => void;
-}
-function EventCard({
-  event,
-  isOpen,
-  isNextUp,
-  cityName,
-  citySlug,
-  domId,
-  onToggle,
-  onOpenEdit,
-}: EventCardProps) {
-  const bodyId = useId();
-  const headRef = useRef<HTMLDivElement>(null);
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-  const didDragRef = useRef(false);
-  const prevSelectionRef = useRef('');
-  const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) {
-      pointerStartRef.current = null;
-      return;
-    }
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
-    didDragRef.current = false;
-    prevSelectionRef.current = window.getSelection()?.toString() ?? '';
-  };
-  const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!pointerStartRef.current || didDragRef.current) return;
-    const dx = e.clientX - pointerStartRef.current.x;
-    const dy = e.clientY - pointerStartRef.current.y;
-    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
-      didDragRef.current = true;
-    }
-  };
-  const handleHeadPointerCancel = () => {
-    pointerStartRef.current = null;
-    didDragRef.current = false;
-  };
-  const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement | null;
-    if (target?.closest('button, a')) {
-      return;
-    }
-    const start = pointerStartRef.current;
-    pointerStartRef.current = null;
-    if (didDragRef.current) {
-      didDragRef.current = false;
-      return;
-    }
-    if (start) {
-      const dx = e.clientX - start.x;
-      const dy = e.clientY - start.y;
-      if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
-        return;
-      }
-    }
-    if (e.detail >= 2) {
-      return;
-    }
-    const selection = window.getSelection();
-    const selectedText = selection?.toString() ?? '';
-    if (
-      selectedText.trim().length > 0 &&
-      selectedText !== prevSelectionRef.current &&
-      headRef.current &&
-      selection
-    ) {
-      const { anchorNode, focusNode } = selection;
-      if (
-        (anchorNode && headRef.current.contains(anchorNode)) ||
-        (focusNode && headRef.current.contains(focusNode))
-      ) {
-        return;
-      }
-    }
-    onToggle();
-  };
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities || [];
-  const {
-    displayVenue,
-    venueUrl,
-    organizerName,
-    organizerUrl,
-    showOrganizer,
-    recurrenceText,
-    preRegistrationText,
-    registrationUrl,
-    needsSignupIcon,
-    mapsHref,
-  } = getEventDisplayDetails(event, cityName);
-  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const eventHref = getEventPath(citySlug, event);
-  return (
-    <article
-      id={domId}
-      className={`${styles.card} ${isOpen ? styles.open : ''}`}
-    >
-      <div
-        ref={headRef}
-        className={styles.head}
-        onPointerDown={handleHeadPointerDown}
-        onPointerMove={handleHeadPointerMove}
-        onPointerCancel={handleHeadPointerCancel}
-        onClick={handleHeadClick}
-      >
-        <div className={styles.time}>
-          <b>{start || '—'}</b>
-          {end && <span>to {end}</span>}
-        </div>
-        <div className={styles.main}>
-          {isNextUp && <span className={styles.next}>Next up</span>}
-          <h3 className={styles.title}>{event.title}</h3>
-          {displayVenue && (
-            <div className={styles.venue}>
-              <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
-              <InlineExternalLink href={venueUrl}>
-                {displayVenue}
-              </InlineExternalLink>
-            </div>
-          )}
-          {showOrganizer && (
-            <div
-              className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
-            >
-              Hosted by{' '}
-              <InlineExternalLink
-                href={organizerUrl}
-                className={organizerUrl ? styles.hostLink : undefined}
-              >
-                {organizerName}
-              </InlineExternalLink>
-            </div>
-          )}
-          {hasMeta && (
-            <div className={styles.meta}>
-              {event.price && (
-                <span
-                  className={`${styles.price} ${
-                    isFree ? styles.priceFree : styles.pricePaid
-                  }`}
-                >
-                  <TagIcon className={styles.icon} />
-                  <span>{event.price}</span>
-                </span>
-              )}
-              {event.price && event.area && (
-                <span className={styles.dot} aria-hidden="true" />
-              )}
-              {event.area && (
-                <span className={styles.area}>
-                  <CompassIcon className={styles.icon} />
-                  <span>{event.area}</span>
-                </span>
-              )}
-              {(event.price || event.area) && tagList.length > 0 && (
-                <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
-              )}
-              {tagList.length > 0 && (
-                <div className={styles.tags}>
-                  {tagList.map((tag) => {
-                    const customStyle = getTagStyle(tag);
-                    return (
-                      <span
-                        key={tag}
-                        className={styles.tag}
-                        style={{
-                          color: customStyle.color,
-                          backgroundColor: customStyle.background,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          className={styles.chev}
-          aria-expanded={isOpen}
-          aria-controls={bodyId}
-          aria-label={
-            isOpen
-              ? `Collapse details for ${event.title}`
-              : `Expand details for ${event.title}`
-          }
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-        >
-          <ChevronDownIcon className={styles.icon} />
-        </button>
-      </div>
-      <div
-        id={bodyId}
-        className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
-        aria-hidden={!isOpen}
-      >
-        {(event.about || event.notes) && (
-          <p className={styles.desc}>{event.about || event.notes}</p>
-        )}
-        <EventFacts
-          recurrenceText={recurrenceText}
-          preRegistrationText={preRegistrationText}
-          registrationUrl={registrationUrl}
-          needsSignupIcon={needsSignupIcon}
-          className={styles.facts}
-        />
-        <div className={styles.actions}>
-          <a
-            href={mapsHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            aria-label="Open in Maps"
-          >
-            <PinIcon className={styles.icon} />
-            Maps
-          </a>
-          <ContactButton
-            contact={event.contact}
-            btnClassName={styles.btn}
-            btnActiveClassName={styles.btnActive}
-            btnDisabledClassName={styles.btnDisabled}
-          />
-          <ProveItButton
-            proveIt={event.proveIt}
-            btnClassName={styles.btn}
-            btnActiveClassName={styles.btnActive}
-            btnDisabledClassName={styles.btnDisabled}
-          />
-          <ShareButton
-            event={event}
-            citySlug={citySlug}
-            btnClassName={styles.btn}
-          />
-          <div className={styles.footerLinks}>
-            <Link href={eventHref} className={styles.permalink}>
-              Open page
-              <ExternalLinkIcon />
-            </Link>
-            <button
-              type="button"
-              className={styles.edit}
-              onClick={() => onOpenEdit(event)}
-            >
-              <PenIcon className={styles.icon} />
-              Suggest edit
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-export default memo(EventCard);
 
 ================
 File: app/events/CityEventsView.tsx
@@ -13063,6 +13370,316 @@ export default function CityEventsView({
     </div>
   );
 }
+
+================
+File: app/events/components/EventCard.tsx
+================
+'use client';
+import { memo, useId, useRef } from 'react';
+import Link from 'next/link';
+import { Event } from '../../lib/google-sheets';
+import {
+  formatTimeRange,
+  isFreePrice,
+  getTagStyle,
+} from '../utils';
+import { getEventDisplayDetails, getEventPath } from '../event-helpers';
+import ContactButton from './ContactButton';
+import EventFacts from './EventFacts';
+import InlineExternalLink from './InlineExternalLink';
+import ProveItButton from './ProveItButton';
+import ShareButton from './ShareButton';
+import {
+  ChevronDownIcon,
+  CompassIcon,
+  ExternalLinkIcon,
+  PenIcon,
+  PinIcon,
+  TagIcon,
+} from './EventIcons';
+import styles from './EventCard.module.css';
+
+const DRAG_THRESHOLD_PX = 5;
+
+interface EventCardProps {
+  event: Event;
+  isOpen: boolean;
+  isNextUp: boolean;
+  cityName: string;
+  citySlug: string;
+  domId?: string;
+  onToggle: () => void;
+  onOpenEdit: (ev: Event) => void;
+}
+
+function EventCard({
+  event,
+  isOpen,
+  isNextUp,
+  cityName,
+  citySlug,
+  domId,
+  onToggle,
+  onOpenEdit,
+}: EventCardProps) {
+  const bodyId = useId();
+  const headRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const didDragRef = useRef(false);
+  const prevSelectionRef = useRef('');
+
+  const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) {
+      pointerStartRef.current = null;
+      return;
+    }
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    didDragRef.current = false;
+    prevSelectionRef.current = window.getSelection()?.toString() ?? '';
+  };
+
+  const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointerStartRef.current || didDragRef.current) return;
+    const dx = e.clientX - pointerStartRef.current.x;
+    const dy = e.clientY - pointerStartRef.current.y;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+      didDragRef.current = true;
+    }
+  };
+
+  const handleHeadPointerCancel = () => {
+    pointerStartRef.current = null;
+    didDragRef.current = false;
+  };
+
+  const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('button, a')) {
+      return;
+    }
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+    if (start) {
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+        return;
+      }
+    }
+    if (e.detail >= 2) {
+      return;
+    }
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() ?? '';
+    if (
+      selectedText.trim().length > 0 &&
+      selectedText !== prevSelectionRef.current &&
+      headRef.current &&
+      selection
+    ) {
+      const { anchorNode, focusNode } = selection;
+      if (
+        (anchorNode && headRef.current.contains(anchorNode)) ||
+        (focusNode && headRef.current.contains(focusNode))
+      ) {
+        return;
+      }
+    }
+    onToggle();
+  };
+
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const isFree = isFreePrice(event.price);
+  const tagList = event.activities || [];
+  const {
+    displayVenue,
+    venueUrl,
+    organizerName,
+    organizerUrl,
+    showOrganizer,
+    recurrenceText,
+    preRegistrationText,
+    registrationUrl,
+    needsSignupIcon,
+    mapsHref,
+  } = getEventDisplayDetails(event, cityName);
+  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
+  const eventHref = getEventPath(citySlug, event);
+
+  return (
+    <article
+      id={domId}
+      className={`${styles.card} ${isOpen ? styles.open : ''}`}
+    >
+      <div
+        ref={headRef}
+        className={styles.head}
+        onPointerDown={handleHeadPointerDown}
+        onPointerMove={handleHeadPointerMove}
+        onPointerCancel={handleHeadPointerCancel}
+        onClick={handleHeadClick}
+      >
+        <div className={styles.time}>
+          <b>{start || '—'}</b>
+          {end && <span>to {end}</span>}
+        </div>
+        <div className={styles.main}>
+          {isNextUp && <span className={styles.next}>Next up</span>}
+          <h3 className={styles.title}>{event.title}</h3>
+          {displayVenue && (
+            <div className={styles.venue}>
+              <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
+              <InlineExternalLink href={venueUrl}>
+                {displayVenue}
+              </InlineExternalLink>
+            </div>
+          )}
+          {showOrganizer && (
+            <div
+              className={`${styles.host} ${!displayVenue ? styles.hostFlush : ''}`}
+            >
+              Hosted by{' '}
+              <InlineExternalLink
+                href={organizerUrl}
+                className={organizerUrl ? styles.hostLink : undefined}
+              >
+                {organizerName}
+              </InlineExternalLink>
+            </div>
+          )}
+          {hasMeta && (
+            <div className={styles.meta}>
+              {event.price && (
+                <span
+                  className={`${styles.price} ${
+                    isFree ? styles.priceFree : styles.pricePaid
+                  }`}
+                >
+                  <TagIcon className={styles.icon} />
+                  <span>{event.price}</span>
+                </span>
+              )}
+              {event.price && event.area && (
+                <span className={styles.dot} aria-hidden="true" />
+              )}
+              {event.area && (
+                <span className={styles.area}>
+                  <CompassIcon className={styles.icon} />
+                  <span>{event.area}</span>
+                </span>
+              )}
+              {(event.price || event.area) && tagList.length > 0 && (
+                <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
+              )}
+              {tagList.length > 0 && (
+                <div className={styles.tags}>
+                  {tagList.map((tag) => {
+                    const customStyle = getTagStyle(tag);
+                    return (
+                      <span
+                        key={tag}
+                        className={styles.tag}
+                        style={{
+                          color: customStyle.color,
+                          backgroundColor: customStyle.background,
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <button
+          type="button"
+          className={styles.chev}
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          aria-label={
+            isOpen
+              ? `Collapse details for ${event.title}`
+              : `Expand details for ${event.title}`
+          }
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+        >
+          <ChevronDownIcon className={styles.icon} />
+        </button>
+      </div>
+      <div
+        id={bodyId}
+        className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
+        aria-hidden={!isOpen}
+      >
+        {(event.about || event.notes) && (
+          <p className={styles.desc}>{event.about || event.notes}</p>
+        )}
+        <EventFacts
+          recurrenceText={recurrenceText}
+          preRegistrationText={preRegistrationText}
+          registrationUrl={registrationUrl}
+          needsSignupIcon={needsSignupIcon}
+          className={styles.facts}
+        />
+        <div className={styles.actions}>
+          <a
+            href={mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            aria-label="Open in Maps"
+          >
+            <PinIcon className={styles.icon} />
+            Maps
+          </a>
+          <ContactButton
+            contact={event.contact}
+            btnClassName={styles.btn}
+            btnActiveClassName={styles.btnActive}
+            btnDisabledClassName={styles.btnDisabled}
+          />
+          <ProveItButton
+            proveIt={event.proveIt}
+            btnClassName={styles.btn}
+            btnActiveClassName={styles.btnActive}
+            btnDisabledClassName={styles.btnDisabled}
+          />
+          <ShareButton
+            event={event}
+            citySlug={citySlug}
+            btnClassName={styles.btn}
+          />
+          <div className={styles.footerLinks}>
+            <Link href={eventHref} className={styles.permalink}>
+              Open page
+              <ExternalLinkIcon />
+            </Link>
+            <button
+              type="button"
+              className={styles.edit}
+              onClick={() => onOpenEdit(event)}
+            >
+              <PenIcon className={styles.icon} />
+              Suggest edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default memo(EventCard);
 
 
 

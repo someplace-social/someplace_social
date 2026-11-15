@@ -418,8 +418,8 @@ export default function CityEventsView({
                         event={sourceEvent}
                         isOpen={openEventId === uniqueId}
                         isNextUp={uniqueId === nextUpEventId}
-                        cityName={city.name}
-                        citySlug={city.slug}
+                        city={city}
+                        selectedDate={activeDate}
                         onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
                         onOpenEdit={setEditModalEvent}
                       />

@@ -139,6 +139,7 @@ export default function ContactButton({
       btnActiveClassName={btnActiveClassName}
       dialogLabel="Contact options"
       headerLabel={contactInfo.type === 'email' ? 'Email' : 'Phone'}
+      align="left"
     >
       {(close) => (
         <>

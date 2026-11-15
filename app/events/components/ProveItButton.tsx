@@ -43,6 +43,7 @@ export default function ProveItButton({
       dialogLabel="Event source and verification details"
       headerLabel="Prove It"
       wide
+      align="left"
     >
       {() => (
         <div className={styles.proveItBox}>

@@ -26,6 +26,10 @@
 .popoverWide {
   width: 320px;
 }
+.popoverAlignLeft {
+  left: 0;
+  right: auto;
+}
 .popoverHeader {
   display: flex;
   flex-direction: column;

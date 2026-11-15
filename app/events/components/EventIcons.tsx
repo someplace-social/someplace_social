@@ -215,6 +215,53 @@ export function CalendarIcon({ className }: IconProps) {
   );
 }
 
+export function CalendarPlusIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" />
+      <path d="M3 10h18" />
+      <path d="M16 19h6" />
+      <path d="M19 16v6" />
+    </svg>
+  );
+}
+
+export function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" x2="12" y1="15" y2="3" />
+    </svg>
+  );
+}
+
 export function ExternalLinkIcon({ className }: IconProps) {
   return (
     <svg
