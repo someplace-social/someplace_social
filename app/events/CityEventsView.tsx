@@ -87,7 +87,7 @@ export default function CityEventsView({
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
   const pendingScrollIdRef = useRef<string | null>(null);
-  const handledInitialParamRef = useRef<string | null>(null);
+  const handledInitialHashRef = useRef<string | null>(null);
   const maxPrice =
     selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
       ? selectedMaxPrice.value
@@ -121,43 +121,63 @@ export default function CityEventsView({
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
-  const syncEventQueryParam = useCallback((slug: string | null) => {
+  const syncEventHash = useCallback((slug: string | null) => {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
-    const current = url.searchParams.get('event');
-    if (slug === null && current === null) return;
-    if (slug !== null && current === slug) return;
-    if (slug) {
-      url.searchParams.set('event', slug);
-    } else {
-      url.searchParams.delete('event');
-    }
+    const nextHash = slug ? `#${slug}` : '';
+    if (url.hash === nextHash) return;
+    url.hash = nextHash;
     const nextUrl = `${url.pathname}${url.search}${url.hash}`;
     window.history.replaceState(window.history.state, '', nextUrl);
   }, []);
+  const openEventFromHash = useCallback(
+    (clearIfEmpty: boolean) => {
+      if (typeof window === 'undefined') return;
+      const rawHash = window.location.hash.replace(/^#/, '').trim();
+      if (!rawHash) {
+        if (clearIfEmpty) {
+          setOpenEventId(null);
+        }
+        return;
+      }
+      const resolved = resolveEventBySlug(allEvents, rawHash);
+      if (!resolved) return;
+      const targetIdx = allEvents.indexOf(resolved.event);
+      const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
+      const firstActiveDayIdx = indexedTarget
+        ? indexedTarget.activeDays.findIndex(Boolean)
+        : -1;
+      if (firstActiveDayIdx < 0 || !indexedTarget) return;
+      const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
+      setActiveDayIdx((prevDay) =>
+        indexedTarget.activeDays[prevDay] ? prevDay : firstActiveDayIdx
+      );
+      setOpenEventId(key);
+      syncEventHash(resolved.canonicalSlug);
+      pendingScrollIdRef.current = `event-card-${key}`;
+    },
+    [allEvents, eventKeyMap, indexedEvents, syncEventHash]
+  );
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (handledInitialParamRef.current === city.slug) return;
-    handledInitialParamRef.current = city.slug;
-    const eventParam = new URLSearchParams(window.location.search).get('event');
-    if (!eventParam) return;
-    const resolved = resolveEventBySlug(allEvents, eventParam);
-    if (!resolved) return;
-    const targetIdx = allEvents.indexOf(resolved.event);
-    const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
-    const firstActiveDayIdx = indexedTarget
-      ? indexedTarget.activeDays.findIndex(Boolean)
-      : -1;
-    if (firstActiveDayIdx < 0) return;
-    const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
-    const rafId = window.requestAnimationFrame(() => {
-      setActiveDayIdx(firstActiveDayIdx);
-      setOpenEventId(key);
-      syncEventQueryParam(resolved.canonicalSlug);
-      pendingScrollIdRef.current = `event-card-${key}`;
-    });
-    return () => window.cancelAnimationFrame(rafId);
-  }, [allEvents, city.slug, eventKeyMap, indexedEvents, syncEventQueryParam]);
+    let rafId: number | null = null;
+    if (handledInitialHashRef.current !== city.slug) {
+      rafId = window.requestAnimationFrame(() => {
+        handledInitialHashRef.current = city.slug;
+        openEventFromHash(false);
+      });
+    }
+    const handleHashChange = () => {
+      openEventFromHash(true);
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [city.slug, openEventFromHash]);
   useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     const domId = pendingScrollIdRef.current;
@@ -257,13 +277,13 @@ export default function CityEventsView({
     (ev: Event, uniqueId: string) => {
       if (openEventId === uniqueId) {
         setOpenEventId(null);
-        syncEventQueryParam(null);
+        syncEventHash(null);
       } else {
         setOpenEventId(uniqueId);
-        syncEventQueryParam(getEventSlug(ev));
+        syncEventHash(getEventSlug(ev));
       }
     },
-    [openEventId, syncEventQueryParam]
+    [openEventId, syncEventHash]
   );
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
@@ -347,7 +367,7 @@ export default function CityEventsView({
             onSelectDay={(idx) => {
               setActiveDayIdx(idx);
               setOpenEventId(null);
-              syncEventQueryParam(null);
+              syncEventHash(null);
             }}
             dayCounts={dayCounts}
           />
