@@ -8,6 +8,7 @@ import {
   getNextEventOccurrence,
   slugifyText,
 } from './event-helpers';
+import { normalizeContactText, parseContactWithLinks } from './linkify';
 
 export type LocalDateTimeParts = {
   year: number;
@@ -200,9 +201,16 @@ function buildCalendarDescription(
     detailLines.push(`Hosted by: ${organizerName}`);
   }
 
-  const rawContact = (event.contact || '').trim();
-  if (rawContact && rawContact.toLowerCase() !== 'x') {
-    detailLines.push(`Contact: ${rawContact}`);
+  const rawContact = normalizeContactText(event.contact);
+  if (rawContact) {
+    const formattedContact = parseContactWithLinks(rawContact)
+      .map((seg) =>
+        seg.type === 'link' && /^https?:\/\//i.test(seg.href)
+          ? seg.href
+          : seg.text
+      )
+      .join('');
+    detailLines.push(`Contact: ${formattedContact || rawContact}`);
   }
 
   const rawMap = (event.map || '').trim();

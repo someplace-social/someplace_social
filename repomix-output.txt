@@ -1,7 +1,205 @@
 #TASK
 
+ evidence link changes in the "Database - Weekly Listing" sheet:
 
+The "Prove It" column is deleted. Both city tabs now end with four new columns instead: URL1, URL1 Notes, URL2, URL2 Notes. Stop reading "Prove It".
+Add a "More details" link at the end of each event listing, pointing to that row's URL1. URL1 is the event's main link — it can be a website, a social post, a Meetup/Eventbrite/Luma page, whatever is strongest. Hide the link when URL1 is blank.
+The Prove It popup now builds its text in code from URL1/URL2 and their Notes:
+First line: "Listed at " + URL1. If URL1 Notes is filled, show the note with it (under the link, smaller text).
+If URL2 is filled: a blank line, then "Also, at " + URL2, with URL2 Notes shown the same way when filled.
+If URL2 is blank, show only the first line. If both are blank, no popup.
+URLs are stored in short form (no https://, no www.) — prepend https:// when building every href, for these columns and also for Organizer URL, Venue URL, Registration URL, Map, and Contact.
+URL1/URL2 may contain "?img_index=N" — keep query strings intact in hrefs.
+The Verification Notes column must still never be displayed anywhere.
 
+MULTI-STEP PROCESS:
+
+1) Make a plan:
+
+As soon as you get the files, investigate the issue at hand and find the root.
+
+#RULES
+
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan.
+- Do not over complicate things - keep it simple and robust.
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours.
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 20k tokens, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response.
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan.
+
+2) Implement plan:
+
+Implement the outline / plan.
+
+**#GUIDELINES**
+
+You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
+
+**1. PROJECT CONTEXT**
+
+- Project Name: Someplace Social
+- Environment: Windows 11
+- Package Manager: PNPM
+
+**2. CORE DIRECTIVES (NON-NEGOTIABLE)**
+
+- Full File Output: When modifying a file, output the *ENTIRE* , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
+- Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
+- PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
+- Response length: If your response contains more than approximately 20k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
+
+**3. RULES**
+
+- Security: Security is very important - always keep in mind best practices.
+- Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices.
+- DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
+- Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
+- Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
+- Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
+- Egress: Keep egress low whenever possible.
+- Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
+- Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
+- Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
+- Simple & Robust: Do not over-complicate things. The simplest and most robust solution is best. When building or fixing a problem, always start with what could be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
+- Page text: when writing text, choose simple, easy to understand, straightforward words for page titles, page text, etc.
+- Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
+- UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- 
+
+**4. RESPONSE FORMAT RULES**
+
+- Start with a brief explanation of what you are doing.
+- Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
+- End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
+- Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: *$targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }*
+
+**5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):**
+
+IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow.
+
+1. Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
+2. File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
+3. Code Output: A single, complete, full-file code block.
+4. Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
+5. Git Commands: The very last item in your response must be a single code block containing the final git commands.
+
+5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
+
+- Never provide multiple open commands in a row.
+- Never provide multiple file code blocks in a row.
+- Never list all commands first and all files afterward.
+- Never open several files before showing the first file’s contents.
+- Never skip ahead to later files.
+- Never bundle files together in one code block.
+- The command for file N+1 MUST appear immediately before the code block for file N+1.
+- The ONLY allowed pattern is:
+- open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
+
+5.3 FORBIDDEN PATTERNS:
+
+- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
+- open 1 -> open 2 -> file 1 -> file 2
+- any response that shows all commands first and all files later
+
+EXAMPLE OF CORRECT RESPONSE FORMAT:
+
+This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
+
+Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc…
+
+```powershell
+
+pnpx supabase migration new create_example_table
+
+```
+
+Here is the sql code.
+
+```sql
+
+- - supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
+
+create table example (
+
+...
+
+);
+
+```
+
+Next we will push to supabase.
+
+```powershell
+
+pnpx supabase db push
+
+```
+
+Now we’ll create a new file.
+
+```powershell
+
+New-Item 'app/index.tsx' -Force
+
+code 'app/index.tsx'
+
+```
+
+Here is the full code for our new file.
+
+```typescript
+
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HelloScreen() {
+
+// ...
+
+return <Text>hello, world</Text>;
+
+// ...
+
+}
+
+```
+
+Now we’ll open page2.
+
+```powershell
+
+code 'app/page2.tsx'
+
+```
+
+Here is the updated code for page2.
+
+```typescript
+
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function PageTwoScreen() {
+
+// ...
+
+return <Text>hello, world page 2</Text>;
+
+// ...
+
+}
+
+```
+
+Finally, we will commit.
+
+```powershell
+
+git add .
+
+git commit -m "feat: Add example migration and pages"
+
+```
 
 #PROJECT FILES
 
@@ -55,7 +253,6 @@ Project Structure Map:
 |   |   |   +--- AddToCalendarButton.tsx
 |   |   |   +--- CityHeroCard.module.css
 |   |   |   +--- CityHeroCard.tsx
-|   |   |   +--- ContactButton.tsx
 |   |   |   +--- DayPicker.tsx
 |   |   |   +--- EventActions.module.css
 |   |   |   +--- EventActions.tsx
@@ -198,7 +395,6 @@ app/events/components/ActionPopover.tsx
 app/events/components/AddToCalendarButton.tsx
 app/events/components/CityHeroCard.module.css
 app/events/components/CityHeroCard.tsx
-app/events/components/ContactButton.tsx
 app/events/components/DayPicker.tsx
 app/events/components/EventActions.module.css
 app/events/components/EventActions.tsx
@@ -1362,157 +1558,6 @@ export default function InlineExternalLink({
       <ExternalLinkIcon className={styles.icon} />
     </a>
   );
-}
-
-================
-File: app/events/components/ProveItButton.module.css
-================
-.proveItBox {
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 10px 12px;
-  max-height: 240px;
-  overflow-y: auto;
-}
-.proveItText {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--ink);
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.proveItLink {
-  display: inline;
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  transition: color 0.15s ease;
-}
-.proveItLink:hover {
-  color: var(--accent);
-}
-.proveItLinkIcon {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-left: 3px;
-  vertical-align: -1px;
-  color: var(--muted);
-  transition: color 0.15s ease;
-}
-.proveItLink:hover .proveItLinkIcon {
-  color: var(--accent);
-}
-
-================
-File: app/events/linkify.ts
-================
-import { ensureExternalUrl } from './utils';
-
-export type TextSegment =
-  | { type: 'text'; text: string }
-  | { type: 'link'; text: string; href: string };
-
-const COMMON_TLDS =
-  'co\\.uk|com\\.co|org\\.co|com\\.mx|com\\.au|co\\.nz|com|org|net|edu|gov|io|co|us|uk|ca|de|es|fr|mx|me|tv|fm|gg|ly|ee|gl|app|dev|ai|info|biz|club|events|social|bar|beer|cafe|live|nyc|studio|shop|store|site|online|space|world|today|guide|news|media|blog|page|link|tech';
-
-const EXCLUDED_URL_CHARS = '\\s<>"\'\\u201c\\u201d\\u2018\\u2019';
-
-const TOKEN_REGEX = new RegExp(
-  [
-    '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
-    `https?:\\/\\/[^${EXCLUDED_URL_CHARS}]+`,
-    `www\\.[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+(?::\\d+)?(?:[/?#][^${EXCLUDED_URL_CHARS}]*)?`,
-    `(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}(?::\\d+)?[/?#][^${EXCLUDED_URL_CHARS}]*`,
-    `(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+(?:${COMMON_TLDS})(?::\\d+)?(?!\\.[a-zA-Z0-9])(?![a-zA-Z0-9@/_?#-])`,
-  ].join('|'),
-  'gi'
-);
-
-export function normalizeProveItText(raw?: string): string {
-  if (!raw) return '';
-  const trimmed = raw.trim();
-  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
-  return trimmed;
-}
-
-function splitTrailingPunctuation(raw: string): { clean: string; trailing: string } {
-  let clean = raw;
-  let trailing = '';
-  while (clean.length > 0) {
-    const lastChar = clean[clean.length - 1];
-    if (/[.,;:!?'"\u201c\u201d\u2018\u2019\]}>]/.test(lastChar)) {
-      trailing = lastChar + trailing;
-      clean = clean.slice(0, -1);
-      continue;
-    }
-    if (lastChar === ')') {
-      const openParens = (clean.match(/\(/g) || []).length;
-      const closeParens = (clean.match(/\)/g) || []).length;
-      if (closeParens > openParens) {
-        trailing = lastChar + trailing;
-        clean = clean.slice(0, -1);
-        continue;
-      }
-    }
-    break;
-  }
-  return { clean, trailing };
-}
-
-function appendTextSegment(segments: TextSegment[], text: string) {
-  if (!text) return;
-  const last = segments[segments.length - 1];
-  if (last && last.type === 'text') {
-    last.text += text;
-  } else {
-    segments.push({ type: 'text', text });
-  }
-}
-
-export function parseTextWithLinks(text: string): TextSegment[] {
-  if (!text) return [];
-  const segments: TextSegment[] = [];
-  let cursor = 0;
-
-  TOKEN_REGEX.lastIndex = 0;
-  let match: RegExpExecArray | null;
-  while ((match = TOKEN_REGEX.exec(text)) !== null) {
-    const rawMatch = match[0];
-    const matchIndex = match.index;
-    const isProtocol = /^https?:\/\//i.test(rawMatch);
-    const isEmail = !isProtocol && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawMatch);
-
-    if (!isProtocol && !isEmail && matchIndex > 0) {
-      const prevChar = text[matchIndex - 1];
-      const beforeSlice = text.slice(Math.max(0, matchIndex - 12), matchIndex).toLowerCase();
-      if (/[a-zA-Z0-9@/_-]/.test(prevChar) || /(?:javascript|data|vbscript):$/.test(beforeSlice)) {
-        continue;
-      }
-    }
-
-    const { clean, trailing } = isEmail
-      ? { clean: rawMatch, trailing: '' }
-      : splitTrailingPunctuation(rawMatch);
-
-    const href = isEmail ? `mailto:${clean}` : ensureExternalUrl(clean);
-    if (!clean || !href) {
-      continue;
-    }
-
-    appendTextSegment(segments, text.slice(cursor, matchIndex));
-    segments.push({ type: 'link', text: clean, href });
-    appendTextSegment(segments, trailing);
-    cursor = matchIndex + rawMatch.length;
-  }
-
-  appendTextSegment(segments, text.slice(cursor));
-  return segments;
 }
 
 ================
@@ -2902,122 +2947,6 @@ export function downloadIcsFile(filename: string, content: string): void {
 }
 
 ================
-File: app/events/components/AddToCalendarButton.tsx
-================
-'use client';
-import { useMemo, useCallback } from 'react';
-import type { CityConfig } from '../../lib/cities';
-import type { Event } from '../../lib/google-sheets';
-import {
-  buildGoogleCalendarUrl,
-  buildIcsContent,
-  downloadIcsFile,
-  getIcsFilename,
-  resolveCalendarOccurrence,
-} from '../calendar-helpers';
-import ActionPopover, { PopoverCopyRow } from './ActionPopover';
-import { CalendarIcon, CalendarPlusIcon, DownloadIcon } from './EventIcons';
-import styles from './ActionPopover.module.css';
-
-interface AddToCalendarButtonProps {
-  event: Event;
-  city: CityConfig;
-  selectedDate?: Date | null;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
-  wrapperClassName?: string;
-}
-
-export default function AddToCalendarButton({
-  event,
-  city,
-  selectedDate,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-  wrapperClassName,
-}: AddToCalendarButtonProps) {
-  const details = useMemo(
-    () => resolveCalendarOccurrence(event, city, selectedDate),
-    [event, city, selectedDate]
-  );
-
-  const googleCalendarUrl = useMemo(
-    () => (details ? buildGoogleCalendarUrl(details) : ''),
-    [details]
-  );
-
-  const handleDownloadIcs = useCallback(
-    (close: () => void) => {
-      if (!details) return;
-      const content = buildIcsContent(details);
-      const filename = getIcsFilename(details);
-      downloadIcsFile(filename, content);
-      close();
-    },
-    [details]
-  );
-
-  if (!details) {
-    return (
-      <div
-        className={`${btnClassName} ${btnDisabledClassName} ${wrapperClassName || ''}`}
-        aria-disabled="true"
-      >
-        <CalendarPlusIcon />
-        Add to Calendar
-      </div>
-    );
-  }
-
-  return (
-    <ActionPopover
-      triggerLabel="Add to Calendar"
-      triggerIcon={<CalendarPlusIcon />}
-      btnClassName={btnClassName}
-      btnActiveClassName={btnActiveClassName}
-      wrapperClassName={wrapperClassName}
-      dialogLabel="Add event to calendar"
-      headerLabel="Add to Calendar"
-      wide
-      align="right"
-    >
-      {(close) => (
-        <>
-          <PopoverCopyRow
-            text={details.copySummary}
-            copyLabel="Copy event summary"
-            wrap
-          />
-          <div className={styles.popoverDivider} />
-          <div className={styles.popoverActions}>
-            <a
-              href={googleCalendarUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.popoverActionLink}
-              onClick={close}
-            >
-              <CalendarIcon />
-              Google Calendar
-            </a>
-            <button
-              type="button"
-              className={styles.popoverActionLink}
-              onClick={() => handleDownloadIcs(close)}
-            >
-              <DownloadIcon />
-              Apple / Outlook (.ics)
-            </button>
-          </div>
-        </>
-      )}
-    </ActionPopover>
-  );
-}
-
-================
 File: app/events/components/DayPicker.tsx
 ================
 'use client';
@@ -3119,90 +3048,6 @@ function DayPicker({
 }
 
 export default memo(DayPicker);
-
-================
-File: app/events/components/EventActions.tsx
-================
-'use client';
-import Link from 'next/link';
-import type { CityConfig } from '../../lib/cities';
-import type { Event } from '../../lib/google-sheets';
-import AddToCalendarButton from './AddToCalendarButton';
-import ContactButton from './ContactButton';
-import { ExternalLinkIcon, PenIcon, PinIcon } from './EventIcons';
-import ProveItButton from './ProveItButton';
-import ShareButton from './ShareButton';
-import styles from './EventActions.module.css';
-
-interface EventActionsProps {
-  event: Event;
-  city: CityConfig;
-  selectedDate?: Date | null;
-  mapsHref: string;
-  eventHref?: string;
-  onOpenEdit: () => void;
-}
-
-export default function EventActions({
-  event,
-  city,
-  selectedDate,
-  mapsHref,
-  eventHref,
-  onOpenEdit,
-}: EventActionsProps) {
-  return (
-    <div className={styles.actions}>
-      <ProveItButton
-        proveIt={event.proveIt}
-        btnClassName={`${styles.btn} ${styles.btnPrimary}`}
-        btnActiveClassName={styles.btnActive}
-        btnDisabledClassName={styles.btnDisabled}
-      />
-      <a
-        href={mapsHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.btn}
-        title="Open location in maps"
-      >
-        <PinIcon />
-        Map
-      </a>
-      <ContactButton
-        contact={event.contact}
-        btnClassName={styles.btn}
-        btnActiveClassName={styles.btnActive}
-        btnDisabledClassName={styles.btnDisabled}
-      />
-      <AddToCalendarButton
-        event={event}
-        city={city}
-        selectedDate={selectedDate}
-        btnClassName={styles.btn}
-        btnActiveClassName={styles.btnActive}
-        btnDisabledClassName={styles.btnDisabled}
-      />
-      <ShareButton
-        event={event}
-        citySlug={city.slug}
-        btnClassName={styles.btn}
-      />
-      <div className={styles.footerLinks}>
-        {eventHref && (
-          <Link href={eventHref} className={styles.permalink}>
-            Open page
-            <ExternalLinkIcon />
-          </Link>
-        )}
-        <button type="button" className={styles.edit} onClick={onOpenEdit}>
-          <PenIcon />
-          Suggest edit
-        </button>
-      </div>
-    </div>
-  );
-}
 
 ================
 File: app/events/components/FilterDropdown.tsx
@@ -3325,6 +3170,242 @@ export default function FilterDropdown({
       )}
     </div>
   );
+}
+
+================
+File: app/events/components/ProveItButton.module.css
+================
+.proveItBox {
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.proveItText {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.proveItContactDivider {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line-strong);
+}
+.proveItLink {
+  display: inline;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  transition: color 0.15s ease;
+}
+.proveItLink:hover {
+  color: var(--accent);
+}
+.proveItLinkIcon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  vertical-align: -1px;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.proveItLink:hover .proveItLinkIcon {
+  color: var(--accent);
+}
+
+================
+File: app/events/linkify.ts
+================
+import { ensureExternalUrl } from './utils';
+
+export type TextSegment =
+  | { type: 'text'; text: string }
+  | { type: 'link'; text: string; href: string };
+
+const COMMON_TLDS =
+  'co\\.uk|com\\.co|org\\.co|com\\.mx|com\\.au|co\\.nz|com|org|net|edu|gov|io|co|us|uk|ca|de|es|fr|mx|me|tv|fm|gg|ly|ee|gl|app|dev|ai|info|biz|club|events|social|bar|beer|cafe|live|nyc|studio|shop|store|site|online|space|world|today|guide|news|media|blog|page|link|tech';
+
+const EXCLUDED_URL_CHARS = '\\s<>"\'\\u201c\\u201d\\u2018\\u2019';
+
+const TOKEN_REGEX = new RegExp(
+  [
+    '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
+    `https?:\\/\\/[^${EXCLUDED_URL_CHARS}]+`,
+    `www\\.[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+(?::\\d+)?(?:[/?#][^${EXCLUDED_URL_CHARS}]*)?`,
+    `(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}(?::\\d+)?[/?#][^${EXCLUDED_URL_CHARS}]*`,
+    `(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+(?:${COMMON_TLDS})(?::\\d+)?(?!\\.[a-zA-Z0-9])(?![a-zA-Z0-9@/_?#-])`,
+  ].join('|'),
+  'gi'
+);
+
+const PHONE_REGEX = /(?:\+\s*)?(?:\(\d{2,4}\)|\d)[\d\s().-]{4,17}\d/g;
+
+export function normalizeProveItText(raw?: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
+  return trimmed;
+}
+
+export function normalizeContactText(raw?: string): string {
+  return normalizeProveItText(raw);
+}
+
+function splitTrailingPunctuation(raw: string): { clean: string; trailing: string } {
+  let clean = raw;
+  let trailing = '';
+  while (clean.length > 0) {
+    const lastChar = clean[clean.length - 1];
+    if (/[.,;:!?'"\u201c\u201d\u2018\u2019\]}>]/.test(lastChar)) {
+      trailing = lastChar + trailing;
+      clean = clean.slice(0, -1);
+      continue;
+    }
+    if (lastChar === ')') {
+      const openParens = (clean.match(/\(/g) || []).length;
+      const closeParens = (clean.match(/\)/g) || []).length;
+      if (closeParens > openParens) {
+        trailing = lastChar + trailing;
+        clean = clean.slice(0, -1);
+        continue;
+      }
+    }
+    break;
+  }
+  return { clean, trailing };
+}
+
+function appendTextSegment(segments: TextSegment[], text: string) {
+  if (!text) return;
+  const last = segments[segments.length - 1];
+  if (last && last.type === 'text') {
+    last.text += text;
+  } else {
+    segments.push({ type: 'text', text });
+  }
+}
+
+export function parseTextWithLinks(text: string): TextSegment[] {
+  if (!text) return [];
+  const segments: TextSegment[] = [];
+  let cursor = 0;
+
+  TOKEN_REGEX.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = TOKEN_REGEX.exec(text)) !== null) {
+    const rawMatch = match[0];
+    const matchIndex = match.index;
+    const isProtocol = /^https?:\/\//i.test(rawMatch);
+    const isEmail = !isProtocol && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawMatch);
+
+    if (!isProtocol && !isEmail && matchIndex > 0) {
+      const prevChar = text[matchIndex - 1];
+      const beforeSlice = text.slice(Math.max(0, matchIndex - 12), matchIndex).toLowerCase();
+      if (/[a-zA-Z0-9@/_-]/.test(prevChar) || /(?:javascript|data|vbscript):$/.test(beforeSlice)) {
+        continue;
+      }
+    }
+
+    const { clean, trailing } = isEmail
+      ? { clean: rawMatch, trailing: '' }
+      : splitTrailingPunctuation(rawMatch);
+
+    const href = isEmail ? `mailto:${clean}` : ensureExternalUrl(clean);
+    if (!clean || !href) {
+      continue;
+    }
+
+    appendTextSegment(segments, text.slice(cursor, matchIndex));
+    segments.push({ type: 'link', text: clean, href });
+    appendTextSegment(segments, trailing);
+    cursor = matchIndex + rawMatch.length;
+  }
+
+  appendTextSegment(segments, text.slice(cursor));
+  return segments;
+}
+
+function linkifyPhonesInText(text: string, out: TextSegment[]) {
+  let cursor = 0;
+  PHONE_REGEX.lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = PHONE_REGEX.exec(text)) !== null) {
+    const rawPhone = match[0];
+    const matchIndex = match.index;
+
+    if (matchIndex > 0) {
+      const prevChar = text[matchIndex - 1];
+      if (/[a-zA-Z0-9.$_]/.test(prevChar)) {
+        continue;
+      }
+    }
+
+    const nextIdx = matchIndex + rawPhone.length;
+    if (nextIdx < text.length && /[a-zA-Z0-9._]/.test(text[nextIdx])) {
+      continue;
+    }
+
+    if (/^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}$/.test(rawPhone)) {
+      continue;
+    }
+
+    const cleanDigits = rawPhone.replace(/[^\d+]/g, '');
+    const digitCount = cleanDigits.replace(/\D/g, '').length;
+    if (digitCount < 7 || digitCount > 15) {
+      continue;
+    }
+
+    appendTextSegment(out, text.slice(cursor, matchIndex));
+    out.push({
+      type: 'link',
+      text: rawPhone,
+      href: `tel:${cleanDigits}`,
+    });
+    cursor = nextIdx;
+  }
+
+  appendTextSegment(out, text.slice(cursor));
+}
+
+export function parseContactWithLinks(rawText: string): TextSegment[] {
+  const cleaned = normalizeContactText(rawText);
+  if (!cleaned) return [];
+
+  if (/^mailto:/i.test(cleaned)) {
+    const email = cleaned.replace(/^mailto:/i, '').split('?')[0].trim();
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return [{ type: 'link', text: email, href: `mailto:${email}` }];
+    }
+  }
+
+  if (/^tel:/i.test(cleaned)) {
+    const display = cleaned.replace(/^tel:/i, '').trim();
+    const cleanDigits = display.replace(/[^\d+]/g, '');
+    if (cleanDigits.replace(/\D/g, '').length >= 7) {
+      return [{ type: 'link', text: display, href: `tel:${cleanDigits}` }];
+    }
+  }
+
+  const baseSegments = parseTextWithLinks(cleaned);
+  const result: TextSegment[] = [];
+  for (const seg of baseSegments) {
+    if (seg.type === 'link') {
+      result.push(seg);
+    } else {
+      linkifyPhonesInText(seg.text, result);
+    }
+  }
+  return result;
 }
 
 ================
@@ -3511,194 +3592,6 @@ export default function AboutView({ city }: AboutViewProps) {
 }
 
 ================
-File: app/events/components/ActionPopover.module.css
-================
-.popoverWrapper {
-  position: relative;
-  display: flex;
-  flex: 0 0 auto;
-  min-width: 0;
-}
-.popoverWrapper > button {
-  flex: 1 1 auto;
-}
-.popover {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  right: 0;
-  width: 260px;
-  max-width: calc(100vw - 32px);
-  background-color: var(--surface-elevated);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: var(--shadow-md);
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.popoverWide {
-  width: 320px;
-}
-.popoverAlignLeft {
-  left: 0;
-  right: auto;
-}
-.popoverHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 4px 6px 2px;
-}
-.popoverHeaderTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.popoverHeaderLabel {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-}
-.popoverCloseBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.popoverCloseBtn:hover {
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-}
-.popoverInlineRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 5px 6px 5px 10px;
-}
-.popoverHeaderValue {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-  min-width: 0;
-}
-.popoverHeaderValueWrap {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  line-height: 1.35;
-}
-.copyIconBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 0;
-  background: var(--card);
-  color: var(--ink);
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-.copyIconBtn:hover {
-  background-color: var(--topbar-bg);
-  color: var(--accent);
-}
-.copyIconBtn:active {
-  transform: scale(0.94);
-}
-.copyIconBtnCopied {
-  background-color: var(--free-bg);
-  color: var(--free);
-}
-.copyIconBtnCopied:hover {
-  background-color: var(--free-bg);
-  color: var(--free);
-}
-.popoverDivider {
-  height: 1px;
-  background-color: var(--line);
-  margin: 4px 0 2px;
-}
-.popoverActions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.popoverActionLink,
-.popoverActionLinkPrimary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.popoverActionLink:hover {
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-}
-.popoverActionLinkPrimary {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.popoverActionLinkPrimary:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .popover {
-    position: fixed;
-    top: auto;
-    bottom: 24px;
-    left: 16px;
-    right: 16px;
-    width: auto;
-    max-width: none;
-    z-index: 100;
-    border-radius: 16px;
-    padding: 12px;
-    box-shadow: var(--shadow-lg);
-  }
-  .popoverCloseBtn {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-================
 File: app/events/components/ActionPopover.tsx
 ================
 'use client';
@@ -3863,254 +3756,193 @@ export default function ActionPopover({
 }
 
 ================
-File: app/events/components/EventActions.module.css
-================
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: clamp(72px, 11.2cqi, 84px);
-  height: 60px;
-  padding: 6px 4px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background-color: var(--card);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 11.5px;
-  line-height: 1.15;
-  text-align: center;
-  color: var(--ink);
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
-}
-
-.btn:hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.btnPrimary {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-
-.btnPrimary:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-
-.btnActive,
-.btnActive:hover {
-  opacity: 1;
-  border-color: var(--ink);
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-}
-
-.btnDisabled,
-.btnDisabled:hover {
-  background-color: var(--card);
-  color: var(--ink);
-  border-color: var(--line);
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.footerLinks {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.permalink,
-.edit {
-  font-size: 13px;
-  color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  background: none;
-  border: 0;
-  padding: 6px 2px;
-  cursor: pointer;
-  font-family: inherit;
-  user-select: none;
-  -webkit-user-select: none;
-  white-space: nowrap;
-}
-
-.permalink:hover,
-.edit:hover {
-  color: var(--accent);
-}
-
-@container (max-width: 600px) {
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 8px;
-  }
-  .actions > :nth-child(1),
-  .actions > :nth-child(2),
-  .actions > :nth-child(3) {
-    grid-column: span 2;
-  }
-  .actions > :nth-child(4),
-  .actions > :nth-child(5) {
-    grid-column: span 3;
-  }
-  .btn {
-    width: 100%;
-    min-width: 0;
-    height: 58px;
-    padding: 6px 4px;
-    font-size: 12px;
-  }
-  .footerLinks {
-    grid-column: 1 / -1;
-    margin: 4px auto 0;
-    justify-content: center;
-    gap: 18px;
-  }
-}
-
-@container (max-width: 340px) {
-  .actions {
-    gap: 6px;
-  }
-  .btn {
-    font-size: 11.5px;
-  }
-}
-
-================
-File: app/events/components/ProveItButton.tsx
+File: app/events/components/AddToCalendarButton.tsx
 ================
 'use client';
-import { useMemo } from 'react';
-import { normalizeProveItText, parseTextWithLinks } from '../linkify';
-import ActionPopover from './ActionPopover';
-import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
-import styles from './ProveItButton.module.css';
+import { useMemo, useCallback } from 'react';
+import type { CityConfig } from '../../lib/cities';
+import type { Event } from '../../lib/google-sheets';
+import {
+  buildGoogleCalendarUrl,
+  buildIcsContent,
+  downloadIcsFile,
+  getIcsFilename,
+  resolveCalendarOccurrence,
+} from '../calendar-helpers';
+import ActionPopover, { PopoverCopyRow } from './ActionPopover';
+import { CalendarIcon, CalendarPlusIcon, DownloadIcon } from './EventIcons';
+import styles from './ActionPopover.module.css';
 
-interface ProveItButtonProps {
-  proveIt?: string;
+interface AddToCalendarButtonProps {
+  event: Event;
+  city: CityConfig;
+  selectedDate?: Date | null;
   btnClassName: string;
   btnActiveClassName: string;
   btnDisabledClassName: string;
+  wrapperClassName?: string;
 }
 
-export default function ProveItButton({
-  proveIt,
+export default function AddToCalendarButton({
+  event,
+  city,
+  selectedDate,
   btnClassName,
   btnActiveClassName,
   btnDisabledClassName,
-}: ProveItButtonProps) {
-  const cleanText = useMemo(() => normalizeProveItText(proveIt), [proveIt]);
-  const segments = useMemo(
-    () => (cleanText ? parseTextWithLinks(cleanText) : []),
-    [cleanText]
+  wrapperClassName,
+}: AddToCalendarButtonProps) {
+  const details = useMemo(
+    () => resolveCalendarOccurrence(event, city, selectedDate),
+    [event, city, selectedDate]
   );
-  if (!cleanText) {
+
+  const googleCalendarUrl = useMemo(
+    () => (details ? buildGoogleCalendarUrl(details) : ''),
+    [details]
+  );
+
+  const handleDownloadIcs = useCallback(
+    (close: () => void) => {
+      if (!details) return;
+      const content = buildIcsContent(details);
+      const filename = getIcsFilename(details);
+      downloadIcsFile(filename, content);
+      close();
+    },
+    [details]
+  );
+
+  if (!details) {
     return (
-      <div
-        className={`${btnClassName} ${btnDisabledClassName}`}
-        aria-disabled="true"
+      <button
+        type="button"
+        disabled
+        className={`${btnClassName} ${btnDisabledClassName} ${wrapperClassName || ''}`}
+        title="No upcoming date available"
       >
-        <ShieldCheckIcon />
-        Prove It
-      </div>
+        <CalendarPlusIcon />
+        Add to Calendar
+      </button>
     );
   }
+
   return (
     <ActionPopover
-      triggerLabel="Prove It"
-      triggerIcon={<ShieldCheckIcon />}
+      triggerLabel="Add to Calendar"
+      triggerIcon={<CalendarPlusIcon />}
       btnClassName={btnClassName}
       btnActiveClassName={btnActiveClassName}
-      dialogLabel="Event source and verification details"
-      headerLabel="Prove It"
+      wrapperClassName={wrapperClassName}
+      dialogLabel="Add event to calendar"
+      headerLabel="Add to Calendar"
       wide
-      align="left"
+      align="right"
     >
-      {() => (
-        <div className={styles.proveItBox}>
-          <p className={styles.proveItText}>
-            {segments.map((seg, idx) => {
-              if (seg.type === 'text') {
-                return <span key={idx}>{seg.text}</span>;
-              }
-              const isMailto = seg.href.startsWith('mailto:');
-              return (
-                <a
-                  key={idx}
-                  href={seg.href}
-                  target={isMailto ? undefined : '_blank'}
-                  rel={isMailto ? undefined : 'noopener noreferrer'}
-                  className={styles.proveItLink}
-                >
-                  <span>{seg.text}</span>
-                  {!isMailto && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
-                </a>
-              );
-            })}
-          </p>
-        </div>
+      {(close) => (
+        <>
+          <PopoverCopyRow
+            text={details.copySummary}
+            copyLabel="Copy event summary"
+            wrap
+          />
+          <div className={styles.popoverDivider} />
+          <div className={styles.popoverActions}>
+            <a
+              href={googleCalendarUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.popoverActionLink}
+              onClick={close}
+            >
+              <CalendarIcon />
+              Google Calendar
+            </a>
+            <button
+              type="button"
+              className={styles.popoverActionLink}
+              onClick={() => handleDownloadIcs(close)}
+            >
+              <DownloadIcon />
+              Apple / Outlook (.ics)
+            </button>
+          </div>
+        </>
       )}
     </ActionPopover>
   );
 }
 
 ================
-File: app/events/components/ShareButton.module.css
+File: app/events/components/EventActions.tsx
 ================
-.shareWrapper {
-  position: relative;
-  display: flex;
-  flex: 0 0 auto;
-  min-width: 0;
+'use client';
+import type { CityConfig } from '../../lib/cities';
+import type { Event } from '../../lib/google-sheets';
+import AddToCalendarButton from './AddToCalendarButton';
+import { PenIcon, PinIcon } from './EventIcons';
+import ProveItButton from './ProveItButton';
+import ShareButton from './ShareButton';
+import styles from './EventActions.module.css';
+
+interface EventActionsProps {
+  event: Event;
+  city: CityConfig;
+  selectedDate?: Date | null;
+  mapsHref: string;
+  onOpenEdit: () => void;
 }
-.shareWrapper > button {
-  flex: 1 1 auto;
-}
-button.copied,
-button.copied:hover {
-  background-color: var(--free-bg);
-  color: var(--free);
-  border-color: var(--free);
-}
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+
+export default function EventActions({
+  event,
+  city,
+  selectedDate,
+  mapsHref,
+  onOpenEdit,
+}: EventActionsProps) {
+  return (
+    <div className={styles.actions}>
+      <div className={styles.buttonsGrid}>
+        <ProveItButton
+          proveIt={event.proveIt}
+          contact={event.contact}
+          contactPageHref={`/${city.slug}/contact`}
+          btnClassName={`${styles.btn} ${styles.btnPrimary}`}
+          btnActiveClassName={styles.btnActive}
+          btnDisabledClassName={styles.btnDisabled}
+        />
+        <a
+          href={mapsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.btn}
+          title="Open location in maps"
+        >
+          <PinIcon />
+          Map
+        </a>
+        <AddToCalendarButton
+          event={event}
+          city={city}
+          selectedDate={selectedDate}
+          btnClassName={styles.btn}
+          btnActiveClassName={styles.btnActive}
+          btnDisabledClassName={styles.btnDisabled}
+        />
+        <ShareButton
+          event={event}
+          citySlug={city.slug}
+          btnClassName={styles.btn}
+        />
+      </div>
+      <div className={styles.actionsFooter}>
+        <button type="button" className={styles.edit} onClick={onOpenEdit}>
+          <PenIcon />
+          Suggest edit
+        </button>
+      </div>
+    </div>
+  );
 }
 
 ================
@@ -4523,362 +4355,6 @@ File: package.json
     "repomix": "^0.2.32",
     "tsx": "^4.19.3",
     "typescript": "^5"
-  }
-}
-
-================
-File: app/[city]/events/[event]/EventDetail.module.css
-================
-.pageContainer {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.main {
-  flex: 1;
-  width: 100%;
-  max-width: 740px;
-  margin: 0 auto;
-  padding: 28px 24px 72px;
-  box-sizing: border-box;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 36px;
-  margin-bottom: 16px;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.backLink:hover {
-  color: var(--ink);
-}
-
-.card {
-  container-type: inline-size;
-  position: relative;
-  background-color: var(--card);
-  border: 1px solid var(--line-strong);
-  border-radius: 20px;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  --fact-bg: #faf4e6;
-  --tag-science-ink: #0f5c5c;
-  --tag-science-bg: #d3efec;
-  --tag-craft-ink: #8a3d0c;
-  --tag-craft-bg: #fde4cf;
-  --tag-food-ink: #6b5200;
-  --tag-food-bg: #f4eab8;
-  --tag-community-ink: #3b4a54;
-  --tag-community-bg: #e1e7ea;
-  --tag-music-ink: #5b2a86;
-  --tag-music-bg: #ecdcf7;
-  --tag-trivia-ink: #2d3f7a;
-  --tag-trivia-bg: #dde4f7;
-  --tag-comedy-ink: #8a1f4f;
-  --tag-comedy-bg: #fbdce9;
-  --tag-dance-ink: #852b2b;
-  --tag-dance-bg: #f9dede;
-  --tag-sport-ink: #1f6a42;
-  --tag-sport-bg: #d7f0df;
-  --tag-language-ink: #2c4f7c;
-  --tag-language-bg: #dbe5f7;
-  --tag-default-ink: #4f483e;
-  --tag-default-bg: #f3ead4;
-}
-
-:global(html[data-theme='dark']) .card {
-  --fact-bg: #25221d;
-  --tag-science-ink: #5eead4;
-  --tag-science-bg: #133330;
-  --tag-craft-ink: #fdba74;
-  --tag-craft-bg: #361c0c;
-  --tag-food-ink: #fde047;
-  --tag-food-bg: #33280c;
-  --tag-community-ink: #cbd5e1;
-  --tag-community-bg: #222b33;
-  --tag-music-ink: #d8b4fe;
-  --tag-music-bg: #2f1847;
-  --tag-trivia-ink: #93c5fd;
-  --tag-trivia-bg: #1c284d;
-  --tag-comedy-ink: #f472b6;
-  --tag-comedy-bg: #3d1427;
-  --tag-dance-ink: #fca5a5;
-  --tag-dance-bg: #3d1919;
-  --tag-sport-ink: #86efac;
-  --tag-sport-bg: #143823;
-  --tag-language-ink: #93c5fd;
-  --tag-language-bg: #1c2b45;
-  --tag-default-ink: #d6cbbe;
-  --tag-default-bg: #2c2720;
-}
-
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .card {
-    --fact-bg: #25221d;
-    --tag-science-ink: #5eead4;
-    --tag-science-bg: #133330;
-    --tag-craft-ink: #fdba74;
-    --tag-craft-bg: #361c0c;
-    --tag-food-ink: #fde047;
-    --tag-food-bg: #33280c;
-    --tag-community-ink: #cbd5e1;
-    --tag-community-bg: #222b33;
-    --tag-music-ink: #d8b4fe;
-    --tag-music-bg: #2f1847;
-    --tag-trivia-ink: #93c5fd;
-    --tag-trivia-bg: #1c284d;
-    --tag-comedy-ink: #f472b6;
-    --tag-comedy-bg: #3d1427;
-    --tag-dance-ink: #fca5a5;
-    --tag-dance-bg: #3d1919;
-    --tag-sport-ink: #86efac;
-    --tag-sport-bg: #143823;
-    --tag-language-ink: #93c5fd;
-    --tag-language-bg: #1c2b45;
-    --tag-default-ink: #d6cbbe;
-    --tag-default-bg: #2c2720;
-  }
-}
-
-.head {
-  padding: 26px 28px 22px;
-}
-
-.eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 10px;
-}
-
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--ink);
-}
-
-.scheduleRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-top: 14px;
-}
-
-.scheduleText {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.scheduleIcon {
-  color: var(--muted);
-}
-
-.nextBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 700;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  border: 1px solid var(--line-strong);
-}
-
-.nextBadgeToday {
-  background-color: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-
-.venueBlock {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.venue {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  font-size: 15.5px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--ink);
-}
-
-.venueIcon {
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.address,
-.host {
-  margin-left: 23px;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--muted);
-}
-
-.hostFlush {
-  margin-left: 0;
-}
-
-.hostLink {
-  color: var(--text-subtle);
-  font-weight: 600;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 14px;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-}
-
-.priceFree {
-  color: var(--free);
-}
-
-.pricePaid {
-  color: var(--ink);
-}
-
-.area {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--line-strong);
-  flex-shrink: 0;
-}
-
-.sep2 {
-  display: inline-block;
-}
-
-.tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  font-size: 12.5px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 3px 9px;
-  white-space: nowrap;
-}
-
-.body {
-  border-top: 1px solid var(--line);
-  padding: 22px 28px 26px;
-}
-
-.desc {
-  font-size: 15.5px;
-  line-height: 1.65;
-  color: var(--text-subtle);
-  margin: 0 0 18px;
-  white-space: pre-line;
-}
-
-.facts {
-  margin: 0 0 20px;
-}
-
-.bottomCtaWrap {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-}
-
-.bottomCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 46px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  background-color: var(--ink);
-  color: var(--bg);
-  font-size: 15px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: opacity 0.15s ease;
-}
-
-.bottomCta:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-
-@container (max-width: 600px) {
-  .head {
-    padding: 20px 16px 18px;
-  }
-  .title {
-    font-size: 26px;
-  }
-  .tags {
-    flex-basis: 100%;
-  }
-  .sep2 {
-    display: none;
-  }
-  .body {
-    padding: 18px 16px 20px;
-  }
-}
-
-@media (max-width: 899px) {
-  .main {
-    padding: 18px 16px 52px;
-  }
-  .bottomCta {
-    width: 100%;
   }
 }
 
@@ -5691,6 +5167,334 @@ export default function ContactPage() {
 }
 
 ================
+File: app/events/components/ActionPopover.module.css
+================
+.popoverWrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+.popoverWrapper > button {
+  width: 100%;
+  min-width: 0;
+}
+.popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.popoverWide {
+  width: 320px;
+}
+.popoverAlignLeft {
+  left: 0;
+  right: auto;
+}
+.popoverHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 6px 2px;
+}
+.popoverHeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.popoverHeaderLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.popoverCloseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.popoverCloseBtn:hover {
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+.popoverInlineRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 6px 5px 10px;
+}
+.popoverHeaderValue {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.popoverHeaderValueWrap {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.35;
+}
+.copyIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 0;
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.copyIconBtn:hover {
+  background-color: var(--topbar-bg);
+  color: var(--accent);
+}
+.copyIconBtn:active {
+  transform: scale(0.94);
+}
+.copyIconBtnCopied {
+  background-color: var(--free-bg);
+  color: var(--free);
+}
+.copyIconBtnCopied:hover {
+  background-color: var(--free-bg);
+  color: var(--free);
+}
+.popoverDivider {
+  height: 1px;
+  background-color: var(--line);
+  margin: 4px 0 2px;
+}
+.popoverActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.popoverActionLink,
+.popoverActionLinkPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.popoverActionLink:hover {
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+.popoverActionLinkPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.popoverActionLinkPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+@media (max-width: 899px) {
+  .popover {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    z-index: 100;
+    border-color: var(--line-strong);
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: var(--shadow-lg);
+  }
+  .popoverCloseBtn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+================
+File: app/events/components/EventActions.module.css
+================
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.buttonsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  height: 60px;
+  padding: 6px 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--card);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.btnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.btnPrimary:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+
+.btnActive,
+.btnActive:hover {
+  opacity: 1;
+  border-color: var(--ink);
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+
+.btnDisabled,
+.btnDisabled:hover {
+  background-color: var(--card);
+  color: var(--ink);
+  border-color: var(--line);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.actionsFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.edit {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  cursor: pointer;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.edit:hover {
+  color: var(--accent);
+}
+
+.edit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@container (max-width: 600px) {
+  .buttonsGrid {
+    gap: 6px;
+  }
+  .btn {
+    height: 58px;
+    padding: 6px 3px;
+    font-size: 11.5px;
+  }
+  .actionsFooter {
+    justify-content: center;
+  }
+}
+
+@container (max-width: 340px) {
+  .buttonsGrid {
+    gap: 5px;
+  }
+  .btn {
+    font-size: 11px;
+  }
+}
+
+================
 File: app/events/components/PriceFilterDropdown.tsx
 ================
 'use client';
@@ -5865,6 +5669,444 @@ export default function PriceFilterDropdown({
       )}
     </div>
   );
+}
+
+================
+File: app/events/components/ProveItButton.tsx
+================
+'use client';
+import { useMemo } from 'react';
+import Link from 'next/link';
+import {
+  normalizeContactText,
+  normalizeProveItText,
+  parseContactWithLinks,
+  parseTextWithLinks,
+  type TextSegment,
+} from '../linkify';
+import ActionPopover from './ActionPopover';
+import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
+import styles from './ProveItButton.module.css';
+
+interface ProveItButtonProps {
+  proveIt?: string;
+  contact?: string;
+  contactPageHref: string;
+  btnClassName: string;
+  btnActiveClassName: string;
+  btnDisabledClassName: string;
+}
+
+function renderTextSegments(segments: TextSegment[]) {
+  return segments.map((seg, idx) => {
+    if (seg.type === 'text') {
+      return <span key={idx}>{seg.text}</span>;
+    }
+    const isExternal =
+      !seg.href.startsWith('mailto:') && !seg.href.startsWith('tel:');
+    return (
+      <a
+        key={idx}
+        href={seg.href}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        className={styles.proveItLink}
+      >
+        <span>{seg.text}</span>
+        {isExternal && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
+      </a>
+    );
+  });
+}
+
+export default function ProveItButton({
+  proveIt,
+  contact,
+  contactPageHref,
+  btnClassName,
+  btnActiveClassName,
+  btnDisabledClassName,
+}: ProveItButtonProps) {
+  const cleanProveIt = useMemo(() => normalizeProveItText(proveIt), [proveIt]);
+  const cleanContact = useMemo(() => normalizeContactText(contact), [contact]);
+  const proveItSegments = useMemo(
+    () => (cleanProveIt ? parseTextWithLinks(cleanProveIt) : []),
+    [cleanProveIt]
+  );
+  const contactSegments = useMemo(
+    () => (cleanContact ? parseContactWithLinks(cleanContact) : []),
+    [cleanContact]
+  );
+
+  if (!cleanProveIt && !cleanContact) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={`${btnClassName} ${btnDisabledClassName}`}
+        title="No source details listed yet"
+      >
+        <ShieldCheckIcon />
+        Prove It
+      </button>
+    );
+  }
+
+  const needsTrailingPeriod =
+    Boolean(cleanContact) && !/[.!?]$/.test(cleanContact);
+
+  return (
+    <ActionPopover
+      triggerLabel="Prove It"
+      triggerIcon={<ShieldCheckIcon />}
+      btnClassName={btnClassName}
+      btnActiveClassName={btnActiveClassName}
+      dialogLabel="Event source and verification details"
+      headerLabel="Prove It"
+      wide
+      align="left"
+    >
+      {() => (
+        <div className={styles.proveItBox}>
+          {cleanProveIt && (
+            <p className={styles.proveItText}>
+              {renderTextSegments(proveItSegments)}
+            </p>
+          )}
+          <p
+            className={`${styles.proveItText} ${
+              cleanProveIt ? styles.proveItContactDivider : ''
+            }`}
+          >
+            <span>Need more proof? Contact </span>
+            {cleanContact ? (
+              <>
+                {renderTextSegments(contactSegments)}
+                {needsTrailingPeriod ? '.' : ''}
+              </>
+            ) : (
+              <>
+                <Link href={contactPageHref} className={styles.proveItLink}>
+                  us
+                </Link>
+                .
+              </>
+            )}
+          </p>
+        </div>
+      )}
+    </ActionPopover>
+  );
+}
+
+================
+File: app/events/components/ShareButton.module.css
+================
+.shareWrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+.shareWrapper > button {
+  width: 100%;
+  min-width: 0;
+}
+button.copied,
+button.copied:hover {
+  background-color: var(--free-bg);
+  color: var(--free);
+  border-color: var(--free);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+================
+File: app/[city]/events/[event]/EventDetail.module.css
+================
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+  box-sizing: border-box;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  margin-bottom: 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.backLink:hover {
+  color: var(--ink);
+}
+
+.card {
+  container-type: inline-size;
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.head {
+  padding: 26px 28px 22px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+
+.title {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+
+.scheduleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+}
+
+.scheduleText {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.scheduleIcon {
+  color: var(--muted);
+}
+
+.nextBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+
+.nextBadgeToday {
+  background-color: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.venueBlock {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.address,
+.host {
+  margin-left: 23px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.hostFlush {
+  margin-left: 0;
+}
+
+.hostLink {
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.priceFree {
+  color: var(--free);
+}
+
+.pricePaid {
+  color: var(--ink);
+}
+
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+
+.sep2 {
+  display: inline-block;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.body {
+  border-top: 1px solid var(--line);
+  padding: 22px 28px 26px;
+}
+
+.desc {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text-subtle);
+  margin: 0 0 18px;
+  white-space: pre-line;
+}
+
+.facts {
+  margin: 0 0 20px;
+}
+
+.bottomCtaWrap {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.bottomCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background-color: var(--ink);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.bottomCta:hover {
+  opacity: 0.9;
+  color: var(--bg);
+}
+
+@container (max-width: 600px) {
+  .head {
+    padding: 20px 16px 18px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+  .body {
+    padding: 18px 16px 20px;
+  }
+}
+
+@media (max-width: 899px) {
+  .main {
+    padding: 18px 16px 52px;
+  }
+  .bottomCta {
+    width: 100%;
+  }
 }
 
 ================
@@ -6073,194 +6315,6 @@ export default function EventDetailView({
         />
       )}
     </div>
-  );
-}
-
-================
-File: app/events/components/ContactButton.tsx
-================
-'use client';
-import { useMemo, useCallback, useSyncExternalStore } from 'react';
-import { parseContactInfo } from '../utils';
-import ActionPopover, { PopoverCopyRow } from './ActionPopover';
-import styles from './ActionPopover.module.css';
-
-const emptySubscribe = () => () => {};
-
-interface ContactButtonProps {
-  contact?: string;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
-}
-
-export default function ContactButton({
-  contact,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-}: ContactButtonProps) {
-  const isAndroid = useSyncExternalStore(
-    emptySubscribe,
-    () => /android/i.test(navigator.userAgent || ''),
-    () => false
-  );
-  const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-
-  const handleOpenGmail = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, close: () => void) => {
-      if (contactInfo.type !== 'email') return;
-      if (isAndroid) {
-        e.preventDefault();
-        window.location.href = contactInfo.androidIntentUrl;
-      }
-      close();
-    },
-    [contactInfo, isAndroid]
-  );
-
-  const mailIcon = (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  );
-
-  if (contactInfo.type === 'none') {
-    return (
-      <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
-        {mailIcon}
-        Contact
-      </div>
-    );
-  }
-
-  if (contactInfo.type === 'url') {
-    return (
-      <a
-        href={contactInfo.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnClassName}
-      >
-        {mailIcon}
-        Contact
-      </a>
-    );
-  }
-
-  return (
-    <ActionPopover
-      triggerLabel="Contact"
-      triggerIcon={mailIcon}
-      btnClassName={btnClassName}
-      btnActiveClassName={btnActiveClassName}
-      dialogLabel="Contact options"
-      headerLabel={contactInfo.type === 'email' ? 'Email' : 'Phone'}
-      align="left"
-    >
-      {(close) => (
-        <>
-          {contactInfo.type === 'email' && (
-            <>
-              <PopoverCopyRow
-                text={contactInfo.email}
-                copyLabel="Copy email"
-              />
-              <div className={styles.popoverDivider} />
-              <div className={styles.popoverActions}>
-                <a
-                  href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
-                  target={isAndroid ? undefined : '_blank'}
-                  rel="noopener noreferrer"
-                  className={styles.popoverActionLink}
-                  onClick={(e) => handleOpenGmail(e, close)}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 7l9 6 9-6" />
-                  </svg>
-                  Open in Gmail
-                </a>
-                <a
-                  href={contactInfo.mailtoUrl}
-                  className={styles.popoverActionLink}
-                  onClick={close}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                  Default Mail App
-                </a>
-              </div>
-            </>
-          )}
-          {contactInfo.type === 'phone' && (
-            <>
-              <PopoverCopyRow
-                text={contactInfo.displayPhone}
-                copyLabel="Copy phone number"
-              />
-              <div className={styles.popoverDivider} />
-              <div className={styles.popoverActions}>
-                <a
-                  href={contactInfo.telUrl}
-                  className={styles.popoverActionLinkPrimary}
-                  onClick={close}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-                  </svg>
-                  Call {contactInfo.displayPhone}
-                </a>
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </ActionPopover>
   );
 }
 
@@ -7513,6 +7567,102 @@ export function buildEventJsonLd(
 }
 
 ================
+File: app/components/Footer.tsx
+================
+import Link from 'next/link';
+import type { CityConfig } from '../lib/cities';
+import styles from './Footer.module.css';
+
+interface FooterProps {
+  city?: CityConfig;
+}
+
+export default function Footer({ city }: FooterProps) {
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerSupportText}>
+            Free for all, no ads.{' '}
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.buyDrinkLink}
+            >
+              Buy me a drink.
+            </a>
+          </div>
+          <div className={styles.footerQuoteSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+          </div>
+          <div className={styles.footerBottom}>
+            <div className={styles.footerSocialLinks}>
+              <a
+                href="https://www.instagram.com/someplace.social/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.footerIconLink}
+                aria-label="Instagram"
+                title="Instagram"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+              </a>
+              <Link
+                href={contactHref}
+                className={styles.footerIconLink}
+                aria-label="Contact us"
+                title="Contact us"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </Link>
+            </div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social.
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+================
 File: app/globals.css
 ================
 :root {
@@ -7544,6 +7694,29 @@ File: app/globals.css
   --changed-badge-bg: #fef3c7;
   --changed-badge-text: #92400e;
   --changed-badge-border: #fde68a;
+  --fact-bg: #faf4e6;
+  --tag-science-ink: #0f5c5c;
+  --tag-science-bg: #d3efec;
+  --tag-craft-ink: #8a3d0c;
+  --tag-craft-bg: #fde4cf;
+  --tag-food-ink: #6b5200;
+  --tag-food-bg: #f4eab8;
+  --tag-community-ink: #3b4a54;
+  --tag-community-bg: #e1e7ea;
+  --tag-music-ink: #5b2a86;
+  --tag-music-bg: #ecdcf7;
+  --tag-trivia-ink: #2d3f7a;
+  --tag-trivia-bg: #dde4f7;
+  --tag-comedy-ink: #8a1f4f;
+  --tag-comedy-bg: #fbdce9;
+  --tag-dance-ink: #852b2b;
+  --tag-dance-bg: #f9dede;
+  --tag-sport-ink: #1f6a42;
+  --tag-sport-bg: #d7f0df;
+  --tag-language-ink: #2c4f7c;
+  --tag-language-bg: #dbe5f7;
+  --tag-default-ink: #4f483e;
+  --tag-default-bg: #f3ead4;
   --shadow-sm: 0 1px 3px rgba(31, 27, 22, 0.04);
   --shadow-md: 0 8px 24px rgba(31, 27, 22, 0.12);
   --shadow-lg: 0 16px 40px rgba(31, 27, 22, 0.2);
@@ -7580,6 +7753,29 @@ html[data-theme='dark'] {
   --changed-badge-bg: #38240d;
   --changed-badge-text: #fcd34d;
   --changed-badge-border: #78350f;
+  --fact-bg: #25221d;
+  --tag-science-ink: #5eead4;
+  --tag-science-bg: #133330;
+  --tag-craft-ink: #fdba74;
+  --tag-craft-bg: #361c0c;
+  --tag-food-ink: #fde047;
+  --tag-food-bg: #33280c;
+  --tag-community-ink: #cbd5e1;
+  --tag-community-bg: #222b33;
+  --tag-music-ink: #d8b4fe;
+  --tag-music-bg: #2f1847;
+  --tag-trivia-ink: #93c5fd;
+  --tag-trivia-bg: #1c284d;
+  --tag-comedy-ink: #f472b6;
+  --tag-comedy-bg: #3d1427;
+  --tag-dance-ink: #fca5a5;
+  --tag-dance-bg: #3d1919;
+  --tag-sport-ink: #86efac;
+  --tag-sport-bg: #143823;
+  --tag-language-ink: #93c5fd;
+  --tag-language-bg: #1c2b45;
+  --tag-default-ink: #d6cbbe;
+  --tag-default-bg: #2c2720;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
@@ -7617,6 +7813,29 @@ html[data-theme='dark'] {
     --changed-badge-bg: #38240d;
     --changed-badge-text: #fcd34d;
     --changed-badge-border: #78350f;
+    --fact-bg: #25221d;
+    --tag-science-ink: #5eead4;
+    --tag-science-bg: #133330;
+    --tag-craft-ink: #fdba74;
+    --tag-craft-bg: #361c0c;
+    --tag-food-ink: #fde047;
+    --tag-food-bg: #33280c;
+    --tag-community-ink: #cbd5e1;
+    --tag-community-bg: #222b33;
+    --tag-music-ink: #d8b4fe;
+    --tag-music-bg: #2f1847;
+    --tag-trivia-ink: #93c5fd;
+    --tag-trivia-bg: #1c284d;
+    --tag-comedy-ink: #f472b6;
+    --tag-comedy-bg: #3d1427;
+    --tag-dance-ink: #fca5a5;
+    --tag-dance-bg: #3d1919;
+    --tag-sport-ink: #86efac;
+    --tag-sport-bg: #143823;
+    --tag-language-ink: #93c5fd;
+    --tag-language-bg: #1c2b45;
+    --tag-default-ink: #d6cbbe;
+    --tag-default-bg: #2c2720;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
@@ -8156,102 +8375,6 @@ export default function SuggestEditModal({
         </form>
       </div>
     </div>
-  );
-}
-
-================
-File: app/components/Footer.tsx
-================
-import Link from 'next/link';
-import type { CityConfig } from '../lib/cities';
-import styles from './Footer.module.css';
-
-interface FooterProps {
-  city?: CityConfig;
-}
-
-export default function Footer({ city }: FooterProps) {
-  const contactHref = city ? `/${city.slug}/contact` : '/contact';
-
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerInner}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerSupportText}>
-            Free for all, no ads.{' '}
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.buyDrinkLink}
-            >
-              Buy me a drink.
-            </a>
-          </div>
-          <div className={styles.footerQuoteSection}>
-            <blockquote className={styles.footerQuoteText}>
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
-          </div>
-          <div className={styles.footerBottom}>
-            <div className={styles.footerSocialLinks}>
-              <a
-                href="https://www.instagram.com/someplace.social/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.footerIconLink}
-                aria-label="Instagram"
-                title="Instagram"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </a>
-              <Link
-                href={contactHref}
-                className={styles.footerIconLink}
-                aria-label="Contact us"
-                title="Contact us"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-              </Link>
-            </div>
-            <div className={styles.footerCopyright}>
-              © 2026 Someplace Social.
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
   );
 }
 
@@ -9337,6 +9460,80 @@ export default function CityHeroCard({
 }
 
 ================
+File: app/layout.tsx
+================
+import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque, Karla } from 'next/font/google';
+import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
+import ThemeScript from './components/ThemeScript';
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['500', '700', '800'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
+const karla = Karla({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-karla',
+  display: 'swap',
+});
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.someplacesocial.org'),
+  title: {
+    default: 'Someplace Social | Community Event Listings',
+    template: '%s | Someplace Social',
+  },
+  description:
+    'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'Someplace Social | Community Event Listings',
+    description:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
+    url: 'https://www.someplacesocial.org',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
+};
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`${bricolage.variable} ${karla.variable}`} suppressHydrationWarning>
+      <body>
+        <ThemeScript />
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+
+================
 File: app/about/About.module.css
 ================
 .page {
@@ -10296,77 +10493,216 @@ function FilterControls({
 export default memo(FilterControls);
 
 ================
-File: app/layout.tsx
+File: app/components/Header.module.css
 ================
-import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Karla } from 'next/font/google';
-import './globals.css';
-import { Analytics } from '@vercel/analytics/next';
-import ThemeScript from './components/ThemeScript';
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
-const karla = Karla({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-karla',
-  display: 'swap',
-});
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-};
-export const metadata: Metadata = {
-  metadataBase: new URL('https://www.someplacesocial.org'),
-  title: {
-    default: 'Someplace Social | Community Event Listings',
-    template: '%s | Someplace Social',
-  },
-  description:
-    'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
-  icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  openGraph: {
-    title: 'Someplace Social | Community Event Listings',
-    description:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
-    url: 'https://www.someplacesocial.org',
-    siteName: 'Someplace Social',
-    locale: 'en_US',
-    type: 'website',
-  },
-};
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en" className={`${bricolage.variable} ${karla.variable}`} suppressHydrationWarning>
-      <body>
-        <ThemeScript />
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  );
+.header {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--bg);
+  z-index: 50;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.brandLogoLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logoImage {
+  height: 108px;
+  width: auto;
+  max-width: 570px;
+  object-fit: contain;
+  filter: var(--logo-filter);
+  transition: filter 0.2s ease;
+}
+.brandSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.navDesktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.navLink:hover {
+  color: var(--accent);
+}
+.navLinkActive {
+  font-weight: 700;
+  text-decoration: none;
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+}
+.navLinkActive:hover {
+  color: var(--ink);
+}
+.navMobileActions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.hamburgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--backdrop);
+  z-index: 100;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background-color: var(--bg);
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.3);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.drawerTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink);
+}
+.drawerCloseBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.drawerSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+.drawerNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerNavLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.drawerNavLink:hover {
+  background-color: var(--topbar-bg);
+}
+.drawerNavLinkActive {
+  background-color: var(--pill-hover);
+  font-weight: 700;
+}
+@media (max-width: 899px) {
+  .headerInner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .brandCol {
+    flex: 1;
+  }
+  .logoImage {
+    height: 57px;
+    max-width: 285px;
+  }
+  .brandSubtitle {
+    font-size: 11.5px;
+    margin-top: 2px;
+  }
+  .navDesktop {
+    display: none;
+  }
+  .navMobileActions {
+    display: flex;
+  }
+}
+@media (max-width: 360px) {
+  .headerInner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .logoImage {
+    height: 48px;
+    max-width: 225px;
+  }
+  .hamburgerBtn {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 ================
@@ -10378,7 +10714,12 @@ import { Event } from '../lib/google-sheets';
 import { CITIES } from '../lib/cities';
 import { isEventActiveOnDate, isMonthActive } from './utils';
 import { expandEventSchedules } from './schedule-splitter';
-import { normalizeProveItText, parseTextWithLinks } from './linkify';
+import {
+  normalizeContactText,
+  normalizeProveItText,
+  parseContactWithLinks,
+  parseTextWithLinks,
+} from './linkify';
 import {
   slugifyText,
   getEventSlug,
@@ -10981,13 +11322,16 @@ describe('getEventDisplayDetails', () => {
   });
 });
 
-describe('linkify Prove It text', () => {
+describe('linkify Prove It and Contact text', () => {
   it('normalizes empty and x placeholder values', () => {
     assert.equal(normalizeProveItText(''), '');
     assert.equal(normalizeProveItText('   '), '');
     assert.equal(normalizeProveItText('x'), '');
     assert.equal(normalizeProveItText('X'), '');
     assert.equal(normalizeProveItText('  maxlinebrewing.com  '), 'maxlinebrewing.com');
+    assert.equal(normalizeContactText(''), '');
+    assert.equal(normalizeContactText('x'), '');
+    assert.equal(normalizeContactText('  info@venue.com  '), 'info@venue.com');
   });
   it('links bare URLs in all provided Prove It examples', () => {
     const ex1 = parseTextWithLinks(
@@ -11098,6 +11442,39 @@ describe('linkify Prove It text', () => {
     const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
     assert.deepEqual(unsafe, [
       { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
+    ]);
+  });
+  it('links emails, contact URLs, phone numbers, and mixed contact strings safely', () => {
+    assert.deepEqual(parseContactWithLinks('x'), []);
+    assert.deepEqual(parseContactWithLinks('mailto:hello@venue.com'), [
+      { type: 'link', text: 'hello@venue.com', href: 'mailto:hello@venue.com' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('venue.com/contact'), [
+      { type: 'link', text: 'venue.com/contact', href: 'https://venue.com/contact' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('tel:+1-970-555-1234'), [
+      { type: 'link', text: '+1-970-555-1234', href: 'tel:+19705551234' },
+    ]);
+    assert.deepEqual(
+      parseContactWithLinks('WhatsApp +57 300 123 4567 or info@venue.com'),
+      [
+        { type: 'text', text: 'WhatsApp ' },
+        { type: 'link', text: '+57 300 123 4567', href: 'tel:+573001234567' },
+        { type: 'text', text: ' or ' },
+        { type: 'link', text: 'info@venue.com', href: 'mailto:info@venue.com' },
+      ]
+    );
+    assert.deepEqual(parseContactWithLinks('(970) 555-1234'), [
+      { type: 'link', text: '(970) 555-1234', href: 'tel:9705551234' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('https://wa.me/573001234567'), [
+      { type: 'link', text: 'https://wa.me/573001234567', href: 'https://wa.me/573001234567' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('DM @club on Instagram'), [
+      { type: 'text', text: 'DM @club on Instagram' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('Updated 2026-01-15'), [
+      { type: 'text', text: 'Updated 2026-01-15' },
     ]);
   });
 });
@@ -11291,583 +11668,6 @@ export default function Home() {
 }
 
 ================
-File: app/components/Header.module.css
-================
-.header {
-  position: relative;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--bg);
-  z-index: 50;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.headerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.brandCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-.brandLogoLink {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.logoImage {
-  height: 108px;
-  width: auto;
-  max-width: 570px;
-  object-fit: contain;
-  filter: var(--logo-filter);
-  transition: filter 0.2s ease;
-}
-.brandSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--muted);
-  margin-top: 6px;
-}
-.navDesktop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 0 16px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 999px;
-  border: 1.5px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-.navLink:hover {
-  color: var(--accent);
-}
-.navLinkActive {
-  font-weight: 700;
-  text-decoration: none;
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-}
-.navLinkActive:hover {
-  color: var(--ink);
-}
-.navMobileActions {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.hamburgerBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 10px;
-  color: var(--ink);
-  cursor: pointer;
-}
-.drawerBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: var(--backdrop);
-  z-index: 100;
-}
-.drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 290px;
-  max-width: 85vw;
-  background-color: var(--bg);
-  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.3);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 20px 28px;
-  overflow-y: auto;
-}
-.drawerHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.drawerTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  color: var(--ink);
-}
-.drawerCloseBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-.drawerSectionTitle {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin: 20px 0 8px;
-}
-.drawerNavLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.drawerNavLink {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-  border-radius: 8px;
-}
-.drawerNavLink:hover {
-  background-color: var(--topbar-bg);
-}
-.drawerNavLinkActive {
-  background-color: var(--pill-hover);
-  font-weight: 700;
-}
-@media (max-width: 899px) {
-  .headerInner {
-    padding: 12px 16px;
-    gap: 12px;
-  }
-  .brandCol {
-    flex: 1;
-  }
-  .logoImage {
-    height: 57px;
-    max-width: 285px;
-  }
-  .brandSubtitle {
-    font-size: 11.5px;
-    margin-top: 2px;
-  }
-  .navDesktop {
-    display: none;
-  }
-  .navMobileActions {
-    display: flex;
-  }
-}
-@media (max-width: 360px) {
-  .headerInner {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .logoImage {
-    height: 48px;
-    max-width: 225px;
-  }
-  .hamburgerBtn {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-================
-File: app/events/components/EventCard.module.css
-================
-.card {
-  container-type: inline-size;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  margin-bottom: 14px;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 110px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-  --fact-bg: #faf4e6;
-  --tag-science-ink: #0f5c5c;
-  --tag-science-bg: #d3efec;
-  --tag-craft-ink: #8a3d0c;
-  --tag-craft-bg: #fde4cf;
-  --tag-food-ink: #6b5200;
-  --tag-food-bg: #f4eab8;
-  --tag-community-ink: #3b4a54;
-  --tag-community-bg: #e1e7ea;
-  --tag-music-ink: #5b2a86;
-  --tag-music-bg: #ecdcf7;
-  --tag-trivia-ink: #2d3f7a;
-  --tag-trivia-bg: #dde4f7;
-  --tag-comedy-ink: #8a1f4f;
-  --tag-comedy-bg: #fbdce9;
-  --tag-dance-ink: #852b2b;
-  --tag-dance-bg: #f9dede;
-  --tag-sport-ink: #1f6a42;
-  --tag-sport-bg: #d7f0df;
-  --tag-language-ink: #2c4f7c;
-  --tag-language-bg: #dbe5f7;
-  --tag-default-ink: #4f483e;
-  --tag-default-bg: #f3ead4;
-}
-
-:global(html[data-theme='dark']) .card {
-  --fact-bg: #25221d;
-  --tag-science-ink: #5eead4;
-  --tag-science-bg: #133330;
-  --tag-craft-ink: #fdba74;
-  --tag-craft-bg: #361c0c;
-  --tag-food-ink: #fde047;
-  --tag-food-bg: #33280c;
-  --tag-community-ink: #cbd5e1;
-  --tag-community-bg: #222b33;
-  --tag-music-ink: #d8b4fe;
-  --tag-music-bg: #2f1847;
-  --tag-trivia-ink: #93c5fd;
-  --tag-trivia-bg: #1c284d;
-  --tag-comedy-ink: #f472b6;
-  --tag-comedy-bg: #3d1427;
-  --tag-dance-ink: #fca5a5;
-  --tag-dance-bg: #3d1919;
-  --tag-sport-ink: #86efac;
-  --tag-sport-bg: #143823;
-  --tag-language-ink: #93c5fd;
-  --tag-language-bg: #1c2b45;
-  --tag-default-ink: #d6cbbe;
-  --tag-default-bg: #2c2720;
-}
-
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .card {
-    --fact-bg: #25221d;
-    --tag-science-ink: #5eead4;
-    --tag-science-bg: #133330;
-    --tag-craft-ink: #fdba74;
-    --tag-craft-bg: #361c0c;
-    --tag-food-ink: #fde047;
-    --tag-food-bg: #33280c;
-    --tag-community-ink: #cbd5e1;
-    --tag-community-bg: #222b33;
-    --tag-music-ink: #d8b4fe;
-    --tag-music-bg: #2f1847;
-    --tag-trivia-ink: #93c5fd;
-    --tag-trivia-bg: #1c284d;
-    --tag-comedy-ink: #f472b6;
-    --tag-comedy-bg: #3d1427;
-    --tag-dance-ink: #fca5a5;
-    --tag-dance-bg: #3d1919;
-    --tag-sport-ink: #86efac;
-    --tag-sport-bg: #143823;
-    --tag-language-ink: #93c5fd;
-    --tag-language-bg: #1c2b45;
-    --tag-default-ink: #d6cbbe;
-    --tag-default-bg: #2c2720;
-  }
-}
-
-.card:not(.open):hover {
-  border-color: var(--line-strong);
-}
-
-.open {
-  border-color: var(--ink);
-  box-shadow: var(--shadow-md);
-  overflow: visible;
-  content-visibility: visible;
-  z-index: 10;
-}
-
-.icon {
-  flex: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.head {
-  display: grid;
-  grid-template-columns: 84px 1fr 34px;
-  grid-template-areas: "time main chev";
-  gap: 16px;
-  padding: 18px 20px;
-  cursor: pointer;
-  align-items: start;
-  user-select: text;
-  -webkit-user-select: text;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.time {
-  grid-area: time;
-}
-
-.time b {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--ink);
-}
-
-.time span {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1.2;
-  color: var(--muted);
-}
-
-.main {
-  grid-area: main;
-  min-width: 0;
-}
-
-.next {
-  display: inline-block;
-  background-color: var(--accent);
-  color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 700;
-  border-radius: 5px;
-  padding: 2px 6px;
-  margin-bottom: 6px;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.title {
-  display: block;
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  color: var(--ink);
-}
-
-.venue {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 5px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ink);
-}
-
-.venueIcon {
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.host {
-  display: block;
-  margin-top: 2px;
-  margin-left: 22px;
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--muted);
-}
-
-.hostFlush {
-  margin-left: 0;
-}
-
-.hostLink {
-  color: var(--text-subtle);
-  font-weight: 600;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 11px;
-  font-size: 13.5px;
-  line-height: 1.3;
-}
-
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-}
-
-.priceFree {
-  color: var(--free);
-}
-
-.pricePaid {
-  color: var(--ink);
-}
-
-.area {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--line-strong);
-  flex-shrink: 0;
-}
-
-.sep2 {
-  display: inline-block;
-}
-
-.tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 3px 8px;
-  white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.chev {
-  grid-area: chev;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
-}
-
-.head:hover .chev,
-.chev:hover {
-  background-color: var(--pill-hover);
-}
-
-.chev:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.open .chev {
-  background-color: var(--ink);
-  color: var(--bg);
-  transform: rotate(180deg);
-}
-
-.open .head:hover .chev,
-.open .chev:hover {
-  background-color: var(--ink);
-  opacity: 0.9;
-}
-
-.body {
-  border-top: 1px solid var(--line);
-  padding: 18px 20px 20px 120px;
-}
-
-.bodyHidden {
-  display: none;
-}
-
-.desc {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-  margin: 0 0 16px;
-  max-width: 580px;
-}
-
-.facts {
-  margin: 0 0 18px;
-}
-
-.desc + .facts {
-  margin-top: -2px;
-}
-
-@container (max-width: 600px) {
-  .head {
-    grid-template-columns: 62px 1fr 30px;
-    gap: 10px;
-    padding: 16px 14px;
-  }
-  .time b {
-    font-size: 21px;
-  }
-  .time span {
-    font-size: 12px;
-  }
-  .chev {
-    width: 30px;
-    height: 30px;
-  }
-  .meta {
-    gap: 8px 10px;
-  }
-  .body {
-    padding: 16px 14px;
-  }
-  .tags {
-    flex-basis: 100%;
-  }
-  .sep2 {
-    display: none;
-  }
-}
-
-================
 File: app/components/Header.tsx
 ================
 'use client';
@@ -12050,130 +11850,6 @@ export default function Header({ city }: HeaderProps) {
       )}
     </>
   );
-}
-
-================
-File: app/lib/cities.ts
-================
-export type CityPriceConfig = {
-  currencyCode: string;
-  currencySymbol: string;
-  unitSuffix: string;
-  maxPrice: number;
-  step: number;
-  underValue: number;
-  underLabel: string;
-  midLabel: string;
-};
-export type CityAlertBanner = {
-  message: string;
-  linkText?: string;
-  linkHref?: string;
-};
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  timeZone: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-  priceConfig?: CityPriceConfig;
-  alertBanner?: CityAlertBanner;
-};
-export const SITE_URL = 'https://www.someplacesocial.org';
-export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    timeZone: 'America/Bogota',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-    priceConfig: {
-      currencyCode: 'COP',
-      currencySymbol: '$',
-      unitSuffix: 'k',
-      maxPrice: 100,
-      step: 5,
-      underValue: 40,
-      underLabel: 'Under 40k',
-      midLabel: '50k',
-    },
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    timeZone: 'America/Denver',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-    priceConfig: {
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      unitSuffix: '',
-      maxPrice: 50,
-      step: 5,
-      underValue: 10,
-      underLabel: 'Under $10',
-      midLabel: '$25',
-    },
-    alertBanner: {
-      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
-      linkText: 'Contact.',
-      linkHref: '/fort-collins-colorado/contact',
-    },
-  },
-};
-export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
-  currencyCode: 'USD',
-  currencySymbol: '$',
-  unitSuffix: '',
-  maxPrice: 50,
-  step: 5,
-  underValue: 10,
-  underLabel: 'Under $10',
-  midLabel: '$25',
-};
-export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
-  if (city?.priceConfig) return city.priceConfig;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return CITIES['medellin-colombia'].priceConfig!;
-  }
-  return DEFAULT_USD_PRICE_CONFIG;
-}
-export function getCityTimeZone(city?: CityConfig): string {
-  if (city?.timeZone) return city.timeZone;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return 'America/Bogota';
-  }
-  return 'America/Denver';
-}
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 ================
@@ -12492,6 +12168,432 @@ File: app/events/EventsView.module.css
   .timeGroupHeader {
     margin: 18px 0 8px;
   }
+}
+
+================
+File: app/events/components/EventCard.module.css
+================
+.card {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  margin-bottom: 14px;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 110px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.card:not(.open):hover {
+  border-color: var(--line-strong);
+}
+
+.open {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-md);
+  overflow: visible;
+  content-visibility: visible;
+  z-index: 10;
+}
+
+.icon {
+  flex: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 84px 1fr 34px;
+  grid-template-areas: "time main chev";
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  align-items: start;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.time {
+  grid-area: time;
+}
+
+.time b {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.time span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+}
+
+.next {
+  display: inline-block;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.title {
+  display: block;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.host {
+  display: block;
+  margin-top: 2px;
+  margin-left: 22px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.hostFlush {
+  margin-left: 0;
+}
+
+.hostLink {
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 11px;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.priceFree {
+  color: var(--free);
+}
+
+.pricePaid {
+  color: var(--ink);
+}
+
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+
+.sep2 {
+  display: inline-block;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.chev {
+  grid-area: chev;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+
+.head:hover .chev,
+.chev:hover {
+  background-color: var(--pill-hover);
+}
+
+.chev:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.open .chev {
+  background-color: var(--ink);
+  color: var(--bg);
+  transform: rotate(180deg);
+}
+
+.open .head:hover .chev,
+.open .chev:hover {
+  background-color: var(--ink);
+  opacity: 0.9;
+}
+
+.body {
+  border-top: 1px solid var(--line);
+  padding: 18px 20px 20px 120px;
+}
+
+.bodyHidden {
+  display: none;
+}
+
+.address {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.address .icon {
+  margin-top: 2px;
+}
+
+.desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+  margin: 0 0 16px;
+  max-width: 580px;
+  white-space: pre-line;
+}
+
+.facts {
+  margin: 0 0 18px;
+}
+
+.desc + .facts {
+  margin-top: -2px;
+}
+
+@container (max-width: 600px) {
+  .head {
+    grid-template-columns: 62px 1fr 30px;
+    gap: 10px;
+    padding: 16px 14px;
+  }
+  .time b {
+    font-size: 21px;
+  }
+  .time span {
+    font-size: 12px;
+  }
+  .chev {
+    width: 30px;
+    height: 30px;
+  }
+  .meta {
+    gap: 8px 10px;
+  }
+  .body {
+    padding: 16px 14px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+}
+
+================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityAlertBanner = {
+  message: string;
+  linkText?: string;
+  linkHref?: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  timeZone: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+  alertBanner?: CityAlertBanner;
+};
+export const SITE_URL = 'https://www.someplacesocial.org';
+export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    timeZone: 'America/Bogota',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    timeZone: 'America/Denver',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+    alertBanner: {
+      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
+      linkText: 'Contact.',
+      linkHref: '/fort-collins-colorado/contact',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
+  }
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityTimeZone(city?: CityConfig): string {
+  if (city?.timeZone) return city.timeZone;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return 'America/Bogota';
+  }
+  return 'America/Denver';
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 ================
@@ -13022,27 +13124,6 @@ export type IndexedEvent = Event & {
   searchCorpus: string;
   activeDays: boolean[];
 };
-export type ContactInfo =
-  | {
-      type: 'email';
-      email: string;
-      mailtoUrl: string;
-      gmailUrl: string;
-      androidIntentUrl: string;
-    }
-  | {
-      type: 'phone';
-      displayPhone: string;
-      telUrl: string;
-      rawPhone: string;
-    }
-  | {
-      type: 'url';
-      url: string;
-    }
-  | {
-      type: 'none';
-    };
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -13542,90 +13623,6 @@ export function ensureExternalUrl(url: string): string {
   if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
-}
-export function formatPhoneNumber(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
-  if (digits.length === 11 && digits.startsWith('1')) {
-    return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-  }
-  return phone;
-}
-export function parseContactInfo(rawContact?: string): ContactInfo {
-  if (!rawContact) return { type: 'none' };
-  const trimmed = rawContact.trim();
-  if (!trimmed || trimmed.toLowerCase() === 'x') {
-    return { type: 'none' };
-  }
-  const createEmailContact = (cleanEmail: string): ContactInfo => {
-    const encoded = encodeURIComponent(cleanEmail);
-    return {
-      type: 'email',
-      email: cleanEmail,
-      mailtoUrl: `mailto:${cleanEmail}`,
-      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encoded}`,
-      androidIntentUrl: `intent:${encoded}#Intent;scheme=mailto;package=com.google.android.gm;action=android.intent.action.SENDTO;S.browser_fallback_url=${encodeURIComponent(`mailto:${cleanEmail}`)};end`,
-    };
-  };
-  if (/^mailto:/i.test(trimmed)) {
-    const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
-    if (email) {
-      return createEmailContact(email);
-    }
-  }
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-    return createEmailContact(trimmed);
-  }
-  if (/^tel:/i.test(trimmed)) {
-    const rawNumber = trimmed.replace(/^tel:/i, '').trim();
-    const displayPhone = formatPhoneNumber(rawNumber);
-    const cleanDigits = rawNumber.replace(/[^\d+]/g, '');
-    const telDigits = cleanDigits.startsWith('+')
-      ? cleanDigits
-      : cleanDigits.length === 10
-      ? `+1${cleanDigits}`
-      : cleanDigits;
-    return {
-      type: 'phone',
-      displayPhone,
-      telUrl: `tel:${telDigits}`,
-      rawPhone: rawNumber,
-    };
-  }
-  if (/^https?:\/\//i.test(trimmed)) {
-    return {
-      type: 'url',
-      url: trimmed,
-    };
-  }
-  const digitCount = (trimmed.match(/\d/g) || []).length;
-  if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
-    const displayPhone = formatPhoneNumber(trimmed);
-    const cleanDigits = trimmed.replace(/[^\d+]/g, '');
-    const telDigits = cleanDigits.startsWith('+')
-      ? cleanDigits
-      : cleanDigits.length === 10
-      ? `+1${cleanDigits}`
-      : cleanDigits;
-    return {
-      type: 'phone',
-      displayPhone,
-      telUrl: `tel:${telDigits}`,
-      rawPhone: trimmed,
-    };
-  }
-  if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
-    const safeUrl = ensureExternalUrl(trimmed);
-    if (safeUrl) {
-      return {
-        type: 'url',
-        url: safeUrl,
-      };
-    }
-  }
-  return { type: 'none' };
 }
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();
@@ -14225,7 +14222,7 @@ import {
   isFreePrice,
   getTagStyle,
 } from '../utils';
-import { getEventDisplayDetails, getEventPath } from '../event-helpers';
+import { getEventDisplayDetails } from '../event-helpers';
 import EventActions from './EventActions';
 import EventFacts from './EventFacts';
 import InlineExternalLink from './InlineExternalLink';
@@ -14336,6 +14333,7 @@ function EventCard({
   const {
     displayVenue,
     venueUrl,
+    showDistinctAddress,
     organizerName,
     organizerUrl,
     showOrganizer,
@@ -14346,7 +14344,6 @@ function EventCard({
     mapsHref,
   } = getEventDisplayDetails(event, city.name);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const eventHref = getEventPath(city.slug, event);
 
   return (
     <article
@@ -14459,6 +14456,12 @@ function EventCard({
         className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
         aria-hidden={!isOpen}
       >
+        {showDistinctAddress && (
+          <div className={styles.address}>
+            <PinIcon className={styles.icon} />
+            <span>{event.location}</span>
+          </div>
+        )}
         {(event.about || event.notes) && (
           <p className={styles.desc}>{event.about || event.notes}</p>
         )}
@@ -14474,7 +14477,6 @@ function EventCard({
           city={city}
           selectedDate={selectedDate}
           mapsHref={mapsHref}
-          eventHref={eventHref}
           onOpenEdit={() => onOpenEdit(event)}
         />
       </div>
