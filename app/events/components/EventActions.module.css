@@ -41,7 +41,7 @@
   border-color: var(--ink);
 }
 
-.btnPrimary:hover {
+.btnPrimary:not(:where(.btnActive, .btnDisabled)):hover {
   opacity: 0.9;
   color: var(--bg);
 }
@@ -49,9 +49,13 @@
 .btnActive {
   border-color: var(--ink);
   background-color: var(--topbar-bg);
+  color: var(--ink);
 }
 
 .btnDisabled {
+  background-color: var(--card);
+  color: var(--ink);
+  border-color: var(--line);
   opacity: 0.45;
   cursor: not-allowed;
 }

@@ -30,7 +30,7 @@ export default function EventActions({
     <div className={styles.actions}>
       <ProveItButton
         proveIt={event.proveIt}
-        btnClassName={styles.btn}
+        btnClassName={`${styles.btn} ${styles.btnPrimary}`}
         btnActiveClassName={styles.btnActive}
         btnDisabledClassName={styles.btnDisabled}
       />
@@ -38,7 +38,7 @@ export default function EventActions({
         href={mapsHref}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${styles.btn} ${styles.btnPrimary}`}
+        className={styles.btn}
         title="Open location in maps"
       >
         <PinIcon />
