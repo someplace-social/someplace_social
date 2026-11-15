@@ -7,27 +7,6 @@ export type IndexedEvent = Event & {
   searchCorpus: string;
   activeDays: boolean[];
 };
-export type ContactInfo =
-  | {
-      type: 'email';
-      email: string;
-      mailtoUrl: string;
-      gmailUrl: string;
-      androidIntentUrl: string;
-    }
-  | {
-      type: 'phone';
-      displayPhone: string;
-      telUrl: string;
-      rawPhone: string;
-    }
-  | {
-      type: 'url';
-      url: string;
-    }
-  | {
-      type: 'none';
-    };
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -527,90 +506,6 @@ export function ensureExternalUrl(url: string): string {
   if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
-}
-export function formatPhoneNumber(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
-  if (digits.length === 11 && digits.startsWith('1')) {
-    return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-  }
-  return phone;
-}
-export function parseContactInfo(rawContact?: string): ContactInfo {
-  if (!rawContact) return { type: 'none' };
-  const trimmed = rawContact.trim();
-  if (!trimmed || trimmed.toLowerCase() === 'x') {
-    return { type: 'none' };
-  }
-  const createEmailContact = (cleanEmail: string): ContactInfo => {
-    const encoded = encodeURIComponent(cleanEmail);
-    return {
-      type: 'email',
-      email: cleanEmail,
-      mailtoUrl: `mailto:${cleanEmail}`,
-      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encoded}`,
-      androidIntentUrl: `intent:${encoded}#Intent;scheme=mailto;package=com.google.android.gm;action=android.intent.action.SENDTO;S.browser_fallback_url=${encodeURIComponent(`mailto:${cleanEmail}`)};end`,
-    };
-  };
-  if (/^mailto:/i.test(trimmed)) {
-    const email = trimmed.replace(/^mailto:/i, '').split('?')[0].trim();
-    if (email) {
-      return createEmailContact(email);
-    }
-  }
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-    return createEmailContact(trimmed);
-  }
-  if (/^tel:/i.test(trimmed)) {
-    const rawNumber = trimmed.replace(/^tel:/i, '').trim();
-    const displayPhone = formatPhoneNumber(rawNumber);
-    const cleanDigits = rawNumber.replace(/[^\d+]/g, '');
-    const telDigits = cleanDigits.startsWith('+')
-      ? cleanDigits
-      : cleanDigits.length === 10
-      ? `+1${cleanDigits}`
-      : cleanDigits;
-    return {
-      type: 'phone',
-      displayPhone,
-      telUrl: `tel:${telDigits}`,
-      rawPhone: rawNumber,
-    };
-  }
-  if (/^https?:\/\//i.test(trimmed)) {
-    return {
-      type: 'url',
-      url: trimmed,
-    };
-  }
-  const digitCount = (trimmed.match(/\d/g) || []).length;
-  if (digitCount >= 7 && !/[a-zA-Z]/.test(trimmed)) {
-    const displayPhone = formatPhoneNumber(trimmed);
-    const cleanDigits = trimmed.replace(/[^\d+]/g, '');
-    const telDigits = cleanDigits.startsWith('+')
-      ? cleanDigits
-      : cleanDigits.length === 10
-      ? `+1${cleanDigits}`
-      : cleanDigits;
-    return {
-      type: 'phone',
-      displayPhone,
-      telUrl: `tel:${telDigits}`,
-      rawPhone: trimmed,
-    };
-  }
-  if (trimmed.includes('.') && !trimmed.includes(' ') && trimmed.length > 3) {
-    const safeUrl = ensureExternalUrl(trimmed);
-    if (safeUrl) {
-      return {
-        type: 'url',
-        url: safeUrl,
-      };
-    }
-  }
-  return { type: 'none' };
 }
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();

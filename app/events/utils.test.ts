@@ -4,7 +4,12 @@ import { Event } from '../lib/google-sheets';
 import { CITIES } from '../lib/cities';
 import { isEventActiveOnDate, isMonthActive } from './utils';
 import { expandEventSchedules } from './schedule-splitter';
-import { normalizeProveItText, parseTextWithLinks } from './linkify';
+import {
+  normalizeContactText,
+  normalizeProveItText,
+  parseContactWithLinks,
+  parseTextWithLinks,
+} from './linkify';
 import {
   slugifyText,
   getEventSlug,
@@ -607,13 +612,16 @@ describe('getEventDisplayDetails', () => {
   });
 });
 
-describe('linkify Prove It text', () => {
+describe('linkify Prove It and Contact text', () => {
   it('normalizes empty and x placeholder values', () => {
     assert.equal(normalizeProveItText(''), '');
     assert.equal(normalizeProveItText('   '), '');
     assert.equal(normalizeProveItText('x'), '');
     assert.equal(normalizeProveItText('X'), '');
     assert.equal(normalizeProveItText('  maxlinebrewing.com  '), 'maxlinebrewing.com');
+    assert.equal(normalizeContactText(''), '');
+    assert.equal(normalizeContactText('x'), '');
+    assert.equal(normalizeContactText('  info@venue.com  '), 'info@venue.com');
   });
   it('links bare URLs in all provided Prove It examples', () => {
     const ex1 = parseTextWithLinks(
@@ -724,6 +732,39 @@ describe('linkify Prove It text', () => {
     const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
     assert.deepEqual(unsafe, [
       { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
+    ]);
+  });
+  it('links emails, contact URLs, phone numbers, and mixed contact strings safely', () => {
+    assert.deepEqual(parseContactWithLinks('x'), []);
+    assert.deepEqual(parseContactWithLinks('mailto:hello@venue.com'), [
+      { type: 'link', text: 'hello@venue.com', href: 'mailto:hello@venue.com' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('venue.com/contact'), [
+      { type: 'link', text: 'venue.com/contact', href: 'https://venue.com/contact' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('tel:+1-970-555-1234'), [
+      { type: 'link', text: '+1-970-555-1234', href: 'tel:+19705551234' },
+    ]);
+    assert.deepEqual(
+      parseContactWithLinks('WhatsApp +57 300 123 4567 or info@venue.com'),
+      [
+        { type: 'text', text: 'WhatsApp ' },
+        { type: 'link', text: '+57 300 123 4567', href: 'tel:+573001234567' },
+        { type: 'text', text: ' or ' },
+        { type: 'link', text: 'info@venue.com', href: 'mailto:info@venue.com' },
+      ]
+    );
+    assert.deepEqual(parseContactWithLinks('(970) 555-1234'), [
+      { type: 'link', text: '(970) 555-1234', href: 'tel:9705551234' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('https://wa.me/573001234567'), [
+      { type: 'link', text: 'https://wa.me/573001234567', href: 'https://wa.me/573001234567' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('DM @club on Instagram'), [
+      { type: 'text', text: 'DM @club on Instagram' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('Updated 2026-01-15'), [
+      { type: 'text', text: 'Updated 2026-01-15' },
     ]);
   });
 });
