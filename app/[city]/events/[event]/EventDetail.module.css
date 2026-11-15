@@ -221,6 +221,20 @@
   margin: 0 0 20px;
 }
 
+.moreDetailsWrap {
+  margin: 0 0 20px;
+}
+
+.facts + .moreDetailsWrap {
+  margin-top: -6px;
+}
+
+.moreDetailsLink {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .bottomCtaWrap {
   margin-top: 28px;
   display: flex;

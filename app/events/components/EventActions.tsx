@@ -26,7 +26,10 @@ export default function EventActions({
     <div className={styles.actions}>
       <div className={styles.buttonsGrid}>
         <ProveItButton
-          proveIt={event.proveIt}
+          url1={event.url1}
+          url1Notes={event.url1Notes}
+          url2={event.url2}
+          url2Notes={event.url2Notes}
           contact={event.contact}
           contactPageHref={`/${city.slug}/contact`}
           btnClassName={`${styles.btn} ${styles.btnPrimary}`}

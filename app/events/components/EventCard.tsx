@@ -127,6 +127,7 @@ function EventCard({
     registrationUrl,
     needsSignupIcon,
     mapsHref,
+    moreDetailsUrl,
   } = getEventDisplayDetails(event, city.name);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
 
@@ -257,6 +258,16 @@ function EventCard({
           needsSignupIcon={needsSignupIcon}
           className={styles.facts}
         />
+        {moreDetailsUrl && (
+          <div className={styles.moreDetailsWrap}>
+            <InlineExternalLink
+              href={moreDetailsUrl}
+              className={styles.moreDetailsLink}
+            >
+              More details
+            </InlineExternalLink>
+          </div>
+        )}
         <EventActions
           event={event}
           city={city}
