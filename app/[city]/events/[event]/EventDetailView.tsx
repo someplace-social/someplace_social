@@ -60,7 +60,7 @@ export default function EventDetailView({
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
-  const hasDescription = Boolean((event.about || event.notes || '').trim());
+  const descriptionText = (event.about || event.notes || '').trim();
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
 
   return (
@@ -169,8 +169,19 @@ export default function EventDetailView({
             )}
           </div>
           <div className={styles.body}>
-            {hasDescription && (
-              <p className={styles.desc}>{event.about || event.notes}</p>
+            {(descriptionText || moreDetailsUrl) && (
+              <p className={styles.desc}>
+                {descriptionText}
+                {descriptionText && moreDetailsUrl ? ' ' : ''}
+                {moreDetailsUrl && (
+                  <InlineExternalLink
+                    href={moreDetailsUrl}
+                    className={styles.moreDetailsLink}
+                  >
+                    More details
+                  </InlineExternalLink>
+                )}
+              </p>
             )}
             <EventFacts
               recurrenceText={recurrenceText}
@@ -179,16 +190,6 @@ export default function EventDetailView({
               needsSignupIcon={needsSignupIcon}
               className={styles.facts}
             />
-            {moreDetailsUrl && (
-              <div className={styles.moreDetailsWrap}>
-                <InlineExternalLink
-                  href={moreDetailsUrl}
-                  className={styles.moreDetailsLink}
-                >
-                  More details
-                </InlineExternalLink>
-              </div>
-            )}
             <EventActions
               event={event}
               city={city}

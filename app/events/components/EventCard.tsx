@@ -130,6 +130,7 @@ function EventCard({
     moreDetailsUrl,
   } = getEventDisplayDetails(event, city.name);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
+  const descriptionText = (event.about || event.notes || '').trim();
 
   return (
     <article
@@ -248,8 +249,19 @@ function EventCard({
             <span>{event.location}</span>
           </div>
         )}
-        {(event.about || event.notes) && (
-          <p className={styles.desc}>{event.about || event.notes}</p>
+        {(descriptionText || moreDetailsUrl) && (
+          <p className={styles.desc}>
+            {descriptionText}
+            {descriptionText && moreDetailsUrl ? ' ' : ''}
+            {moreDetailsUrl && (
+              <InlineExternalLink
+                href={moreDetailsUrl}
+                className={styles.moreDetailsLink}
+              >
+                More details
+              </InlineExternalLink>
+            )}
+          </p>
         )}
         <EventFacts
           recurrenceText={recurrenceText}
@@ -258,16 +270,6 @@ function EventCard({
           needsSignupIcon={needsSignupIcon}
           className={styles.facts}
         />
-        {moreDetailsUrl && (
-          <div className={styles.moreDetailsWrap}>
-            <InlineExternalLink
-              href={moreDetailsUrl}
-              className={styles.moreDetailsLink}
-            >
-              More details
-            </InlineExternalLink>
-          </div>
-        )}
         <EventActions
           event={event}
           city={city}

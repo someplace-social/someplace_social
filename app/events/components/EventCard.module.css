@@ -259,26 +259,18 @@
   white-space: pre-line;
 }
 
+.moreDetailsLink {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
 .facts {
   margin: 0 0 18px;
 }
 
 .desc + .facts {
   margin-top: -2px;
-}
-
-.moreDetailsWrap {
-  margin: 0 0 18px;
-}
-
-.facts + .moreDetailsWrap {
-  margin-top: -4px;
-}
-
-.moreDetailsLink {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--ink);
 }
 
 @container (max-width: 600px) {
