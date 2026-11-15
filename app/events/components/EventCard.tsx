@@ -155,9 +155,20 @@ function EventCard({
           {displayVenue && (
             <div className={styles.venue}>
               <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
-              <InlineExternalLink href={venueUrl}>
-                {displayVenue}
-              </InlineExternalLink>
+              <div className={styles.venueText}>
+                <InlineExternalLink href={venueUrl}>
+                  {displayVenue}
+                </InlineExternalLink>
+                {showDistinctAddress && (
+                  <span className={styles.venueLocation}>
+                    {' '}
+                    <span className={styles.venueSep} aria-hidden="true">
+                      ·{'\u00a0'}
+                    </span>
+                    {event.location}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           {showOrganizer && (
@@ -243,12 +254,6 @@ function EventCard({
         className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
         aria-hidden={!isOpen}
       >
-        {showDistinctAddress && (
-          <div className={styles.address}>
-            <PinIcon className={styles.icon} />
-            <span>{event.location}</span>
-          </div>
-        )}
         {(descriptionText || moreDetailsUrl) && (
           <p className={styles.desc}>
             {descriptionText}

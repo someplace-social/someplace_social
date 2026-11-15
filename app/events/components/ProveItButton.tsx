@@ -128,7 +128,7 @@ export default function ProveItButton({
             </div>
           ))}
           <p className={`${styles.proveItText} ${styles.proveItContactDivider}`}>
-            <span>Need more proof? Contact </span>
+            <span>Want more proof? Contact </span>
             {cleanContact ? (
               <>
                 {renderTextSegments(contactSegments)}
