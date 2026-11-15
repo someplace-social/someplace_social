@@ -27,7 +27,7 @@ export type CalendarEventDetails = {
   isAllDay: boolean;
   startLocal: LocalDateTimeParts;
   endLocal: LocalDateTimeParts;
-  previewLabel: string;
+  copySummary: string;
 };
 
 type CalendarCityInput = Pick<
@@ -251,13 +251,12 @@ export function resolveCalendarOccurrence(
   let isAllDay = false;
   let startLocal: LocalDateTimeParts;
   let endLocal: LocalDateTimeParts;
-  let previewLabel: string;
+  let timeSummary = '';
 
   if (!hasStartTime) {
     isAllDay = true;
     startLocal = dateToParts(dayDate, 0, 0);
     endLocal = dateToParts(addCalendarDays(dayDate, 1), 0, 0);
-    previewLabel = `${formatPreviewDate(dayDate)} · All day`;
   } else {
     const startDec = parseHour(rawStart);
     const startTotalMins = Math.round(startDec * 60);
@@ -294,18 +293,27 @@ export function resolveCalendarOccurrence(
 
     endLocal = dateToParts(endDay, endHour, endMin);
     const { start, end } = formatTimeRange(rawStart, rawEnd);
-    const timePart = start && end ? `${start} – ${end}` : start;
-    previewLabel = [formatPreviewDate(dayDate), timePart]
-      .filter(Boolean)
-      .join(' · ');
+    timeSummary = start && end ? `${start}–${end}` : start;
   }
 
+  const title = event.title.trim();
+  const { displayVenue } = getEventDisplayDetails(event, city.name);
+  const venueName = displayVenue || event.area.trim();
+  const whenPart = [formatPreviewDate(dayDate), timeSummary]
+    .filter(Boolean)
+    .join(' ');
+  const includeVenue =
+    Boolean(venueName) &&
+    !normalizeForMatch(title).includes(normalizeForMatch(venueName));
+  const whatWhere = includeVenue ? `${title} at ${venueName}` : title;
+  const copySummary = `${whenPart}: ${whatWhere}`;
+
   const canonicalUrl = getEventAbsoluteUrl(city.slug, event);
-  const uidBase = slugifyText(event.id || event.title) || 'event';
+  const uidBase = slugifyText(event.id || title) || 'event';
   const uid = `${uidBase}-${formatCompactDate(startLocal)}@someplacesocial.org`;
 
   return {
-    title: event.title.trim(),
+    title,
     location: buildCalendarLocation(event, city),
     description: buildCalendarDescription(event, city, canonicalUrl),
     url: canonicalUrl,
@@ -314,7 +322,7 @@ export function resolveCalendarOccurrence(
     isAllDay,
     startLocal,
     endLocal,
-    previewLabel,
+    copySummary,
   };
 }
 
@@ -371,7 +379,7 @@ export function foldIcsLine(line: string): string {
   const lines: string[] = [];
   let current = '';
   let currentBytes = 0;
-  let maxBytes = 75;
+  const maxBytes = 75;
 
   for (const ch of line) {
     const chBytes = encoder.encode(ch).length;
@@ -379,7 +387,6 @@ export function foldIcsLine(line: string): string {
       lines.push(current);
       current = ` ${ch}`;
       currentBytes = 1 + chBytes;
-      maxBytes = 75;
     } else {
       current += ch;
       currentBytes += chBytes;

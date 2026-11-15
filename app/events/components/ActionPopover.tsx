@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { CloseIcon } from './EventIcons';
+import { copyToClipboard } from '../event-helpers';
+import { CheckIcon, CloseIcon, CopyIcon } from './EventIcons';
 import styles from './ActionPopover.module.css';
 
 interface ActionPopoverProps {
@@ -14,6 +15,66 @@ interface ActionPopoverProps {
   wide?: boolean;
   align?: 'left' | 'right';
   children: (close: () => void) => React.ReactNode;
+}
+
+interface PopoverCopyRowProps {
+  text: string;
+  copyValue?: string;
+  copyLabel: string;
+  wrap?: boolean;
+}
+
+export function PopoverCopyRow({
+  text,
+  copyValue,
+  copyLabel,
+  wrap = false,
+}: PopoverCopyRowProps) {
+  const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const valueToCopy = copyValue ?? text;
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    const ok = await copyToClipboard(valueToCopy);
+    if (!ok) return;
+    setCopied(true);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => setCopied(false), 2000);
+  }, [valueToCopy]);
+
+  return (
+    <div className={styles.popoverInlineRow}>
+      <span
+        className={`${styles.popoverHeaderValue} ${
+          wrap ? styles.popoverHeaderValueWrap : ''
+        }`}
+        title={text}
+      >
+        {text}
+      </span>
+      <button
+        type="button"
+        className={`${styles.copyIconBtn} ${
+          copied ? styles.copyIconBtnCopied : ''
+        }`}
+        onClick={handleCopy}
+        title={copied ? 'Copied to clipboard' : copyLabel}
+        aria-label={copied ? 'Copied to clipboard' : copyLabel}
+      >
+        {copied ? <CheckIcon size={15} strokeWidth={2.6} /> : <CopyIcon />}
+      </button>
+    </div>
+  );
 }
 
 export default function ActionPopover({

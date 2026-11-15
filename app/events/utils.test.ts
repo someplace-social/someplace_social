@@ -728,8 +728,8 @@ describe('linkify Prove It text', () => {
   });
 });
 
-describe('calendar helpers (Google Calendar & ICS)', () => {
-  it('builds a clean single-occurrence Google Calendar URL and omits extraneous fields', () => {
+describe('calendar helpers (Google Calendar, ICS & copy summary)', () => {
+  it('builds a clean single-occurrence Google Calendar URL, simple copySummary, and omits extraneous fields', () => {
     const ev = makeEvent({
       id: 'MED014',
       title: 'Verb & Vibe Game Nite',
@@ -757,7 +757,10 @@ describe('calendar helpers (Google Calendar & ICS)', () => {
     );
     assert.ok(details);
     assert.equal(details.location, 'Café Revolución, Cra. 37 #8A-37, Medellín, Colombia');
-    assert.equal(details.previewLabel, 'Fri, Jan 2 · 7p – 9:30p');
+    assert.equal(
+      details.copySummary,
+      'Fri, Jan 2 7p–9:30p: Verb & Vibe Game Nite at Café Revolución'
+    );
 
     const url = new URL(buildGoogleCalendarUrl(details));
     assert.equal(url.origin + url.pathname, 'https://calendar.google.com/calendar/render');
@@ -789,10 +792,10 @@ describe('calendar helpers (Google Calendar & ICS)', () => {
     assert.equal(desc.includes('MED014'), false);
   });
 
-  it('handles missing endTime (+1h default), overnight rollover, all-day events, and city deduplication', () => {
+  it('handles missing endTime (+1h default), overnight rollover, all-day events, missing venue, and duplicate venue in title', () => {
     const noEnd = resolveCalendarOccurrence(
       makeEvent({
-        title: 'Trivia Night',
+        title: 'Trivia at Maxline Brewing',
         venue: 'Maxline Brewing',
         location: '2724 McClelland Dr, Fort Collins, CO',
         startTime: '7:00 PM',
@@ -803,6 +806,7 @@ describe('calendar helpers (Google Calendar & ICS)', () => {
     );
     assert.ok(noEnd);
     assert.equal(noEnd.location, 'Maxline Brewing, 2724 McClelland Dr, Fort Collins, CO');
+    assert.equal(noEnd.copySummary, 'Fri, Jan 2 7p: Trivia at Maxline Brewing');
     assert.deepEqual(noEnd.startLocal, { year: 2026, month: 1, day: 2, hour: 19, minute: 0 });
     assert.deepEqual(noEnd.endLocal, { year: 2026, month: 1, day: 2, hour: 20, minute: 0 });
 
@@ -815,13 +819,13 @@ describe('calendar helpers (Google Calendar & ICS)', () => {
     assert.deepEqual(overnight.endLocal, { year: 2026, month: 1, day: 3, hour: 1, minute: 0 });
 
     const allDay = resolveCalendarOccurrence(
-      makeEvent({ startTime: '', endTime: '' }),
+      makeEvent({ title: 'Park Day', startTime: '', endTime: '', venue: '', location: '', area: '' }),
       CITIES['fort-collins-colorado'],
       jan2Fri
     );
     assert.ok(allDay);
     assert.equal(allDay.isAllDay, true);
-    assert.equal(allDay.previewLabel, 'Fri, Jan 2 · All day');
+    assert.equal(allDay.copySummary, 'Fri, Jan 2: Park Day');
     const allDayUrl = new URL(buildGoogleCalendarUrl(allDay));
     assert.equal(allDayUrl.searchParams.get('dates'), '20260102/20260103');
 

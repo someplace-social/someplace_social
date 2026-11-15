@@ -87,6 +87,12 @@
   flex: 1;
   min-width: 0;
 }
+.popoverHeaderValueWrap {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.35;
+}
 .copyIconBtn {
   display: inline-flex;
   align-items: center;

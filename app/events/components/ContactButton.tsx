@@ -1,8 +1,7 @@
 'use client';
-import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
+import { useMemo, useCallback, useSyncExternalStore } from 'react';
 import { parseContactInfo } from '../utils';
-import { copyToClipboard } from '../event-helpers';
-import ActionPopover from './ActionPopover';
+import ActionPopover, { PopoverCopyRow } from './ActionPopover';
 import styles from './ActionPopover.module.css';
 
 const emptySubscribe = () => () => {};
@@ -20,32 +19,12 @@ export default function ContactButton({
   btnActiveClassName,
   btnDisabledClassName,
 }: ContactButtonProps) {
-  const [copied, setCopied] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isAndroid = useSyncExternalStore(
     emptySubscribe,
     () => /android/i.test(navigator.userAgent || ''),
     () => false
   );
   const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimerRef.current) {
-        clearTimeout(copyTimerRef.current);
-      }
-    };
-  }, []);
-
-  const handleCopy = useCallback(async (text: string) => {
-    const ok = await copyToClipboard(text);
-    if (!ok) return;
-    setCopied(true);
-    if (copyTimerRef.current) {
-      clearTimeout(copyTimerRef.current);
-    }
-    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-  }, []);
 
   const handleOpenGmail = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, close: () => void) => {
@@ -100,37 +79,6 @@ export default function ContactButton({
     );
   }
 
-  const copyIcon = copied ? (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  ) : (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-    </svg>
-  );
-
   return (
     <ActionPopover
       triggerLabel="Contact"
@@ -145,20 +93,10 @@ export default function ContactButton({
         <>
           {contactInfo.type === 'email' && (
             <>
-              <div className={styles.popoverInlineRow}>
-                <span className={styles.popoverHeaderValue} title={contactInfo.email}>
-                  {contactInfo.email}
-                </span>
-                <button
-                  type="button"
-                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.email)}
-                  title={copied ? 'Copied to clipboard' : 'Copy email'}
-                  aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
-                >
-                  {copyIcon}
-                </button>
-              </div>
+              <PopoverCopyRow
+                text={contactInfo.email}
+                copyLabel="Copy email"
+              />
               <div className={styles.popoverDivider} />
               <div className={styles.popoverActions}>
                 <a
@@ -210,22 +148,10 @@ export default function ContactButton({
           )}
           {contactInfo.type === 'phone' && (
             <>
-              <div className={styles.popoverInlineRow}>
-                <span className={styles.popoverHeaderValue} title={contactInfo.displayPhone}>
-                  {contactInfo.displayPhone}
-                </span>
-                <button
-                  type="button"
-                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                  onClick={() => handleCopy(contactInfo.displayPhone)}
-                  title={copied ? 'Copied to clipboard' : 'Copy phone number'}
-                  aria-label={
-                    copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'
-                  }
-                >
-                  {copyIcon}
-                </button>
-              </div>
+              <PopoverCopyRow
+                text={contactInfo.displayPhone}
+                copyLabel="Copy phone number"
+              />
               <div className={styles.popoverDivider} />
               <div className={styles.popoverActions}>
                 <a

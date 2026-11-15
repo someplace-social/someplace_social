@@ -9,7 +9,7 @@ import {
   getIcsFilename,
   resolveCalendarOccurrence,
 } from '../calendar-helpers';
-import ActionPopover from './ActionPopover';
+import ActionPopover, { PopoverCopyRow } from './ActionPopover';
 import { CalendarIcon, CalendarPlusIcon, DownloadIcon } from './EventIcons';
 import styles from './ActionPopover.module.css';
 
@@ -74,18 +74,16 @@ export default function AddToCalendarButton({
       wrapperClassName={wrapperClassName}
       dialogLabel="Add event to calendar"
       headerLabel="Add to Calendar"
+      wide
       align="right"
     >
       {(close) => (
         <>
-          <div className={styles.popoverInlineRow}>
-            <span
-              className={styles.popoverHeaderValue}
-              title={details.previewLabel}
-            >
-              {details.previewLabel}
-            </span>
-          </div>
+          <PopoverCopyRow
+            text={details.copySummary}
+            copyLabel="Copy event summary"
+            wrap
+          />
           <div className={styles.popoverDivider} />
           <div className={styles.popoverActions}>
             <a
