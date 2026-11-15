@@ -11,6 +11,7 @@ import {
 } from '../utils';
 import { getEventPath } from '../event-helpers';
 import ContactButton from './ContactButton';
+import ProveItButton from './ProveItButton';
 import ShareButton from './ShareButton';
 import {
   CheckIcon,
@@ -25,7 +26,9 @@ import {
   TagIcon,
 } from './EventIcons';
 import styles from './EventCard.module.css';
+
 const DRAG_THRESHOLD_PX = 5;
+
 interface EventCardProps {
   event: Event;
   isOpen: boolean;
@@ -36,6 +39,7 @@ interface EventCardProps {
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;
 }
+
 function ActionButton({
   href,
   label,
@@ -66,6 +70,7 @@ function ActionButton({
     </div>
   );
 }
+
 function EventCard({
   event,
   isOpen,
@@ -81,6 +86,7 @@ function EventCard({
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const didDragRef = useRef(false);
   const prevSelectionRef = useRef('');
+
   const handleHeadPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
       pointerStartRef.current = null;
@@ -90,6 +96,7 @@ function EventCard({
     didDragRef.current = false;
     prevSelectionRef.current = window.getSelection()?.toString() ?? '';
   };
+
   const handleHeadPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!pointerStartRef.current || didDragRef.current) return;
     const dx = e.clientX - pointerStartRef.current.x;
@@ -98,10 +105,12 @@ function EventCard({
       didDragRef.current = true;
     }
   };
+
   const handleHeadPointerCancel = () => {
     pointerStartRef.current = null;
     didDragRef.current = false;
   };
+
   const handleHeadClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement | null;
     if (target?.closest('button, a')) {
@@ -141,6 +150,7 @@ function EventCard({
     }
     onToggle();
   };
+
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
   const isFree = isFreePrice(event.price);
   const tagList = event.activities || [];
@@ -168,6 +178,7 @@ function EventCard({
       `${displayVenue || event.title}, ${cityName}`
     )}`;
   const eventHref = getEventPath(citySlug, event);
+
   return (
     <article
       id={domId}
@@ -321,6 +332,13 @@ function EventCard({
             btnActiveClassName={styles.btnActive}
             btnDisabledClassName={styles.btnDisabled}
           />
+          <ProveItButton
+            proveIt={event.proveIt}
+            btnClassName={`${styles.btn} ${styles.proveItBtn}`}
+            btnActiveClassName={styles.btnActive}
+            btnDisabledClassName={styles.btnDisabled}
+            slotClassName={styles.proveItSlot}
+          />
           <ShareButton
             event={event}
             citySlug={citySlug}
@@ -345,4 +363,5 @@ function EventCard({
     </article>
   );
 }
+
 export default memo(EventCard);

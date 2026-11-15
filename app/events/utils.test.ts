@@ -4,6 +4,7 @@ import { Event } from '../lib/google-sheets';
 import { CITIES } from '../lib/cities';
 import { isEventActiveOnDate, isMonthActive } from './utils';
 import { expandEventSchedules } from './schedule-splitter';
+import { normalizeProveItText, parseTextWithLinks } from './linkify';
 import {
   slugifyText,
   getEventSlug,
@@ -12,6 +13,7 @@ import {
   buildEventInviteText,
   buildEventJsonLd,
 } from './event-helpers';
+
 function makeEvent(overrides: Partial<Event>): Event {
   return {
     id: '1',
@@ -33,12 +35,14 @@ function makeEvent(overrides: Partial<Event>): Event {
     social: '',
     website: '',
     contact: '',
+    proveIt: '',
     about: '',
     notes: '',
     database: '',
     ...overrides,
   };
 }
+
 const jan2Fri = new Date(2026, 0, 2);
 const jan3Sat = new Date(2026, 0, 3);
 const jan4Sun = new Date(2026, 0, 4);
@@ -64,6 +68,7 @@ const feb27Fri = new Date(2026, 1, 27);
 const mar3Tue = new Date(2026, 2, 3);
 const mar17Tue = new Date(2026, 2, 17);
 const mar31Tue = new Date(2026, 2, 31);
+
 describe('isEventActiveOnDate frequency parsing', () => {
   it('handles Weekly and Weekly, Sat & Sun', () => {
     const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
@@ -75,6 +80,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
     assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
   });
+
   it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
     const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
     assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
@@ -85,6 +91,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
     assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
   });
+
   it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
     const variations = [
       { frequency: 'Bi-weekly', frequencyNotes: '' },
@@ -106,6 +113,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
     assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
   });
+
   it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
     const oddEv = makeEvent({
       frequency: 'Bi-weekly',
@@ -124,6 +132,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
     assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
   });
+
   it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
     const ev = makeEvent({
       frequency: 'Bi-weekly',
@@ -147,6 +156,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
     assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
   });
+
   it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
     for (const freq of ['Monthly', 'Once a month', 'Every month']) {
       const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
@@ -158,6 +168,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
       assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
     }
   });
+
   it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
     const lastEv = makeEvent({
       frequency: 'Monthly',
@@ -184,6 +195,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
     assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
   });
+
   it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
     const weeksListEv = makeEvent({
       frequency: 'Monthly',
@@ -212,6 +224,7 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
     assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
   });
+
   it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
     const variations = [
       'Bi-monthly',
@@ -252,16 +265,19 @@ describe('isEventActiveOnDate frequency parsing', () => {
     assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
     assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
   });
+
   it('handles paused and hiatus statuses', () => {
     const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
     assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
   });
+
   it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
     const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
     assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
     assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
   });
 });
+
 describe('expandEventSchedules', () => {
   it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
     const karaoke = makeEvent({
@@ -289,6 +305,7 @@ describe('expandEventSchedules', () => {
       ]
     );
   });
+
   it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
     const commaEv = makeEvent({
       id: 'E1',
@@ -332,6 +349,7 @@ describe('expandEventSchedules', () => {
       ]
     );
   });
+
   it('supports parallel unlabeled times and same-day multiple slots', () => {
     const parallelEv = makeEvent({
       id: 'E4',
@@ -360,6 +378,7 @@ describe('expandEventSchedules', () => {
       ]
     );
   });
+
   it('keeps single-time multi-day events unsplit', () => {
     const sameTimeMultiDay = makeEvent({
       id: 'FOCO0020',
@@ -374,6 +393,7 @@ describe('expandEventSchedules', () => {
     assert.equal(result[0].endTime, '9p');
   });
 });
+
 describe('isMonthActive', () => {
   it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
     assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
@@ -386,6 +406,7 @@ describe('isMonthActive', () => {
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
   });
 });
+
 describe('slug generation and event resolution', () => {
   it('strips accents, emojis, punctuation, and formats clean slugs', () => {
     assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
@@ -399,6 +420,7 @@ describe('slug generation and event resolution', () => {
     );
     assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
   });
+
   it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
     const events = [
       makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
@@ -436,6 +458,7 @@ describe('slug generation and event resolution', () => {
     assert.equal(deletedId, null);
   });
 });
+
 describe('next occurrence and invite text', () => {
   it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
     const monthlyEv = makeEvent({
@@ -454,6 +477,7 @@ describe('next occurrence and invite text', () => {
       null
     );
   });
+
   it('builds formatted invite text skipping missing fields cleanly', () => {
     const fullEv = makeEvent({
       id: '14',
@@ -486,6 +510,7 @@ describe('next occurrence and invite text', () => {
       'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
     );
   });
+
   it('builds valid schema.org/Event JSON-LD when occurrence exists', () => {
     const ev = makeEvent({
       id: '14',
@@ -507,5 +532,133 @@ describe('next occurrence and invite text', () => {
     assert.equal(ld['@type'], 'Event');
     assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
     assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
+  });
+});
+
+describe('linkify Prove It text', () => {
+  it('normalizes empty and x placeholder values', () => {
+    assert.equal(normalizeProveItText(''), '');
+    assert.equal(normalizeProveItText('   '), '');
+    assert.equal(normalizeProveItText('x'), '');
+    assert.equal(normalizeProveItText('X'), '');
+    assert.equal(normalizeProveItText('  maxlinebrewing.com  '), 'maxlinebrewing.com');
+  });
+
+  it('links bare URLs in all provided Prove It examples', () => {
+    const ex1 = parseTextWithLinks(
+      'Go to maxlinebrewing.com/whats-happening , click on the "Community Events" tab. Also, at instagram.com/p/De-X7zOMr6n'
+    );
+    assert.deepEqual(ex1, [
+      { type: 'text', text: 'Go to ' },
+      {
+        type: 'link',
+        text: 'maxlinebrewing.com/whats-happening',
+        href: 'https://maxlinebrewing.com/whats-happening',
+      },
+      { type: 'text', text: ' , click on the "Community Events" tab. Also, at ' },
+      {
+        type: 'link',
+        text: 'instagram.com/p/De-X7zOMr6n',
+        href: 'https://instagram.com/p/De-X7zOMr6n',
+      },
+    ]);
+
+    const ex2 = parseTextWithLinks(
+      'Go to breckbrew.com/events/y2k-bingo-night . Also, at instagram.com/p/DfV0gzJjq-e/?img_index=2'
+    );
+    assert.deepEqual(ex2, [
+      { type: 'text', text: 'Go to ' },
+      {
+        type: 'link',
+        text: 'breckbrew.com/events/y2k-bingo-night',
+        href: 'https://breckbrew.com/events/y2k-bingo-night',
+      },
+      { type: 'text', text: ' . Also, at ' },
+      {
+        type: 'link',
+        text: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
+        href: 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2',
+      },
+    ]);
+
+    const ex3 = parseTextWithLinks(
+      'Go to comedyfortcollins.com/events/142205 , click on "Biography" link for further details like price. Also, at instagram.com/p/DfiPohTlspn'
+    );
+    assert.deepEqual(ex3, [
+      { type: 'text', text: 'Go to ' },
+      {
+        type: 'link',
+        text: 'comedyfortcollins.com/events/142205',
+        href: 'https://comedyfortcollins.com/events/142205',
+      },
+      { type: 'text', text: ' , click on "Biography" link for further details like price. Also, at ' },
+      {
+        type: 'link',
+        text: 'instagram.com/p/DfiPohTlspn',
+        href: 'https://instagram.com/p/DfiPohTlspn',
+      },
+    ]);
+  });
+
+  it('handles protocols, emails, query params, multi-part TLDs, curly quotes, and ignores non-URLs', () => {
+    const mixed = parseTextWithLinks(
+      '(See https://www.example.com/events?id=1, or maxlinebrewing.com.) Email info@venue.com at 7:30 p.m. e.g. $12.50.'
+    );
+    assert.deepEqual(mixed, [
+      { type: 'text', text: '(See ' },
+      {
+        type: 'link',
+        text: 'https://www.example.com/events?id=1',
+        href: 'https://www.example.com/events?id=1',
+      },
+      { type: 'text', text: ', or ' },
+      {
+        type: 'link',
+        text: 'maxlinebrewing.com',
+        href: 'https://maxlinebrewing.com',
+      },
+      { type: 'text', text: '.) Email ' },
+      {
+        type: 'link',
+        text: 'info@venue.com',
+        href: 'mailto:info@venue.com',
+      },
+      { type: 'text', text: ' at 7:30 p.m. e.g. $12.50.' },
+    ]);
+
+    const extra = parseTextWithLinks(
+      'Check “sub.example.com.co” and maxlinebrewing.com?tab=events.'
+    );
+    assert.deepEqual(extra, [
+      { type: 'text', text: 'Check “' },
+      {
+        type: 'link',
+        text: 'sub.example.com.co',
+        href: 'https://sub.example.com.co',
+      },
+      { type: 'text', text: '” and ' },
+      {
+        type: 'link',
+        text: 'maxlinebrewing.com?tab=events',
+        href: 'https://maxlinebrewing.com?tab=events',
+      },
+      { type: 'text', text: '.' },
+    ]);
+
+    const wiki = parseTextWithLinks('Look at en.wikipedia.org/wiki/Pub_quiz_(game).');
+    assert.deepEqual(wiki, [
+      { type: 'text', text: 'Look at ' },
+      {
+        type: 'link',
+        text: 'en.wikipedia.org/wiki/Pub_quiz_(game)',
+        href: 'https://en.wikipedia.org/wiki/Pub_quiz_(game)',
+      },
+      { type: 'text', text: '.' },
+    ]);
+
+    const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
+    assert.deepEqual(unsafe, [
+      { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
+    ]);
   });
 });

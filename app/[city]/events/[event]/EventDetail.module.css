@@ -292,7 +292,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 82px;
+  width: 80px;
   height: 58px;
   padding: 0 4px;
   border: 1px solid var(--line);
@@ -330,8 +330,15 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+.proveItSlot {
+  display: flex;
+  flex: 0 0 auto;
+}
+.proveItBtn {
+  width: 80px;
+}
 .shareBtn {
-  width: 82px;
+  width: 80px;
 }
 .edit {
   margin-left: auto;
@@ -401,8 +408,20 @@
     height: 58px;
     font-size: 12px;
   }
+  .proveItSlot {
+    grid-column: span 2;
+    width: 100%;
+  }
+  .proveItBtn {
+    width: 100%;
+    height: 44px;
+    flex-direction: row;
+    gap: 8px;
+    font-size: 13.5px;
+    border-radius: 12px;
+  }
   .shareBtn {
-    grid-column: 1 / -1;
+    grid-column: span 2;
     width: 100%;
     height: 44px;
     flex-direction: row;

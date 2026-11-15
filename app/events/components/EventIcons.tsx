@@ -1,6 +1,7 @@
 interface IconProps {
   className?: string;
 }
+
 export function PinIcon({ className }: IconProps) {
   return (
     <svg
@@ -21,6 +22,7 @@ export function PinIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function TagIcon({ className }: IconProps) {
   return (
     <svg
@@ -41,6 +43,7 @@ export function TagIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function CompassIcon({ className }: IconProps) {
   return (
     <svg
@@ -61,6 +64,7 @@ export function CompassIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function ChevronDownIcon({ className }: IconProps) {
   return (
     <svg
@@ -80,6 +84,7 @@ export function ChevronDownIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function RepeatIcon({ className }: IconProps) {
   return (
     <svg
@@ -102,6 +107,7 @@ export function RepeatIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function CheckIcon({ className }: IconProps) {
   return (
     <svg
@@ -121,6 +127,7 @@ export function CheckIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function PenIcon({ className }: IconProps) {
   return (
     <svg
@@ -141,6 +148,7 @@ export function PenIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function GlobeIcon({ className }: IconProps) {
   return (
     <svg
@@ -162,6 +170,7 @@ export function GlobeIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function SocialIcon({ className }: IconProps) {
   return (
     <svg
@@ -184,6 +193,7 @@ export function SocialIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function ShareIcon({ className }: IconProps) {
   return (
     <svg
@@ -205,6 +215,28 @@ export function ShareIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function ShieldCheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
 export function CalendarIcon({ className }: IconProps) {
   return (
     <svg
@@ -227,6 +259,7 @@ export function CalendarIcon({ className }: IconProps) {
     </svg>
   );
 }
+
 export function ExternalLinkIcon({ className }: IconProps) {
   return (
     <svg
@@ -244,6 +277,27 @@ export function ExternalLinkIcon({ className }: IconProps) {
     >
       <path d="M7 17 17 7" />
       <path d="M7 7h10v10" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
     </svg>
   );
 }

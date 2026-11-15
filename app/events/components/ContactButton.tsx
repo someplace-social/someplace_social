@@ -2,21 +2,24 @@
 import { useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { parseContactInfo } from '../utils';
 import { copyToClipboard } from '../event-helpers';
-import styles from './ContactButton.module.css';
+import ActionPopover from './ActionPopover';
+import styles from './ActionPopover.module.css';
+
 const emptySubscribe = () => () => {};
+
 interface ContactButtonProps {
   contact?: string;
   btnClassName: string;
   btnActiveClassName: string;
   btnDisabledClassName: string;
 }
+
 export default function ContactButton({
   contact,
   btnClassName,
   btnActiveClassName,
   btnDisabledClassName,
 }: ContactButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isAndroid = useSyncExternalStore(
@@ -24,8 +27,8 @@ export default function ContactButton({
     () => /android/i.test(navigator.userAgent || ''),
     () => false
   );
-  const popoverRef = useRef<HTMLDivElement>(null);
   const contactInfo = useMemo(() => parseContactInfo(contact), [contact]);
+
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) {
@@ -33,25 +36,7 @@ export default function ContactButton({
       }
     };
   }, []);
-  useEffect(() => {
-    if (!isOpen) return;
-    function handlePointerDown(e: PointerEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
+
   const handleCopy = useCallback(async (text: string) => {
     const ok = await copyToClipboard(text);
     if (!ok) return;
@@ -61,19 +46,19 @@ export default function ContactButton({
     }
     copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, []);
+
   const handleOpenGmail = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
+    (e: React.MouseEvent<HTMLAnchorElement>, close: () => void) => {
       if (contactInfo.type !== 'email') return;
       if (isAndroid) {
         e.preventDefault();
         window.location.href = contactInfo.androidIntentUrl;
-        setIsOpen(false);
-      } else {
-        setIsOpen(false);
       }
+      close();
     },
     [contactInfo, isAndroid]
   );
+
   const mailIcon = (
     <svg
       width="16"
@@ -91,6 +76,7 @@ export default function ContactButton({
       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
   );
+
   if (contactInfo.type === 'none') {
     return (
       <div className={`${btnClassName} ${btnDisabledClassName}`} aria-disabled="true">
@@ -99,6 +85,7 @@ export default function ContactButton({
       </div>
     );
   }
+
   if (contactInfo.type === 'url') {
     return (
       <a
@@ -112,76 +99,73 @@ export default function ContactButton({
       </a>
     );
   }
+
+  const copyIcon = copied ? (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  ) : (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+    </svg>
+  );
+
   return (
-    <div className={styles.contactWrapper} ref={popoverRef}>
-      <button
-        type="button"
-        className={`${btnClassName} ${isOpen ? btnActiveClassName : ''}`}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-      >
-        {mailIcon}
-        Contact
-      </button>
-      {isOpen && (
-        <div className={styles.contactPopover} role="dialog" aria-label="Contact options">
+    <ActionPopover
+      triggerLabel="Contact"
+      triggerIcon={mailIcon}
+      btnClassName={btnClassName}
+      btnActiveClassName={btnActiveClassName}
+      dialogLabel="Contact options"
+      headerLabel={contactInfo.type === 'email' ? 'Email' : 'Phone'}
+    >
+      {(close) => (
+        <>
           {contactInfo.type === 'email' && (
             <>
-              <div className={styles.contactHeader}>
-                <span className={styles.contactHeaderLabel}>Email</span>
-                <div className={styles.contactInlineRow}>
-                  <span className={styles.contactHeaderValue} title={contactInfo.email}>
-                    {contactInfo.email}
-                  </span>
-                  <button
-                    type="button"
-                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                    onClick={() => handleCopy(contactInfo.email)}
-                    title={copied ? 'Copied to clipboard' : 'Copy email'}
-                    aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
-                  >
-                    {copied ? (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
+              <div className={styles.popoverInlineRow}>
+                <span className={styles.popoverHeaderValue} title={contactInfo.email}>
+                  {contactInfo.email}
+                </span>
+                <button
+                  type="button"
+                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                  onClick={() => handleCopy(contactInfo.email)}
+                  title={copied ? 'Copied to clipboard' : 'Copy email'}
+                  aria-label={copied ? 'Email copied to clipboard' : 'Copy email to clipboard'}
+                >
+                  {copyIcon}
+                </button>
               </div>
-              <div className={styles.contactDivider} />
-              <div className={styles.contactActions}>
+              <div className={styles.popoverDivider} />
+              <div className={styles.popoverActions}>
                 <a
                   href={isAndroid ? contactInfo.androidIntentUrl : contactInfo.gmailUrl}
                   target={isAndroid ? undefined : '_blank'}
                   rel="noopener noreferrer"
-                  className={styles.contactActionLink}
-                  onClick={handleOpenGmail}
+                  className={styles.popoverActionLink}
+                  onClick={(e) => handleOpenGmail(e, close)}
                 >
                   <svg
                     width="15"
@@ -201,8 +185,8 @@ export default function ContactButton({
                 </a>
                 <a
                   href={contactInfo.mailtoUrl}
-                  className={styles.contactActionLink}
-                  onClick={() => setIsOpen(false)}
+                  className={styles.popoverActionLink}
+                  onClick={close}
                 >
                   <svg
                     width="15"
@@ -225,58 +209,28 @@ export default function ContactButton({
           )}
           {contactInfo.type === 'phone' && (
             <>
-              <div className={styles.contactHeader}>
-                <span className={styles.contactHeaderLabel}>Phone</span>
-                <div className={styles.contactInlineRow}>
-                  <span className={styles.contactHeaderValue} title={contactInfo.displayPhone}>
-                    {contactInfo.displayPhone}
-                  </span>
-                  <button
-                    type="button"
-                    className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
-                    onClick={() => handleCopy(contactInfo.displayPhone)}
-                    title={copied ? 'Copied to clipboard' : 'Copy phone number'}
-                    aria-label={copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'}
-                  >
-                    {copied ? (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
+              <div className={styles.popoverInlineRow}>
+                <span className={styles.popoverHeaderValue} title={contactInfo.displayPhone}>
+                  {contactInfo.displayPhone}
+                </span>
+                <button
+                  type="button"
+                  className={`${styles.copyIconBtn} ${copied ? styles.copyIconBtnCopied : ''}`}
+                  onClick={() => handleCopy(contactInfo.displayPhone)}
+                  title={copied ? 'Copied to clipboard' : 'Copy phone number'}
+                  aria-label={
+                    copied ? 'Phone number copied to clipboard' : 'Copy phone number to clipboard'
+                  }
+                >
+                  {copyIcon}
+                </button>
               </div>
-              <div className={styles.contactDivider} />
-              <div className={styles.contactActions}>
+              <div className={styles.popoverDivider} />
+              <div className={styles.popoverActions}>
                 <a
                   href={contactInfo.telUrl}
-                  className={styles.contactActionLinkPrimary}
-                  onClick={() => setIsOpen(false)}
+                  className={styles.popoverActionLinkPrimary}
+                  onClick={close}
                 >
                   <svg
                     width="15"
@@ -296,8 +250,8 @@ export default function ContactButton({
               </div>
             </>
           )}
-        </div>
+        </>
       )}
-    </div>
+    </ActionPopover>
   );
 }

@@ -1,0 +1,41 @@
+.proveItBox {
+  background-color: var(--topbar-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.proveItText {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.proveItLink {
+  display: inline;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  transition: color 0.15s ease;
+}
+.proveItLink:hover {
+  color: var(--accent);
+}
+.proveItLinkIcon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  vertical-align: -1px;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.proveItLink:hover .proveItLinkIcon {
+  color: var(--accent);
+}

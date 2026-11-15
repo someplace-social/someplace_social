@@ -14,6 +14,7 @@ import { buildScheduleLine } from '../../../events/event-helpers';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import ContactButton from '../../../events/components/ContactButton';
+import ProveItButton from '../../../events/components/ProveItButton';
 import ShareButton from '../../../events/components/ShareButton';
 import SuggestEditModal from '../../../events/components/SuggestEditModal';
 import {
@@ -29,11 +30,13 @@ import {
 } from '../../../events/components/EventIcons';
 import NextOccurrenceBadge from './NextOccurrenceBadge';
 import styles from './EventDetail.module.css';
+
 interface EventDetailViewProps {
   city: CityConfig;
   event: Event;
   initialNextLabel: string | null;
 }
+
 function DetailActionButton({
   href,
   label,
@@ -64,6 +67,7 @@ function DetailActionButton({
     </div>
   );
 }
+
 export default function EventDetailView({
   city,
   event,
@@ -105,6 +109,7 @@ export default function EventDetailView({
       `${displayVenue || event.title}, ${city.name}`
     )}`;
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
+
   return (
     <div className={styles.pageContainer}>
       <Header city={city} />
@@ -252,6 +257,13 @@ export default function EventDetailView({
                 btnClassName={styles.btn}
                 btnActiveClassName={styles.btnActive}
                 btnDisabledClassName={styles.btnDisabled}
+              />
+              <ProveItButton
+                proveIt={event.proveIt}
+                btnClassName={`${styles.btn} ${styles.proveItBtn}`}
+                btnActiveClassName={styles.btnActive}
+                btnDisabledClassName={styles.btnDisabled}
+                slotClassName={styles.proveItSlot}
               />
               <ShareButton
                 event={event}

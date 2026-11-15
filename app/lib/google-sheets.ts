@@ -1,6 +1,7 @@
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
 import { expandEventSchedules } from '../events/schedule-splitter';
+
 export type Event = {
   id: string;
   title: string;
@@ -21,16 +22,19 @@ export type Event = {
   social: string;
   website: string;
   contact: string;
+  proveIt: string;
   about: string;
   notes: string;
   database: string;
 };
+
 function getFetchOptions(revalidateSeconds: number = 30): RequestInit {
   if (process.env.NODE_ENV === 'development') {
     return { cache: 'no-store' };
   }
   return { next: { revalidate: revalidateSeconds } };
 }
+
 function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
   if (city.csvUrl) return [city.csvUrl];
   const targetId = city.spreadsheetId || MAIN_SPREADSHEET_ID;
@@ -63,6 +67,7 @@ function getCandidateUrls(city: CityConfig, discoveredGid: string | null): strin
   }
   return urls;
 }
+
 function parseCsv(csvText: string): string[][] {
   const rows: string[][] = [];
   let currentRow: string[] = [];
@@ -96,6 +101,7 @@ function parseCsv(csvText: string): string[][] {
   rows.push(currentRow);
   return rows;
 }
+
 function parseSheetData(rawText: string): string[][] {
   const trimmed = rawText.trim();
   if (trimmed.includes('google.visualization.Query.setResponse') || trimmed.startsWith('/*O_o*/')) {
@@ -134,6 +140,7 @@ function parseSheetData(rawText: string): string[][] {
   }
   return parseCsv(rawText);
 }
+
 async function fetchValidSheetText(url: string, revalidateSeconds: number = 30): Promise<string | null> {
   try {
     const response = await fetch(url, {
@@ -173,6 +180,7 @@ async function fetchValidSheetText(url: string, revalidateSeconds: number = 30):
   }
   return null;
 }
+
 async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number = 30): Promise<string[][]> {
   for (const url of candidateUrls) {
     const text = await fetchValidSheetText(url, revalidateSeconds);
@@ -184,18 +192,21 @@ async function fetchSheetRows(candidateUrls: string[], revalidateSeconds: number
   }
   return [];
 }
+
 const normalizeHeader = (header: string): string =>
   header
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/g, '');
+
 const normalizeCityKey = (value: string): string =>
   value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
+
 function formatSheetDate(value: string): string {
   const gvizDateMatch = value.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
   if (gvizDateMatch) {
@@ -211,6 +222,7 @@ function formatSheetDate(value: string): string {
   }
   return value;
 }
+
 function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
   if (rows.length < 2) return null;
   const headerRow = rows[0].map((h) => normalizeHeader(h));
@@ -230,6 +242,7 @@ function parseLastUpdatedRows(rows: string[][]): Map<string, string> | null {
   }
   return map.size > 0 ? map : null;
 }
+
 function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   const targets = new Set(tabNames.map((n) => normalizeHeader(n)));
   const itemNameFirstRegex = /\{[^{}]*?name:\s*["']([^"']+)["'][^{}]*?gid:\s*["'](\d+)["']/gi;
@@ -253,6 +266,7 @@ function findTabGidInHtml(html: string, tabNames: string[]): string | null {
   }
   return null;
 }
+
 async function discoverTabGid(
   targetId: string,
   tabNames: string[],
@@ -278,6 +292,7 @@ async function discoverTabGid(
     return null;
   }
 }
+
 const HEADER_ALIASES: Record<string, string[]> = {
   id: ['id'],
   title: ['title', 'eventname', 'name'],
@@ -308,10 +323,12 @@ const HEADER_ALIASES: Record<string, string[]> = {
   social: ['social', 'socialmedia', 'socialmedialink', 'instagram'],
   website: ['website', 'site', 'url'],
   contact: ['contact', 'whatsapp', 'phone'],
+  proveIt: ['proveit', 'proof', 'provelink', 'verification'],
   about: ['about', 'description'],
   notes: ['notes', 'note'],
   database: ['database', 'db', 'sheet'],
 };
+
 const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   id: 0,
   title: 1,
@@ -334,6 +351,7 @@ const DEFAULT_INDEX_FALLBACK: Record<string, number> = {
   about: 17,
   notes: 18,
 };
+
 export async function getLastUpdated(
   city: CityConfig,
   revalidateSeconds: number = 30
@@ -380,6 +398,7 @@ export async function getLastUpdated(
     return null;
   }
 }
+
 export async function getEvents(
   cityOrTab?: CityConfig | string,
   revalidateSeconds: number = 30
@@ -480,6 +499,7 @@ export async function getEvents(
           social: getValue('social'),
           website: getValue('website'),
           contact: getValue('contact'),
+          proveIt: getValue('proveIt'),
           about: getValue('about'),
           notes: getValue('notes'),
           database: getValue('database'),

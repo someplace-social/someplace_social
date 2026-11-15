@@ -1,13 +1,13 @@
-.contactWrapper {
+.popoverWrapper {
   position: relative;
   display: flex;
   flex: 0 0 auto;
   min-width: 0;
 }
-.contactWrapper > button {
+.popoverWrapper > button {
   flex: 1 1 auto;
 }
-.contactPopover {
+.popover {
   position: absolute;
   bottom: calc(100% + 8px);
   right: 0;
@@ -23,20 +23,47 @@
   flex-direction: column;
   gap: 6px;
 }
-.contactHeader {
+.popoverWide {
+  width: 320px;
+}
+.popoverHeader {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 4px 6px 6px;
+  padding: 4px 6px 2px;
 }
-.contactHeaderLabel {
+.popoverHeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.popoverHeaderLabel {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--muted);
 }
-.contactInlineRow {
+.popoverCloseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.popoverCloseBtn:hover {
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+}
+.popoverInlineRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -46,7 +73,7 @@
   border-radius: 8px;
   padding: 5px 6px 5px 10px;
 }
-.contactHeaderValue {
+.popoverHeaderValue {
   font-size: 13.5px;
   font-weight: 600;
   color: var(--ink);
@@ -86,18 +113,18 @@
   background-color: var(--free-bg);
   color: var(--free);
 }
-.contactDivider {
+.popoverDivider {
   height: 1px;
   background-color: var(--line);
-  margin: 2px 0 4px;
+  margin: 4px 0 2px;
 }
-.contactActions {
+.popoverActions {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.contactActionLink,
-.contactActionLinkPrimary {
+.popoverActionLink,
+.popoverActionLinkPrimary {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -114,20 +141,20 @@
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-.contactActionLink:hover {
+.popoverActionLink:hover {
   background-color: var(--topbar-bg);
   color: var(--ink);
 }
-.contactActionLinkPrimary {
+.popoverActionLinkPrimary {
   background-color: var(--ink);
   color: var(--bg);
 }
-.contactActionLinkPrimary:hover {
+.popoverActionLinkPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
 @media (max-width: 899px) {
-  .contactPopover {
+  .popover {
     position: fixed;
     top: auto;
     bottom: 24px;
@@ -137,6 +164,11 @@
     max-width: none;
     z-index: 100;
     border-radius: 16px;
+    padding: 12px;
     box-shadow: var(--shadow-lg);
+  }
+  .popoverCloseBtn {
+    width: 28px;
+    height: 28px;
   }
 }
