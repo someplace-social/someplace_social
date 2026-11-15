@@ -116,11 +116,6 @@
   overflow-wrap: break-word;
 }
 
-.venueSep {
-  color: var(--muted);
-  font-weight: 600;
-}
-
 .venueLocation {
   font-size: 13.5px;
   font-weight: 500;

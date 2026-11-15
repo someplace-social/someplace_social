@@ -161,11 +161,7 @@ function EventCard({
                 </InlineExternalLink>
                 {showDistinctAddress && (
                   <span className={styles.venueLocation}>
-                    {' '}
-                    <span className={styles.venueSep} aria-hidden="true">
-                      ·{'\u00a0'}
-                    </span>
-                    {event.location}
+                    , {event.location}
                   </span>
                 )}
               </div>
