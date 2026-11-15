@@ -30,9 +30,14 @@
   transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
-.btn:not(:where(.btnDisabled, .btnPrimary)):hover {
+.btn:hover {
   border-color: var(--ink);
   color: var(--ink);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .btnPrimary {
@@ -41,18 +46,21 @@
   border-color: var(--ink);
 }
 
-.btnPrimary:not(:where(.btnActive, .btnDisabled)):hover {
+.btnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
 
-.btnActive {
+.btnActive,
+.btnActive:hover {
+  opacity: 1;
   border-color: var(--ink);
   background-color: var(--topbar-bg);
   color: var(--ink);
 }
 
-.btnDisabled {
+.btnDisabled,
+.btnDisabled:hover {
   background-color: var(--card);
   color: var(--ink);
   border-color: var(--line);
