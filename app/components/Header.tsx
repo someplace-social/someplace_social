@@ -6,12 +6,15 @@ import { usePathname } from 'next/navigation';
 import { CityConfig } from '../lib/cities';
 import ThemeToggle from './ThemeToggle';
 import styles from './Header.module.css';
+
 interface HeaderProps {
   city?: CityConfig;
 }
+
 export default function Header({ city }: HeaderProps) {
   const pathname = usePathname();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
   useEffect(() => {
     if (!mobileDrawerOpen) return;
     const originalOverflow = document.body.style.overflow;
@@ -27,9 +30,12 @@ export default function Header({ city }: HeaderProps) {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [mobileDrawerOpen]);
+
+  const homeHref = city ? `/${city.slug}/events` : '/';
   const eventsHref = city ? `/${city.slug}/events` : '';
-  const aboutHref = city ? `/${city.slug}/about` : '/';
+  const aboutHref = city ? `/${city.slug}/about` : '/about';
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
+
   const isEventsActive = Boolean(
     city &&
       (pathname === `/${city.slug}/events` ||
@@ -37,19 +43,17 @@ export default function Header({ city }: HeaderProps) {
   );
   const isAboutActive = city
     ? pathname === `/${city.slug}/about`
-    : pathname === '/' || pathname === '/about';
+    : pathname === '/about';
   const isContactActive = city
     ? pathname === `/${city.slug}/contact`
     : pathname === '/contact';
+
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.brandCol}>
-            <Link
-              href={city ? `/${city.slug}/events` : '/'}
-              className={styles.brandLogoLink}
-            >
+            <Link href={homeHref} className={styles.brandLogoLink}>
               <Image
                 src="/images/logo.svg"
                 alt="Someplace Social"
@@ -139,7 +143,7 @@ export default function Header({ city }: HeaderProps) {
             </div>
             <div className={styles.drawerSectionTitle}>Navigation</div>
             <div className={styles.drawerNavLinks}>
-              {city && (
+              {city ? (
                 <Link
                   href={eventsHref}
                   className={`${styles.drawerNavLink} ${
@@ -148,6 +152,16 @@ export default function Header({ city }: HeaderProps) {
                   onClick={() => setMobileDrawerOpen(false)}
                 >
                   Events
+                </Link>
+              ) : (
+                <Link
+                  href="/"
+                  className={`${styles.drawerNavLink} ${
+                    pathname === '/' ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Home
                 </Link>
               )}
               <Link
