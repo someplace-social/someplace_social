@@ -16,6 +16,9 @@ import {
   buildEventJsonLd,
   getEventDisplayDetails,
   buildProveItSources,
+  parseLastUpdatedDate,
+  formatIsoDateAttribute,
+  groupEventsForDirectory,
 } from './event-helpers';
 import { makeEvent } from './test-fixtures';
 
@@ -120,7 +123,7 @@ describe('next occurrence, invite text, and JSON-LD', () => {
       'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
     );
   });
-  it('builds valid schema.org/Event JSON-LD including venue, organizer, and registration URLs', () => {
+  it('builds valid schema.org/Event JSON-LD including image, addressCountry, venue, organizer, and registration URLs', () => {
     const ev = makeEvent({
       id: '14',
       title: 'Salsa Night',
@@ -134,18 +137,23 @@ describe('next occurrence, invite text, and JSON-LD', () => {
       startTime: '8:00 PM',
       endTime: '11:00 PM',
     });
+    const canonicalUrl =
+      'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14';
     const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
     const ld = buildEventJsonLd(
       ev,
       CITIES['medellin-colombia'],
-      'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14',
+      canonicalUrl,
       occ
     ) as Record<string, unknown>;
     assert.ok(ld);
     assert.equal(ld['@type'], 'Event');
+    assert.equal(ld['image'], `${canonicalUrl}/opengraph-image`);
     assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
     assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
-    assert.equal((ld['location'] as Record<string, unknown>)['url'], 'https://sonhavana.com');
+    const location = ld['location'] as Record<string, unknown>;
+    assert.equal(location['url'], 'https://sonhavana.com');
+    assert.equal((location['address'] as Record<string, unknown>)['addressCountry'], 'CO');
     assert.equal(
       (ld['organizer'] as Record<string, unknown>)['url'],
       'https://instagram.com/medellinsalsa'
@@ -153,6 +161,56 @@ describe('next occurrence, invite text, and JSON-LD', () => {
     assert.equal(
       (ld['offers'] as Record<string, unknown>)['url'],
       'https://eventbrite.com/e/salsa-14'
+    );
+
+    const focoOcc = getNextEventOccurrence(ev, 'America/Denver', 90, new Date('2026-01-02T15:00:00Z'));
+    const focoLd = buildEventJsonLd(
+      ev,
+      CITIES['fort-collins-colorado'],
+      'https://www.someplacesocial.org/fort-collins-colorado/events/salsa-night-14',
+      focoOcc
+    ) as Record<string, unknown>;
+    const focoAddress = (focoLd['location'] as Record<string, unknown>)['address'] as Record<string, unknown>;
+    assert.equal(focoAddress['addressCountry'], 'US');
+  });
+});
+
+describe('last updated date parsing & directory grouping', () => {
+  it('parses sheet verification dates cleanly into UTC dates and ISO YYYY-MM-DD attributes', () => {
+    assert.equal(formatIsoDateAttribute('Nov 8, 2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('November 8, 2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('2026-11-08'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('11/8/2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('Date(2026, 10, 8)'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('8 Nov 2026'), '2026-11-08');
+    assert.equal(parseLastUpdatedDate('Feb 30, 2026'), null);
+    assert.equal(parseLastUpdatedDate('Recently'), null);
+    assert.equal(parseLastUpdatedDate(''), null);
+    assert.equal(parseLastUpdatedDate(null), null);
+  });
+
+  it('groups daily, weekly, multi-day, monthly, and unscheduled events chronologically into directory buckets', () => {
+    const events = [
+      makeEvent({ id: '1', title: 'Late Trivia', dayOfWeek: 'Fri', startTime: '8:00 PM' }),
+      makeEvent({ id: '2', title: 'Morning Run', dayOfWeek: 'Fri', startTime: '7:00 AM' }),
+      makeEvent({ id: '3', title: 'Daily Coffee Club', dayOfWeek: 'Daily', startTime: '9:00 AM' }),
+      makeEvent({ id: '4', title: 'Midweek Games', dayOfWeek: 'Tue, Thu', startTime: '6:00 PM' }),
+      makeEvent({ id: '5', title: 'Seasonal Walk', dayOfWeek: '', frequency: 'Seasonal' }),
+    ];
+
+    const groups = groupEventsForDirectory(events);
+    assert.deepEqual(
+      groups.map((g) => ({
+        key: g.key,
+        titles: g.events.map((e) => e.title),
+      })),
+      [
+        { key: 'daily', titles: ['Daily Coffee Club'] },
+        { key: 'tue', titles: ['Midweek Games'] },
+        { key: 'thu', titles: ['Midweek Games'] },
+        { key: 'fri', titles: ['Morning Run', 'Late Trivia'] },
+        { key: 'other', titles: ['Seasonal Walk'] },
+      ]
     );
   });
 });

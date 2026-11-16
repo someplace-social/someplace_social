@@ -7,7 +7,7 @@ import {
   isFreePrice,
   getTagStyle,
 } from '../utils';
-import { getEventDisplayDetails } from '../event-helpers';
+import { getEventDisplayDetails, getEventPath } from '../event-helpers';
 import EventActions from './EventActions';
 import EventFacts from './EventFacts';
 import InlineExternalLink from './InlineExternalLink';
@@ -129,6 +129,7 @@ function EventCard({
     mapsHref,
     moreDetailsUrl,
   } = getEventDisplayDetails(event, city.name);
+  const eventPageHref = getEventPath(city.slug, event);
   const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
   const descriptionText = (event.about || event.notes || '').trim();
 
@@ -276,6 +277,7 @@ function EventCard({
           city={city}
           selectedDate={selectedDate}
           mapsHref={mapsHref}
+          eventPageHref={eventPageHref}
           onOpenEdit={() => onOpenEdit(event)}
         />
       </div>

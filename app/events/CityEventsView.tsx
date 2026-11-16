@@ -27,7 +27,9 @@ import FilterControls from './components/FilterControls';
 import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
+import WeeklyEventDirectory from './components/WeeklyEventDirectory';
 import styles from './EventsView.module.css';
+
 const emptySubscribe = () => () => {};
 const DAY_NAMES_LONG = [
   'Sunday',
@@ -58,6 +60,7 @@ const TIME_GROUPS = [
   { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
   { name: 'Night', predicate: (h: number) => h >= 20 },
 ];
+
 export default function CityEventsView({
   city,
   initialEvents = [],
@@ -88,6 +91,7 @@ export default function CityEventsView({
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
   const pendingScrollIdRef = useRef<string | null>(null);
   const handledInitialHashRef = useRef<string | null>(null);
+
   const maxPrice =
     selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
       ? selectedMaxPrice.value
@@ -98,6 +102,7 @@ export default function CityEventsView({
     },
     [city.slug]
   );
+
   const allEvents = initialEvents;
   const eventKeyMap = useMemo(() => {
     const map = new Map<Event, string>();
@@ -110,6 +115,7 @@ export default function CityEventsView({
     });
     return map;
   }, [allEvents]);
+
   const rollingWeek = useMemo(() => {
     const today = getCityToday(timeZone);
     return Array.from({ length: 7 }, (_, i) => {
@@ -118,9 +124,11 @@ export default function CityEventsView({
       return d;
     });
   }, [timeZone]);
+
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
+
   const syncEventHash = useCallback((slug: string | null) => {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
@@ -130,6 +138,7 @@ export default function CityEventsView({
     const nextUrl = `${url.pathname}${url.search}${url.hash}`;
     window.history.replaceState(window.history.state, '', nextUrl);
   }, []);
+
   const openEventFromHash = useCallback(
     (clearIfEmpty: boolean) => {
       if (typeof window === 'undefined') return;
@@ -158,6 +167,7 @@ export default function CityEventsView({
     },
     [allEvents, eventKeyMap, indexedEvents, syncEventHash]
   );
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let rafId: number | null = null;
@@ -178,6 +188,7 @@ export default function CityEventsView({
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, [city.slug, openEventFromHash]);
+
   useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     const domId = pendingScrollIdRef.current;
@@ -189,7 +200,9 @@ export default function CityEventsView({
     });
     return () => window.cancelAnimationFrame(rafId);
   }, [activeDayIdx, openEventId]);
+
   const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
     allEvents.forEach((ev) => {
@@ -202,6 +215,7 @@ export default function CityEventsView({
     });
     return counts;
   }, [allEvents]);
+
   const activities = useMemo(() => {
     return Array.from(activityFrequencies.keys()).sort((a, b) => {
       const countDiff = (activityFrequencies.get(b) || 0) - (activityFrequencies.get(a) || 0);
@@ -209,6 +223,7 @@ export default function CityEventsView({
       return a.localeCompare(b);
     });
   }, [activityFrequencies]);
+
   const areas = useMemo(() => {
     const set = new Set<string>();
     allEvents.forEach((ev) => {
@@ -218,16 +233,19 @@ export default function CityEventsView({
     });
     return Array.from(set).sort();
   }, [allEvents]);
+
   const toggleTime = useCallback((tName: string) => {
     setSelectedTimes((prev) =>
       prev.includes(tName) ? prev.filter((t) => t !== tName) : [...prev, tName]
     );
   }, []);
+
   const toggleActivity = useCallback((act: string) => {
     setSelectedActivities((prev) =>
       prev.includes(act) ? prev.filter((a) => a !== act) : [...prev, act]
     );
   }, []);
+
   const handleSelectChip = useCallback((act: string) => {
     setSelectedActivities((prev) => {
       if (prev.includes(act)) {
@@ -236,11 +254,13 @@ export default function CityEventsView({
       return [act];
     });
   }, []);
+
   const toggleArea = useCallback((ar: string) => {
     setSelectedAreas((prev) =>
       prev.includes(ar) ? prev.filter((a) => a !== ar) : [...prev, ar]
     );
   }, []);
+
   const { currentList, dayCounts } = useMemo(() => {
     return filterAndCountEvents(
       indexedEvents,
@@ -263,6 +283,7 @@ export default function CityEventsView({
     selectedAreas,
     deferredSearchQuery,
   ]);
+
   const nextUpEventId = useMemo(() => {
     if (!mounted || activeDayIdx !== 0) return null;
     const now = new Date();
@@ -273,6 +294,7 @@ export default function CityEventsView({
     const sourceEvent = idx >= 0 ? allEvents[idx] : nextEvent;
     return eventKeyMap.get(sourceEvent) || getEventSlug(nextEvent);
   }, [mounted, activeDayIdx, allEvents, currentList, eventKeyMap, indexedEvents]);
+
   const handleToggleEvent = useCallback(
     (ev: Event, uniqueId: string) => {
       if (openEventId === uniqueId) {
@@ -285,12 +307,14 @@ export default function CityEventsView({
     },
     [openEventId, syncEventHash]
   );
+
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
     maxPrice < priceConfig.maxPrice ||
     selectedTimes.length > 0 ||
     selectedActivities.length > 0 ||
     selectedAreas.length > 0;
+
   const clearAllFilters = useCallback(() => {
     setSearchQuery('');
     setSelectedMaxPrice(null);
@@ -298,6 +322,7 @@ export default function CityEventsView({
     setSelectedActivities([]);
     setSelectedAreas([]);
   }, []);
+
   const totalEventsCount = allEvents.length;
   const dayHeading =
     activeDayIdx === 0
@@ -308,6 +333,7 @@ export default function CityEventsView({
   const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
     MONTH_NAMES[activeDate.getMonth()]
   }`;
+
   return (
     <div className={styles.pageContainer}>
       <Header city={city} />
@@ -357,99 +383,102 @@ export default function CityEventsView({
           onClearActivities={() => setSelectedActivities([])}
         />
       </div>
-      <main className={styles.mainLayout}>
-        <aside className={styles.aside}>
-          <h2 className={styles.asideTitle}>{dayHeading}</h2>
-          <p className={styles.asideSubtitle}>{daySubheading}</p>
-          <DayPicker
-            rollingWeek={rollingWeek}
-            activeDayIdx={activeDayIdx}
-            onSelectDay={(idx) => {
-              setActiveDayIdx(idx);
-              setOpenEventId(null);
-              syncEventHash(null);
-            }}
-            dayCounts={dayCounts}
-          />
-          <FilterControls
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            priceConfig={priceConfig}
-            maxPrice={maxPrice}
-            onPriceChange={handlePriceChange}
-            timeSections={TIME_GROUPS.map((g) => g.name)}
-            selectedTimes={selectedTimes}
-            onToggleTime={toggleTime}
-            onClearTimes={() => setSelectedTimes([])}
-            activities={activities}
-            selectedActivities={selectedActivities}
-            onToggleActivity={toggleActivity}
-            onClearActivities={() => setSelectedActivities([])}
-            areas={areas}
-            selectedAreas={selectedAreas}
-            onToggleArea={toggleArea}
-            onClearAreas={() => setSelectedAreas([])}
-            hasActiveFilters={hasActiveFilters}
-            onClearAllFilters={clearAllFilters}
-          />
-        </aside>
-        <section className={styles.contentCol}>
-          {currentList.length === 0 ? (
-            <div className={styles.emptyState}>
-              <b className={styles.emptyStateTitle}>
-                Nothing listed{hasActiveFilters ? ' with these filters' : ''}
-              </b>
-              {hasActiveFilters ? (
-                'Try clearing your filters to see more events.'
-              ) : (
-                <>
-                  Know an event or group happening on this day?{' '}
-                  <Link
-                    href={`/${city.slug}/contact?tab=submit`}
-                    className={styles.emptyStateLink}
-                  >
-                    Submit an event
-                  </Link>
-                  .
-                </>
-              )}
-            </div>
-          ) : (
-            TIME_GROUPS.map((group) => {
-              const groupEvents = currentList.filter((ev) =>
-                group.predicate(ev.parsedHour)
-              );
-              if (groupEvents.length === 0) return null;
-              return (
-                <div key={group.name}>
-                  <div className={styles.timeGroupHeader}>
-                    {group.name}
-                    <div className={styles.timeGroupLine} />
+      <main className={styles.mainContent}>
+        <div className={styles.mainLayout}>
+          <aside className={styles.aside}>
+            <h2 className={styles.asideTitle}>{dayHeading}</h2>
+            <p className={styles.asideSubtitle}>{daySubheading}</p>
+            <DayPicker
+              rollingWeek={rollingWeek}
+              activeDayIdx={activeDayIdx}
+              onSelectDay={(idx) => {
+                setActiveDayIdx(idx);
+                setOpenEventId(null);
+                syncEventHash(null);
+              }}
+              dayCounts={dayCounts}
+            />
+            <FilterControls
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              priceConfig={priceConfig}
+              maxPrice={maxPrice}
+              onPriceChange={handlePriceChange}
+              timeSections={TIME_GROUPS.map((g) => g.name)}
+              selectedTimes={selectedTimes}
+              onToggleTime={toggleTime}
+              onClearTimes={() => setSelectedTimes([])}
+              activities={activities}
+              selectedActivities={selectedActivities}
+              onToggleActivity={toggleActivity}
+              onClearActivities={() => setSelectedActivities([])}
+              areas={areas}
+              selectedAreas={selectedAreas}
+              onToggleArea={toggleArea}
+              onClearAreas={() => setSelectedAreas([])}
+              hasActiveFilters={hasActiveFilters}
+              onClearAllFilters={clearAllFilters}
+            />
+          </aside>
+          <section className={styles.contentCol}>
+            {currentList.length === 0 ? (
+              <div className={styles.emptyState}>
+                <b className={styles.emptyStateTitle}>
+                  Nothing listed{hasActiveFilters ? ' with these filters' : ''}
+                </b>
+                {hasActiveFilters ? (
+                  'Try clearing your filters to see more events.'
+                ) : (
+                  <>
+                    Know an event or group happening on this day?{' '}
+                    <Link
+                      href={`/${city.slug}/contact?tab=submit`}
+                      className={styles.emptyStateLink}
+                    >
+                      Submit an event
+                    </Link>
+                    .
+                  </>
+                )}
+              </div>
+            ) : (
+              TIME_GROUPS.map((group) => {
+                const groupEvents = currentList.filter((ev) =>
+                  group.predicate(ev.parsedHour)
+                );
+                if (groupEvents.length === 0) return null;
+                return (
+                  <div key={group.name}>
+                    <div className={styles.timeGroupHeader}>
+                      {group.name}
+                      <div className={styles.timeGroupLine} />
+                    </div>
+                    {groupEvents.map((ev) => {
+                      const idx = indexedEvents.indexOf(ev);
+                      const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
+                      const uniqueId =
+                        eventKeyMap.get(sourceEvent) || getEventSlug(ev);
+                      return (
+                        <EventCard
+                          key={uniqueId}
+                          domId={`event-card-${uniqueId}`}
+                          event={sourceEvent}
+                          isOpen={openEventId === uniqueId}
+                          isNextUp={uniqueId === nextUpEventId}
+                          city={city}
+                          selectedDate={activeDate}
+                          onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
+                          onOpenEdit={setEditModalEvent}
+                        />
+                      );
+                    })}
                   </div>
-                  {groupEvents.map((ev) => {
-                    const idx = indexedEvents.indexOf(ev);
-                    const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
-                    const uniqueId =
-                      eventKeyMap.get(sourceEvent) || getEventSlug(ev);
-                    return (
-                      <EventCard
-                        key={uniqueId}
-                        domId={`event-card-${uniqueId}`}
-                        event={sourceEvent}
-                        isOpen={openEventId === uniqueId}
-                        isNextUp={uniqueId === nextUpEventId}
-                        city={city}
-                        selectedDate={activeDate}
-                        onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
-                        onOpenEdit={setEditModalEvent}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })
-          )}
-        </section>
+                );
+              })
+            )}
+          </section>
+        </div>
+        <WeeklyEventDirectory city={city} events={allEvents} />
       </main>
       <Footer city={city} />
       {editModalEvent && (

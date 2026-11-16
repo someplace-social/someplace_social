@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
   SITE_URL,
@@ -94,7 +94,7 @@ export default async function EventPage({ params }: PageProps) {
     notFound();
   }
   if (!resolved.isCanonical || city.slug !== citySlug) {
-    redirect(`/${city.slug}/events/${resolved.canonicalSlug}`);
+    permanentRedirect(`/${city.slug}/events/${resolved.canonicalSlug}`);
   }
   const { event, canonicalSlug } = resolved;
   const timeZone = getCityTimeZone(city);

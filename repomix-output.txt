@@ -1,175 +1,7 @@
 #TASK
 
 
-idk where the "fort collins" came from in the screenshot, but move it so it goes after the venue name, in this case Avogadro's Number. Make sure it looks nice. once out of description area, move up the description a line accordingly so looks even and good. 
 
-**#GUIDELINES**
-
-You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
-
-**1. PROJECT CONTEXT**
-
-- Project Name: Someplace Social
-- Environment: Windows 11
-- Package Manager: PNPM
-
-**2. CORE DIRECTIVES (NON-NEGOTIABLE)**
-
-- Full File Output: When modifying a file, output the *ENTIRE* , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
-- Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
-- PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
-- Response length: If your response contains more than approximately 20k tokens, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
-
-**3. RULES**
-
-- Security: Security is very important - always keep in mind best practices.
-- Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices.
-- DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
-- Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
-- Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
-- Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create the .sql file, the SQL code block, and finally the supabase db push command.
-- Egress: Keep egress low whenever possible.
-- Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
-- Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
-- Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
-- Simple & Robust: Do not over-complicate things. The simplest and most robust solution is best. When building or fixing a problem, always start with what could be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
-- Page text: when writing text, choose simple, easy to understand, straightforward words for page titles, page text, etc.
-- Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
-- UI-Shared: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
-- 
-
-**4. RESPONSE FORMAT RULES**
-
-- Start with a brief explanation of what you are doing.
-- Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
-- End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
-- Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: *$targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }*
-
-**5. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):**
-
-IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow.
-
-1. Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
-2. File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
-3. Code Output: A single, complete, full-file code block.
-4. Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
-5. Git Commands: The very last item in your response must be a single code block containing the final git commands.
-
-5.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
-
-- Never provide multiple open commands in a row.
-- Never provide multiple file code blocks in a row.
-- Never list all commands first and all files afterward.
-- Never open several files before showing the first file’s contents.
-- Never skip ahead to later files.
-- Never bundle files together in one code block.
-- The command for file N+1 MUST appear immediately before the code block for file N+1.
-- The ONLY allowed pattern is:
-- open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
-
-5.3 FORBIDDEN PATTERNS:
-
-- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
-- open 1 -> open 2 -> file 1 -> file 2
-- any response that shows all commands first and all files later
-
-EXAMPLE OF CORRECT RESPONSE FORMAT:
-
-This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
-
-Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc…
-
-```powershell
-
-pnpx supabase migration new create_example_table
-
-```
-
-Here is the sql code.
-
-```sql
-
-- - supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
-
-create table example (
-
-...
-
-);
-
-```
-
-Next we will push to supabase.
-
-```powershell
-
-pnpx supabase db push
-
-```
-
-Now we’ll create a new file.
-
-```powershell
-
-New-Item 'app/index.tsx' -Force
-
-code 'app/index.tsx'
-
-```
-
-Here is the full code for our new file.
-
-```typescript
-
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function HelloScreen() {
-
-// ...
-
-return <Text>hello, world</Text>;
-
-// ...
-
-}
-
-```
-
-Now we’ll open page2.
-
-```powershell
-
-code 'app/page2.tsx'
-
-```
-
-Here is the updated code for page2.
-
-```typescript
-
-import { View, Text, StyleSheet } from 'react-native';
-
-export default function PageTwoScreen() {
-
-// ...
-
-return <Text>hello, world page 2</Text>;
-
-// ...
-
-}
-
-```
-
-Finally, we will commit.
-
-```powershell
-
-git add .
-
-git commit -m "feat: Add example migration and pages"
-
-```
 
 #PROJECT FILES
 
@@ -3506,6 +3338,32 @@ export default function AboutView({ city }: AboutViewProps) {
 }
 
 ================
+File: app/contact/page.tsx
+================
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import ContactView from './ContactView';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Submit a new regularly occurring event or ask us a question.',
+};
+
+export default function ContactPage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <Suspense fallback={null}>
+        <ContactView />
+      </Suspense>
+      <Footer />
+    </div>
+  );
+}
+
+================
 File: app/events/calendar-helpers.ts
 ================
 import type { CityConfig } from '../lib/cities';
@@ -5675,32 +5533,6 @@ export default function EventSubmissionForm({ defaultCity }: EventSubmissionForm
 }
 
 ================
-File: app/contact/page.tsx
-================
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ContactView from './ContactView';
-
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
-};
-
-export default function ContactPage() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <Suspense fallback={null}>
-        <ContactView />
-      </Suspense>
-      <Footer />
-    </div>
-  );
-}
-
-================
 File: app/events/components/ActionPopover.module.css
 ================
 .popoverWrapper {
@@ -6787,160 +6619,6 @@ export function CloseIcon({ className }: IconProps) {
 }
 
 ================
-File: app/events/components/ProveItButton.tsx
-================
-'use client';
-import { useMemo } from 'react';
-import Link from 'next/link';
-import { buildProveItSources } from '../event-helpers';
-import {
-  normalizeContactText,
-  parseContactWithLinks,
-  parseTextWithLinks,
-  type TextSegment,
-} from '../linkify';
-import ActionPopover from './ActionPopover';
-import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
-import styles from './ProveItButton.module.css';
-
-interface ProveItButtonProps {
-  url1?: string;
-  url1Notes?: string;
-  url2?: string;
-  url2Notes?: string;
-  contact?: string;
-  contactPageHref: string;
-  btnClassName: string;
-  btnActiveClassName: string;
-  btnDisabledClassName: string;
-}
-
-function renderTextSegments(segments: TextSegment[]) {
-  return segments.map((seg, idx) => {
-    if (seg.type === 'text') {
-      return <span key={idx}>{seg.text}</span>;
-    }
-    const isExternal =
-      !seg.href.startsWith('mailto:') && !seg.href.startsWith('tel:');
-    return (
-      <a
-        key={idx}
-        href={seg.href}
-        target={isExternal ? '_blank' : undefined}
-        rel={isExternal ? 'noopener noreferrer' : undefined}
-        className={styles.proveItLink}
-      >
-        <span>{seg.text}</span>
-        {isExternal && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
-      </a>
-    );
-  });
-}
-
-export default function ProveItButton({
-  url1,
-  url1Notes,
-  url2,
-  url2Notes,
-  contact,
-  contactPageHref,
-  btnClassName,
-  btnActiveClassName,
-  btnDisabledClassName,
-}: ProveItButtonProps) {
-  const sources = useMemo(
-    () =>
-      buildProveItSources({
-        url1: url1 || '',
-        url1Notes: url1Notes || '',
-        url2: url2 || '',
-        url2Notes: url2Notes || '',
-      }),
-    [url1, url1Notes, url2, url2Notes]
-  );
-  const cleanContact = useMemo(() => normalizeContactText(contact), [contact]);
-  const contactSegments = useMemo(
-    () => (cleanContact ? parseContactWithLinks(cleanContact) : []),
-    [cleanContact]
-  );
-
-  if (sources.length === 0) {
-    return (
-      <button
-        type="button"
-        disabled
-        className={`${btnClassName} ${btnDisabledClassName}`}
-        title="No source details listed yet"
-      >
-        <ShieldCheckIcon />
-        Prove It
-      </button>
-    );
-  }
-
-  const needsTrailingPeriod =
-    Boolean(cleanContact) && !/[.!?]$/.test(cleanContact);
-
-  return (
-    <ActionPopover
-      triggerLabel="Prove It"
-      triggerIcon={<ShieldCheckIcon />}
-      btnClassName={btnClassName}
-      btnActiveClassName={btnActiveClassName}
-      dialogLabel="Event source and verification details"
-      headerLabel="Prove It"
-      wide
-      align="left"
-    >
-      {() => (
-        <div className={styles.proveItBox}>
-          {sources.map((source) => (
-            <div
-              key={`${source.prefix}-${source.url}`}
-              className={styles.proveItSource}
-            >
-              <p className={styles.proveItText}>
-                <span>{source.prefix}</span>
-                <a
-                  href={source.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.proveItLink}
-                >
-                  <span>{source.url}</span>
-                  <ExternalLinkIcon className={styles.proveItLinkIcon} />
-                </a>
-              </p>
-              {source.notes && (
-                <p className={styles.proveItNote}>
-                  {renderTextSegments(parseTextWithLinks(source.notes))}
-                </p>
-              )}
-            </div>
-          ))}
-          <p className={`${styles.proveItText} ${styles.proveItContactDivider}`}>
-            <span>Want more proof? Contact </span>
-            {cleanContact ? (
-              <>
-                {renderTextSegments(contactSegments)}
-                {needsTrailingPeriod ? '.' : ''}
-              </>
-            ) : (
-              <>
-                <Link href={contactPageHref} className={styles.proveItLink}>
-                  us
-                </Link>
-                .
-              </>
-            )}
-          </p>
-        </div>
-      )}
-    </ActionPopover>
-  );
-}
-
-================
 File: app/events/components/SuggestEditModal.module.css
 ================
 .modalBackdrop {
@@ -7780,6 +7458,160 @@ export default function SuggestEditModal({
         </form>
       </div>
     </div>
+  );
+}
+
+================
+File: app/events/components/ProveItButton.tsx
+================
+'use client';
+import { useMemo } from 'react';
+import Link from 'next/link';
+import { buildProveItSources } from '../event-helpers';
+import {
+  normalizeContactText,
+  parseContactWithLinks,
+  parseTextWithLinks,
+  type TextSegment,
+} from '../linkify';
+import ActionPopover from './ActionPopover';
+import { ExternalLinkIcon, ShieldCheckIcon } from './EventIcons';
+import styles from './ProveItButton.module.css';
+
+interface ProveItButtonProps {
+  url1?: string;
+  url1Notes?: string;
+  url2?: string;
+  url2Notes?: string;
+  contact?: string;
+  contactPageHref: string;
+  btnClassName: string;
+  btnActiveClassName: string;
+  btnDisabledClassName: string;
+}
+
+function renderTextSegments(segments: TextSegment[]) {
+  return segments.map((seg, idx) => {
+    if (seg.type === 'text') {
+      return <span key={idx}>{seg.text}</span>;
+    }
+    const isExternal =
+      !seg.href.startsWith('mailto:') && !seg.href.startsWith('tel:');
+    return (
+      <a
+        key={idx}
+        href={seg.href}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        className={styles.proveItLink}
+      >
+        <span>{seg.text}</span>
+        {isExternal && <ExternalLinkIcon className={styles.proveItLinkIcon} />}
+      </a>
+    );
+  });
+}
+
+export default function ProveItButton({
+  url1,
+  url1Notes,
+  url2,
+  url2Notes,
+  contact,
+  contactPageHref,
+  btnClassName,
+  btnActiveClassName,
+  btnDisabledClassName,
+}: ProveItButtonProps) {
+  const sources = useMemo(
+    () =>
+      buildProveItSources({
+        url1: url1 || '',
+        url1Notes: url1Notes || '',
+        url2: url2 || '',
+        url2Notes: url2Notes || '',
+      }),
+    [url1, url1Notes, url2, url2Notes]
+  );
+  const cleanContact = useMemo(() => normalizeContactText(contact), [contact]);
+  const contactSegments = useMemo(
+    () => (cleanContact ? parseContactWithLinks(cleanContact) : []),
+    [cleanContact]
+  );
+
+  if (sources.length === 0) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={`${btnClassName} ${btnDisabledClassName}`}
+        title="No source details listed yet"
+      >
+        <ShieldCheckIcon />
+        Prove It
+      </button>
+    );
+  }
+
+  const needsTrailingPeriod =
+    Boolean(cleanContact) && !/[.!?]$/.test(cleanContact);
+
+  return (
+    <ActionPopover
+      triggerLabel="Prove It"
+      triggerIcon={<ShieldCheckIcon />}
+      btnClassName={btnClassName}
+      btnActiveClassName={btnActiveClassName}
+      dialogLabel="Event source and verification details"
+      headerLabel="Prove It"
+      wide
+      align="left"
+    >
+      {() => (
+        <div className={styles.proveItBox}>
+          {sources.map((source) => (
+            <div
+              key={`${source.prefix}-${source.url}`}
+              className={styles.proveItSource}
+            >
+              <p className={styles.proveItText}>
+                <span>{source.prefix}</span>
+                <a
+                  href={source.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.proveItLink}
+                >
+                  <span>{source.url}</span>
+                  <ExternalLinkIcon className={styles.proveItLinkIcon} />
+                </a>
+              </p>
+              {source.notes && (
+                <p className={styles.proveItNote}>
+                  {renderTextSegments(parseTextWithLinks(source.notes))}
+                </p>
+              )}
+            </div>
+          ))}
+          <p className={`${styles.proveItText} ${styles.proveItContactDivider}`}>
+            <span>Want more proof? Contact </span>
+            {cleanContact ? (
+              <>
+                {renderTextSegments(contactSegments)}
+                {needsTrailingPeriod ? '.' : ''}
+              </>
+            ) : (
+              <>
+                <Link href={contactPageHref} className={styles.proveItLink}>
+                  us
+                </Link>
+                .
+              </>
+            )}
+          </p>
+        </div>
+      )}
+    </ActionPopover>
   );
 }
 
@@ -11766,724 +11598,6 @@ File: app/events/EventsView.module.css
 }
 
 ================
-File: app/events/utils.test.ts
-================
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { isEventActiveOnDate, isMonthActive } from './utils';
-import { expandEventSchedules } from './schedule-splitter';
-import { makeEvent } from './test-fixtures';
-
-const jan2Fri = new Date(2026, 0, 2);
-const jan3Sat = new Date(2026, 0, 3);
-const jan4Sun = new Date(2026, 0, 4);
-const jan5Mon = new Date(2026, 0, 5);
-const jan7Wed = new Date(2026, 0, 7);
-const jan9Fri = new Date(2026, 0, 9);
-const jan12Mon = new Date(2026, 0, 12);
-const jan16Fri = new Date(2026, 0, 16);
-const jan23Fri = new Date(2026, 0, 23);
-const jan25Sun = new Date(2026, 0, 25);
-const jan30Fri = new Date(2026, 0, 30);
-const feb3Tue = new Date(2026, 1, 3);
-const feb4Wed = new Date(2026, 1, 4);
-const feb5Thu = new Date(2026, 1, 5);
-const feb6Fri = new Date(2026, 1, 6);
-const feb10Tue = new Date(2026, 1, 10);
-const feb13Fri = new Date(2026, 1, 13);
-const feb17Tue = new Date(2026, 1, 17);
-const feb18Wed = new Date(2026, 1, 18);
-const feb19Thu = new Date(2026, 1, 19);
-const feb20Fri = new Date(2026, 1, 20);
-const feb27Fri = new Date(2026, 1, 27);
-const mar3Tue = new Date(2026, 2, 3);
-const mar17Tue = new Date(2026, 2, 17);
-const mar31Tue = new Date(2026, 2, 31);
-
-describe('isEventActiveOnDate frequency parsing', () => {
-  it('handles Weekly and Weekly, Sat & Sun', () => {
-    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
-    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
-    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
-    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
-  });
-  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
-    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
-    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
-    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
-    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
-  });
-  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
-    const variations = [
-      { frequency: 'Bi-weekly', frequencyNotes: '' },
-      { frequency: 'Biweekly', frequencyNotes: '' },
-      { frequency: 'bi weekly', frequencyNotes: '' },
-      { frequency: 'Every other week', frequencyNotes: '' },
-      { frequency: 'Every 2 weeks', frequencyNotes: '' },
-      { frequency: 'Alternating weeks', frequencyNotes: '' },
-      { frequency: '', frequencyNotes: 'Every other week' },
-    ];
-    for (const v of variations) {
-      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
-    }
-    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
-  });
-  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
-    const oddEv = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: 'Odd weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
-    const evenEv = makeEvent({
-      frequency: 'Biweekly',
-      frequencyNotes: 'Even weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
-  });
-  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
-    const ev = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: '2nd & 4th Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
-    const fifthTueEv = makeEvent({
-      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
-      dayOfWeek: 'Tue',
-    });
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
-  });
-  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
-    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
-    }
-  });
-  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
-    const lastEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Last Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
-    const finalEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Final Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
-    const firstAndLastSun = makeEvent({
-      frequency: 'Monthly, 1st & Last Sun',
-      dayOfWeek: 'Sun',
-    });
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
-  });
-  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
-    const weeksListEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1 & 3',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
-    const slashEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st/3rd',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
-    const commaAndEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1, 3, and 5',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
-  });
-  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
-    const variations = [
-      'Bi-monthly',
-      'Bimonthly',
-      'Bi monthly',
-      'Every other month',
-      'Every 2 months',
-    ];
-    for (const freq of variations) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
-    }
-    const oddMonthsEv = makeEvent({
-      frequency: 'Bi-monthly',
-      frequencyNotes: 'Odd months',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
-    const ordinalBiMonthlyEv = makeEvent({
-      frequency: 'Every 2 months',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
-    const pairedBiMonthlyEv = makeEvent({
-      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
-      dayOfWeek: 'Wed, Thu',
-    });
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
-  });
-  it('handles paused and hiatus statuses', () => {
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
-    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
-  });
-  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
-    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
-    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
-  });
-});
-
-describe('expandEventSchedules', () => {
-  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
-    const karaoke = makeEvent({
-      id: 'FOCO0024',
-      title: 'Weekly Karaoke Night',
-      venue: 'R Bar and Lounge',
-      venueUrl: 'rbar.com',
-      organizerUrl: 'instagram.com/rbar',
-      url1: 'rbar.com/karaoke',
-      url1Notes: 'See events calendar',
-      dayOfWeek: 'Mon, Wed, Sat',
-      startTime: '7p (Mon) / 8p (Wed, Sat)',
-      endTime: '10p (Mon) / 11p (Wed, Sat)',
-      frequency: 'Weekly',
-    });
-    const expanded = expandEventSchedules(karaoke);
-    assert.equal(expanded.length, 3);
-    assert.deepEqual(
-      expanded.map((e) => ({
-        id: e.id,
-        dayOfWeek: e.dayOfWeek,
-        startTime: e.startTime,
-        endTime: e.endTime,
-        venueUrl: e.venueUrl,
-        organizerUrl: e.organizerUrl,
-        url1: e.url1,
-        url1Notes: e.url1Notes,
-      })),
-      [
-        {
-          id: 'FOCO0024-mon',
-          dayOfWeek: 'Mon',
-          startTime: '7p',
-          endTime: '10p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-        {
-          id: 'FOCO0024-wed',
-          dayOfWeek: 'Wed',
-          startTime: '8p',
-          endTime: '11p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-        {
-          id: 'FOCO0024-sat',
-          dayOfWeek: 'Sat',
-          startTime: '8p',
-          endTime: '11p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-      ]
-    );
-  });
-  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
-    const commaEv = makeEvent({
-      id: 'E1',
-      dayOfWeek: 'Mon, Wed, Sat',
-      startTime: '7p (Mon), 8p (Wed & Sat)',
-      endTime: '',
-    });
-    const commaExpanded = expandEventSchedules(commaEv);
-    assert.equal(commaExpanded.length, 3);
-    assert.equal(commaExpanded[0].startTime, '7p');
-    assert.equal(commaExpanded[1].startTime, '8p');
-    assert.equal(commaExpanded[2].startTime, '8p');
-    assert.equal(commaExpanded[0].endTime, '');
-    const colonEv = makeEvent({
-      id: 'E2',
-      dayOfWeek: 'Tue, Thu',
-      startTime: 'Tue: 6p / Thu: 7:30p',
-      endTime: '9p',
-    });
-    const colonExpanded = expandEventSchedules(colonEv);
-    assert.deepEqual(
-      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['Tue', '6p', '9p'],
-        ['Thu', '7:30p', '9p'],
-      ]
-    );
-    const rangeEv = makeEvent({
-      id: 'E3',
-      dayOfWeek: 'Mon-Wed',
-      startTime: '5p (Mon-Tue) / 6p (Wed)',
-      endTime: '7p (Mon-Tue) / 8p (Wed)',
-    });
-    const rangeExpanded = expandEventSchedules(rangeEv);
-    assert.deepEqual(
-      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['Mon', '5p', '7p'],
-        ['Tue', '5p', '7p'],
-        ['Wed', '6p', '8p'],
-      ]
-    );
-  });
-  it('supports parallel unlabeled times and same-day multiple slots', () => {
-    const parallelEv = makeEvent({
-      id: 'E4',
-      dayOfWeek: 'Tue, Thu',
-      startTime: '6p / 7p',
-      endTime: '8p / 9p',
-    });
-    assert.deepEqual(
-      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['E4-tue', 'Tue', '6p', '8p'],
-        ['E4-thu', 'Thu', '7p', '9p'],
-      ]
-    );
-    const sameDayEv = makeEvent({
-      id: 'E5',
-      dayOfWeek: 'Sat',
-      startTime: '10a / 2p',
-      endTime: '12p / 4p',
-    });
-    assert.deepEqual(
-      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['E5-sat-1', 'Sat', '10a', '12p'],
-        ['E5-sat-2', 'Sat', '2p', '4p'],
-      ]
-    );
-  });
-  it('keeps single-time multi-day events unsplit', () => {
-    const sameTimeMultiDay = makeEvent({
-      id: 'FOCO0020',
-      dayOfWeek: 'Tue, Thu',
-      startTime: '6p',
-      endTime: '9p',
-    });
-    const result = expandEventSchedules(sameTimeMultiDay);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
-    assert.equal(result[0].startTime, '6p');
-    assert.equal(result[0].endTime, '9p');
-  });
-});
-
-describe('isMonthActive', () => {
-  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
-  });
-});
-
-================
-File: app/page.tsx
-================
-import type { Metadata } from 'next';
-import AboutView from './components/AboutView';
-export const metadata: Metadata = {
-  title: 'Community Events, Social Clubs & Weekly Activities',
-  description:
-    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
-};
-export default function Home() {
-  return <AboutView />;
-}
-
-================
-File: app/components/Header.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { CityConfig } from '../lib/cities';
-import ThemeToggle from './ThemeToggle';
-import styles from './Header.module.css';
-interface HeaderProps {
-  city?: CityConfig;
-}
-export default function Header({ city }: HeaderProps) {
-  const pathname = usePathname();
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  useEffect(() => {
-    if (!mobileDrawerOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setMobileDrawerOpen(false);
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [mobileDrawerOpen]);
-  const eventsHref = city ? `/${city.slug}/events` : '';
-  const aboutHref = city ? `/${city.slug}/about` : '/';
-  const contactHref = city ? `/${city.slug}/contact` : '/contact';
-  const isEventsActive = Boolean(
-    city &&
-      (pathname === `/${city.slug}/events` ||
-        pathname.startsWith(`/${city.slug}/events/`))
-  );
-  const isAboutActive = city
-    ? pathname === `/${city.slug}/about`
-    : pathname === '/' || pathname === '/about';
-  const isContactActive = city
-    ? pathname === `/${city.slug}/contact`
-    : pathname === '/contact';
-  return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.brandCol}>
-            <Link
-              href={city ? `/${city.slug}/events` : '/'}
-              className={styles.brandLogoLink}
-            >
-              <Image
-                src="/images/logo.svg"
-                alt="Someplace Social"
-                width={540}
-                height={150}
-                priority
-                className={styles.logoImage}
-              />
-            </Link>
-            {city && (
-              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
-            )}
-          </div>
-          <nav className={styles.navDesktop} aria-label="Primary">
-            {city && (
-              <Link
-                href={eventsHref}
-                className={`${styles.navLink} ${
-                  isEventsActive ? styles.navLinkActive : ''
-                }`}
-              >
-                Events
-              </Link>
-            )}
-            <Link
-              href={aboutHref}
-              className={`${styles.navLink} ${
-                isAboutActive ? styles.navLinkActive : ''
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href={contactHref}
-              className={`${styles.navLink} ${
-                isContactActive ? styles.navLinkActive : ''
-              }`}
-            >
-              Contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-          <div className={styles.navMobileActions}>
-            <button
-              type="button"
-              className={styles.hamburgerBtn}
-              aria-label="Open menu"
-              onClick={() => setMobileDrawerOpen(true)}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              >
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-      {mobileDrawerOpen && (
-        <div
-          className={styles.drawerBackdrop}
-          onClick={() => setMobileDrawerOpen(false)}
-        >
-          <div
-            className={styles.drawer}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-          >
-            <div className={styles.drawerHeader}>
-              <div className={styles.drawerTitle}>Someplace Social</div>
-              <button
-                type="button"
-                className={styles.drawerCloseBtn}
-                aria-label="Close menu"
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className={styles.drawerSectionTitle}>Navigation</div>
-            <div className={styles.drawerNavLinks}>
-              {city && (
-                <Link
-                  href={eventsHref}
-                  className={`${styles.drawerNavLink} ${
-                    isEventsActive ? styles.drawerNavLinkActive : ''
-                  }`}
-                  onClick={() => setMobileDrawerOpen(false)}
-                >
-                  Events
-                </Link>
-              )}
-              <Link
-                href={aboutHref}
-                className={`${styles.drawerNavLink} ${
-                  isAboutActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href={contactHref}
-                className={`${styles.drawerNavLink} ${
-                  isContactActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                Contact
-              </Link>
-            </div>
-            <div className={styles.drawerSectionTitle}>Preferences</div>
-            <div className={styles.drawerNavLinks}>
-              <ThemeToggle showLabel />
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-================
-File: app/lib/cities.ts
-================
-export type CityPriceConfig = {
-  currencyCode: string;
-  currencySymbol: string;
-  unitSuffix: string;
-  maxPrice: number;
-  step: number;
-  underValue: number;
-  underLabel: string;
-  midLabel: string;
-};
-export type CityAlertBanner = {
-  message: string;
-  linkText?: string;
-  linkHref?: string;
-};
-export type CityConfig = {
-  slug: string;
-  name: string;
-  region: string;
-  heroLocation: string;
-  timeZone: string;
-  sheetTab: string;
-  sheetGid?: string;
-  spreadsheetId?: string;
-  csvUrl?: string;
-  introTitle?: string;
-  introDescription?: string;
-  priceConfig?: CityPriceConfig;
-  alertBanner?: CityAlertBanner;
-};
-export const SITE_URL = 'https://www.someplacesocial.org';
-export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
-export const CITIES: Record<string, CityConfig> = {
-  'medellin-colombia': {
-    slug: 'medellin-colombia',
-    name: 'Medellín',
-    region: 'Colombia',
-    heroLocation: 'Medellín, Colombia',
-    timeZone: 'America/Bogota',
-    sheetTab: 'Medellin',
-    sheetGid: '0',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Medellin Community Listings',
-    introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
-    priceConfig: {
-      currencyCode: 'COP',
-      currencySymbol: '$',
-      unitSuffix: 'k',
-      maxPrice: 100,
-      step: 5,
-      underValue: 40,
-      underLabel: 'Under 40k',
-      midLabel: '50k',
-    },
-  },
-  'fort-collins-colorado': {
-    slug: 'fort-collins-colorado',
-    name: 'Fort Collins',
-    region: 'Colorado',
-    heroLocation: 'Fort Collins, Colorado',
-    timeZone: 'America/Denver',
-    sheetTab: 'Fort Collins',
-    sheetGid: '466758538',
-    spreadsheetId: MAIN_SPREADSHEET_ID,
-    introTitle: 'Fort Collins Community Listings',
-    introDescription:
-      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
-    priceConfig: {
-      currencyCode: 'USD',
-      currencySymbol: '$',
-      unitSuffix: '',
-      maxPrice: 50,
-      step: 5,
-      underValue: 10,
-      underLabel: 'Under $10',
-      midLabel: '$25',
-    },
-    alertBanner: {
-      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
-      linkText: 'Contact.',
-      linkHref: '/fort-collins-colorado/contact',
-    },
-  },
-};
-export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
-  currencyCode: 'USD',
-  currencySymbol: '$',
-  unitSuffix: '',
-  maxPrice: 50,
-  step: 5,
-  underValue: 10,
-  underLabel: 'Under $10',
-  midLabel: '$25',
-};
-export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
-  if (city?.priceConfig) return city.priceConfig;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return CITIES['medellin-colombia'].priceConfig!;
-  }
-  return DEFAULT_USD_PRICE_CONFIG;
-}
-export function getCityTimeZone(city?: CityConfig): string {
-  if (city?.timeZone) return city.timeZone;
-  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
-    return 'America/Bogota';
-  }
-  return 'America/Denver';
-}
-export function getCityBySlug(slug: string): CityConfig | undefined {
-  if (!slug) return undefined;
-  const normalized = slug.toLowerCase().trim();
-  return CITIES[normalized];
-}
-export function getAllCitySlugs(): string[] {
-  return Object.keys(CITIES);
-}
-export function getAllCities(): CityConfig[] {
-  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-================
 File: app/lib/google-sheets.ts
 ================
 import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
@@ -13009,311 +12123,721 @@ export async function getEvents(
 }
 
 ================
-File: app/events/components/EventCard.module.css
+File: app/events/utils.test.ts
 ================
-.card {
-  container-type: inline-size;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  margin-bottom: 14px;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 110px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-}
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { isEventActiveOnDate, isMonthActive } from './utils';
+import { expandEventSchedules } from './schedule-splitter';
+import { makeEvent } from './test-fixtures';
 
-.card:not(.open):hover {
-  border-color: var(--line-strong);
-}
+const jan2Fri = new Date(2026, 0, 2);
+const jan3Sat = new Date(2026, 0, 3);
+const jan4Sun = new Date(2026, 0, 4);
+const jan5Mon = new Date(2026, 0, 5);
+const jan7Wed = new Date(2026, 0, 7);
+const jan9Fri = new Date(2026, 0, 9);
+const jan12Mon = new Date(2026, 0, 12);
+const jan16Fri = new Date(2026, 0, 16);
+const jan23Fri = new Date(2026, 0, 23);
+const jan25Sun = new Date(2026, 0, 25);
+const jan30Fri = new Date(2026, 0, 30);
+const feb3Tue = new Date(2026, 1, 3);
+const feb4Wed = new Date(2026, 1, 4);
+const feb5Thu = new Date(2026, 1, 5);
+const feb6Fri = new Date(2026, 1, 6);
+const feb10Tue = new Date(2026, 1, 10);
+const feb13Fri = new Date(2026, 1, 13);
+const feb17Tue = new Date(2026, 1, 17);
+const feb18Wed = new Date(2026, 1, 18);
+const feb19Thu = new Date(2026, 1, 19);
+const feb20Fri = new Date(2026, 1, 20);
+const feb27Fri = new Date(2026, 1, 27);
+const mar3Tue = new Date(2026, 2, 3);
+const mar17Tue = new Date(2026, 2, 17);
+const mar31Tue = new Date(2026, 2, 31);
 
-.open {
-  border-color: var(--ink);
-  box-shadow: var(--shadow-md);
-  overflow: visible;
-  content-visibility: visible;
-  z-index: 10;
-}
+describe('isEventActiveOnDate frequency parsing', () => {
+  it('handles Weekly and Weekly, Sat & Sun', () => {
+    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
+    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
+    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
+    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
+  });
+  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
+    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
+    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
+    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
+    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
+  });
+  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
+    const variations = [
+      { frequency: 'Bi-weekly', frequencyNotes: '' },
+      { frequency: 'Biweekly', frequencyNotes: '' },
+      { frequency: 'bi weekly', frequencyNotes: '' },
+      { frequency: 'Every other week', frequencyNotes: '' },
+      { frequency: 'Every 2 weeks', frequencyNotes: '' },
+      { frequency: 'Alternating weeks', frequencyNotes: '' },
+      { frequency: '', frequencyNotes: 'Every other week' },
+    ];
+    for (const v of variations) {
+      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
+    }
+    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
+  });
+  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
+    const oddEv = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: 'Odd weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
+    const evenEv = makeEvent({
+      frequency: 'Biweekly',
+      frequencyNotes: 'Even weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
+  });
+  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
+    const ev = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: '2nd & 4th Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
+    const fifthTueEv = makeEvent({
+      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
+  });
+  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
+    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
+    }
+  });
+  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
+    const lastEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Last Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
+    const finalEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Final Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
+    const firstAndLastSun = makeEvent({
+      frequency: 'Monthly, 1st & Last Sun',
+      dayOfWeek: 'Sun',
+    });
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
+  });
+  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
+    const weeksListEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1 & 3',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
+    const slashEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st/3rd',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
+    const commaAndEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1, 3, and 5',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
+  });
+  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
+    const variations = [
+      'Bi-monthly',
+      'Bimonthly',
+      'Bi monthly',
+      'Every other month',
+      'Every 2 months',
+    ];
+    for (const freq of variations) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
+    }
+    const oddMonthsEv = makeEvent({
+      frequency: 'Bi-monthly',
+      frequencyNotes: 'Odd months',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
+    const ordinalBiMonthlyEv = makeEvent({
+      frequency: 'Every 2 months',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
+    const pairedBiMonthlyEv = makeEvent({
+      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
+      dayOfWeek: 'Wed, Thu',
+    });
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
+  });
+  it('handles paused and hiatus statuses', () => {
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
+    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
+  });
+  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
+    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
+    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
+  });
+});
 
-.icon {
-  flex: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
+describe('expandEventSchedules', () => {
+  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
+    const karaoke = makeEvent({
+      id: 'FOCO0024',
+      title: 'Weekly Karaoke Night',
+      venue: 'R Bar and Lounge',
+      venueUrl: 'rbar.com',
+      organizerUrl: 'instagram.com/rbar',
+      url1: 'rbar.com/karaoke',
+      url1Notes: 'See events calendar',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon) / 8p (Wed, Sat)',
+      endTime: '10p (Mon) / 11p (Wed, Sat)',
+      frequency: 'Weekly',
+    });
+    const expanded = expandEventSchedules(karaoke);
+    assert.equal(expanded.length, 3);
+    assert.deepEqual(
+      expanded.map((e) => ({
+        id: e.id,
+        dayOfWeek: e.dayOfWeek,
+        startTime: e.startTime,
+        endTime: e.endTime,
+        venueUrl: e.venueUrl,
+        organizerUrl: e.organizerUrl,
+        url1: e.url1,
+        url1Notes: e.url1Notes,
+      })),
+      [
+        {
+          id: 'FOCO0024-mon',
+          dayOfWeek: 'Mon',
+          startTime: '7p',
+          endTime: '10p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+        {
+          id: 'FOCO0024-wed',
+          dayOfWeek: 'Wed',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+        {
+          id: 'FOCO0024-sat',
+          dayOfWeek: 'Sat',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+      ]
+    );
+  });
+  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
+    const commaEv = makeEvent({
+      id: 'E1',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon), 8p (Wed & Sat)',
+      endTime: '',
+    });
+    const commaExpanded = expandEventSchedules(commaEv);
+    assert.equal(commaExpanded.length, 3);
+    assert.equal(commaExpanded[0].startTime, '7p');
+    assert.equal(commaExpanded[1].startTime, '8p');
+    assert.equal(commaExpanded[2].startTime, '8p');
+    assert.equal(commaExpanded[0].endTime, '');
+    const colonEv = makeEvent({
+      id: 'E2',
+      dayOfWeek: 'Tue, Thu',
+      startTime: 'Tue: 6p / Thu: 7:30p',
+      endTime: '9p',
+    });
+    const colonExpanded = expandEventSchedules(colonEv);
+    assert.deepEqual(
+      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Tue', '6p', '9p'],
+        ['Thu', '7:30p', '9p'],
+      ]
+    );
+    const rangeEv = makeEvent({
+      id: 'E3',
+      dayOfWeek: 'Mon-Wed',
+      startTime: '5p (Mon-Tue) / 6p (Wed)',
+      endTime: '7p (Mon-Tue) / 8p (Wed)',
+    });
+    const rangeExpanded = expandEventSchedules(rangeEv);
+    assert.deepEqual(
+      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Mon', '5p', '7p'],
+        ['Tue', '5p', '7p'],
+        ['Wed', '6p', '8p'],
+      ]
+    );
+  });
+  it('supports parallel unlabeled times and same-day multiple slots', () => {
+    const parallelEv = makeEvent({
+      id: 'E4',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p / 7p',
+      endTime: '8p / 9p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E4-tue', 'Tue', '6p', '8p'],
+        ['E4-thu', 'Thu', '7p', '9p'],
+      ]
+    );
+    const sameDayEv = makeEvent({
+      id: 'E5',
+      dayOfWeek: 'Sat',
+      startTime: '10a / 2p',
+      endTime: '12p / 4p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E5-sat-1', 'Sat', '10a', '12p'],
+        ['E5-sat-2', 'Sat', '2p', '4p'],
+      ]
+    );
+  });
+  it('keeps single-time multi-day events unsplit', () => {
+    const sameTimeMultiDay = makeEvent({
+      id: 'FOCO0020',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p',
+      endTime: '9p',
+    });
+    const result = expandEventSchedules(sameTimeMultiDay);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
+    assert.equal(result[0].startTime, '6p');
+    assert.equal(result[0].endTime, '9p');
+  });
+});
 
-.head {
-  display: grid;
-  grid-template-columns: 84px 1fr 34px;
-  grid-template-areas: "time main chev";
-  gap: 16px;
-  padding: 18px 20px;
-  cursor: pointer;
-  align-items: start;
-  user-select: text;
-  -webkit-user-select: text;
-  -webkit-tap-highlight-color: transparent;
-}
+describe('isMonthActive', () => {
+  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
 
-.time {
-  grid-area: time;
-}
-
-.time b {
-  display: block;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--ink);
-}
-
-.time span {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 1.2;
-  color: var(--muted);
-}
-
-.main {
-  grid-area: main;
-  min-width: 0;
-}
-
-.next {
-  display: inline-block;
-  background-color: var(--accent);
-  color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 700;
-  border-radius: 5px;
-  padding: 2px 6px;
-  margin-bottom: 6px;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.title {
-  display: block;
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  color: var(--ink);
-}
-
-.venue {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 5px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ink);
-}
-
-.venueIcon {
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.host {
-  display: block;
-  margin-top: 2px;
-  margin-left: 22px;
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--muted);
-}
-
-.hostFlush {
-  margin-left: 0;
-}
-
-.hostLink {
-  color: var(--text-subtle);
-  font-weight: 600;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  margin-top: 11px;
-  font-size: 13.5px;
-  line-height: 1.3;
-}
-
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-}
-
-.priceFree {
-  color: var(--free);
-}
-
-.pricePaid {
-  color: var(--ink);
-}
-
-.area {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--line-strong);
-  flex-shrink: 0;
-}
-
-.sep2 {
-  display: inline-block;
-}
-
-.tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 3px 8px;
-  white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.chev {
-  grid-area: chev;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background-color: var(--topbar-bg);
-  color: var(--ink);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
-}
-
-.head:hover .chev,
-.chev:hover {
-  background-color: var(--pill-hover);
-}
-
-.chev:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.open .chev {
-  background-color: var(--ink);
-  color: var(--bg);
-  transform: rotate(180deg);
-}
-
-.open .head:hover .chev,
-.open .chev:hover {
-  background-color: var(--ink);
-  opacity: 0.9;
-}
-
-.body {
-  border-top: 1px solid var(--line);
-  padding: 18px 20px 20px 120px;
-}
-
-.bodyHidden {
-  display: none;
-}
-
-.address {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: 0 0 12px;
-}
-
-.address .icon {
-  margin-top: 2px;
-}
-
-.desc {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-  margin: 0 0 16px;
-  max-width: 580px;
-  white-space: pre-line;
-}
-
-.moreDetailsLink {
-  font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.facts {
-  margin: 0 0 18px;
-}
-
-.desc + .facts {
-  margin-top: -2px;
-}
-
-@container (max-width: 600px) {
-  .head {
-    grid-template-columns: 62px 1fr 30px;
-    gap: 10px;
-    padding: 16px 14px;
+================
+File: app/lib/cities.ts
+================
+export type CityPriceConfig = {
+  currencyCode: string;
+  currencySymbol: string;
+  unitSuffix: string;
+  maxPrice: number;
+  step: number;
+  underValue: number;
+  underLabel: string;
+  midLabel: string;
+};
+export type CityAlertBanner = {
+  message: string;
+  linkText?: string;
+  linkHref?: string;
+};
+export type CityConfig = {
+  slug: string;
+  name: string;
+  region: string;
+  heroLocation: string;
+  timeZone: string;
+  sheetTab: string;
+  sheetGid?: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
+  introTitle?: string;
+  introDescription?: string;
+  priceConfig?: CityPriceConfig;
+  alertBanner?: CityAlertBanner;
+};
+export const SITE_URL = 'https://www.someplacesocial.org';
+export const MAIN_SPREADSHEET_ID = '1dI6cIB28uxBDz9Vq6B4H9l2N2iu1ayTBkPDCkiWsHsU';
+export const CITIES: Record<string, CityConfig> = {
+  'medellin-colombia': {
+    slug: 'medellin-colombia',
+    name: 'Medellín',
+    region: 'Colombia',
+    heroLocation: 'Medellín, Colombia',
+    timeZone: 'America/Bogota',
+    sheetTab: 'Medellin',
+    sheetGid: '0',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Medellin Community Listings',
+    introDescription:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find traveler friendly language exchanges, free salsa classes, fun parties, and other stuff to do in Medellin, Colombia.',
+    priceConfig: {
+      currencyCode: 'COP',
+      currencySymbol: '$',
+      unitSuffix: 'k',
+      maxPrice: 100,
+      step: 5,
+      underValue: 40,
+      underLabel: 'Under 40k',
+      midLabel: '50k',
+    },
+  },
+  'fort-collins-colorado': {
+    slug: 'fort-collins-colorado',
+    name: 'Fort Collins',
+    region: 'Colorado',
+    heroLocation: 'Fort Collins, Colorado',
+    timeZone: 'America/Denver',
+    sheetTab: 'Fort Collins',
+    sheetGid: '466758538',
+    spreadsheetId: MAIN_SPREADSHEET_ID,
+    introTitle: 'Fort Collins Community Listings',
+    introDescription:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find local pub trivia, live music jams, board game nights, open mics, and other stuff to do in Fort Collins, Colorado.',
+    priceConfig: {
+      currencyCode: 'USD',
+      currencySymbol: '$',
+      unitSuffix: '',
+      maxPrice: 50,
+      step: 5,
+      underValue: 10,
+      underLabel: 'Under $10',
+      midLabel: '$25',
+    },
+    alertBanner: {
+      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
+      linkText: 'Contact.',
+      linkHref: '/fort-collins-colorado/contact',
+    },
+  },
+};
+export const DEFAULT_USD_PRICE_CONFIG: CityPriceConfig = {
+  currencyCode: 'USD',
+  currencySymbol: '$',
+  unitSuffix: '',
+  maxPrice: 50,
+  step: 5,
+  underValue: 10,
+  underLabel: 'Under $10',
+  midLabel: '$25',
+};
+export function getCityPriceConfig(city?: CityConfig): CityPriceConfig {
+  if (city?.priceConfig) return city.priceConfig;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return CITIES['medellin-colombia'].priceConfig!;
   }
-  .time b {
-    font-size: 21px;
+  return DEFAULT_USD_PRICE_CONFIG;
+}
+export function getCityTimeZone(city?: CityConfig): string {
+  if (city?.timeZone) return city.timeZone;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return 'America/Bogota';
   }
-  .time span {
-    font-size: 12px;
-  }
-  .chev {
-    width: 30px;
-    height: 30px;
-  }
-  .meta {
-    gap: 8px 10px;
-  }
-  .body {
-    padding: 16px 14px;
-  }
-  .tags {
-    flex-basis: 100%;
-  }
-  .sep2 {
-    display: none;
-  }
+  return 'America/Denver';
+}
+export function getCityBySlug(slug: string): CityConfig | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  return CITIES[normalized];
+}
+export function getAllCitySlugs(): string[] {
+  return Object.keys(CITIES);
+}
+export function getAllCities(): CityConfig[] {
+  return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+================
+File: app/page.tsx
+================
+import type { Metadata } from 'next';
+import AboutView from './components/AboutView';
+export const metadata: Metadata = {
+  title: 'Community Events, Social Clubs & Weekly Activities',
+  description:
+    'Find weekly community events, social clubs, classes, and meetups in Medellín, Fort Collins, and beyond. Free and accessible to everyone.',
+};
+export default function Home() {
+  return <AboutView />;
+}
+
+================
+File: app/components/Header.tsx
+================
+'use client';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { CityConfig } from '../lib/cities';
+import ThemeToggle from './ThemeToggle';
+import styles from './Header.module.css';
+interface HeaderProps {
+  city?: CityConfig;
+}
+export default function Header({ city }: HeaderProps) {
+  const pathname = usePathname();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  useEffect(() => {
+    if (!mobileDrawerOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMobileDrawerOpen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileDrawerOpen]);
+  const eventsHref = city ? `/${city.slug}/events` : '';
+  const aboutHref = city ? `/${city.slug}/about` : '/';
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+  const isEventsActive = Boolean(
+    city &&
+      (pathname === `/${city.slug}/events` ||
+        pathname.startsWith(`/${city.slug}/events/`))
+  );
+  const isAboutActive = city
+    ? pathname === `/${city.slug}/about`
+    : pathname === '/' || pathname === '/about';
+  const isContactActive = city
+    ? pathname === `/${city.slug}/contact`
+    : pathname === '/contact';
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandCol}>
+            <Link
+              href={city ? `/${city.slug}/events` : '/'}
+              className={styles.brandLogoLink}
+            >
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={540}
+                height={150}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            {city && (
+              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
+            )}
+          </div>
+          <nav className={styles.navDesktop} aria-label="Primary">
+            {city && (
+              <Link
+                href={eventsHref}
+                className={`${styles.navLink} ${
+                  isEventsActive ? styles.navLinkActive : ''
+                }`}
+              >
+                Events
+              </Link>
+            )}
+            <Link
+              href={aboutHref}
+              className={`${styles.navLink} ${
+                isAboutActive ? styles.navLinkActive : ''
+              }`}
+            >
+              About
+            </Link>
+            <Link
+              href={contactHref}
+              className={`${styles.navLink} ${
+                isContactActive ? styles.navLinkActive : ''
+              }`}
+            >
+              Contact
+            </Link>
+            <ThemeToggle />
+          </nav>
+          <div className={styles.navMobileActions}>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              {city && (
+                <Link
+                  href={eventsHref}
+                  className={`${styles.drawerNavLink} ${
+                    isEventsActive ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Events
+                </Link>
+              )}
+              <Link
+                href={aboutHref}
+                className={`${styles.drawerNavLink} ${
+                  isAboutActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href={contactHref}
+                className={`${styles.drawerNavLink} ${
+                  isContactActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+            </div>
+            <div className={styles.drawerSectionTitle}>Preferences</div>
+            <div className={styles.drawerNavLinks}>
+              <ThemeToggle showLabel />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 ================
@@ -13968,6 +13492,312 @@ export function filterAndCountEvents(
 }
 
 ================
+File: app/events/components/EventCard.module.css
+================
+.card {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  margin-bottom: 14px;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 110px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.card:not(.open):hover {
+  border-color: var(--line-strong);
+}
+
+.open {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-md);
+  overflow: visible;
+  content-visibility: visible;
+  z-index: 10;
+}
+
+.icon {
+  flex: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 84px 1fr 34px;
+  grid-template-areas: "time main chev";
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  align-items: start;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.time {
+  grid-area: time;
+}
+
+.time b {
+  display: block;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.time span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+}
+
+.next {
+  display: inline-block;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.title {
+  display: block;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.venue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.venueIcon {
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.venueText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.venueLocation {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.host {
+  display: block;
+  margin-top: 2px;
+  margin-left: 22px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.hostFlush {
+  margin-left: 0;
+}
+
+.hostLink {
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 11px;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.priceFree {
+  color: var(--free);
+}
+
+.pricePaid {
+  color: var(--ink);
+}
+
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--line-strong);
+  flex-shrink: 0;
+}
+
+.sep2 {
+  display: inline-block;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.chev {
+  grid-area: chev;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--topbar-bg);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+
+.head:hover .chev,
+.chev:hover {
+  background-color: var(--pill-hover);
+}
+
+.chev:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.open .chev {
+  background-color: var(--ink);
+  color: var(--bg);
+  transform: rotate(180deg);
+}
+
+.open .head:hover .chev,
+.open .chev:hover {
+  background-color: var(--ink);
+  opacity: 0.9;
+}
+
+.body {
+  border-top: 1px solid var(--line);
+  padding: 16px 20px 20px 120px;
+}
+
+.bodyHidden {
+  display: none;
+}
+
+.desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+  margin: 0 0 16px;
+  max-width: 580px;
+  white-space: pre-line;
+}
+
+.moreDetailsLink {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.facts {
+  margin: 0 0 18px;
+}
+
+.desc + .facts {
+  margin-top: -2px;
+}
+
+@container (max-width: 600px) {
+  .head {
+    grid-template-columns: 62px 1fr 30px;
+    gap: 10px;
+    padding: 16px 14px;
+  }
+  .time b {
+    font-size: 21px;
+  }
+  .time span {
+    font-size: 12px;
+  }
+  .chev {
+    width: 30px;
+    height: 30px;
+  }
+  .meta {
+    gap: 8px 10px;
+  }
+  .body {
+    padding: 16px 14px;
+  }
+  .tags {
+    flex-basis: 100%;
+  }
+  .sep2 {
+    display: none;
+  }
+}
+
+================
 File: app/events/CityEventsView.tsx
 ================
 'use client';
@@ -14059,7 +13889,7 @@ export default function CityEventsView({
   const [openEventId, setOpenEventId] = useState<string | null>(null);
   const [editModalEvent, setEditModalEvent] = useState<Event | null>(null);
   const pendingScrollIdRef = useRef<string | null>(null);
-  const handledInitialParamRef = useRef<string | null>(null);
+  const handledInitialHashRef = useRef<string | null>(null);
   const maxPrice =
     selectedMaxPrice && selectedMaxPrice.citySlug === city.slug
       ? selectedMaxPrice.value
@@ -14093,43 +13923,63 @@ export default function CityEventsView({
   const indexedEvents = useMemo(() => {
     return indexEvents(allEvents, rollingWeek, priceConfig.currencyCode);
   }, [allEvents, rollingWeek, priceConfig.currencyCode]);
-  const syncEventQueryParam = useCallback((slug: string | null) => {
+  const syncEventHash = useCallback((slug: string | null) => {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
-    const current = url.searchParams.get('event');
-    if (slug === null && current === null) return;
-    if (slug !== null && current === slug) return;
-    if (slug) {
-      url.searchParams.set('event', slug);
-    } else {
-      url.searchParams.delete('event');
-    }
+    const nextHash = slug ? `#${slug}` : '';
+    if (url.hash === nextHash) return;
+    url.hash = nextHash;
     const nextUrl = `${url.pathname}${url.search}${url.hash}`;
     window.history.replaceState(window.history.state, '', nextUrl);
   }, []);
+  const openEventFromHash = useCallback(
+    (clearIfEmpty: boolean) => {
+      if (typeof window === 'undefined') return;
+      const rawHash = window.location.hash.replace(/^#/, '').trim();
+      if (!rawHash) {
+        if (clearIfEmpty) {
+          setOpenEventId(null);
+        }
+        return;
+      }
+      const resolved = resolveEventBySlug(allEvents, rawHash);
+      if (!resolved) return;
+      const targetIdx = allEvents.indexOf(resolved.event);
+      const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
+      const firstActiveDayIdx = indexedTarget
+        ? indexedTarget.activeDays.findIndex(Boolean)
+        : -1;
+      if (firstActiveDayIdx < 0 || !indexedTarget) return;
+      const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
+      setActiveDayIdx((prevDay) =>
+        indexedTarget.activeDays[prevDay] ? prevDay : firstActiveDayIdx
+      );
+      setOpenEventId(key);
+      syncEventHash(resolved.canonicalSlug);
+      pendingScrollIdRef.current = `event-card-${key}`;
+    },
+    [allEvents, eventKeyMap, indexedEvents, syncEventHash]
+  );
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (handledInitialParamRef.current === city.slug) return;
-    handledInitialParamRef.current = city.slug;
-    const eventParam = new URLSearchParams(window.location.search).get('event');
-    if (!eventParam) return;
-    const resolved = resolveEventBySlug(allEvents, eventParam);
-    if (!resolved) return;
-    const targetIdx = allEvents.indexOf(resolved.event);
-    const indexedTarget = targetIdx >= 0 ? indexedEvents[targetIdx] : null;
-    const firstActiveDayIdx = indexedTarget
-      ? indexedTarget.activeDays.findIndex(Boolean)
-      : -1;
-    if (firstActiveDayIdx < 0) return;
-    const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
-    const rafId = window.requestAnimationFrame(() => {
-      setActiveDayIdx(firstActiveDayIdx);
-      setOpenEventId(key);
-      syncEventQueryParam(resolved.canonicalSlug);
-      pendingScrollIdRef.current = `event-card-${key}`;
-    });
-    return () => window.cancelAnimationFrame(rafId);
-  }, [allEvents, city.slug, eventKeyMap, indexedEvents, syncEventQueryParam]);
+    let rafId: number | null = null;
+    if (handledInitialHashRef.current !== city.slug) {
+      rafId = window.requestAnimationFrame(() => {
+        handledInitialHashRef.current = city.slug;
+        openEventFromHash(false);
+      });
+    }
+    const handleHashChange = () => {
+      openEventFromHash(true);
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [city.slug, openEventFromHash]);
   useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     const domId = pendingScrollIdRef.current;
@@ -14229,13 +14079,13 @@ export default function CityEventsView({
     (ev: Event, uniqueId: string) => {
       if (openEventId === uniqueId) {
         setOpenEventId(null);
-        syncEventQueryParam(null);
+        syncEventHash(null);
       } else {
         setOpenEventId(uniqueId);
-        syncEventQueryParam(getEventSlug(ev));
+        syncEventHash(getEventSlug(ev));
       }
     },
-    [openEventId, syncEventQueryParam]
+    [openEventId, syncEventHash]
   );
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
@@ -14319,7 +14169,7 @@ export default function CityEventsView({
             onSelectDay={(idx) => {
               setActiveDayIdx(idx);
               setOpenEventId(null);
-              syncEventQueryParam(null);
+              syncEventHash(null);
             }}
             dayCounts={dayCounts}
           />
@@ -14575,9 +14425,16 @@ function EventCard({
           {displayVenue && (
             <div className={styles.venue}>
               <PinIcon className={`${styles.icon} ${styles.venueIcon}`} />
-              <InlineExternalLink href={venueUrl}>
-                {displayVenue}
-              </InlineExternalLink>
+              <div className={styles.venueText}>
+                <InlineExternalLink href={venueUrl}>
+                  {displayVenue}
+                </InlineExternalLink>
+                {showDistinctAddress && (
+                  <span className={styles.venueLocation}>
+                    , {event.location}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           {showOrganizer && (
@@ -14663,12 +14520,6 @@ function EventCard({
         className={`${styles.body} ${!isOpen ? styles.bodyHidden : ''}`}
         aria-hidden={!isOpen}
       >
-        {showDistinctAddress && (
-          <div className={styles.address}>
-            <PinIcon className={styles.icon} />
-            <span>{event.location}</span>
-          </div>
-        )}
         {(descriptionText || moreDetailsUrl) && (
           <p className={styles.desc}>
             {descriptionText}

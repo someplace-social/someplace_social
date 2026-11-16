@@ -79,6 +79,8 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .edit {
@@ -121,6 +123,7 @@
   }
   .actionsFooter {
     justify-content: center;
+    gap: 16px;
   }
 }
 

@@ -2,12 +2,15 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getAllCitySlugs, getCityBySlug } from '../../lib/cities';
 import AboutView from '../../components/AboutView';
+
 type PageProps = {
   params: Promise<{ city: string }>;
 };
+
 export async function generateStaticParams() {
   return getAllCitySlugs().map((city) => ({ city }));
 }
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { city: citySlug } = await params;
   const city = getCityBySlug(citySlug);
@@ -21,10 +24,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `About — ${city.name}`,
     description: `Learn about Someplace Social and community event listings in ${city.heroLocation}.`,
     alternates: {
-      canonical: `/${city.slug}/about`,
+      canonical: '/',
+    },
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
     },
   };
 }
+
 export default async function CityAboutPage({ params }: PageProps) {
   const { city: citySlug } = await params;
   const city = getCityBySlug(citySlug);

@@ -5,12 +5,15 @@ import { getAllCitySlugs, getCityBySlug } from '../../lib/cities';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ContactView from '../../contact/ContactView';
+
 type PageProps = {
   params: Promise<{ city: string }>;
 };
+
 export async function generateStaticParams() {
   return getAllCitySlugs().map((city) => ({ city }));
 }
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { city: citySlug } = await params;
   const city = getCityBySlug(citySlug);
@@ -20,14 +23,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       robots: { index: false, follow: false },
     };
   }
+  const title = `Contact Us — ${city.name}`;
+  const description = `Submit a new regularly occurring event in ${city.heroLocation} or ask us a question.`;
+  const canonicalPath = `/${city.slug}/contact`;
   return {
-    title: `Contact Us — ${city.name}`,
-    description: `Submit a new regularly occurring event in ${city.heroLocation} or ask us a question.`,
+    title,
+    description,
     alternates: {
-      canonical: `/${city.slug}/contact`,
+      canonical: canonicalPath,
+    },
+    openGraph: {
+      title: `${title} | Someplace Social`,
+      description,
+      url: canonicalPath,
+      siteName: 'Someplace Social',
+      locale: 'en_US',
+      type: 'website',
     },
   };
 }
+
 export default async function CityContactPage({ params }: PageProps) {
   const { city: citySlug } = await params;
   const city = getCityBySlug(citySlug);

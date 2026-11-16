@@ -4,10 +4,27 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import styles from '../Page.module.css';
 import type { Metadata } from 'next';
+
+const title = 'Support Us';
+const description =
+  'Learn how you can support Someplace Social and keep the community going.';
+
 export const metadata: Metadata = {
-  title: 'Support Us',
-  description: 'Learn how you can support Someplace Social and keep the community going.',
+  title,
+  description,
+  alternates: {
+    canonical: '/support',
+  },
+  openGraph: {
+    title: `${title} | Someplace Social`,
+    description,
+    url: '/support',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
+
 export default function SupportPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

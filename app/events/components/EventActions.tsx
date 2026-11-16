@@ -1,8 +1,9 @@
 'use client';
+import Link from 'next/link';
 import type { CityConfig } from '../../lib/cities';
 import type { Event } from '../../lib/google-sheets';
 import AddToCalendarButton from './AddToCalendarButton';
-import { PenIcon, PinIcon } from './EventIcons';
+import { LinkIcon, PenIcon, PinIcon } from './EventIcons';
 import ProveItButton from './ProveItButton';
 import ShareButton from './ShareButton';
 import styles from './EventActions.module.css';
@@ -12,6 +13,7 @@ interface EventActionsProps {
   city: CityConfig;
   selectedDate?: Date | null;
   mapsHref: string;
+  eventPageHref?: string;
   onOpenEdit: () => void;
 }
 
@@ -20,6 +22,7 @@ export default function EventActions({
   city,
   selectedDate,
   mapsHref,
+  eventPageHref,
   onOpenEdit,
 }: EventActionsProps) {
   return (
@@ -61,6 +64,12 @@ export default function EventActions({
         />
       </div>
       <div className={styles.actionsFooter}>
+        {eventPageHref && (
+          <Link href={eventPageHref} className={styles.edit}>
+            <LinkIcon />
+            Event page
+          </Link>
+        )}
         <button type="button" className={styles.edit} onClick={onOpenEdit}>
           <PenIcon />
           Suggest edit

@@ -63,13 +63,16 @@
 .alertBannerLink:hover {
   opacity: 0.8;
 }
-.mainLayout {
+.mainContent {
   flex: 1;
+  width: 100%;
+}
+.mainLayout {
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   box-sizing: border-box;
-  padding: 36px 32px 72px;
+  padding: 36px 32px 56px;
   display: flex;
   align-items: flex-start;
   gap: 48px;
@@ -214,7 +217,7 @@
     gap: 8px;
   }
   .mainLayout {
-    padding: 16px 16px 40px;
+    padding: 16px 16px 32px;
     flex-direction: column;
     gap: 16px;
   }

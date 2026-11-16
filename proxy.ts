@@ -31,7 +31,7 @@ export function proxy(request: NextRequest) {
   const destination = request.nextUrl.clone();
   destination.pathname = `/${city.slug}/events/${encodeURIComponent(rawEvent)}`;
   destination.searchParams.delete('event');
-  return NextResponse.redirect(destination, 307);
+  return NextResponse.redirect(destination, 308);
 }
 export const config = {
   matcher: [

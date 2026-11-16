@@ -4,6 +4,7 @@ import { CityConfig, getAllCities } from '../lib/cities';
 import Header from './Header';
 import Footer from './Footer';
 import styles from '../about/About.module.css';
+
 const CRITERIA_ITEMS = [
   {
     number: '01',
@@ -31,6 +32,7 @@ const CRITERIA_ITEMS = [
     description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
   },
 ] as const;
+
 const HOW_IT_WORKS_STEPS = [
   {
     title: 'Weekly Updates',
@@ -45,19 +47,27 @@ const HOW_IT_WORKS_STEPS = [
     description: 'No accounts, no sponsors, no cookies, and no paywalls.',
   },
 ] as const;
+
 interface AboutViewProps {
   city?: CityConfig;
 }
+
 export default function AboutView({ city }: AboutViewProps) {
   const cities = getAllCities();
+  const isHome = !city;
+  const eyebrowText = isHome ? 'SOMEPLACE SOCIAL' : 'ABOUT';
+  const headingText = isHome
+    ? 'Weekly Community Events & Social Clubs'
+    : 'About Someplace Social';
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header city={city} />
       <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>ABOUT</p>
-            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.eyebrow}>{eyebrowText}</p>
+            <h1 className={styles.heroTitle}>{headingText}</h1>
             <p className={styles.heroDescription}>
               We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
             </p>

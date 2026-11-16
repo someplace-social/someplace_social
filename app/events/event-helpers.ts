@@ -2,6 +2,7 @@ import { Event } from '../lib/google-sheets';
 import {
   CityConfig,
   SITE_URL,
+  getCityCountryCode,
   getCityPriceConfig,
   getCityTimeZone,
 } from '../lib/cities';
@@ -11,6 +12,7 @@ import {
   formatTimeRange,
   isEventActiveOnDate,
   isFreeOrDonation,
+  matchesDay,
   parseEventPrice,
   parseHour,
 } from './utils';
@@ -50,6 +52,216 @@ export type ProveItSource = {
   href: string;
   notes: string;
 };
+
+export type DirectoryGroup = {
+  key: string;
+  label: string;
+  events: Event[];
+};
+
+const MONTH_NAME_MAP: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+
+const DIRECTORY_WEEKDAYS = [
+  { key: 'mon', label: 'Monday' },
+  { key: 'tue', label: 'Tuesday' },
+  { key: 'wed', label: 'Wednesday' },
+  { key: 'thu', label: 'Thursday' },
+  { key: 'fri', label: 'Friday' },
+  { key: 'sat', label: 'Saturday' },
+  { key: 'sun', label: 'Sunday' },
+] as const;
+
+function buildValidUtcNoonDate(
+  year: number,
+  month: number,
+  day: number
+): Date | null {
+  if (year < 2020 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+  const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return date;
+}
+
+export function parseLastUpdatedDate(value?: string | null): Date | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const gvizMatch = trimmed.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
+  if (gvizMatch) {
+    return buildValidUtcNoonDate(
+      Number(gvizMatch[1]),
+      Number(gvizMatch[2]) + 1,
+      Number(gvizMatch[3])
+    );
+  }
+
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:$|T)/);
+  if (isoMatch) {
+    return buildValidUtcNoonDate(
+      Number(isoMatch[1]),
+      Number(isoMatch[2]),
+      Number(isoMatch[3])
+    );
+  }
+
+  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    return buildValidUtcNoonDate(
+      Number(slashMatch[3]),
+      Number(slashMatch[1]),
+      Number(slashMatch[2])
+    );
+  }
+
+  const monthFirstMatch = trimmed.match(/^([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})$/);
+  if (monthFirstMatch) {
+    const month = MONTH_NAME_MAP[monthFirstMatch[1].toLowerCase()];
+    if (month) {
+      return buildValidUtcNoonDate(
+        Number(monthFirstMatch[3]),
+        month,
+        Number(monthFirstMatch[2])
+      );
+    }
+  }
+
+  const dayFirstMatch = trimmed.match(/^(\d{1,2})\s+([A-Za-z]+)\.?,?\s+(\d{4})$/);
+  if (dayFirstMatch) {
+    const month = MONTH_NAME_MAP[dayFirstMatch[2].toLowerCase()];
+    if (month) {
+      return buildValidUtcNoonDate(
+        Number(dayFirstMatch[3]),
+        month,
+        Number(dayFirstMatch[1])
+      );
+    }
+  }
+
+  if (/\b20\d{2}\b/.test(trimmed)) {
+    const timestamp = Date.parse(trimmed);
+    if (!Number.isNaN(timestamp)) {
+      const parsed = new Date(timestamp);
+      return buildValidUtcNoonDate(
+        parsed.getFullYear(),
+        parsed.getMonth() + 1,
+        parsed.getDate()
+      );
+    }
+  }
+
+  return null;
+}
+
+export function formatIsoDateAttribute(value?: string | null): string | null {
+  const date = parseLastUpdatedDate(value);
+  if (!date) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+export function groupEventsForDirectory(events: Event[]): DirectoryGroup[] {
+  if (events.length === 0) return [];
+
+  const dailyEvents: Event[] = [];
+  const weekdayBuckets = new Map<string, Event[]>(
+    DIRECTORY_WEEKDAYS.map((d) => [d.key, []])
+  );
+  const otherEvents: Event[] = [];
+
+  for (const ev of events) {
+    const daySpec =
+      (ev.dayOfWeek || '').trim() ||
+      [ev.frequency, ev.frequencyNotes].filter(Boolean).join(' ').trim();
+
+    if (/\b(?:daily|everyday|every day)\b/i.test(daySpec)) {
+      dailyEvents.push(ev);
+      continue;
+    }
+
+    let matchedAny = false;
+    for (const day of DIRECTORY_WEEKDAYS) {
+      if (matchesDay(daySpec, day.label)) {
+        weekdayBuckets.get(day.key)!.push(ev);
+        matchedAny = true;
+      }
+    }
+
+    if (!matchedAny) {
+      otherEvents.push(ev);
+    }
+  }
+
+  const sortByTimeThenTitle = (list: Event[]) =>
+    list.sort((a, b) => {
+      const hourDiff = parseHour(a.startTime) - parseHour(b.startTime);
+      if (hourDiff !== 0) return hourDiff;
+      return a.title.localeCompare(b.title);
+    });
+
+  const groups: DirectoryGroup[] = [];
+  if (dailyEvents.length > 0) {
+    groups.push({
+      key: 'daily',
+      label: 'Daily',
+      events: sortByTimeThenTitle(dailyEvents),
+    });
+  }
+
+  for (const day of DIRECTORY_WEEKDAYS) {
+    const bucket = weekdayBuckets.get(day.key)!;
+    if (bucket.length > 0) {
+      groups.push({
+        key: day.key,
+        label: day.label,
+        events: sortByTimeThenTitle(bucket),
+      });
+    }
+  }
+
+  if (otherEvents.length > 0) {
+    groups.push({
+      key: 'other',
+      label: 'Other Schedules',
+      events: sortByTimeThenTitle(otherEvents),
+    });
+  }
+
+  return groups;
+}
 
 function cleanOptionalField(raw?: string): string {
   if (!raw) return '';
@@ -557,6 +769,8 @@ export function buildEventJsonLd(
       : null;
   const description = (event.about || event.notes || '').trim();
   const streetAddress = (event.location || '').trim();
+  const countryCode = getCityCountryCode(city);
+  const imageUrl = `${canonicalUrl}/opengraph-image`;
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -566,6 +780,7 @@ export function buildEventJsonLd(
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     eventStatus: 'https://schema.org/EventScheduled',
     url: canonicalUrl,
+    image: imageUrl,
     location: {
       '@type': 'Place',
       name: venueName || city.heroLocation,
@@ -575,6 +790,7 @@ export function buildEventJsonLd(
         ...(streetAddress ? { streetAddress } : {}),
         addressLocality: city.name,
         ...(city.region ? { addressRegion: city.region } : {}),
+        ...(countryCode ? { addressCountry: countryCode } : {}),
       },
     },
     ...(description ? { description } : {}),

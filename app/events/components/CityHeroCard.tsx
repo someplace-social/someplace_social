@@ -1,5 +1,7 @@
 'use client';
+import { formatIsoDateAttribute } from '../event-helpers';
 import styles from './CityHeroCard.module.css';
+
 interface CityHeroCardProps {
   cityName: string;
   introTitle?: string;
@@ -11,6 +13,7 @@ interface CityHeroCardProps {
   onSelectChip: (activity: string) => void;
   onClearActivities: () => void;
 }
+
 export default function CityHeroCard({
   cityName,
   introTitle,
@@ -23,6 +26,8 @@ export default function CityHeroCard({
   onClearActivities,
 }: CityHeroCardProps) {
   const isAllActive = selectedActivities.length === 0;
+  const lastUpdatedIso = formatIsoDateAttribute(lastUpdated);
+
   return (
     <section className={styles.heroCard} aria-labelledby="city-intro-heading">
       <div className={styles.titleCol}>
@@ -55,7 +60,12 @@ export default function CityHeroCard({
                   <path d="M9 12.5l2 2 4-4.5" />
                 </svg>
                 <span className={styles.lastUpdatedLabel}>Last updated:</span>
-                <span className={styles.lastUpdatedDate}>{lastUpdated}</span>
+                <time
+                  dateTime={lastUpdatedIso ?? undefined}
+                  className={styles.lastUpdatedDate}
+                >
+                  {lastUpdated}
+                </time>
               </div>
             )}
           </div>

@@ -4,9 +4,23 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContactView from './ContactView';
 
+const title = 'Contact Us';
+const description = 'Submit a new regularly occurring event or ask us a question.';
+
 export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Submit a new regularly occurring event or ask us a question.',
+  title,
+  description,
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: `${title} | Someplace Social`,
+    description,
+    url: '/contact',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function ContactPage() {

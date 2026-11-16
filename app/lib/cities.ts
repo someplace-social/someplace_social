@@ -17,6 +17,7 @@ export type CityConfig = {
   slug: string;
   name: string;
   region: string;
+  countryCode?: string;
   heroLocation: string;
   timeZone: string;
   sheetTab: string;
@@ -35,6 +36,7 @@ export const CITIES: Record<string, CityConfig> = {
     slug: 'medellin-colombia',
     name: 'Medellín',
     region: 'Colombia',
+    countryCode: 'CO',
     heroLocation: 'Medellín, Colombia',
     timeZone: 'America/Bogota',
     sheetTab: 'Medellin',
@@ -58,6 +60,7 @@ export const CITIES: Record<string, CityConfig> = {
     slug: 'fort-collins-colorado',
     name: 'Fort Collins',
     region: 'Colorado',
+    countryCode: 'US',
     heroLocation: 'Fort Collins, Colorado',
     timeZone: 'America/Denver',
     sheetTab: 'Fort Collins',
@@ -77,7 +80,7 @@ export const CITIES: Record<string, CityConfig> = {
       midLabel: '$25',
     },
     alertBanner: {
-      message: 'Nov 8, 2026: This page is new! Some info may not be correct. Having issues?',
+      message: 'This page is new! Some info may not be correct. Having issues?',
       linkText: 'Contact.',
       linkHref: '/fort-collins-colorado/contact',
     },
@@ -106,6 +109,14 @@ export function getCityTimeZone(city?: CityConfig): string {
     return 'America/Bogota';
   }
   return 'America/Denver';
+}
+export function getCityCountryCode(city?: CityConfig): string | undefined {
+  if (city?.countryCode) return city.countryCode;
+  if (city?.region?.toLowerCase().includes('colombia') || city?.slug?.includes('colombia')) {
+    return 'CO';
+  }
+  if (city) return 'US';
+  return undefined;
 }
 export function getCityBySlug(slug: string): CityConfig | undefined {
   if (!slug) return undefined;

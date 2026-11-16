@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { CityConfig } from '../lib/cities';
+import { type CityConfig, getAllCities } from '../lib/cities';
 import styles from './Footer.module.css';
 
 interface FooterProps {
@@ -8,6 +8,7 @@ interface FooterProps {
 
 export default function Footer({ city }: FooterProps) {
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
+  const cities = getAllCities();
 
   return (
     <footer className={styles.footer}>
@@ -24,6 +25,31 @@ export default function Footer({ city }: FooterProps) {
               Buy me a drink.
             </a>
           </div>
+          <nav className={styles.footerNav} aria-label="Footer navigation">
+            <Link href="/" className={styles.footerNavLink}>
+              All Cities
+            </Link>
+            {cities.map((c) => {
+              const isActive = city?.slug === c.slug;
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/${c.slug}/events`}
+                  className={`${styles.footerNavLink} ${
+                    isActive ? styles.footerNavLinkActive : ''
+                  }`}
+                >
+                  {c.name}
+                </Link>
+              );
+            })}
+            <Link href="/support" className={styles.footerNavLink}>
+              Support
+            </Link>
+            <Link href={contactHref} className={styles.footerNavLink}>
+              Contact
+            </Link>
+          </nav>
           <div className={styles.footerQuoteSection}>
             <blockquote className={styles.footerQuoteText}>
               “What should young people do with their lives today? Many things,
