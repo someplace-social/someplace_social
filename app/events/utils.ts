@@ -1,5 +1,6 @@
 import { Event } from '../lib/google-sheets';
 import { CityPriceConfig } from '../lib/cities';
+
 export type IndexedEvent = Event & {
   parsedHour: number;
   parsedPrice: number | null;
@@ -7,6 +8,7 @@ export type IndexedEvent = Event & {
   searchCorpus: string;
   activeDays: boolean[];
 };
+
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -30,6 +32,7 @@ export function parseHour(timeStr: string): number {
   const numMatch = cleaned.match(/\d+/);
   return numMatch ? parseInt(numMatch[0], 10) : 18;
 }
+
 export function formatTimeLabel(timeStr: string): string {
   if (!timeStr) return '';
   const cleaned = timeStr.trim();
@@ -42,6 +45,7 @@ export function formatTimeLabel(timeStr: string): string {
   }
   return cleaned;
 }
+
 export function formatTimeRange(
   startTime: string,
   endTime: string
@@ -50,6 +54,7 @@ export function formatTimeRange(
   const end = endTime ? formatTimeLabel(endTime) : undefined;
   return { start, end };
 }
+
 export function formatRecurrenceText(
   frequency?: string,
   frequencyNotes?: string
@@ -72,11 +77,13 @@ export function formatRecurrenceText(
   }
   return freq || notes || '';
 }
+
 export function isFreePrice(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
   return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
 }
+
 export function isFreeOrDonation(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
@@ -88,6 +95,7 @@ export function isFreeOrDonation(price: string): boolean {
     p === '0k'
   );
 }
+
 export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'): number | null {
   if (!priceStr) return 0;
   const cleaned = priceStr.trim().toLowerCase();
@@ -119,6 +127,7 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
   }
   return null;
 }
+
 export function matchesPriceFilter(
   eventPrice: string,
   maxPriceFilter: number,
@@ -139,6 +148,7 @@ export function matchesPriceFilter(
   }
   return num <= maxPriceFilter;
 }
+
 export function formatPriceValue(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free';
   if (config.unitSuffix) {
@@ -146,34 +156,38 @@ export function formatPriceValue(val: number, config: CityPriceConfig): string {
   }
   return `${config.currencySymbol}${val}`;
 }
+
 export function formatPriceReadout(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   if (val >= config.maxPrice) return 'Any price';
   return `Up to ${formatPriceValue(val, config)}`;
 }
+
 export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
   if (val >= config.maxPrice) return 'All prices';
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   return `Up to ${formatPriceValue(val, config)}`;
 }
+
 const DAY_ALIAS_MAP: Record<string, string[]> = {
-  sun: ['sun', 'sunday'],
-  sunday: ['sun', 'sunday'],
-  mon: ['mon', 'monday'],
-  monday: ['mon', 'monday'],
-  tue: ['tue', 'tues', 'tuesday'],
-  tuesday: ['tue', 'tues', 'tuesday'],
-  wed: ['wed', 'weds', 'wednesday'],
-  wednesday: ['wed', 'weds', 'wednesday'],
-  thu: ['thu', 'thur', 'thurs', 'thursday'],
-  thursday: ['thu', 'thur', 'thurs', 'thursday'],
-  fri: ['fri', 'friday'],
-  friday: ['fri', 'friday'],
-  sat: ['sat', 'saturday'],
-  saturday: ['sat', 'saturday'],
+  sun: ['sun', 'sunday', 'sundays'],
+  sunday: ['sun', 'sunday', 'sundays'],
+  mon: ['mon', 'monday', 'mondays'],
+  monday: ['mon', 'monday', 'mondays'],
+  tue: ['tue', 'tues', 'tuesday', 'tuesdays'],
+  tuesday: ['tue', 'tues', 'tuesday', 'tuesdays'],
+  wed: ['wed', 'weds', 'wednesday', 'wednesdays'],
+  wednesday: ['wed', 'weds', 'wednesday', 'wednesdays'],
+  thu: ['thu', 'thur', 'thurs', 'thursday', 'thursdays'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday', 'thursdays'],
+  fri: ['fri', 'friday', 'fridays'],
+  friday: ['fri', 'friday', 'fridays'],
+  sat: ['sat', 'saturday', 'saturdays'],
+  saturday: ['sat', 'saturday', 'saturdays'],
 };
+
 const DAY_INDEX: Record<string, number> = {
   sun: 0,
   sunday: 0,
@@ -194,32 +208,43 @@ const DAY_INDEX: Record<string, number> = {
   sat: 6,
   saturday: 6,
 };
+
 export function normalizeDayOfWeek(dayStr: string): string {
   if (!dayStr) return '';
   const trimmed = dayStr.trim();
   const lower = trimmed.toLowerCase();
+  if (lower === 'varies' || lower.startsWith('varies')) {
+    return 'Varies';
+  }
   if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
     return 'Daily';
   }
   const DAY_TO_SHORT: Record<string, string> = {
     sun: 'Sun',
     sunday: 'Sun',
+    sundays: 'Sun',
     mon: 'Mon',
     monday: 'Mon',
+    mondays: 'Mon',
     tue: 'Tue',
     tues: 'Tue',
     tuesday: 'Tue',
+    tuesdays: 'Tue',
     wed: 'Wed',
     weds: 'Wed',
     wednesday: 'Wed',
+    wednesdays: 'Wed',
     thu: 'Thu',
     thur: 'Thu',
     thurs: 'Thu',
     thursday: 'Thu',
+    thursdays: 'Thu',
     fri: 'Fri',
     friday: 'Fri',
+    fridays: 'Fri',
     sat: 'Sat',
     saturday: 'Sat',
+    saturdays: 'Sat',
   };
   const rangeMatch = trimmed.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
   if (rangeMatch) {
@@ -239,12 +264,16 @@ export function normalizeDayOfWeek(dayStr: string): string {
   }
   return normalized.length > 0 ? normalized.join(', ') : trimmed;
 }
+
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
   const targetKey = targetDayName.trim().toLowerCase();
   const targetIndex = DAY_INDEX[targetKey];
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
   const rawLower = eventDays.toLowerCase();
+  if (rawLower.includes('varies')) {
+    return false;
+  }
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
     return true;
   }
@@ -268,6 +297,7 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   }
   return false;
 }
+
 const MONTH_NAME_TO_NUM: Record<string, number> = {
   jan: 1, january: 1, enero: 1, ene: 1,
   feb: 2, february: 2, febrero: 2,
@@ -282,18 +312,67 @@ const MONTH_NAME_TO_NUM: Record<string, number> = {
   nov: 11, november: 11, noviembre: 11,
   dec: 12, december: 12, diciembre: 12, dic: 12,
 };
-const BIWEEKLY_REGEX =
-  /\b(?:bi[-\s]?weekly|every\s+other\s+week|every\s+(?:2|two)\s+weeks?|alternating\s+weeks?)\b/i;
+
 const BIMONTHLY_REGEX =
   /\b(?:bi[-\s]?monthly|every\s+other\s+month|every\s+(?:2|two)\s+months?)\b/i;
+
 const ORDINAL_TOKEN_PATTERN =
   '(?:1st|first|primer[oa]?|2nd|second|segund[oa]|3rd|third|tercer[oa]?|4th|fourth|cuart[oa]|5th|fifth|quint[oa]|last|final|ultimo|últim[oa])';
+
 const WEEKDAY_TOKEN_PATTERN =
-  '(?:sun(?:day)?|mon(?:day)?|tue(?:s|sday)?|wed(?:s|nesday)?|thu(?:r|rs|rsday)?|fri(?:day)?|sat(?:urday)?)';
+  '(?:sun(?:days?|s)?|mon(?:days?|s)?|tue(?:sdays?|s)?|wed(?:nesdays?|s)?|thu(?:rsdays?|rs?|s)?|fri(?:days?|s)?|sat(?:urdays?|s)?)';
+
 const DAY_PAIRED_ORDINAL_REGEX = new RegExp(
   `\\b((?:${ORDINAL_TOKEN_PATTERN})(?:\\s*(?:,\\s*(?:and\\b|&|y\\b)?|&|/|\\band\\b|\\by\\b)\\s*(?:${ORDINAL_TOKEN_PATTERN}))*)\\s+(?:of\\s+)?(${WEEKDAY_TOKEN_PATTERN})\\b`,
   'gi'
 );
+
+export type DateOfMonthPattern = {
+  isDateOfMonth: boolean;
+  days: number[];
+  isLastDay: boolean;
+};
+
+export function parseDateOfMonthPattern(
+  frequency?: string,
+  frequencyNotes?: string
+): DateOfMonthPattern {
+  const combined = [frequency, frequencyNotes].filter(Boolean).join(' ').trim();
+  if (!combined) {
+    return { isDateOfMonth: false, days: [], isLastDay: false };
+  }
+  const hasWeekday = new RegExp(`\\b${WEEKDAY_TOKEN_PATTERN}\\b`, 'i').test(combined);
+  if (hasWeekday) {
+    return { isDateOfMonth: false, days: [], isLastDay: false };
+  }
+  const isMonthlyStyle =
+    /\b(?:monthly|every\s+month|once\s+(?:a|per)\s+month|cada\s+mes|mensual)\b/i.test(combined);
+  const isLastDay = /\b(?:last|final|ultimo|último)\s+day\b/i.test(combined);
+  const days: number[] = [];
+  for (const m of combined.matchAll(/\b([1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\b/gi)) {
+    const num = parseInt(m[1], 10);
+    if (num >= 1 && num <= 31 && !days.includes(num)) {
+      days.push(num);
+    }
+  }
+  const isDateOfMonth = isMonthlyStyle || isLastDay || days.length > 0;
+  return { isDateOfMonth, days, isLastDay };
+}
+
+export function isDateRecurringEvent(
+  event: Pick<Event, 'dayOfWeek' | 'frequency' | 'frequencyNotes'>
+): boolean {
+  const dayStr = (event.dayOfWeek || '').trim().toLowerCase();
+  if (dayStr === 'varies' || dayStr.startsWith('varies')) {
+    return true;
+  }
+  const parsed = parseDateOfMonthPattern(event.frequency, event.frequencyNotes);
+  if (parsed.isDateOfMonth && (dayStr === '' || dayStr === 'varies')) {
+    return true;
+  }
+  return false;
+}
+
 type OrdinalFlags = {
   has1st: boolean;
   has2nd: boolean;
@@ -302,6 +381,7 @@ type OrdinalFlags = {
   has5th: boolean;
   hasLast: boolean;
 };
+
 function parseOrdinalFlags(text: string, numericWeeks?: Set<number>): OrdinalFlags {
   return {
     has1st: /\b(1st|first|primer[oa]?)\b/i.test(text) || Boolean(numericWeeks?.has(1)),
@@ -312,6 +392,7 @@ function parseOrdinalFlags(text: string, numericWeeks?: Set<number>): OrdinalFla
     hasLast: /\b(last|final|ultimo|últim[oa])\b/i.test(text),
   };
 }
+
 function matchesOrdinalFlags(flags: OrdinalFlags, occurrence: number, isLast: boolean): boolean {
   return (
     (flags.has1st && occurrence === 1) ||
@@ -322,6 +403,7 @@ function matchesOrdinalFlags(flags: OrdinalFlags, occurrence: number, isLast: bo
     (flags.hasLast && isLast)
   );
 }
+
 export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
@@ -339,27 +421,35 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
+
+  const ranges: [number, number][] = [];
   for (const rangeMatch of cleaned.matchAll(
     /\b([a-zA-Z]{3,10})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,10})\b/gi
   )) {
     const startMonth = MONTH_NAME_TO_NUM[rangeMatch[1].toLowerCase()];
     const endMonth = MONTH_NAME_TO_NUM[rangeMatch[2].toLowerCase()];
     if (startMonth && endMonth) {
-      const inRange =
-        startMonth <= endMonth
-          ? targetMonth >= startMonth && targetMonth <= endMonth
-          : targetMonth >= startMonth || targetMonth <= endMonth;
-      if (!inRange) return false;
-      break;
+      ranges.push([startMonth, endMonth]);
     }
   }
-  const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,10})\s+only\b/i);
-  if (singleMonthMatch) {
-    const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
-    if (m) {
-      return targetMonth === m;
+
+  if (ranges.length > 0) {
+    const inAnyRange = ranges.some(([startMonth, endMonth]) =>
+      startMonth <= endMonth
+        ? targetMonth >= startMonth && targetMonth <= endMonth
+        : targetMonth >= startMonth || targetMonth <= endMonth
+    );
+    if (!inAnyRange) return false;
+  } else {
+    const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,10})\s+only\b/i);
+    if (singleMonthMatch) {
+      const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
+      if (m && targetMonth !== m) {
+        return false;
+      }
     }
   }
+
   if (/\bsummer\b/i.test(cleaned) && (targetMonth < 6 || targetMonth > 8)) {
     return false;
   }
@@ -385,6 +475,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   }
   return true;
 }
+
 export function getWeekdayOccurrence(targetDate: Date): {
   occurrence: number;
   isLast: boolean;
@@ -399,6 +490,7 @@ export function getWeekdayOccurrence(targetDate: Date): {
   const isLast = dayOfMonth + 7 > daysInMonth;
   return { occurrence, isLast };
 }
+
 function getWeekNumber(d: Date): number {
   const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dayNum = target.getUTCDay() || 7;
@@ -406,6 +498,7 @@ function getWeekNumber(d: Date): number {
   const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
   return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
+
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const combinedText = [event.frequency, event.frequencyNotes]
     .map((s) => (s || '').trim())
@@ -417,6 +510,22 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   if (!isMonthActive(combinedText, targetDate)) {
     return false;
   }
+
+  if (isDateRecurringEvent(event)) {
+    const pattern = parseDateOfMonthPattern(event.frequency, event.frequencyNotes);
+    if (!pattern.isDateOfMonth) {
+      return false;
+    }
+    const dayNum = targetDate.getDate();
+    const daysInMonth = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth() + 1,
+      0
+    ).getDate();
+    const isLastDay = dayNum === daysInMonth;
+    return pattern.days.includes(dayNum) || (pattern.isLastDay && isLastDay);
+  }
+
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const DAY_SHORT_NAMES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const dayIdx = targetDate.getDay();
@@ -485,10 +594,6 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   ) {
     return matchesOrdinalFlags(globalFlags, occurrence, isLast);
   }
-  if (BIWEEKLY_REGEX.test(combinedText)) {
-    const weekNum = getWeekNumber(targetDate);
-    return weekNum % 2 === 0;
-  }
   const isBiMonthly = BIMONTHLY_REGEX.test(combinedText);
   const isPlainMonthly =
     !isBiMonthly &&
@@ -499,6 +604,7 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   }
   return true;
 }
+
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
@@ -508,6 +614,7 @@ export function ensureExternalUrl(url: string): string {
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }
+
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();
   if (t.includes('science')) {
@@ -542,6 +649,7 @@ export function getTagStyle(tag: string): { color: string; background: string } 
   }
   return { color: 'var(--tag-default-ink, #4f483e)', background: 'var(--tag-default-bg, #f3ead4)' };
 }
+
 export function indexEvents(
   events: Event[],
   rollingWeek: Date[],
@@ -561,11 +669,16 @@ export function indexEvents(
       ...ev.activities,
       ev.about,
       ev.notes,
+      ev.frequency,
+      ev.frequencyNotes,
     ]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
-    const activeDays = rollingWeek.map((day) => isEventActiveOnDate(ev, day));
+    const isDateRec = isDateRecurringEvent(ev);
+    const activeDays = isDateRec
+      ? [false, false, false, false, false, false, false]
+      : rollingWeek.map((day) => isEventActiveOnDate(ev, day));
     return {
       ...ev,
       parsedHour,
@@ -576,6 +689,7 @@ export function indexEvents(
     };
   });
 }
+
 export function filterAndCountEvents(
   indexedEvents: IndexedEvent[],
   activeDayIdx: number,
@@ -644,7 +758,8 @@ export function filterAndCountEvents(
         dayCounts[d]++;
       }
     }
-    if (isAllEvents || ev.activeDays[activeDayIdx]) {
+    const isDateRec = isDateRecurringEvent(ev);
+    if (isAllEvents || (queryTerms !== null && isDateRec) || ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }

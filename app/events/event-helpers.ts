@@ -10,6 +10,7 @@ import {
   ensureExternalUrl,
   formatRecurrenceText,
   formatTimeRange,
+  isDateRecurringEvent,
   isEventActiveOnDate,
   isFreeOrDonation,
   matchesDay,
@@ -203,6 +204,11 @@ export function groupEventsForDirectory(events: Event[]): DirectoryGroup[] {
   const otherEvents: Event[] = [];
 
   for (const ev of events) {
+    if (isDateRecurringEvent(ev)) {
+      otherEvents.push(ev);
+      continue;
+    }
+
     const daySpec =
       (ev.dayOfWeek || '').trim() ||
       [ev.frequency, ev.frequencyNotes].filter(Boolean).join(' ').trim();
@@ -590,7 +596,9 @@ export function buildScheduleLine(event: Event): string {
   const recurrencePart = formatRecurrenceText(freqRaw, notesRaw);
   const dayRaw = (event.dayOfWeek || '').trim();
   let whenPart = '';
-  if (dayRaw && recurrencePart && !isPlainWeekly) {
+  if (/^varies$/i.test(dayRaw) || isDateRecurringEvent(event)) {
+    whenPart = recurrencePart || freqRaw || 'Varies';
+  } else if (dayRaw && recurrencePart && !isPlainWeekly) {
     if (recurrencePart.toLowerCase().includes(dayRaw.toLowerCase())) {
       whenPart = recurrencePart;
     } else {

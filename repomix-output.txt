@@ -619,77 +619,6 @@ export default async function EventOpenGraphImage({
 }
 
 ================
-File: app/[city]/events/page.tsx
-================
-import { notFound, permanentRedirect } from 'next/navigation';
-import type { Metadata } from 'next';
-import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
-import { getEvents, getLastUpdated } from '../../lib/google-sheets';
-import CityEventsView from '../../events/CityEventsView';
-export const revalidate = 60;
-type PageProps = {
-  params: Promise<{ city: string }>;
-};
-export async function generateStaticParams() {
-  return getAllCitySlugs().map((city) => ({ city }));
-}
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    return {
-      title: 'City Not Found · Someplace Social',
-      robots: { index: false, follow: false },
-    };
-  }
-  const title = `${city.name} Events & Activities This Week`;
-  const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `/${city.slug}/events`,
-    },
-    openGraph: {
-      title: `${title} | Someplace Social`,
-      description,
-      url: `/${city.slug}/events`,
-      siteName: 'Someplace Social',
-      type: 'website',
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-      },
-    },
-  };
-}
-export default async function CityEventsPage({ params }: PageProps) {
-  const { city: citySlug } = await params;
-  const city = getCityBySlug(citySlug);
-  if (!city) {
-    notFound();
-  }
-  if (city.slug !== citySlug) {
-    permanentRedirect(`/${city.slug}/events`);
-  }
-  const [events, lastUpdated] = await Promise.all([
-    getEvents(city),
-    getLastUpdated(city),
-  ]);
-  return (
-    <CityEventsView
-      city={city}
-      initialEvents={events}
-      lastUpdated={lastUpdated}
-    />
-  );
-}
-
-================
 File: app/[city]/page.tsx
 ================
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -1205,109 +1134,6 @@ describe('calendar helpers (Google Calendar, ICS & copy summary)', () => {
     assert.equal(allDayIcs.includes('DTEND;VALUE=DATE:20260103'), true);
   });
 });
-
-================
-File: app/events/components/DayPicker.tsx
-================
-'use client';
-import { memo } from 'react';
-import styles from '../EventsView.module.css';
-
-const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-interface DayPickerProps {
-  rollingWeek: Date[];
-  activeDayIdx: number;
-  onSelectDay: (idx: number) => void;
-  dayCounts?: number[];
-  getEventCountForDay?: (idx: number) => number;
-}
-
-function DayPicker({
-  rollingWeek,
-  activeDayIdx,
-  onSelectDay,
-  dayCounts,
-  getEventCountForDay,
-}: DayPickerProps) {
-  const getCount = (idx: number) => {
-    if (dayCounts && dayCounts[idx] !== undefined) {
-      return dayCounts[idx];
-    }
-    return getEventCountForDay ? getEventCountForDay(idx) : 0;
-  };
-
-  return (
-    <>
-      <div className={styles.dayListVertical} role="group" aria-label="Day list">
-        {rollingWeek.map((day, idx) => {
-          const label =
-            idx === 0
-              ? 'Today'
-              : `${DAY_NAMES_SHORT[day.getDay()]} ${day.getDate()}`;
-          const count = getCount(idx);
-          const isSelected = idx === activeDayIdx;
-          return (
-            <button
-              key={idx}
-              type="button"
-              className={`${styles.dayBtnVertical} ${
-                isSelected ? styles.dayBtnVerticalActive : ''
-              }`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectDay(idx)}
-            >
-              <span>{label}</span>
-              <span
-                className={`${styles.dayCountText} ${
-                  isSelected ? styles.dayCountTextActive : ''
-                }`}
-              >
-                {count} events
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
-        {rollingWeek.map((day, idx) => {
-          const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
-          const count = getCount(idx);
-          const isSelected = idx === activeDayIdx;
-          return (
-            <button
-              key={idx}
-              type="button"
-              className={`${styles.mobileDayBtn} ${
-                isSelected ? styles.mobileDayBtnActive : ''
-              }`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectDay(idx)}
-            >
-              <span
-                className={`${styles.mobileDayLabel} ${
-                  isSelected ? styles.mobileDayLabelActive : ''
-                }`}
-              >
-                {dayShort}
-              </span>
-              <span className={styles.mobileDayNum}>{day.getDate()}</span>
-              <span
-                className={`${styles.mobileDayCount} ${
-                  isSelected ? styles.mobileDayCountActive : ''
-                }`}
-              >
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </>
-  );
-}
-
-export default memo(DayPicker);
 
 ================
 File: app/events/components/EventFacts.module.css
@@ -2678,6 +2504,89 @@ export default async function EventPage({ params }: PageProps) {
 }
 
 ================
+File: app/[city]/events/page.tsx
+================
+import { notFound, permanentRedirect } from 'next/navigation';
+import type { Metadata } from 'next';
+import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getEvents, getLastUpdated } from '../../lib/google-sheets';
+import CityEventsView from '../../events/CityEventsView';
+export const revalidate = 60;
+type PageProps = {
+  params: Promise<{ city: string }>;
+  searchParams?: Promise<{ tab?: string }>;
+};
+export async function generateStaticParams() {
+  return getAllCitySlugs().map((city) => ({ city }));
+}
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
+  const { city: citySlug } = await params;
+  const sParams = searchParams ? await searchParams : undefined;
+  const isAllTab = sParams?.tab === 'all';
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    return {
+      title: 'City Not Found · Someplace Social',
+      robots: { index: false, follow: false },
+    };
+  }
+  const title = isAllTab
+    ? `All ${city.name} Events & Activities · Full Directory`
+    : `${city.name} Events & Activities This Week`;
+  const description = isAllTab
+    ? `Complete directory of all weekly community events, recurring meetups, classes, and social gatherings in ${city.heroLocation}.`
+    : `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
+  const canonicalPath = isAllTab
+    ? `/${city.slug}/events?tab=all`
+    : `/${city.slug}/events`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalPath,
+    },
+    openGraph: {
+      title: `${title} | Someplace Social`,
+      description,
+      url: canonicalPath,
+      siteName: 'Someplace Social',
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
+  };
+}
+export default async function CityEventsPage({ params, searchParams }: PageProps) {
+  const { city: citySlug } = await params;
+  const sParams = searchParams ? await searchParams : undefined;
+  const city = getCityBySlug(citySlug);
+  if (!city) {
+    notFound();
+  }
+  if (city.slug !== citySlug) {
+    permanentRedirect(`/${city.slug}/events`);
+  }
+  const [events, lastUpdated] = await Promise.all([
+    getEvents(city),
+    getLastUpdated(city),
+  ]);
+  return (
+    <CityEventsView
+      city={city}
+      initialEvents={events}
+      lastUpdated={lastUpdated}
+      initialTab={sParams?.tab === 'all' ? 'all' : undefined}
+    />
+  );
+}
+
+================
 File: app/components/ThemeToggle.tsx
 ================
 'use client';
@@ -2924,6 +2833,176 @@ export default function ContactMessageForm({ cityName }: ContactMessageFormProps
     </form>
   );
 }
+
+================
+File: app/events/components/DayPicker.tsx
+================
+'use client';
+import { memo } from 'react';
+import styles from '../EventsView.module.css';
+
+const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+interface DayPickerProps {
+  rollingWeek: Date[];
+  activeDayIdx: number;
+  onSelectDay: (idx: number) => void;
+  dayCounts?: number[];
+  getEventCountForDay?: (idx: number) => number;
+  allEventsCount?: number;
+  citySlug?: string;
+}
+
+function DayPicker({
+  rollingWeek,
+  activeDayIdx,
+  onSelectDay,
+  dayCounts,
+  getEventCountForDay,
+  allEventsCount,
+  citySlug,
+}: DayPickerProps) {
+  const allEventsIdx = rollingWeek.length;
+  const getCount = (idx: number) => {
+    if (idx === allEventsIdx) {
+      if (allEventsCount !== undefined) {
+        return allEventsCount;
+      }
+      if (dayCounts && dayCounts[allEventsIdx] !== undefined) {
+        return dayCounts[allEventsIdx];
+      }
+      return 0;
+    }
+    if (dayCounts && dayCounts[idx] !== undefined) {
+      return dayCounts[idx];
+    }
+    return getEventCountForDay ? getEventCountForDay(idx) : 0;
+  };
+
+  const isAllEventsSelected = activeDayIdx === allEventsIdx;
+  const allCount = getCount(allEventsIdx);
+  const allEventsHref = citySlug ? `/${citySlug}/events?tab=all` : '?tab=all';
+
+  return (
+    <>
+      <div className={styles.dayListVertical} role="group" aria-label="Day list">
+        {rollingWeek.map((day, idx) => {
+          const label =
+            idx === 0
+              ? 'Today'
+              : `${DAY_NAMES_SHORT[day.getDay()]} ${day.getDate()}`;
+          const count = getCount(idx);
+          const isSelected = idx === activeDayIdx;
+          return (
+            <button
+              key={idx}
+              type="button"
+              className={`${styles.dayBtnVertical} ${
+                isSelected ? styles.dayBtnVerticalActive : ''
+              }`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectDay(idx)}
+            >
+              <span>{label}</span>
+              <span
+                className={`${styles.dayCountText} ${
+                  isSelected ? styles.dayCountTextActive : ''
+                }`}
+              >
+                {count} events
+              </span>
+            </button>
+          );
+        })}
+        <a
+          href={allEventsHref}
+          className={`${styles.dayBtnVertical} ${
+            isAllEventsSelected ? styles.dayBtnVerticalActive : ''
+          }`}
+          aria-pressed={isAllEventsSelected}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectDay(allEventsIdx);
+          }}
+        >
+          <span>All Events</span>
+          <span
+            className={`${styles.dayCountText} ${
+              isAllEventsSelected ? styles.dayCountTextActive : ''
+            }`}
+          >
+            {allCount} events
+          </span>
+        </a>
+      </div>
+      <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
+        {rollingWeek.map((day, idx) => {
+          const dayShort = idx === 0 ? 'Today' : DAY_NAMES_SHORT[day.getDay()];
+          const count = getCount(idx);
+          const isSelected = idx === activeDayIdx;
+          return (
+            <button
+              key={idx}
+              type="button"
+              className={`${styles.mobileDayBtn} ${
+                isSelected ? styles.mobileDayBtnActive : ''
+              }`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectDay(idx)}
+            >
+              <span
+                className={`${styles.mobileDayLabel} ${
+                  isSelected ? styles.mobileDayLabelActive : ''
+                }`}
+              >
+                {dayShort}
+              </span>
+              <span className={styles.mobileDayNum}>{day.getDate()}</span>
+              <span
+                className={`${styles.mobileDayCount} ${
+                  isSelected ? styles.mobileDayCountActive : ''
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+        <a
+          href={allEventsHref}
+          className={`${styles.mobileDayBtn} ${
+            isAllEventsSelected ? styles.mobileDayBtnActive : ''
+          }`}
+          aria-pressed={isAllEventsSelected}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectDay(allEventsIdx);
+          }}
+        >
+          <span
+            className={`${styles.mobileDayLabel} ${
+              isAllEventsSelected ? styles.mobileDayLabelActive : ''
+            }`}
+          >
+            All
+          </span>
+          <span className={`${styles.mobileDayNum} ${styles.mobileDayNumAll}`}>
+            Events
+          </span>
+          <span
+            className={`${styles.mobileDayCount} ${
+              isAllEventsSelected ? styles.mobileDayCountActive : ''
+            }`}
+          >
+            {allCount}
+          </span>
+        </a>
+      </div>
+    </>
+  );
+}
+
+export default memo(DayPicker);
 
 ================
 File: app/events/components/FilterDropdown.tsx
@@ -6582,66 +6661,6 @@ export default function SuggestEditModal({
 }
 
 ================
-File: app/sitemap.ts
-================
-import type { MetadataRoute } from 'next';
-import { SITE_URL, getAllCities } from './lib/cities';
-import { getEvents, getLastUpdated } from './lib/google-sheets';
-import { getEventSlug, parseLastUpdatedDate } from './events/event-helpers';
-
-export const revalidate = 3600;
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = SITE_URL;
-  const cities = getAllCities();
-
-  const cityData = await Promise.all(
-    cities.map(async (city) => {
-      const [events, lastUpdatedRaw] = await Promise.all([
-        getEvents(city, 3600),
-        getLastUpdated(city, 3600),
-      ]);
-      return {
-        citySlug: city.slug,
-        events,
-        lastModified: parseLastUpdatedDate(lastUpdatedRaw),
-      };
-    })
-  );
-
-  const cityUrls: MetadataRoute.Sitemap = cityData.flatMap(
-    ({ citySlug, lastModified }) => [
-      {
-        url: `${baseUrl}/${citySlug}/events`,
-        ...(lastModified ? { lastModified } : {}),
-      },
-      {
-        url: `${baseUrl}/${citySlug}/contact`,
-      },
-    ]
-  );
-
-  const seenEventUrls = new Set<string>();
-  const eventUrls: MetadataRoute.Sitemap = [];
-  for (const { citySlug, events } of cityData) {
-    for (const ev of events) {
-      const url = `${baseUrl}/${citySlug}/events/${getEventSlug(ev)}`;
-      if (seenEventUrls.has(url)) continue;
-      seenEventUrls.add(url);
-      eventUrls.push({ url });
-    }
-  }
-
-  return [
-    { url: baseUrl },
-    ...cityUrls,
-    ...eventUrls,
-    { url: `${baseUrl}/contact` },
-    { url: `${baseUrl}/support` },
-  ];
-}
-
-================
 File: app/support/page.tsx
 ================
 import Image from 'next/image';
@@ -7496,6 +7515,70 @@ File: app/events/components/SuggestEditModal.module.css
     flex: 1;
     text-align: center;
   }
+}
+
+================
+File: app/sitemap.ts
+================
+import type { MetadataRoute } from 'next';
+import { SITE_URL, getAllCities } from './lib/cities';
+import { getEvents, getLastUpdated } from './lib/google-sheets';
+import { getEventSlug, parseLastUpdatedDate } from './events/event-helpers';
+
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = SITE_URL;
+  const cities = getAllCities();
+
+  const cityData = await Promise.all(
+    cities.map(async (city) => {
+      const [events, lastUpdatedRaw] = await Promise.all([
+        getEvents(city, 3600),
+        getLastUpdated(city, 3600),
+      ]);
+      return {
+        citySlug: city.slug,
+        events,
+        lastModified: parseLastUpdatedDate(lastUpdatedRaw),
+      };
+    })
+  );
+
+  const cityUrls: MetadataRoute.Sitemap = cityData.flatMap(
+    ({ citySlug, lastModified }) => [
+      {
+        url: `${baseUrl}/${citySlug}/events`,
+        ...(lastModified ? { lastModified } : {}),
+      },
+      {
+        url: `${baseUrl}/${citySlug}/events?tab=all`,
+        ...(lastModified ? { lastModified } : {}),
+      },
+      {
+        url: `${baseUrl}/${citySlug}/contact`,
+      },
+    ]
+  );
+
+  const seenEventUrls = new Set<string>();
+  const eventUrls: MetadataRoute.Sitemap = [];
+  for (const { citySlug, events } of cityData) {
+    for (const ev of events) {
+      const url = `${baseUrl}/${citySlug}/events/${getEventSlug(ev)}`;
+      if (seenEventUrls.has(url)) continue;
+      seenEventUrls.add(url);
+      eventUrls.push({ url });
+    }
+  }
+
+  return [
+    { url: baseUrl },
+    ...cityUrls,
+    ...eventUrls,
+    { url: `${baseUrl}/contact` },
+    { url: `${baseUrl}/support` },
+  ];
 }
 
 ================
@@ -12551,6 +12634,191 @@ export async function getEvents(
 }
 
 ================
+File: app/components/Header.tsx
+================
+'use client';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { CityConfig } from '../lib/cities';
+import ThemeToggle from './ThemeToggle';
+import styles from './Header.module.css';
+interface HeaderProps {
+  city?: CityConfig;
+}
+export default function Header({ city }: HeaderProps) {
+  const pathname = usePathname();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  useEffect(() => {
+    if (!mobileDrawerOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMobileDrawerOpen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileDrawerOpen]);
+  const eventsHref = city ? `/${city.slug}/events` : '';
+  const aboutHref = city ? `/${city.slug}/about` : '/';
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+  const isEventsActive = Boolean(
+    city &&
+      (pathname === `/${city.slug}/events` ||
+        pathname.startsWith(`/${city.slug}/events/`))
+  );
+  const isAboutActive = city
+    ? pathname === `/${city.slug}/about`
+    : pathname === '/' || pathname === '/about';
+  const isContactActive = city
+    ? pathname === `/${city.slug}/contact`
+    : pathname === '/contact';
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandCol}>
+            <Link
+              href={city ? `/${city.slug}/events` : '/'}
+              className={styles.brandLogoLink}
+            >
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={540}
+                height={150}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            {city && (
+              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
+            )}
+          </div>
+          <nav className={styles.navDesktop} aria-label="Primary">
+            {city && (
+              <Link
+                href={eventsHref}
+                className={`${styles.navLink} ${
+                  isEventsActive ? styles.navLinkActive : ''
+                }`}
+              >
+                Events
+              </Link>
+            )}
+            <Link
+              href={aboutHref}
+              className={`${styles.navLink} ${
+                isAboutActive ? styles.navLinkActive : ''
+              }`}
+            >
+              About
+            </Link>
+            <Link
+              href={contactHref}
+              className={`${styles.navLink} ${
+                isContactActive ? styles.navLinkActive : ''
+              }`}
+            >
+              Contact
+            </Link>
+            <ThemeToggle />
+          </nav>
+          <div className={styles.navMobileActions}>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              {city && (
+                <Link
+                  href={eventsHref}
+                  className={`${styles.drawerNavLink} ${
+                    isEventsActive ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Events
+                </Link>
+              )}
+              <Link
+                href={aboutHref}
+                className={`${styles.drawerNavLink} ${
+                  isAboutActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href={contactHref}
+                className={`${styles.drawerNavLink} ${
+                  isContactActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+            </div>
+            <div className={styles.drawerSectionTitle}>Preferences</div>
+            <div className={styles.drawerNavLinks}>
+              <ThemeToggle showLabel />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+================
 File: app/events/EventsView.module.css
 ================
 .pageContainer {
@@ -12680,6 +12948,7 @@ File: app/events/EventsView.module.css
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   box-shadow: var(--shadow-sm);
   transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
@@ -12687,6 +12956,7 @@ File: app/events/EventsView.module.css
   background-color: var(--card-hover);
   border-color: var(--line-strong);
   box-shadow: var(--shadow-sm);
+  color: var(--ink);
 }
 .dayBtnVerticalActive {
   background-color: var(--ink);
@@ -12698,6 +12968,7 @@ File: app/events/EventsView.module.css
 .dayBtnVerticalActive:hover {
   background-color: var(--ink);
   border-color: var(--ink);
+  color: var(--bg);
 }
 .dayCountText {
   font-size: 13px;
@@ -12713,6 +12984,13 @@ File: app/events/EventsView.module.css
 }
 .mobileDaysGrid {
   display: none;
+}
+.mobileDayNumAll {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 .contentCol {
   flex: 999 1 520px;
@@ -12818,7 +13096,7 @@ File: app/events/EventsView.module.css
     align-items: center;
     justify-content: center;
     gap: 2px;
-    flex: 1 0 calc((100% - 36px) / 7);
+    flex: 1 0 calc((100% - 42px) / 8);
     min-width: 48px;
     min-height: 60px;
     padding: 6px 2px;
@@ -12829,11 +13107,18 @@ File: app/events/EventsView.module.css
     font: inherit;
     cursor: pointer;
     flex-shrink: 0;
+    text-decoration: none;
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .mobileDayBtn:hover {
+    color: var(--ink);
   }
   .mobileDayBtnActive {
     border-color: var(--ink);
     background: var(--ink);
+    color: var(--bg);
+  }
+  .mobileDayBtnActive:hover {
     color: var(--bg);
   }
   .mobileDayLabel {
@@ -12876,9 +13161,15 @@ File: app/events/utils.test.ts
 ================
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isEventActiveOnDate, isMonthActive } from './utils';
+import {
+  filterAndCountEvents,
+  indexEvents,
+  isEventActiveOnDate,
+  isMonthActive,
+} from './utils';
 import { expandEventSchedules } from './schedule-splitter';
 import { makeEvent } from './test-fixtures';
+import { DEFAULT_USD_PRICE_CONFIG } from '../lib/cities';
 
 const jan2Fri = new Date(2026, 0, 2);
 const jan3Sat = new Date(2026, 0, 3);
@@ -13266,190 +13557,48 @@ describe('isMonthActive', () => {
   });
 });
 
-================
-File: app/components/Header.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { CityConfig } from '../lib/cities';
-import ThemeToggle from './ThemeToggle';
-import styles from './Header.module.css';
-interface HeaderProps {
-  city?: CityConfig;
-}
-export default function Header({ city }: HeaderProps) {
-  const pathname = usePathname();
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  useEffect(() => {
-    if (!mobileDrawerOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setMobileDrawerOpen(false);
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [mobileDrawerOpen]);
-  const eventsHref = city ? `/${city.slug}/events` : '';
-  const aboutHref = city ? `/${city.slug}/about` : '/';
-  const contactHref = city ? `/${city.slug}/contact` : '/contact';
-  const isEventsActive = Boolean(
-    city &&
-      (pathname === `/${city.slug}/events` ||
-        pathname.startsWith(`/${city.slug}/events/`))
-  );
-  const isAboutActive = city
-    ? pathname === `/${city.slug}/about`
-    : pathname === '/' || pathname === '/about';
-  const isContactActive = city
-    ? pathname === `/${city.slug}/contact`
-    : pathname === '/contact';
-  return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.brandCol}>
-            <Link
-              href={city ? `/${city.slug}/events` : '/'}
-              className={styles.brandLogoLink}
-            >
-              <Image
-                src="/images/logo.svg"
-                alt="Someplace Social"
-                width={540}
-                height={150}
-                priority
-                className={styles.logoImage}
-              />
-            </Link>
-            {city && (
-              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
-            )}
-          </div>
-          <nav className={styles.navDesktop} aria-label="Primary">
-            {city && (
-              <Link
-                href={eventsHref}
-                className={`${styles.navLink} ${
-                  isEventsActive ? styles.navLinkActive : ''
-                }`}
-              >
-                Events
-              </Link>
-            )}
-            <Link
-              href={aboutHref}
-              className={`${styles.navLink} ${
-                isAboutActive ? styles.navLinkActive : ''
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href={contactHref}
-              className={`${styles.navLink} ${
-                isContactActive ? styles.navLinkActive : ''
-              }`}
-            >
-              Contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-          <div className={styles.navMobileActions}>
-            <button
-              type="button"
-              className={styles.hamburgerBtn}
-              aria-label="Open menu"
-              onClick={() => setMobileDrawerOpen(true)}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              >
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-      {mobileDrawerOpen && (
-        <div
-          className={styles.drawerBackdrop}
-          onClick={() => setMobileDrawerOpen(false)}
-        >
-          <div
-            className={styles.drawer}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-          >
-            <div className={styles.drawerHeader}>
-              <div className={styles.drawerTitle}>Someplace Social</div>
-              <button
-                type="button"
-                className={styles.drawerCloseBtn}
-                aria-label="Close menu"
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className={styles.drawerSectionTitle}>Navigation</div>
-            <div className={styles.drawerNavLinks}>
-              {city && (
-                <Link
-                  href={eventsHref}
-                  className={`${styles.drawerNavLink} ${
-                    isEventsActive ? styles.drawerNavLinkActive : ''
-                  }`}
-                  onClick={() => setMobileDrawerOpen(false)}
-                >
-                  Events
-                </Link>
-              )}
-              <Link
-                href={aboutHref}
-                className={`${styles.drawerNavLink} ${
-                  isAboutActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href={contactHref}
-                className={`${styles.drawerNavLink} ${
-                  isContactActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                Contact
-              </Link>
-            </div>
-            <div className={styles.drawerSectionTitle}>Preferences</div>
-            <div className={styles.drawerNavLinks}>
-              <ThemeToggle showLabel />
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+describe('filterAndCountEvents with All Events tab', () => {
+  it('includes all matching events across all days and populates dayCounts index 7 when activeDayIdx is 7', () => {
+    const rollingWeek = [
+      new Date(2026, 0, 2),
+      new Date(2026, 0, 3),
+      new Date(2026, 0, 4),
+      new Date(2026, 0, 5),
+      new Date(2026, 0, 6),
+      new Date(2026, 0, 7),
+      new Date(2026, 0, 8),
+    ];
+    const events = [
+      makeEvent({ id: '1', title: 'Friday Jam', dayOfWeek: 'Fri', startTime: '7:00 PM', price: 'Free' }),
+      makeEvent({ id: '2', title: 'Saturday Hike', dayOfWeek: 'Sat', startTime: '9:00 AM', price: '$10' }),
+      makeEvent({ id: '3', title: 'Monday Coding', dayOfWeek: 'Mon', startTime: '6:30 PM', price: 'Free' }),
+    ];
+    const indexed = indexEvents(events, rollingWeek, 'USD');
+    const timeGroups = [
+      { name: 'Morning', predicate: (h: number) => h < 12 },
+      { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
+    ];
+
+    const result = filterAndCountEvents(
+      indexed,
+      7,
+      DEFAULT_USD_PRICE_CONFIG.maxPrice,
+      DEFAULT_USD_PRICE_CONFIG,
+      [],
+      [],
+      [],
+      '',
+      timeGroups
+    );
+
+    assert.equal(result.currentList.length, 3);
+    assert.equal(result.allCount, 3);
+    assert.equal(result.dayCounts[7], 3);
+    assert.equal(result.dayCounts[0], 1);
+    assert.equal(result.dayCounts[1], 1);
+    assert.equal(result.dayCounts[3], 1);
+  });
+});
 
 ================
 File: app/lib/cities.ts
@@ -14207,8 +14356,8 @@ export function filterAndCountEvents(
   selectedAreas: string[],
   searchQuery: string,
   timeGroups: { name: string; predicate: (h: number) => boolean }[]
-): { currentList: IndexedEvent[]; dayCounts: number[] } {
-  const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+): { currentList: IndexedEvent[]; dayCounts: number[]; allCount: number } {
+  const dayCounts = [0, 0, 0, 0, 0, 0, 0, 0];
   const currentList: IndexedEvent[] = [];
   const queryTerms = searchQuery.trim()
     ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
@@ -14222,6 +14371,9 @@ export function filterAndCountEvents(
       ? selectedAreas.map((a) => a.toLowerCase())
       : null;
   const isPriceFiltered = maxPrice < priceConfig.maxPrice;
+  const isAllEvents = activeDayIdx === 7;
+  let allCount = 0;
+
   for (let i = 0; i < indexedEvents.length; i++) {
     const ev = indexedEvents[i];
     if (isPriceFiltered) {
@@ -14254,17 +14406,20 @@ export function filterAndCountEvents(
       );
       if (!matchesSearch) continue;
     }
+
+    allCount++;
+    dayCounts[7]++;
     for (let d = 0; d < 7; d++) {
       if (ev.activeDays[d]) {
         dayCounts[d]++;
       }
     }
-    if (ev.activeDays[activeDayIdx]) {
+    if (isAllEvents || ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
   currentList.sort((a, b) => a.parsedHour - b.parsedHour);
-  return { currentList, dayCounts };
+  return { currentList, dayCounts, allCount };
 }
 
 ================
@@ -14597,7 +14752,12 @@ import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
-import { getCityToday, getEventSlug, resolveEventBySlug } from './event-helpers';
+import {
+  getCityToday,
+  getEventSlug,
+  groupEventsForDirectory,
+  resolveEventBySlug,
+} from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -14605,7 +14765,6 @@ import FilterControls from './components/FilterControls';
 import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
-import WeeklyEventDirectory from './components/WeeklyEventDirectory';
 import styles from './EventsView.module.css';
 
 const emptySubscribe = () => () => {};
@@ -14638,16 +14797,21 @@ const TIME_GROUPS = [
   { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
   { name: 'Night', predicate: (h: number) => h >= 20 },
 ];
+const ALL_EVENTS_IDX = 7;
+
+interface CityEventsViewProps {
+  city: CityConfig;
+  initialEvents?: Event[];
+  lastUpdated?: string | null;
+  initialTab?: string;
+}
 
 export default function CityEventsView({
   city,
   initialEvents = [],
   lastUpdated = null,
-}: {
-  city: CityConfig;
-  initialEvents?: Event[];
-  lastUpdated?: string | null;
-}) {
+  initialTab,
+}: CityEventsViewProps) {
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -14655,7 +14819,9 @@ export default function CityEventsView({
   );
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const timeZone = useMemo(() => getCityTimeZone(city), [city]);
-  const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [activeDayIdx, setActiveDayIdx] = useState(() =>
+    initialTab === 'all' ? ALL_EVENTS_IDX : 0
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [selectedMaxPrice, setSelectedMaxPrice] = useState<{
@@ -14734,11 +14900,12 @@ export default function CityEventsView({
       const firstActiveDayIdx = indexedTarget
         ? indexedTarget.activeDays.findIndex(Boolean)
         : -1;
-      if (firstActiveDayIdx < 0 || !indexedTarget) return;
       const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
-      setActiveDayIdx((prevDay) =>
-        indexedTarget.activeDays[prevDay] ? prevDay : firstActiveDayIdx
-      );
+      setActiveDayIdx((prevDay) => {
+        if (prevDay === ALL_EVENTS_IDX) return ALL_EVENTS_IDX;
+        if (indexedTarget && indexedTarget.activeDays[prevDay]) return prevDay;
+        return firstActiveDayIdx >= 0 ? firstActiveDayIdx : prevDay;
+      });
       setOpenEventId(key);
       syncEventHash(resolved.canonicalSlug);
       pendingScrollIdRef.current = `event-card-${key}`;
@@ -14768,6 +14935,19 @@ export default function CityEventsView({
   }, [city.slug, openEventFromHash]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkTabParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'all') {
+        setActiveDayIdx(ALL_EVENTS_IDX);
+      }
+    };
+    checkTabParam();
+    window.addEventListener('popstate', checkTabParam);
+    return () => window.removeEventListener('popstate', checkTabParam);
+  }, []);
+
+  useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     const domId = pendingScrollIdRef.current;
     const el = document.getElementById(domId);
@@ -14779,7 +14959,10 @@ export default function CityEventsView({
     return () => window.cancelAnimationFrame(rafId);
   }, [activeDayIdx, openEventId]);
 
-  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+  const isAllEventsTab = activeDayIdx === ALL_EVENTS_IDX;
+  const activeDate = isAllEventsTab
+    ? rollingWeek[0]
+    : rollingWeek[activeDayIdx] || rollingWeek[0];
 
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
@@ -14839,7 +15022,7 @@ export default function CityEventsView({
     );
   }, []);
 
-  const { currentList, dayCounts } = useMemo(() => {
+  const { currentList, dayCounts, allCount } = useMemo(() => {
     return filterAndCountEvents(
       indexedEvents,
       activeDayIdx,
@@ -14862,6 +15045,11 @@ export default function CityEventsView({
     deferredSearchQuery,
   ]);
 
+  const allEventGroups = useMemo(() => {
+    if (!isAllEventsTab) return [];
+    return groupEventsForDirectory(currentList);
+  }, [isAllEventsTab, currentList]);
+
   const nextUpEventId = useMemo(() => {
     if (!mounted || activeDayIdx !== 0) return null;
     const now = new Date();
@@ -14875,15 +15063,34 @@ export default function CityEventsView({
 
   const handleToggleEvent = useCallback(
     (ev: Event, uniqueId: string) => {
-      if (openEventId === uniqueId) {
+      const baseSlug = getEventSlug(ev);
+      if (openEventId === uniqueId || openEventId === baseSlug) {
         setOpenEventId(null);
         syncEventHash(null);
       } else {
         setOpenEventId(uniqueId);
-        syncEventHash(getEventSlug(ev));
+        syncEventHash(baseSlug);
       }
     },
     [openEventId, syncEventHash]
+  );
+
+  const handleSelectDay = useCallback(
+    (idx: number) => {
+      setActiveDayIdx(idx);
+      setOpenEventId(null);
+      syncEventHash(null);
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        if (idx === ALL_EVENTS_IDX) {
+          url.searchParams.set('tab', 'all');
+        } else {
+          url.searchParams.delete('tab');
+        }
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      }
+    },
+    [syncEventHash]
   );
 
   const hasActiveFilters =
@@ -14902,15 +15109,18 @@ export default function CityEventsView({
   }, []);
 
   const totalEventsCount = allEvents.length;
-  const dayHeading =
-    activeDayIdx === 0
-      ? 'Today'
-      : activeDayIdx === 1
-      ? 'Tomorrow'
-      : DAY_NAMES_LONG[activeDate.getDay()];
-  const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
-    MONTH_NAMES[activeDate.getMonth()]
-  }`;
+  const dayHeading = isAllEventsTab
+    ? 'All Events'
+    : activeDayIdx === 0
+    ? 'Today'
+    : activeDayIdx === 1
+    ? 'Tomorrow'
+    : DAY_NAMES_LONG[activeDate.getDay()];
+  const daySubheading = isAllEventsTab
+    ? `All ${city.name} events & activities`
+    : `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
+        MONTH_NAMES[activeDate.getMonth()]
+      }`;
 
   return (
     <div className={styles.pageContainer}>
@@ -14969,12 +15179,10 @@ export default function CityEventsView({
             <DayPicker
               rollingWeek={rollingWeek}
               activeDayIdx={activeDayIdx}
-              onSelectDay={(idx) => {
-                setActiveDayIdx(idx);
-                setOpenEventId(null);
-                syncEventHash(null);
-              }}
+              onSelectDay={handleSelectDay}
               dayCounts={dayCounts}
+              allEventsCount={allCount}
+              citySlug={city.slug}
             />
             <FilterControls
               searchQuery={searchQuery}
@@ -15008,7 +15216,7 @@ export default function CityEventsView({
                   'Try clearing your filters to see more events.'
                 ) : (
                   <>
-                    Know an event or group happening on this day?{' '}
+                    Know an event or group happening in {city.name}?{' '}
                     <Link
                       href={`/${city.slug}/contact?tab=submit`}
                       className={styles.emptyStateLink}
@@ -15019,6 +15227,40 @@ export default function CityEventsView({
                   </>
                 )}
               </div>
+            ) : isAllEventsTab ? (
+              allEventGroups.map((group) => {
+                if (group.events.length === 0) return null;
+                return (
+                  <div key={group.key}>
+                    <div className={styles.timeGroupHeader}>
+                      {group.label} ({group.events.length})
+                      <div className={styles.timeGroupLine} />
+                    </div>
+                    {group.events.map((ev) => {
+                      const foundIdx = indexedEvents.findIndex(
+                        (ie) => ie.id === ev.id && ie.title === ev.title
+                      );
+                      const sourceEvent = foundIdx >= 0 ? allEvents[foundIdx] : ev;
+                      const baseKey =
+                        eventKeyMap.get(sourceEvent) || getEventSlug(ev);
+                      const uniqueId = `${group.key}-${baseKey}`;
+                      return (
+                        <EventCard
+                          key={uniqueId}
+                          domId={`event-card-${uniqueId}`}
+                          event={sourceEvent}
+                          isOpen={openEventId === uniqueId || openEventId === baseKey}
+                          isNextUp={false}
+                          city={city}
+                          selectedDate={null}
+                          onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
+                          onOpenEdit={setEditModalEvent}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })
             ) : (
               TIME_GROUPS.map((group) => {
                 const groupEvents = currentList.filter((ev) =>
@@ -15056,7 +15298,6 @@ export default function CityEventsView({
             )}
           </section>
         </div>
-        <WeeklyEventDirectory city={city} events={allEvents} />
       </main>
       <Footer city={city} />
       {editModalEvent && (
@@ -15101,7 +15342,7 @@ interface EventCardProps {
   isOpen: boolean;
   isNextUp: boolean;
   city: CityConfig;
-  selectedDate: Date;
+  selectedDate?: Date | null;
   domId?: string;
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;

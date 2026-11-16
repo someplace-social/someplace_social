@@ -18,6 +18,7 @@ import type { Event } from '../lib/google-sheets';
 import {
   indexEvents,
   filterAndCountEvents,
+  isDateRecurringEvent,
 } from './utils';
 import {
   getCityToday,
@@ -545,6 +546,7 @@ export default function CityEventsView({
                       const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
                       const uniqueId =
                         eventKeyMap.get(sourceEvent) || getEventSlug(ev);
+                      const isDateRec = isDateRecurringEvent(sourceEvent);
                       return (
                         <EventCard
                           key={uniqueId}
@@ -553,7 +555,7 @@ export default function CityEventsView({
                           isOpen={openEventId === uniqueId}
                           isNextUp={uniqueId === nextUpEventId}
                           city={city}
-                          selectedDate={activeDate}
+                          selectedDate={isDateRec ? null : activeDate}
                           onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
                           onOpenEdit={setEditModalEvent}
                         />

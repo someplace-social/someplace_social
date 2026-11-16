@@ -14,6 +14,7 @@ import {
   getNextEventOccurrence,
   buildEventInviteText,
   buildEventJsonLd,
+  buildScheduleLine,
   getEventDisplayDetails,
   buildProveItSources,
   parseLastUpdatedDate,
@@ -35,6 +36,7 @@ describe('slug generation and event resolution', () => {
     );
     assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
   });
+
   it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
     const events = [
       makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
@@ -74,7 +76,7 @@ describe('slug generation and event resolution', () => {
 });
 
 describe('next occurrence, invite text, and JSON-LD', () => {
-  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
+  it('finds next occurrence beyond 7 days for monthly events, date-recurring events, and omits paused events', () => {
     const monthlyEv = makeEvent({
       frequency: 'Monthly',
       frequencyNotes: '1st Fri',
@@ -85,12 +87,52 @@ describe('next occurrence, invite text, and JSON-LD', () => {
     assert.equal(occ.date.getMonth(), 1);
     assert.equal(occ.date.getDate(), 6);
     assert.equal(occ.label.startsWith('Next: '), true);
+
+    const potluckEv = makeEvent({
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 1st',
+    });
+    const potluckOcc = getNextEventOccurrence(potluckEv, 'America/Denver', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(potluckOcc);
+    assert.equal(potluckOcc.date.getMonth(), 1);
+    assert.equal(potluckOcc.date.getDate(), 1);
+
     const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
     assert.equal(
       getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
       null
     );
   });
+
+  it('builds formatted schedule lines using frequency text for Varies and date-of-month rows', () => {
+    const potluck = makeEvent({
+      title: 'Community Potluck',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 1st',
+      startTime: '5:00 PM',
+      endTime: '7:00 PM',
+    });
+    assert.equal(buildScheduleLine(potluck), 'Monthly, 1st · 5p – 7p');
+
+    const midMonth = makeEvent({
+      title: 'Mid-Month Social',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 15th',
+      startTime: '6:00 PM',
+      endTime: '',
+    });
+    assert.equal(buildScheduleLine(midMonth), 'Monthly, 15th · 6p');
+
+    const lastDay = makeEvent({
+      title: 'End of Month Mixer',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, Last day',
+      startTime: '',
+      endTime: '',
+    });
+    assert.equal(buildScheduleLine(lastDay), 'Monthly, Last day');
+  });
+
   it('builds formatted invite text skipping missing fields cleanly', () => {
     const fullEv = makeEvent({
       id: '14',
@@ -123,6 +165,7 @@ describe('next occurrence, invite text, and JSON-LD', () => {
       'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
     );
   });
+
   it('builds valid schema.org/Event JSON-LD including image, addressCountry, venue, organizer, and registration URLs', () => {
     const ev = makeEvent({
       id: '14',
@@ -189,13 +232,15 @@ describe('last updated date parsing & directory grouping', () => {
     assert.equal(parseLastUpdatedDate(null), null);
   });
 
-  it('groups daily, weekly, multi-day, monthly, and unscheduled events chronologically into directory buckets', () => {
+  it('groups daily, weekly, multi-day, monthly, and date-recurring events chronologically into directory buckets', () => {
     const events = [
       makeEvent({ id: '1', title: 'Late Trivia', dayOfWeek: 'Fri', startTime: '8:00 PM' }),
       makeEvent({ id: '2', title: 'Morning Run', dayOfWeek: 'Fri', startTime: '7:00 AM' }),
       makeEvent({ id: '3', title: 'Daily Coffee Club', dayOfWeek: 'Daily', startTime: '9:00 AM' }),
       makeEvent({ id: '4', title: 'Midweek Games', dayOfWeek: 'Tue, Thu', startTime: '6:00 PM' }),
       makeEvent({ id: '5', title: 'Seasonal Walk', dayOfWeek: '', frequency: 'Seasonal' }),
+      makeEvent({ id: '6', title: 'Weekend Market', dayOfWeek: 'Sat & Sun', startTime: '10:00 AM' }),
+      makeEvent({ id: '7', title: 'Community Potluck', dayOfWeek: 'Varies', frequency: 'Monthly, 1st', startTime: '5:00 PM' }),
     ];
 
     const groups = groupEventsForDirectory(events);
@@ -209,7 +254,9 @@ describe('last updated date parsing & directory grouping', () => {
         { key: 'tue', titles: ['Midweek Games'] },
         { key: 'thu', titles: ['Midweek Games'] },
         { key: 'fri', titles: ['Morning Run', 'Late Trivia'] },
-        { key: 'other', titles: ['Seasonal Walk'] },
+        { key: 'sat', titles: ['Weekend Market'] },
+        { key: 'sun', titles: ['Weekend Market'] },
+        { key: 'other', titles: ['Community Potluck', 'Seasonal Walk'] },
       ]
     );
   });
@@ -345,6 +392,7 @@ describe('linkify Contact and URL text', () => {
     assert.equal(normalizeContactText('X'), '');
     assert.equal(normalizeContactText('  info@venue.com  '), 'info@venue.com');
   });
+
   it('links bare URLs, protocols, emails, query params, multi-part TLDs, curly quotes, and ignores non-URLs', () => {
     const mixed = parseTextWithLinks(
       '(See https://www.example.com/events?id=1, or maxlinebrewing.com.) Email info@venue.com at 7:30 p.m. e.g. $12.50.'
@@ -403,6 +451,7 @@ describe('linkify Contact and URL text', () => {
       { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
     ]);
   });
+
   it('links emails, short-form contact URLs across TLDs, phone numbers, and mixed contact strings safely', () => {
     assert.deepEqual(parseContactWithLinks('x'), []);
     assert.deepEqual(parseContactWithLinks('mailto:hello@venue.com'), [
