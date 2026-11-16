@@ -1,61 +1,41 @@
 import type { Metadata } from 'next';
-import { getAllCities, SITE_URL } from './lib/cities';
-import { getEvents } from './lib/google-sheets';
+import { SITE_URL } from './lib/cities';
 import HomeView from './components/HomeView';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Someplace Social | Regular Things to Do, All in One Place',
+  title: 'Someplace Social | Regular Things To Do Near You',
   description:
-    'Free, ad-free directory of weekly community events, recurring meetups, language exchanges, and social clubs in Medellín, Fort Collins, and beyond.',
+    'Free, ad-free guide to recurring local events: language exchanges, trivia, dance classes, run clubs and more in Medellín and Fort Collins.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Someplace Social | Regular Things to Do, All in One Place',
+    title: 'Someplace Social | Regular Things To Do Near You',
     description:
-      'Free, ad-free directory of weekly community events, recurring meetups, language exchanges, and social clubs in Medellín, Fort Collins, and beyond.',
+      'Free, ad-free guide to recurring local events: language exchanges, trivia, dance classes, run clubs and more in Medellín and Fort Collins.',
     url: '/',
     siteName: 'Someplace Social',
     locale: 'en_US',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Someplace Social | Regular Things To Do Near You',
+    description:
+      'Free, ad-free guide to recurring local events: language exchanges, trivia, dance classes, run clubs and more in Medellín and Fort Collins.',
+  },
 };
 
-export default async function Home() {
-  const cities = getAllCities();
-  const citySummaries = await Promise.all(
-    cities.map(async (city) => {
-      const events = await getEvents(city, 3600);
-      return {
-        ...city,
-        eventCount: events.length,
-      };
-    })
-  );
-
+export default function Home() {
   const websiteJsonLd = {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${SITE_URL}/#website`,
-        url: SITE_URL,
-        name: 'Someplace Social',
-        description:
-          'Directory of recurring community events, weekly activities, and social clubs.',
-        inLanguage: 'en-US',
-      },
-      {
-        '@type': 'Organization',
-        '@id': `${SITE_URL}/#organization`,
-        name: 'Someplace Social',
-        url: SITE_URL,
-        logo: `${SITE_URL}/icon.png`,
-        sameAs: ['https://www.instagram.com/someplace.social/'],
-      },
-    ],
+    '@type': 'WebSite',
+    name: 'Someplace Social',
+    url: SITE_URL,
+    description:
+      'Free, ad-free guide to recurring local events: language exchanges, trivia, dance classes, run clubs and more in Medellín and Fort Collins.',
   };
 
   return (
@@ -66,7 +46,7 @@ export default async function Home() {
           __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c'),
         }}
       />
-      <HomeView citySummaries={citySummaries} />
+      <HomeView />
     </>
   );
 }

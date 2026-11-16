@@ -1,460 +1,222 @@
 .page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
   width: 100%;
-  max-width: 1040px;
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 48px 24px 64px;
   box-sizing: border-box;
-  padding: 48px 24px 80px;
 }
 
-.heroSection {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  max-width: 820px;
-  margin-bottom: 56px;
+.hero {
+  padding-bottom: 48px;
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.tag {
   font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13px;
-  line-height: 1;
+  color: var(--accent);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 14px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--free);
-  background-color: var(--free-bg);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  padding: 6px 14px;
-  margin: 0 0 18px;
+  margin-bottom: 14px;
 }
 
 .heroTitle {
   font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 52px;
+  font-size: clamp(34px, 5.2vw, 54px);
   font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-  margin: 0 0 20px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
   color: var(--ink);
+  max-width: 780px;
 }
 
-.heroDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 19px;
-  line-height: 1.6;
+.lead {
   color: var(--text-subtle);
-  margin: 0 0 28px;
+  font-size: 19px;
+  line-height: 1.55;
+  max-width: 620px;
+  margin-bottom: 26px;
 }
 
-.heroCtaRow {
+.btns {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.primaryCta {
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--ink);
-  color: var(--bg);
+  padding: 13px 24px;
+  border-radius: 10px;
   font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
   font-weight: 700;
+  font-size: 15px;
   text-decoration: none;
-  padding: 12px 24px;
-  border-radius: 999px;
-  min-height: 44px;
-  transition: opacity 0.15s ease, transform 0.1s ease;
+  border: 1.5px solid var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
-.primaryCta:hover {
+.btnPrimary {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+
+.btnPrimary:hover {
   opacity: 0.9;
   color: var(--bg);
 }
 
-.secondaryCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--topbar-bg);
+.btnSecondary {
+  background-color: transparent;
   color: var(--ink);
-  border: 1.5px solid var(--line);
+}
+
+.btnSecondary:hover {
+  background-color: var(--card-hover);
+  border-color: var(--ink);
+}
+
+.section {
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+}
+
+.sectionHeading {
   font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
   font-weight: 700;
-  text-decoration: none;
-  padding: 12px 22px;
-  border-radius: 999px;
-  min-height: 44px;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.secondaryCta:hover {
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-  color: var(--ink);
-}
-
-.trustList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 24px;
-  margin-top: 8px;
-}
-
-.trustItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--muted);
-}
-
-.trustIcon {
-  color: var(--free);
-  flex-shrink: 0;
-}
-
-.sectionBlock {
-  margin-bottom: 56px;
-}
-
-.sectionBlock:last-of-type {
-  margin-bottom: 0;
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.sectionHeaderTitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
   font-size: 13px;
-  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--muted);
-  margin: 0;
-  white-space: nowrap;
+  margin-bottom: 16px;
 }
 
-.sectionHeaderLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-
-.citiesGrid {
+.cities {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .cityCard {
-  background-color: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 20px;
-  padding: 28px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .cityCard:hover {
-  border-color: var(--line-strong);
+  border-color: var(--accent);
   background-color: var(--card-hover);
-}
-
-.cityCardTop {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cityBadgeRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.cityRegionBadge {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-.cityCountBadge {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--free);
-  background-color: var(--free-bg);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
 }
 
 .cityName {
   font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
   color: var(--ink);
-  margin: 4px 0 0;
+  margin-bottom: 8px;
 }
 
 .cityDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--text-subtle);
-  margin: 8px 0 20px;
-}
-
-.cityLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
-
-.cityScheduleBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--ink);
-  color: var(--bg);
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-  transition: opacity 0.15s ease;
-}
-
-.cityScheduleBtn:hover {
-  opacity: 0.9;
-  color: var(--bg);
-}
-
-.cityDirectoryLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   color: var(--muted);
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.15s ease;
+  font-size: 15.5px;
+  line-height: 1.5;
+  flex: 1;
 }
 
-.cityDirectoryLink:hover {
+.cityLink {
+  display: block;
+  margin-top: 16px;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 15px;
   color: var(--accent);
 }
 
-.activitiesGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.activityCard {
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 20px;
+.cats {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.activityCard:hover {
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-}
-
-.activityTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 0;
-  line-height: 1.25;
-}
-
-.activityDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-subtle);
-  margin: 0;
-}
-
-.whyGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.whyItem {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 22px 20px;
-  display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.whyNumber {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--free);
-}
-
-.whyTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 0;
-  line-height: 1.25;
-}
-
-.whyDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: var(--text-subtle);
-  margin: 0;
-}
-
-.ctaCard {
-  background-color: var(--card);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 20px;
-  padding: 32px;
-  display: flex;
+.catPill {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  box-shadow: var(--shadow-sm);
-}
-
-.ctaContent {
-  max-width: 600px;
-}
-
-.ctaTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 24px;
-  font-weight: 800;
+  border: 1px solid var(--line);
+  background-color: var(--card);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--ink);
-  margin: 0 0 8px;
-  line-height: 1.2;
+  user-select: none;
 }
 
-.ctaDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
+.how {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.howItem h3 {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.howItem p {
+  color: var(--muted);
   font-size: 15px;
   line-height: 1.5;
-  color: var(--text-subtle);
-  margin: 0;
 }
 
-.ctaActions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-@media (max-width: 899px) {
+@media (max-width: 768px) {
   .page {
-    padding: 24px 16px 56px;
+    padding: 32px 16px 48px;
   }
 
-  .heroSection {
-    margin-bottom: 40px;
+  .hero {
+    padding-bottom: 32px;
   }
 
   .heroTitle {
     font-size: 34px;
-    margin-bottom: 14px;
   }
 
-  .heroDescription {
-    font-size: 16px;
+  .lead {
+    font-size: 16.5px;
     margin-bottom: 22px;
   }
 
-  .heroCtaRow {
+  .btns {
     flex-direction: column;
+  }
+
+  .btn {
     width: 100%;
   }
 
-  .primaryCta,
-  .secondaryCta {
-    width: 100%;
-  }
-
-  .trustList {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .sectionBlock {
-    margin-bottom: 40px;
-  }
-
-  .citiesGrid {
+  .cities {
     grid-template-columns: 1fr;
-    gap: 14px;
   }
 
   .cityCard {
-    padding: 22px 18px;
+    padding: 20px 18px;
   }
 
-  .activitiesGrid {
+  .how {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .whyGrid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .ctaCard {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 22px 18px;
-  }
-
-  .ctaActions {
-    width: 100%;
+    gap: 18px;
   }
 }
