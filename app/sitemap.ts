@@ -30,6 +30,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(lastModified ? { lastModified } : {}),
       },
       {
+        url: `${baseUrl}/${citySlug}/events?tab=all`,
+        ...(lastModified ? { lastModified } : {}),
+      },
+      {
         url: `${baseUrl}/${citySlug}/contact`,
       },
     ]

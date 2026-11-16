@@ -586,8 +586,8 @@ export function filterAndCountEvents(
   selectedAreas: string[],
   searchQuery: string,
   timeGroups: { name: string; predicate: (h: number) => boolean }[]
-): { currentList: IndexedEvent[]; dayCounts: number[] } {
-  const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+): { currentList: IndexedEvent[]; dayCounts: number[]; allCount: number } {
+  const dayCounts = [0, 0, 0, 0, 0, 0, 0, 0];
   const currentList: IndexedEvent[] = [];
   const queryTerms = searchQuery.trim()
     ? searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean)
@@ -601,6 +601,9 @@ export function filterAndCountEvents(
       ? selectedAreas.map((a) => a.toLowerCase())
       : null;
   const isPriceFiltered = maxPrice < priceConfig.maxPrice;
+  const isAllEvents = activeDayIdx === 7;
+  let allCount = 0;
+
   for (let i = 0; i < indexedEvents.length; i++) {
     const ev = indexedEvents[i];
     if (isPriceFiltered) {
@@ -633,15 +636,18 @@ export function filterAndCountEvents(
       );
       if (!matchesSearch) continue;
     }
+
+    allCount++;
+    dayCounts[7]++;
     for (let d = 0; d < 7; d++) {
       if (ev.activeDays[d]) {
         dayCounts[d]++;
       }
     }
-    if (ev.activeDays[activeDayIdx]) {
+    if (isAllEvents || ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
   currentList.sort((a, b) => a.parsedHour - b.parsedHour);
-  return { currentList, dayCounts };
+  return { currentList, dayCounts, allCount };
 }

@@ -26,7 +26,7 @@ interface EventCardProps {
   isOpen: boolean;
   isNextUp: boolean;
   city: CityConfig;
-  selectedDate: Date;
+  selectedDate?: Date | null;
   domId?: string;
   onToggle: () => void;
   onOpenEdit: (ev: Event) => void;

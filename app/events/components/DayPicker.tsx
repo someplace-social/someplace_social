@@ -10,6 +10,8 @@ interface DayPickerProps {
   onSelectDay: (idx: number) => void;
   dayCounts?: number[];
   getEventCountForDay?: (idx: number) => number;
+  allEventsCount?: number;
+  citySlug?: string;
 }
 
 function DayPicker({
@@ -18,13 +20,29 @@ function DayPicker({
   onSelectDay,
   dayCounts,
   getEventCountForDay,
+  allEventsCount,
+  citySlug,
 }: DayPickerProps) {
+  const allEventsIdx = rollingWeek.length;
   const getCount = (idx: number) => {
+    if (idx === allEventsIdx) {
+      if (allEventsCount !== undefined) {
+        return allEventsCount;
+      }
+      if (dayCounts && dayCounts[allEventsIdx] !== undefined) {
+        return dayCounts[allEventsIdx];
+      }
+      return 0;
+    }
     if (dayCounts && dayCounts[idx] !== undefined) {
       return dayCounts[idx];
     }
     return getEventCountForDay ? getEventCountForDay(idx) : 0;
   };
+
+  const isAllEventsSelected = activeDayIdx === allEventsIdx;
+  const allCount = getCount(allEventsIdx);
+  const allEventsHref = citySlug ? `/${citySlug}/events?tab=all` : '?tab=all';
 
   return (
     <>
@@ -57,6 +75,26 @@ function DayPicker({
             </button>
           );
         })}
+        <a
+          href={allEventsHref}
+          className={`${styles.dayBtnVertical} ${
+            isAllEventsSelected ? styles.dayBtnVerticalActive : ''
+          }`}
+          aria-pressed={isAllEventsSelected}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectDay(allEventsIdx);
+          }}
+        >
+          <span>All Events</span>
+          <span
+            className={`${styles.dayCountText} ${
+              isAllEventsSelected ? styles.dayCountTextActive : ''
+            }`}
+          >
+            {allCount} events
+          </span>
+        </a>
       </div>
       <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
         {rollingWeek.map((day, idx) => {
@@ -91,6 +129,35 @@ function DayPicker({
             </button>
           );
         })}
+        <a
+          href={allEventsHref}
+          className={`${styles.mobileDayBtn} ${
+            isAllEventsSelected ? styles.mobileDayBtnActive : ''
+          }`}
+          aria-pressed={isAllEventsSelected}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectDay(allEventsIdx);
+          }}
+        >
+          <span
+            className={`${styles.mobileDayLabel} ${
+              isAllEventsSelected ? styles.mobileDayLabelActive : ''
+            }`}
+          >
+            All
+          </span>
+          <span className={`${styles.mobileDayNum} ${styles.mobileDayNumAll}`}>
+            Events
+          </span>
+          <span
+            className={`${styles.mobileDayCount} ${
+              isAllEventsSelected ? styles.mobileDayCountActive : ''
+            }`}
+          >
+            {allCount}
+          </span>
+        </a>
       </div>
     </>
   );

@@ -1,8 +1,14 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isEventActiveOnDate, isMonthActive } from './utils';
+import {
+  filterAndCountEvents,
+  indexEvents,
+  isEventActiveOnDate,
+  isMonthActive,
+} from './utils';
 import { expandEventSchedules } from './schedule-splitter';
 import { makeEvent } from './test-fixtures';
+import { DEFAULT_USD_PRICE_CONFIG } from '../lib/cities';
 
 const jan2Fri = new Date(2026, 0, 2);
 const jan3Sat = new Date(2026, 0, 3);
@@ -387,5 +393,48 @@ describe('isMonthActive', () => {
     assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
     assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
+
+describe('filterAndCountEvents with All Events tab', () => {
+  it('includes all matching events across all days and populates dayCounts index 7 when activeDayIdx is 7', () => {
+    const rollingWeek = [
+      new Date(2026, 0, 2),
+      new Date(2026, 0, 3),
+      new Date(2026, 0, 4),
+      new Date(2026, 0, 5),
+      new Date(2026, 0, 6),
+      new Date(2026, 0, 7),
+      new Date(2026, 0, 8),
+    ];
+    const events = [
+      makeEvent({ id: '1', title: 'Friday Jam', dayOfWeek: 'Fri', startTime: '7:00 PM', price: 'Free' }),
+      makeEvent({ id: '2', title: 'Saturday Hike', dayOfWeek: 'Sat', startTime: '9:00 AM', price: '$10' }),
+      makeEvent({ id: '3', title: 'Monday Coding', dayOfWeek: 'Mon', startTime: '6:30 PM', price: 'Free' }),
+    ];
+    const indexed = indexEvents(events, rollingWeek, 'USD');
+    const timeGroups = [
+      { name: 'Morning', predicate: (h: number) => h < 12 },
+      { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
+    ];
+
+    const result = filterAndCountEvents(
+      indexed,
+      7,
+      DEFAULT_USD_PRICE_CONFIG.maxPrice,
+      DEFAULT_USD_PRICE_CONFIG,
+      [],
+      [],
+      [],
+      '',
+      timeGroups
+    );
+
+    assert.equal(result.currentList.length, 3);
+    assert.equal(result.allCount, 3);
+    assert.equal(result.dayCounts[7], 3);
+    assert.equal(result.dayCounts[0], 1);
+    assert.equal(result.dayCounts[1], 1);
+    assert.equal(result.dayCounts[3], 1);
   });
 });

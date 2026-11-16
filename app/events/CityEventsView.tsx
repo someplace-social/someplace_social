@@ -19,7 +19,12 @@ import {
   indexEvents,
   filterAndCountEvents,
 } from './utils';
-import { getCityToday, getEventSlug, resolveEventBySlug } from './event-helpers';
+import {
+  getCityToday,
+  getEventSlug,
+  groupEventsForDirectory,
+  resolveEventBySlug,
+} from './event-helpers';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DayPicker from './components/DayPicker';
@@ -27,7 +32,6 @@ import FilterControls from './components/FilterControls';
 import EventCard from './components/EventCard';
 import SuggestEditModal from './components/SuggestEditModal';
 import CityHeroCard from './components/CityHeroCard';
-import WeeklyEventDirectory from './components/WeeklyEventDirectory';
 import styles from './EventsView.module.css';
 
 const emptySubscribe = () => () => {};
@@ -60,16 +64,21 @@ const TIME_GROUPS = [
   { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
   { name: 'Night', predicate: (h: number) => h >= 20 },
 ];
+const ALL_EVENTS_IDX = 7;
+
+interface CityEventsViewProps {
+  city: CityConfig;
+  initialEvents?: Event[];
+  lastUpdated?: string | null;
+  initialTab?: string;
+}
 
 export default function CityEventsView({
   city,
   initialEvents = [],
   lastUpdated = null,
-}: {
-  city: CityConfig;
-  initialEvents?: Event[];
-  lastUpdated?: string | null;
-}) {
+  initialTab,
+}: CityEventsViewProps) {
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -77,7 +86,9 @@ export default function CityEventsView({
   );
   const priceConfig = useMemo(() => getCityPriceConfig(city), [city]);
   const timeZone = useMemo(() => getCityTimeZone(city), [city]);
-  const [activeDayIdx, setActiveDayIdx] = useState(0);
+  const [activeDayIdx, setActiveDayIdx] = useState(() =>
+    initialTab === 'all' ? ALL_EVENTS_IDX : 0
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [selectedMaxPrice, setSelectedMaxPrice] = useState<{
@@ -156,11 +167,12 @@ export default function CityEventsView({
       const firstActiveDayIdx = indexedTarget
         ? indexedTarget.activeDays.findIndex(Boolean)
         : -1;
-      if (firstActiveDayIdx < 0 || !indexedTarget) return;
       const key = eventKeyMap.get(resolved.event) || resolved.canonicalSlug;
-      setActiveDayIdx((prevDay) =>
-        indexedTarget.activeDays[prevDay] ? prevDay : firstActiveDayIdx
-      );
+      setActiveDayIdx((prevDay) => {
+        if (prevDay === ALL_EVENTS_IDX) return ALL_EVENTS_IDX;
+        if (indexedTarget && indexedTarget.activeDays[prevDay]) return prevDay;
+        return firstActiveDayIdx >= 0 ? firstActiveDayIdx : prevDay;
+      });
       setOpenEventId(key);
       syncEventHash(resolved.canonicalSlug);
       pendingScrollIdRef.current = `event-card-${key}`;
@@ -190,6 +202,19 @@ export default function CityEventsView({
   }, [city.slug, openEventFromHash]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkTabParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'all') {
+        setActiveDayIdx(ALL_EVENTS_IDX);
+      }
+    };
+    checkTabParam();
+    window.addEventListener('popstate', checkTabParam);
+    return () => window.removeEventListener('popstate', checkTabParam);
+  }, []);
+
+  useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     const domId = pendingScrollIdRef.current;
     const el = document.getElementById(domId);
@@ -201,7 +226,10 @@ export default function CityEventsView({
     return () => window.cancelAnimationFrame(rafId);
   }, [activeDayIdx, openEventId]);
 
-  const activeDate = rollingWeek[activeDayIdx] || rollingWeek[0];
+  const isAllEventsTab = activeDayIdx === ALL_EVENTS_IDX;
+  const activeDate = isAllEventsTab
+    ? rollingWeek[0]
+    : rollingWeek[activeDayIdx] || rollingWeek[0];
 
   const activityFrequencies = useMemo(() => {
     const counts = new Map<string, number>();
@@ -261,7 +289,7 @@ export default function CityEventsView({
     );
   }, []);
 
-  const { currentList, dayCounts } = useMemo(() => {
+  const { currentList, dayCounts, allCount } = useMemo(() => {
     return filterAndCountEvents(
       indexedEvents,
       activeDayIdx,
@@ -284,6 +312,11 @@ export default function CityEventsView({
     deferredSearchQuery,
   ]);
 
+  const allEventGroups = useMemo(() => {
+    if (!isAllEventsTab) return [];
+    return groupEventsForDirectory(currentList);
+  }, [isAllEventsTab, currentList]);
+
   const nextUpEventId = useMemo(() => {
     if (!mounted || activeDayIdx !== 0) return null;
     const now = new Date();
@@ -297,15 +330,34 @@ export default function CityEventsView({
 
   const handleToggleEvent = useCallback(
     (ev: Event, uniqueId: string) => {
-      if (openEventId === uniqueId) {
+      const baseSlug = getEventSlug(ev);
+      if (openEventId === uniqueId || openEventId === baseSlug) {
         setOpenEventId(null);
         syncEventHash(null);
       } else {
         setOpenEventId(uniqueId);
-        syncEventHash(getEventSlug(ev));
+        syncEventHash(baseSlug);
       }
     },
     [openEventId, syncEventHash]
+  );
+
+  const handleSelectDay = useCallback(
+    (idx: number) => {
+      setActiveDayIdx(idx);
+      setOpenEventId(null);
+      syncEventHash(null);
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        if (idx === ALL_EVENTS_IDX) {
+          url.searchParams.set('tab', 'all');
+        } else {
+          url.searchParams.delete('tab');
+        }
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      }
+    },
+    [syncEventHash]
   );
 
   const hasActiveFilters =
@@ -324,15 +376,18 @@ export default function CityEventsView({
   }, []);
 
   const totalEventsCount = allEvents.length;
-  const dayHeading =
-    activeDayIdx === 0
-      ? 'Today'
-      : activeDayIdx === 1
-      ? 'Tomorrow'
-      : DAY_NAMES_LONG[activeDate.getDay()];
-  const daySubheading = `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
-    MONTH_NAMES[activeDate.getMonth()]
-  }`;
+  const dayHeading = isAllEventsTab
+    ? 'All Events'
+    : activeDayIdx === 0
+    ? 'Today'
+    : activeDayIdx === 1
+    ? 'Tomorrow'
+    : DAY_NAMES_LONG[activeDate.getDay()];
+  const daySubheading = isAllEventsTab
+    ? `All ${city.name} events & activities`
+    : `${DAY_NAMES_LONG[activeDate.getDay()]}, ${activeDate.getDate()} ${
+        MONTH_NAMES[activeDate.getMonth()]
+      }`;
 
   return (
     <div className={styles.pageContainer}>
@@ -391,12 +446,10 @@ export default function CityEventsView({
             <DayPicker
               rollingWeek={rollingWeek}
               activeDayIdx={activeDayIdx}
-              onSelectDay={(idx) => {
-                setActiveDayIdx(idx);
-                setOpenEventId(null);
-                syncEventHash(null);
-              }}
+              onSelectDay={handleSelectDay}
               dayCounts={dayCounts}
+              allEventsCount={allCount}
+              citySlug={city.slug}
             />
             <FilterControls
               searchQuery={searchQuery}
@@ -430,7 +483,7 @@ export default function CityEventsView({
                   'Try clearing your filters to see more events.'
                 ) : (
                   <>
-                    Know an event or group happening on this day?{' '}
+                    Know an event or group happening in {city.name}?{' '}
                     <Link
                       href={`/${city.slug}/contact?tab=submit`}
                       className={styles.emptyStateLink}
@@ -441,6 +494,40 @@ export default function CityEventsView({
                   </>
                 )}
               </div>
+            ) : isAllEventsTab ? (
+              allEventGroups.map((group) => {
+                if (group.events.length === 0) return null;
+                return (
+                  <div key={group.key}>
+                    <div className={styles.timeGroupHeader}>
+                      {group.label} ({group.events.length})
+                      <div className={styles.timeGroupLine} />
+                    </div>
+                    {group.events.map((ev) => {
+                      const foundIdx = indexedEvents.findIndex(
+                        (ie) => ie.id === ev.id && ie.title === ev.title
+                      );
+                      const sourceEvent = foundIdx >= 0 ? allEvents[foundIdx] : ev;
+                      const baseKey =
+                        eventKeyMap.get(sourceEvent) || getEventSlug(ev);
+                      const uniqueId = `${group.key}-${baseKey}`;
+                      return (
+                        <EventCard
+                          key={uniqueId}
+                          domId={`event-card-${uniqueId}`}
+                          event={sourceEvent}
+                          isOpen={openEventId === uniqueId || openEventId === baseKey}
+                          isNextUp={false}
+                          city={city}
+                          selectedDate={null}
+                          onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
+                          onOpenEdit={setEditModalEvent}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })
             ) : (
               TIME_GROUPS.map((group) => {
                 const groupEvents = currentList.filter((ev) =>
@@ -478,7 +565,6 @@ export default function CityEventsView({
             )}
           </section>
         </div>
-        <WeeklyEventDirectory city={city} events={allEvents} />
       </main>
       <Footer city={city} />
       {editModalEvent && (

@@ -6,12 +6,15 @@ import CityEventsView from '../../events/CityEventsView';
 export const revalidate = 60;
 type PageProps = {
   params: Promise<{ city: string }>;
+  searchParams?: Promise<{ tab?: string }>;
 };
 export async function generateStaticParams() {
   return getAllCitySlugs().map((city) => ({ city }));
 }
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { city: citySlug } = await params;
+  const sParams = searchParams ? await searchParams : undefined;
+  const isAllTab = sParams?.tab === 'all';
   const city = getCityBySlug(citySlug);
   if (!city) {
     return {
@@ -19,18 +22,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       robots: { index: false, follow: false },
     };
   }
-  const title = `${city.name} Events & Activities This Week`;
-  const description = `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
+  const title = isAllTab
+    ? `All ${city.name} Events & Activities · Full Directory`
+    : `${city.name} Events & Activities This Week`;
+  const description = isAllTab
+    ? `Complete directory of all weekly community events, recurring meetups, classes, and social gatherings in ${city.heroLocation}.`
+    : `Weekly community events, classes, and social activities in ${city.heroLocation}. Free and affordable group gatherings.`;
+  const canonicalPath = isAllTab
+    ? `/${city.slug}/events?tab=all`
+    : `/${city.slug}/events`;
   return {
     title,
     description,
     alternates: {
-      canonical: `/${city.slug}/events`,
+      canonical: canonicalPath,
     },
     openGraph: {
       title: `${title} | Someplace Social`,
       description,
-      url: `/${city.slug}/events`,
+      url: canonicalPath,
       siteName: 'Someplace Social',
       type: 'website',
     },
@@ -44,8 +54,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
   };
 }
-export default async function CityEventsPage({ params }: PageProps) {
+export default async function CityEventsPage({ params, searchParams }: PageProps) {
   const { city: citySlug } = await params;
+  const sParams = searchParams ? await searchParams : undefined;
   const city = getCityBySlug(citySlug);
   if (!city) {
     notFound();
@@ -62,6 +73,7 @@ export default async function CityEventsPage({ params }: PageProps) {
       city={city}
       initialEvents={events}
       lastUpdated={lastUpdated}
+      initialTab={sParams?.tab === 'all' ? 'all' : undefined}
     />
   );
 }
