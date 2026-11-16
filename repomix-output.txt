@@ -1,7 +1,213 @@
-#TASK
+let's make an actual homepage for this site. goal is to give us a good website structure so we have good SEO. attached is an HTML mock up of what I'm talking about - feel free to edit it so it best fits out site. of course make it fit well and fully function given the rest of our site.
+
+DO NOT INCLUDE THIS PART: "Tonight in Medellín
+6p
+Meditation Gatherings
+Centro Cultural Facultad de Artes UdeA · Free
+6:30p
+Bilingual Conversation Club
+El Carretero Cultural, Sabaneta · $6-$7 USD
+7p
+Beginner Bachata Class
+Parques del Río · Free
+7:45p
+Group Salsa Class & Practice
+Dancefree, Poblado · 20k COP
+See all 9 events today →"
+TOTALLY GET RID OF IT. HAVE THE REST OF THAT AREA BE THE SAME AS WE HAVE THE "Free · No ads · Updated every week
+Regular things to do, all in one place.
+Language exchanges, trivia, salsa classes, run clubs, book clubs. Everything here happens on a schedule, so you can just show up." SPREAD OUT A BIT. 
 
 
+### **#0-PROJECT SPECIFICS (SPS**)
 
+- Project Name: Someplace Social
+- About: A totally free, highly excellent, simple, fast, modern website where people can go to see local recurring activities, weekly events, monthly happenings. It’s totally free with no ads.
+
+### #2-Make a plan
+
+As soon as you get the files, investigate the issue at hand and find the root.
+
+#RULES
+
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan.
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours.
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 2000 lines of code, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response.
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan.
+
+3) Implement plan:
+
+Implement the outline / plan.
+
+### **#3-GENERAL CODING GUIDELINES**
+
+You are an expert super senior software engineer. Your tone is direct, succinct, and simple. You focus strictly on actionable items.
+
+**1. PROJECT CONTEXT**
+
+- Environment: Windows 11
+- Package Manager: PNPM
+
+**2. CORE DIRECTIVES (NON-NEGOTIABLE)**
+
+- Full File Output: When modifying a file, output the *ENTIRE* , updated file content. Never use diffs or partial snippets. Never delete important parts of files.
+- Pristine Code Blocks: All generated code must be inside a markdown code block. There must be absolutely NO text, characters, or explanations inside the code fences.
+- PowerShell Chaining: Provide necessary PowerShell commands before code blocks. Because this is Windows PowerShell, use semicolons (;) to chain commands, not &&. Break commands into separate blocks if the output is required for the user to proceed.
+- Response length: If your response contains more than approximately 2000 lines of code, break your response up into multiple logical responses. After the first response, you’ll ask me if I’m ready for the next batch. You will always tell me how many batches there are left.
+
+**3. RULES**
+
+- Security: Security is important - always keep in mind best practices.
+- Performance: Speed, efficiency, optimization of the app is also very important - always keep in mind best practices.
+- DRY: Always follow best DRY principles (don’t repeat yourself). Always check if we have a shared components and use those. Create new shared elements if advisable. Don’t use more code than we need.
+- Simple & Robust: The simplest and most robust solution is best. When building or fixing a problem, always start with what coild be removed / simplified to complete the task rather than added - the goal is to avoid complexity for something that could be simple.
+- Manual Actions: If I need to download something, navigate a UI (e.g., GitHub, Supabase), or perform a task manually, explicitly instruct me on what to do.
+- Anticipate Errors: If a change impacts other files, anticipate the breakage and provide the fixes for all affected files in a single response.
+- Supabase Migrations: All database changes (tables, policies, functions) must be done via Supabase CLI migration files. Provide the PowerShell command to create and open the .sql file, the SQL code block, and finally the pnpx supabase db push --remote command (never local Docker).
+- Egress: Keep egress low whenever possible.
+- Refactoring: If a file exceeds ~300 lines, carefully refactor it into logical, smaller files without losing any code.
+- Native UI/UX: Adhere to platform conventions - styling must be done using React Native's StyleSheet API.
+- Design Philosophy: Prioritize robust strength and simplicity over fancy aesthetics or complex technical features. The UI should be clean, fast, and minimalist, elegant, modern, intuitive, highly organized, clean, and looks great. Less is more. User intuition is key. You will also make sure the style fits with the rest of the platform.
+- Page text: when writing text, choose simple, basic, easy to understand, straightforward words for page titles, page text, etc for our simple audience.
+- Sync: If I need to sync / rebuild something after updates, tell me exactly what. Use my pnpm sync commands.
+
+### **#4-CHAT CODE FORMATTING**
+
+**1. RESPONSE FORMAT RULES**
+
+- Start with a brief explanation of what you are doing.
+- Provide all terminal commands and complete code blocks needed. When creating or editing multiple files, the order should be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc. Add a very brief one sentence explanation between each code block of what the next code block is / what you’re doing.
+- End every response with a brief commit message (use easy basic clear non-code language to describe what the change was) and the corresponding git commands inside a code block.
+- Missing Context: If you are missing project files, do not make them up. Tell me what files are missing that you may need so I can provide them. Request any of the files you could possibly need given the area of the code base for full context and editing. Use the following format so I can copy them instantly. Example format: *$targets = @('src/App.tsx', 'src/components/Header.tsx', 'src/components/Button.tsx', 'src/utils/api.ts'); $res = ""; foreach ($t in $targets) { if (Test-Path -LiteralPath $t) { $content = Get-Content -LiteralPath $t | Out-String; $res += "File: $t`n$content`n`n" } }; if ($res) { $res | Set-Clipboard; "Files copied to clipboard." } else { "No files found. Please check paths." }*
+
+**2. RESPONSE FORMAT ORDER (NON-NEGOTIABLE):**
+
+IMPERATIVE: Your entire response must follow this exact sequence to ensure a streamlined workflow.
+
+1. Brief Explanation: 1-2 sentences explaining the problem being solved (if applicable).
+2. File Preparation: A single PowerShell command to create folders, create files, or open files (e.g., code filename.ts).
+3. Code Output: A single, complete, full-file code block.
+4. Iteration: Repeat steps 2 and 3 for multiple files (Open Command 1 -> Full File 1 -> Open Command 2 -> Full File 2).
+5. Git Commands: The very last item in your response must be a single code block containing the final git commands.
+
+2.2 ABSOLUTE ORDERING RULES (NON-NEGOTIABLE):
+
+- Never provide multiple open commands in a row.
+- Never provide multiple file code blocks in a row.
+- Never list all commands first and all files afterward.
+- Never open several files before showing the first file’s contents.
+- Never skip ahead to later files.
+- Never bundle files together in one code block.
+- The command for file N+1 MUST appear immediately before the code block for file N+1.
+- The ONLY allowed pattern is:
+- open file 1 -> full file 1 -> open file 2 -> full file 2 -> open file 3 -> full file 3
+
+2.3 FORBIDDEN PATTERNS:
+
+- open 1 -> open 2 -> open 3 -> file 1 -> file 2 -> file 3
+- open 1 -> open 2 -> file 1 -> file 2
+- any response that shows all commands first and all files later
+
+EXAMPLE OF CORRECT RESPONSE FORMAT:
+
+This response demonstrates the required structure by creating a Supabase migration and two placeholder pages.
+
+Important: Remember for all responses your format order MUST be: Open “code” command 1 > full file 1 > Open “code” command 2 > full file 2 > etc…
+
+```powershell
+
+pnpx supabase migration new create_example_table; code (Get-ChildItem 'supabase/migrations/*_create_example_table.sql' | Sort-Object Name | Select-Object -Last 1).FullName
+
+```
+
+Here is the sql code.
+
+```sql
+
+- - supabase/migrations/YYYYMMDDHHMMSS_create_example_table.sql
+
+create table example (
+
+...
+
+);
+
+```
+
+Next we will push to supabase.
+
+```powershell
+
+pnpx supabase db push --remote
+
+```
+
+Now we’ll create a new file.
+
+```powershell
+
+New-Item 'app/index.tsx' -Force
+
+code 'app/index.tsx'
+
+```
+
+Here is the full code for our new file.
+
+```typescript
+
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HelloScreen() {
+
+// ...
+
+return <Text>hello, world</Text>;
+
+// ...
+
+}
+
+```
+
+Now we’ll open page2.
+
+```powershell
+
+code 'app/page2.tsx'
+
+```
+
+Here is the updated code for page2.
+
+```typescript
+
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function PageTwoScreen() {
+
+// ...
+
+return <Text>hello, world page 2</Text>;
+
+// ...
+
+}
+
+```
+
+Finally, we will commit.
+
+```powershell
+
+git add .
+
+git commit -m "feat: Add example migration and pages"
+
+```
 
 #PROJECT FILES
 
@@ -3128,458 +3334,6 @@ export default function FilterDropdown({
 }
 
 ================
-File: app/events/event-helpers.test.ts
-================
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { CITIES } from '../lib/cities';
-import { ensureExternalUrl } from './utils';
-import {
-  normalizeContactText,
-  parseContactWithLinks,
-  parseTextWithLinks,
-} from './linkify';
-import {
-  slugifyText,
-  getEventSlug,
-  resolveEventBySlug,
-  getNextEventOccurrence,
-  buildEventInviteText,
-  buildEventJsonLd,
-  getEventDisplayDetails,
-  buildProveItSources,
-  parseLastUpdatedDate,
-  formatIsoDateAttribute,
-  groupEventsForDirectory,
-} from './event-helpers';
-import { makeEvent } from './test-fixtures';
-
-describe('slug generation and event resolution', () => {
-  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
-    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
-    assert.equal(
-      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
-      'verb-vibe-game-nite-14'
-    );
-    assert.equal(
-      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
-      'cafe-revolucion-meetup'
-    );
-    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
-  });
-  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
-    const events = [
-      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
-      makeEvent({ id: '', title: 'Open Air Sketching' }),
-      makeEvent({ id: 'FOCO0024-mon', title: 'Weekly Karaoke Night', dayOfWeek: 'Mon' }),
-      makeEvent({ id: 'FOCO0024-wed', title: 'Weekly Karaoke Night', dayOfWeek: 'Wed' }),
-    ];
-    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
-    assert.ok(exact);
-    assert.equal(exact.event.id, '14');
-    assert.equal(exact.isCanonical, true);
-    const renamed = resolveEventBySlug(events, 'old-title-here-14');
-    assert.ok(renamed);
-    assert.equal(renamed.event.id, '14');
-    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
-    assert.equal(renamed.isCanonical, false);
-    const bareId = resolveEventBySlug(events, '14');
-    assert.ok(bareId);
-    assert.equal(bareId.event.id, '14');
-    assert.equal(bareId.isCanonical, false);
-    const splitWed = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024-wed');
-    assert.ok(splitWed);
-    assert.equal(splitWed.event.id, 'FOCO0024-wed');
-    assert.equal(splitWed.isCanonical, true);
-    const legacyUnsplit = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024');
-    assert.ok(legacyUnsplit);
-    assert.equal(legacyUnsplit.event.id, 'FOCO0024-mon');
-    assert.equal(legacyUnsplit.canonicalSlug, 'weekly-karaoke-night-foco0024-mon');
-    assert.equal(legacyUnsplit.isCanonical, false);
-    const missingId = resolveEventBySlug(events, 'open-air-sketching');
-    assert.ok(missingId);
-    assert.equal(missingId.event.title, 'Open Air Sketching');
-    assert.equal(missingId.isCanonical, true);
-    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
-    assert.equal(deletedId, null);
-  });
-});
-
-describe('next occurrence, invite text, and JSON-LD', () => {
-  it('finds next occurrence beyond 7 days for monthly events and omits paused events', () => {
-    const monthlyEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
-    assert.ok(occ);
-    assert.equal(occ.date.getMonth(), 1);
-    assert.equal(occ.date.getDate(), 6);
-    assert.equal(occ.label.startsWith('Next: '), true);
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
-    assert.equal(
-      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
-      null
-    );
-  });
-  it('builds formatted invite text skipping missing fields cleanly', () => {
-    const fullEv = makeEvent({
-      id: '14',
-      title: 'Verb & Vibe Game Nite',
-      dayOfWeek: 'Fri',
-      startTime: '7:00 PM',
-      endTime: '9:30 PM',
-      venue: 'Café Revolución',
-      area: 'Laureles',
-      price: 'Free',
-    });
-    assert.equal(
-      buildEventInviteText(fullEv, 'medellin-colombia'),
-      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/medellin-colombia/events/verb-vibe-game-nite-14'
-    );
-    const sparseEv = makeEvent({
-      id: '2',
-      title: 'Mystery Gathering',
-      dayOfWeek: '',
-      frequency: '',
-      startTime: '',
-      endTime: '',
-      venue: '',
-      location: '',
-      area: '',
-      price: '',
-    });
-    assert.equal(
-      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
-      'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
-    );
-  });
-  it('builds valid schema.org/Event JSON-LD including image, addressCountry, venue, organizer, and registration URLs', () => {
-    const ev = makeEvent({
-      id: '14',
-      title: 'Salsa Night',
-      venue: 'Son Havana',
-      venueUrl: 'sonhavana.com',
-      organization: 'Medellín Salsa Collective',
-      organizerUrl: 'instagram.com/medellinsalsa',
-      registrationUrl: 'eventbrite.com/e/salsa-14',
-      location: 'Cra 73 #44-56',
-      price: 'Free',
-      startTime: '8:00 PM',
-      endTime: '11:00 PM',
-    });
-    const canonicalUrl =
-      'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14';
-    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
-    const ld = buildEventJsonLd(
-      ev,
-      CITIES['medellin-colombia'],
-      canonicalUrl,
-      occ
-    ) as Record<string, unknown>;
-    assert.ok(ld);
-    assert.equal(ld['@type'], 'Event');
-    assert.equal(ld['image'], `${canonicalUrl}/opengraph-image`);
-    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
-    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
-    const location = ld['location'] as Record<string, unknown>;
-    assert.equal(location['url'], 'https://sonhavana.com');
-    assert.equal((location['address'] as Record<string, unknown>)['addressCountry'], 'CO');
-    assert.equal(
-      (ld['organizer'] as Record<string, unknown>)['url'],
-      'https://instagram.com/medellinsalsa'
-    );
-    assert.equal(
-      (ld['offers'] as Record<string, unknown>)['url'],
-      'https://eventbrite.com/e/salsa-14'
-    );
-
-    const focoOcc = getNextEventOccurrence(ev, 'America/Denver', 90, new Date('2026-01-02T15:00:00Z'));
-    const focoLd = buildEventJsonLd(
-      ev,
-      CITIES['fort-collins-colorado'],
-      'https://www.someplacesocial.org/fort-collins-colorado/events/salsa-night-14',
-      focoOcc
-    ) as Record<string, unknown>;
-    const focoAddress = (focoLd['location'] as Record<string, unknown>)['address'] as Record<string, unknown>;
-    assert.equal(focoAddress['addressCountry'], 'US');
-  });
-});
-
-describe('last updated date parsing & directory grouping', () => {
-  it('parses sheet verification dates cleanly into UTC dates and ISO YYYY-MM-DD attributes', () => {
-    assert.equal(formatIsoDateAttribute('Nov 8, 2026'), '2026-11-08');
-    assert.equal(formatIsoDateAttribute('November 8, 2026'), '2026-11-08');
-    assert.equal(formatIsoDateAttribute('2026-11-08'), '2026-11-08');
-    assert.equal(formatIsoDateAttribute('11/8/2026'), '2026-11-08');
-    assert.equal(formatIsoDateAttribute('Date(2026, 10, 8)'), '2026-11-08');
-    assert.equal(formatIsoDateAttribute('8 Nov 2026'), '2026-11-08');
-    assert.equal(parseLastUpdatedDate('Feb 30, 2026'), null);
-    assert.equal(parseLastUpdatedDate('Recently'), null);
-    assert.equal(parseLastUpdatedDate(''), null);
-    assert.equal(parseLastUpdatedDate(null), null);
-  });
-
-  it('groups daily, weekly, multi-day, monthly, and unscheduled events chronologically into directory buckets', () => {
-    const events = [
-      makeEvent({ id: '1', title: 'Late Trivia', dayOfWeek: 'Fri', startTime: '8:00 PM' }),
-      makeEvent({ id: '2', title: 'Morning Run', dayOfWeek: 'Fri', startTime: '7:00 AM' }),
-      makeEvent({ id: '3', title: 'Daily Coffee Club', dayOfWeek: 'Daily', startTime: '9:00 AM' }),
-      makeEvent({ id: '4', title: 'Midweek Games', dayOfWeek: 'Tue, Thu', startTime: '6:00 PM' }),
-      makeEvent({ id: '5', title: 'Seasonal Walk', dayOfWeek: '', frequency: 'Seasonal' }),
-    ];
-
-    const groups = groupEventsForDirectory(events);
-    assert.deepEqual(
-      groups.map((g) => ({
-        key: g.key,
-        titles: g.events.map((e) => e.title),
-      })),
-      [
-        { key: 'daily', titles: ['Daily Coffee Club'] },
-        { key: 'tue', titles: ['Midweek Games'] },
-        { key: 'thu', titles: ['Midweek Games'] },
-        { key: 'fri', titles: ['Morning Run', 'Late Trivia'] },
-        { key: 'other', titles: ['Seasonal Walk'] },
-      ]
-    );
-  });
-});
-
-describe('getEventDisplayDetails & URL normalization', () => {
-  it('prepends https:// across short-form Organizer, Venue, Registration, Map, and URL1 while preserving query strings', () => {
-    const linked = getEventDisplayDetails(
-      makeEvent({
-        venue: 'Maxline Brewing',
-        venueUrl: 'maxlinebrewing.com',
-        organization: 'Hosted by Geeks Who Drink',
-        organizerUrl: 'instagram.com/geekswhodrink',
-        preRegistration: 'Registration required.',
-        registrationUrl: 'geekswhodrink.com/register?city=foco',
-        map: 'maps.app.goo.gl/abc123',
-        url1: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
-      }),
-      'Fort Collins'
-    );
-    assert.equal(linked.displayVenue, 'Maxline Brewing');
-    assert.equal(linked.venueUrl, 'https://maxlinebrewing.com');
-    assert.equal(linked.organizerName, 'Geeks Who Drink');
-    assert.equal(linked.organizerUrl, 'https://instagram.com/geekswhodrink');
-    assert.equal(linked.showOrganizer, true);
-    assert.equal(linked.preRegistrationText, 'Registration required.');
-    assert.equal(linked.registrationUrl, 'https://geekswhodrink.com/register?city=foco');
-    assert.equal(linked.mapsHref, 'https://maps.app.goo.gl/abc123');
-    assert.equal(linked.moreDetailsUrl, 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2');
-    assert.equal(linked.needsSignupIcon, true);
-
-    const blankAndUnsafe = getEventDisplayDetails(
-      makeEvent({
-        venue: 'City Park',
-        venueUrl: 'javascript:alert(1)',
-        organization: '',
-        organizerUrl: '',
-        preRegistration: 'Drop-in (no RSVP needed)',
-        registrationUrl: '',
-        url1: '',
-      }),
-      'Fort Collins'
-    );
-    assert.equal(blankAndUnsafe.venueUrl, '');
-    assert.equal(blankAndUnsafe.showOrganizer, false);
-    assert.equal(blankAndUnsafe.registrationUrl, '');
-    assert.equal(blankAndUnsafe.moreDetailsUrl, '');
-    assert.equal(blankAndUnsafe.needsSignupIcon, false);
-    assert.equal(ensureExternalUrl('//example.com/events?img_index=3'), 'https://example.com/events?img_index=3');
-    assert.equal(ensureExternalUrl('x'), '');
-  });
-});
-
-describe('buildProveItSources', () => {
-  it('builds Listed at + Also, at entries with https:// hrefs, query strings intact, and notes', () => {
-    const both = buildProveItSources({
-      url1: 'maxlinebrewing.com/whats-happening',
-      url1Notes: 'Click on the "Community Events" tab',
-      url2: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
-      url2Notes: 'Check slide 2 for times',
-    });
-    assert.deepEqual(both, [
-      {
-        prefix: 'Listed at ',
-        url: 'maxlinebrewing.com/whats-happening',
-        href: 'https://maxlinebrewing.com/whats-happening',
-        notes: 'Click on the "Community Events" tab',
-      },
-      {
-        prefix: 'Also, at ',
-        url: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
-        href: 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2',
-        notes: 'Check slide 2 for times',
-      },
-    ]);
-  });
-
-  it('shows only the first line when URL2 is blank and ignores stray URL2 Notes', () => {
-    const firstOnly = buildProveItSources({
-      url1: 'comedyfortcollins.com/events/142205?img_index=1',
-      url1Notes: 'Click on "Biography" link',
-      url2: '',
-      url2Notes: 'Ignored note when URL2 is empty',
-    });
-    assert.deepEqual(firstOnly, [
-      {
-        prefix: 'Listed at ',
-        url: 'comedyfortcollins.com/events/142205?img_index=1',
-        href: 'https://comedyfortcollins.com/events/142205?img_index=1',
-        notes: 'Click on "Biography" link',
-      },
-    ]);
-  });
-
-  it('returns empty array when both URL1 and URL2 are blank, x, or unsafe', () => {
-    assert.deepEqual(
-      buildProveItSources({ url1: '', url1Notes: 'orphan', url2: '', url2Notes: '' }),
-      []
-    );
-    assert.deepEqual(
-      buildProveItSources({ url1: 'x', url1Notes: '', url2: '  ', url2Notes: '' }),
-      []
-    );
-    assert.deepEqual(
-      buildProveItSources({ url1: 'javascript:alert(1)', url1Notes: '', url2: '', url2Notes: '' }),
-      []
-    );
-  });
-
-  it('promotes URL2 to Listed at when URL1 is blank and URL2 is filled', () => {
-    const secondOnly = buildProveItSources({
-      url1: '',
-      url1Notes: '',
-      url2: 'instagram.com/p/DfiPohTlspn/?img_index=4',
-      url2Notes: 'Carousel slide 4',
-    });
-    assert.deepEqual(secondOnly, [
-      {
-        prefix: 'Listed at ',
-        url: 'instagram.com/p/DfiPohTlspn/?img_index=4',
-        href: 'https://instagram.com/p/DfiPohTlspn/?img_index=4',
-        notes: 'Carousel slide 4',
-      },
-    ]);
-  });
-});
-
-describe('linkify Contact and URL text', () => {
-  it('normalizes empty and x placeholder values', () => {
-    assert.equal(normalizeContactText(''), '');
-    assert.equal(normalizeContactText('   '), '');
-    assert.equal(normalizeContactText('x'), '');
-    assert.equal(normalizeContactText('X'), '');
-    assert.equal(normalizeContactText('  info@venue.com  '), 'info@venue.com');
-  });
-  it('links bare URLs, protocols, emails, query params, multi-part TLDs, curly quotes, and ignores non-URLs', () => {
-    const mixed = parseTextWithLinks(
-      '(See https://www.example.com/events?id=1, or maxlinebrewing.com.) Email info@venue.com at 7:30 p.m. e.g. $12.50.'
-    );
-    assert.deepEqual(mixed, [
-      { type: 'text', text: '(See ' },
-      {
-        type: 'link',
-        text: 'https://www.example.com/events?id=1',
-        href: 'https://www.example.com/events?id=1',
-      },
-      { type: 'text', text: ', or ' },
-      {
-        type: 'link',
-        text: 'maxlinebrewing.com',
-        href: 'https://maxlinebrewing.com',
-      },
-      { type: 'text', text: '.) Email ' },
-      {
-        type: 'link',
-        text: 'info@venue.com',
-        href: 'mailto:info@venue.com',
-      },
-      { type: 'text', text: ' at 7:30 p.m. e.g. $12.50.' },
-    ]);
-    const extra = parseTextWithLinks(
-      'Check “sub.example.com.co” and maxlinebrewing.com?tab=events.'
-    );
-    assert.deepEqual(extra, [
-      { type: 'text', text: 'Check “' },
-      {
-        type: 'link',
-        text: 'sub.example.com.co',
-        href: 'https://sub.example.com.co',
-      },
-      { type: 'text', text: '” and ' },
-      {
-        type: 'link',
-        text: 'maxlinebrewing.com?tab=events',
-        href: 'https://maxlinebrewing.com?tab=events',
-      },
-      { type: 'text', text: '.' },
-    ]);
-    const wiki = parseTextWithLinks('Look at en.wikipedia.org/wiki/Pub_quiz_(game).');
-    assert.deepEqual(wiki, [
-      { type: 'text', text: 'Look at ' },
-      {
-        type: 'link',
-        text: 'en.wikipedia.org/wiki/Pub_quiz_(game)',
-        href: 'https://en.wikipedia.org/wiki/Pub_quiz_(game)',
-      },
-      { type: 'text', text: '.' },
-    ]);
-    const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
-    assert.deepEqual(unsafe, [
-      { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
-    ]);
-  });
-  it('links emails, short-form contact URLs across TLDs, phone numbers, and mixed contact strings safely', () => {
-    assert.deepEqual(parseContactWithLinks('x'), []);
-    assert.deepEqual(parseContactWithLinks('mailto:hello@venue.com'), [
-      { type: 'link', text: 'hello@venue.com', href: 'mailto:hello@venue.com' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('venue.com/contact?ref=1'), [
-      { type: 'link', text: 'venue.com/contact?ref=1', href: 'https://venue.com/contact?ref=1' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('lu.ma'), [
-      { type: 'link', text: 'lu.ma', href: 'https://lu.ma' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('someclub.photography'), [
-      { type: 'link', text: 'someclub.photography', href: 'https://someclub.photography' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('wa.me/573001234567'), [
-      { type: 'link', text: 'wa.me/573001234567', href: 'https://wa.me/573001234567' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('tel:+1-970-555-1234'), [
-      { type: 'link', text: '+1-970-555-1234', href: 'tel:+19705551234' },
-    ]);
-    assert.deepEqual(
-      parseContactWithLinks('WhatsApp +57 300 123 4567 or info@venue.com'),
-      [
-        { type: 'text', text: 'WhatsApp ' },
-        { type: 'link', text: '+57 300 123 4567', href: 'tel:+573001234567' },
-        { type: 'text', text: ' or ' },
-        { type: 'link', text: 'info@venue.com', href: 'mailto:info@venue.com' },
-      ]
-    );
-    assert.deepEqual(parseContactWithLinks('(970) 555-1234'), [
-      { type: 'link', text: '(970) 555-1234', href: 'tel:9705551234' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('https://wa.me/573001234567'), [
-      { type: 'link', text: 'https://wa.me/573001234567', href: 'https://wa.me/573001234567' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('DM @club on Instagram'), [
-      { type: 'text', text: 'DM @club on Instagram' },
-    ]);
-    assert.deepEqual(parseContactWithLinks('Updated 2026-01-15'), [
-      { type: 'text', text: 'Updated 2026-01-15' },
-    ]);
-  });
-});
-
-================
 File: app/[city]/contact/page.tsx
 ================
 import { Suspense } from 'react';
@@ -4576,6 +4330,507 @@ export default function ShareButton({
     </div>
   );
 }
+
+================
+File: app/events/event-helpers.test.ts
+================
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { CITIES } from '../lib/cities';
+import { ensureExternalUrl } from './utils';
+import {
+  normalizeContactText,
+  parseContactWithLinks,
+  parseTextWithLinks,
+} from './linkify';
+import {
+  slugifyText,
+  getEventSlug,
+  resolveEventBySlug,
+  getNextEventOccurrence,
+  buildEventInviteText,
+  buildEventJsonLd,
+  buildScheduleLine,
+  getEventDisplayDetails,
+  buildProveItSources,
+  parseLastUpdatedDate,
+  formatIsoDateAttribute,
+  groupEventsForDirectory,
+} from './event-helpers';
+import { makeEvent } from './test-fixtures';
+
+describe('slug generation and event resolution', () => {
+  it('strips accents, emojis, punctuation, and formats clean slugs', () => {
+    assert.equal(slugifyText("Café & Español! 🎉 Game's Nite"), 'cafe-espanol-games-nite');
+    assert.equal(
+      getEventSlug(makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' })),
+      'verb-vibe-game-nite-14'
+    );
+    assert.equal(
+      getEventSlug(makeEvent({ id: '', title: 'Café Revolución Meetup' })),
+      'cafe-revolucion-meetup'
+    );
+    assert.equal(getEventSlug(makeEvent({ id: '9', title: '🎉✨' })), 'event-9');
+  });
+
+  it('resolves exact, renamed-title ID, bare ID, missing-ID fallback, split IDs, and rejects deleted IDs', () => {
+    const events = [
+      makeEvent({ id: '14', title: 'Verb & Vibe Game Nite' }),
+      makeEvent({ id: '', title: 'Open Air Sketching' }),
+      makeEvent({ id: 'FOCO0024-mon', title: 'Weekly Karaoke Night', dayOfWeek: 'Mon' }),
+      makeEvent({ id: 'FOCO0024-wed', title: 'Weekly Karaoke Night', dayOfWeek: 'Wed' }),
+    ];
+    const exact = resolveEventBySlug(events, 'verb-vibe-game-nite-14');
+    assert.ok(exact);
+    assert.equal(exact.event.id, '14');
+    assert.equal(exact.isCanonical, true);
+    const renamed = resolveEventBySlug(events, 'old-title-here-14');
+    assert.ok(renamed);
+    assert.equal(renamed.event.id, '14');
+    assert.equal(renamed.canonicalSlug, 'verb-vibe-game-nite-14');
+    assert.equal(renamed.isCanonical, false);
+    const bareId = resolveEventBySlug(events, '14');
+    assert.ok(bareId);
+    assert.equal(bareId.event.id, '14');
+    assert.equal(bareId.isCanonical, false);
+    const splitWed = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024-wed');
+    assert.ok(splitWed);
+    assert.equal(splitWed.event.id, 'FOCO0024-wed');
+    assert.equal(splitWed.isCanonical, true);
+    const legacyUnsplit = resolveEventBySlug(events, 'weekly-karaoke-night-foco0024');
+    assert.ok(legacyUnsplit);
+    assert.equal(legacyUnsplit.event.id, 'FOCO0024-mon');
+    assert.equal(legacyUnsplit.canonicalSlug, 'weekly-karaoke-night-foco0024-mon');
+    assert.equal(legacyUnsplit.isCanonical, false);
+    const missingId = resolveEventBySlug(events, 'open-air-sketching');
+    assert.ok(missingId);
+    assert.equal(missingId.event.title, 'Open Air Sketching');
+    assert.equal(missingId.isCanonical, true);
+    const deletedId = resolveEventBySlug(events, 'verb-vibe-game-nite-999');
+    assert.equal(deletedId, null);
+  });
+});
+
+describe('next occurrence, invite text, and JSON-LD', () => {
+  it('finds next occurrence beyond 7 days for monthly events, date-recurring events, and omits paused events', () => {
+    const monthlyEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    const occ = getNextEventOccurrence(monthlyEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(occ);
+    assert.equal(occ.date.getMonth(), 1);
+    assert.equal(occ.date.getDate(), 6);
+    assert.equal(occ.label.startsWith('Next: '), true);
+
+    const potluckEv = makeEvent({
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 1st',
+    });
+    const potluckOcc = getNextEventOccurrence(potluckEv, 'America/Denver', 90, new Date('2026-01-10T15:00:00Z'));
+    assert.ok(potluckOcc);
+    assert.equal(potluckOcc.date.getMonth(), 1);
+    assert.equal(potluckOcc.date.getDate(), 1);
+
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'Paused' });
+    assert.equal(
+      getNextEventOccurrence(pausedEv, 'America/Bogota', 90, new Date('2026-01-10T15:00:00Z')),
+      null
+    );
+  });
+
+  it('builds formatted schedule lines using frequency text for Varies and date-of-month rows', () => {
+    const potluck = makeEvent({
+      title: 'Community Potluck',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 1st',
+      startTime: '5:00 PM',
+      endTime: '7:00 PM',
+    });
+    assert.equal(buildScheduleLine(potluck), 'Monthly, 1st · 5p – 7p');
+
+    const midMonth = makeEvent({
+      title: 'Mid-Month Social',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 15th',
+      startTime: '6:00 PM',
+      endTime: '',
+    });
+    assert.equal(buildScheduleLine(midMonth), 'Monthly, 15th · 6p');
+
+    const lastDay = makeEvent({
+      title: 'End of Month Mixer',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, Last day',
+      startTime: '',
+      endTime: '',
+    });
+    assert.equal(buildScheduleLine(lastDay), 'Monthly, Last day');
+  });
+
+  it('builds formatted invite text skipping missing fields cleanly', () => {
+    const fullEv = makeEvent({
+      id: '14',
+      title: 'Verb & Vibe Game Nite',
+      dayOfWeek: 'Fri',
+      startTime: '7:00 PM',
+      endTime: '9:30 PM',
+      venue: 'Café Revolución',
+      area: 'Laureles',
+      price: 'Free',
+    });
+    assert.equal(
+      buildEventInviteText(fullEv, 'medellin-colombia'),
+      'Verb & Vibe Game Nite\nFri · 7p – 9:30p\nCafé Revolución (Laureles) · Free\nhttps://www.someplacesocial.org/medellin-colombia/events/verb-vibe-game-nite-14'
+    );
+    const sparseEv = makeEvent({
+      id: '2',
+      title: 'Mystery Gathering',
+      dayOfWeek: '',
+      frequency: '',
+      startTime: '',
+      endTime: '',
+      venue: '',
+      location: '',
+      area: '',
+      price: '',
+    });
+    assert.equal(
+      buildEventInviteText(sparseEv, 'fort-collins-colorado'),
+      'Mystery Gathering\nhttps://www.someplacesocial.org/fort-collins-colorado/events/mystery-gathering-2'
+    );
+  });
+
+  it('builds valid schema.org/Event JSON-LD including image, addressCountry, venue, organizer, and registration URLs', () => {
+    const ev = makeEvent({
+      id: '14',
+      title: 'Salsa Night',
+      venue: 'Son Havana',
+      venueUrl: 'sonhavana.com',
+      organization: 'Medellín Salsa Collective',
+      organizerUrl: 'instagram.com/medellinsalsa',
+      registrationUrl: 'eventbrite.com/e/salsa-14',
+      location: 'Cra 73 #44-56',
+      price: 'Free',
+      startTime: '8:00 PM',
+      endTime: '11:00 PM',
+    });
+    const canonicalUrl =
+      'https://www.someplacesocial.org/medellin-colombia/events/salsa-night-14';
+    const occ = getNextEventOccurrence(ev, 'America/Bogota', 90, new Date('2026-01-02T15:00:00Z'));
+    const ld = buildEventJsonLd(
+      ev,
+      CITIES['medellin-colombia'],
+      canonicalUrl,
+      occ
+    ) as Record<string, unknown>;
+    assert.ok(ld);
+    assert.equal(ld['@type'], 'Event');
+    assert.equal(ld['image'], `${canonicalUrl}/opengraph-image`);
+    assert.equal(ld['eventAttendanceMode'], 'https://schema.org/OfflineEventAttendanceMode');
+    assert.equal(String(ld['startDate']).startsWith('2026-01-02T20:00:00'), true);
+    const location = ld['location'] as Record<string, unknown>;
+    assert.equal(location['url'], 'https://sonhavana.com');
+    assert.equal((location['address'] as Record<string, unknown>)['addressCountry'], 'CO');
+    assert.equal(
+      (ld['organizer'] as Record<string, unknown>)['url'],
+      'https://instagram.com/medellinsalsa'
+    );
+    assert.equal(
+      (ld['offers'] as Record<string, unknown>)['url'],
+      'https://eventbrite.com/e/salsa-14'
+    );
+
+    const focoOcc = getNextEventOccurrence(ev, 'America/Denver', 90, new Date('2026-01-02T15:00:00Z'));
+    const focoLd = buildEventJsonLd(
+      ev,
+      CITIES['fort-collins-colorado'],
+      'https://www.someplacesocial.org/fort-collins-colorado/events/salsa-night-14',
+      focoOcc
+    ) as Record<string, unknown>;
+    const focoAddress = (focoLd['location'] as Record<string, unknown>)['address'] as Record<string, unknown>;
+    assert.equal(focoAddress['addressCountry'], 'US');
+  });
+});
+
+describe('last updated date parsing & directory grouping', () => {
+  it('parses sheet verification dates cleanly into UTC dates and ISO YYYY-MM-DD attributes', () => {
+    assert.equal(formatIsoDateAttribute('Nov 8, 2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('November 8, 2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('2026-11-08'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('11/8/2026'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('Date(2026, 10, 8)'), '2026-11-08');
+    assert.equal(formatIsoDateAttribute('8 Nov 2026'), '2026-11-08');
+    assert.equal(parseLastUpdatedDate('Feb 30, 2026'), null);
+    assert.equal(parseLastUpdatedDate('Recently'), null);
+    assert.equal(parseLastUpdatedDate(''), null);
+    assert.equal(parseLastUpdatedDate(null), null);
+  });
+
+  it('groups daily, weekly, multi-day, monthly, and date-recurring events chronologically into directory buckets', () => {
+    const events = [
+      makeEvent({ id: '1', title: 'Late Trivia', dayOfWeek: 'Fri', startTime: '8:00 PM' }),
+      makeEvent({ id: '2', title: 'Morning Run', dayOfWeek: 'Fri', startTime: '7:00 AM' }),
+      makeEvent({ id: '3', title: 'Daily Coffee Club', dayOfWeek: 'Daily', startTime: '9:00 AM' }),
+      makeEvent({ id: '4', title: 'Midweek Games', dayOfWeek: 'Tue, Thu', startTime: '6:00 PM' }),
+      makeEvent({ id: '5', title: 'Seasonal Walk', dayOfWeek: '', frequency: 'Seasonal' }),
+      makeEvent({ id: '6', title: 'Weekend Market', dayOfWeek: 'Sat & Sun', startTime: '10:00 AM' }),
+      makeEvent({ id: '7', title: 'Community Potluck', dayOfWeek: 'Varies', frequency: 'Monthly, 1st', startTime: '5:00 PM' }),
+    ];
+
+    const groups = groupEventsForDirectory(events);
+    assert.deepEqual(
+      groups.map((g) => ({
+        key: g.key,
+        titles: g.events.map((e) => e.title),
+      })),
+      [
+        { key: 'daily', titles: ['Daily Coffee Club'] },
+        { key: 'tue', titles: ['Midweek Games'] },
+        { key: 'thu', titles: ['Midweek Games'] },
+        { key: 'fri', titles: ['Morning Run', 'Late Trivia'] },
+        { key: 'sat', titles: ['Weekend Market'] },
+        { key: 'sun', titles: ['Weekend Market'] },
+        { key: 'other', titles: ['Community Potluck', 'Seasonal Walk'] },
+      ]
+    );
+  });
+});
+
+describe('getEventDisplayDetails & URL normalization', () => {
+  it('prepends https:// across short-form Organizer, Venue, Registration, Map, and URL1 while preserving query strings', () => {
+    const linked = getEventDisplayDetails(
+      makeEvent({
+        venue: 'Maxline Brewing',
+        venueUrl: 'maxlinebrewing.com',
+        organization: 'Hosted by Geeks Who Drink',
+        organizerUrl: 'instagram.com/geekswhodrink',
+        preRegistration: 'Registration required.',
+        registrationUrl: 'geekswhodrink.com/register?city=foco',
+        map: 'maps.app.goo.gl/abc123',
+        url1: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
+      }),
+      'Fort Collins'
+    );
+    assert.equal(linked.displayVenue, 'Maxline Brewing');
+    assert.equal(linked.venueUrl, 'https://maxlinebrewing.com');
+    assert.equal(linked.organizerName, 'Geeks Who Drink');
+    assert.equal(linked.organizerUrl, 'https://instagram.com/geekswhodrink');
+    assert.equal(linked.showOrganizer, true);
+    assert.equal(linked.preRegistrationText, 'Registration required.');
+    assert.equal(linked.registrationUrl, 'https://geekswhodrink.com/register?city=foco');
+    assert.equal(linked.mapsHref, 'https://maps.app.goo.gl/abc123');
+    assert.equal(linked.moreDetailsUrl, 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2');
+    assert.equal(linked.needsSignupIcon, true);
+
+    const blankAndUnsafe = getEventDisplayDetails(
+      makeEvent({
+        venue: 'City Park',
+        venueUrl: 'javascript:alert(1)',
+        organization: '',
+        organizerUrl: '',
+        preRegistration: 'Drop-in (no RSVP needed)',
+        registrationUrl: '',
+        url1: '',
+      }),
+      'Fort Collins'
+    );
+    assert.equal(blankAndUnsafe.venueUrl, '');
+    assert.equal(blankAndUnsafe.showOrganizer, false);
+    assert.equal(blankAndUnsafe.registrationUrl, '');
+    assert.equal(blankAndUnsafe.moreDetailsUrl, '');
+    assert.equal(blankAndUnsafe.needsSignupIcon, false);
+    assert.equal(ensureExternalUrl('//example.com/events?img_index=3'), 'https://example.com/events?img_index=3');
+    assert.equal(ensureExternalUrl('x'), '');
+  });
+});
+
+describe('buildProveItSources', () => {
+  it('builds Listed at + Also, at entries with https:// hrefs, query strings intact, and notes', () => {
+    const both = buildProveItSources({
+      url1: 'maxlinebrewing.com/whats-happening',
+      url1Notes: 'Click on the "Community Events" tab',
+      url2: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
+      url2Notes: 'Check slide 2 for times',
+    });
+    assert.deepEqual(both, [
+      {
+        prefix: 'Listed at ',
+        url: 'maxlinebrewing.com/whats-happening',
+        href: 'https://maxlinebrewing.com/whats-happening',
+        notes: 'Click on the "Community Events" tab',
+      },
+      {
+        prefix: 'Also, at ',
+        url: 'instagram.com/p/DfV0gzJjq-e/?img_index=2',
+        href: 'https://instagram.com/p/DfV0gzJjq-e/?img_index=2',
+        notes: 'Check slide 2 for times',
+      },
+    ]);
+  });
+
+  it('shows only the first line when URL2 is blank and ignores stray URL2 Notes', () => {
+    const firstOnly = buildProveItSources({
+      url1: 'comedyfortcollins.com/events/142205?img_index=1',
+      url1Notes: 'Click on "Biography" link',
+      url2: '',
+      url2Notes: 'Ignored note when URL2 is empty',
+    });
+    assert.deepEqual(firstOnly, [
+      {
+        prefix: 'Listed at ',
+        url: 'comedyfortcollins.com/events/142205?img_index=1',
+        href: 'https://comedyfortcollins.com/events/142205?img_index=1',
+        notes: 'Click on "Biography" link',
+      },
+    ]);
+  });
+
+  it('returns empty array when both URL1 and URL2 are blank, x, or unsafe', () => {
+    assert.deepEqual(
+      buildProveItSources({ url1: '', url1Notes: 'orphan', url2: '', url2Notes: '' }),
+      []
+    );
+    assert.deepEqual(
+      buildProveItSources({ url1: 'x', url1Notes: '', url2: '  ', url2Notes: '' }),
+      []
+    );
+    assert.deepEqual(
+      buildProveItSources({ url1: 'javascript:alert(1)', url1Notes: '', url2: '', url2Notes: '' }),
+      []
+    );
+  });
+
+  it('promotes URL2 to Listed at when URL1 is blank and URL2 is filled', () => {
+    const secondOnly = buildProveItSources({
+      url1: '',
+      url1Notes: '',
+      url2: 'instagram.com/p/DfiPohTlspn/?img_index=4',
+      url2Notes: 'Carousel slide 4',
+    });
+    assert.deepEqual(secondOnly, [
+      {
+        prefix: 'Listed at ',
+        url: 'instagram.com/p/DfiPohTlspn/?img_index=4',
+        href: 'https://instagram.com/p/DfiPohTlspn/?img_index=4',
+        notes: 'Carousel slide 4',
+      },
+    ]);
+  });
+});
+
+describe('linkify Contact and URL text', () => {
+  it('normalizes empty and x placeholder values', () => {
+    assert.equal(normalizeContactText(''), '');
+    assert.equal(normalizeContactText('   '), '');
+    assert.equal(normalizeContactText('x'), '');
+    assert.equal(normalizeContactText('X'), '');
+    assert.equal(normalizeContactText('  info@venue.com  '), 'info@venue.com');
+  });
+
+  it('links bare URLs, protocols, emails, query params, multi-part TLDs, curly quotes, and ignores non-URLs', () => {
+    const mixed = parseTextWithLinks(
+      '(See https://www.example.com/events?id=1, or maxlinebrewing.com.) Email info@venue.com at 7:30 p.m. e.g. $12.50.'
+    );
+    assert.deepEqual(mixed, [
+      { type: 'text', text: '(See ' },
+      {
+        type: 'link',
+        text: 'https://www.example.com/events?id=1',
+        href: 'https://www.example.com/events?id=1',
+      },
+      { type: 'text', text: ', or ' },
+      {
+        type: 'link',
+        text: 'maxlinebrewing.com',
+        href: 'https://maxlinebrewing.com',
+      },
+      { type: 'text', text: '.) Email ' },
+      {
+        type: 'link',
+        text: 'info@venue.com',
+        href: 'mailto:info@venue.com',
+      },
+      { type: 'text', text: ' at 7:30 p.m. e.g. $12.50.' },
+    ]);
+    const extra = parseTextWithLinks(
+      'Check “sub.example.com.co” and maxlinebrewing.com?tab=events.'
+    );
+    assert.deepEqual(extra, [
+      { type: 'text', text: 'Check “' },
+      {
+        type: 'link',
+        text: 'sub.example.com.co',
+        href: 'https://sub.example.com.co',
+      },
+      { type: 'text', text: '” and ' },
+      {
+        type: 'link',
+        text: 'maxlinebrewing.com?tab=events',
+        href: 'https://maxlinebrewing.com?tab=events',
+      },
+      { type: 'text', text: '.' },
+    ]);
+    const wiki = parseTextWithLinks('Look at en.wikipedia.org/wiki/Pub_quiz_(game).');
+    assert.deepEqual(wiki, [
+      { type: 'text', text: 'Look at ' },
+      {
+        type: 'link',
+        text: 'en.wikipedia.org/wiki/Pub_quiz_(game)',
+        href: 'https://en.wikipedia.org/wiki/Pub_quiz_(game)',
+      },
+      { type: 'text', text: '.' },
+    ]);
+    const unsafe = parseTextWithLinks('Try javascript:alert(1) or javascript:evil.com');
+    assert.deepEqual(unsafe, [
+      { type: 'text', text: 'Try javascript:alert(1) or javascript:evil.com' },
+    ]);
+  });
+
+  it('links emails, short-form contact URLs across TLDs, phone numbers, and mixed contact strings safely', () => {
+    assert.deepEqual(parseContactWithLinks('x'), []);
+    assert.deepEqual(parseContactWithLinks('mailto:hello@venue.com'), [
+      { type: 'link', text: 'hello@venue.com', href: 'mailto:hello@venue.com' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('venue.com/contact?ref=1'), [
+      { type: 'link', text: 'venue.com/contact?ref=1', href: 'https://venue.com/contact?ref=1' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('lu.ma'), [
+      { type: 'link', text: 'lu.ma', href: 'https://lu.ma' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('someclub.photography'), [
+      { type: 'link', text: 'someclub.photography', href: 'https://someclub.photography' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('wa.me/573001234567'), [
+      { type: 'link', text: 'wa.me/573001234567', href: 'https://wa.me/573001234567' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('tel:+1-970-555-1234'), [
+      { type: 'link', text: '+1-970-555-1234', href: 'tel:+19705551234' },
+    ]);
+    assert.deepEqual(
+      parseContactWithLinks('WhatsApp +57 300 123 4567 or info@venue.com'),
+      [
+        { type: 'text', text: 'WhatsApp ' },
+        { type: 'link', text: '+57 300 123 4567', href: 'tel:+573001234567' },
+        { type: 'text', text: ' or ' },
+        { type: 'link', text: 'info@venue.com', href: 'mailto:info@venue.com' },
+      ]
+    );
+    assert.deepEqual(parseContactWithLinks('(970) 555-1234'), [
+      { type: 'link', text: '(970) 555-1234', href: 'tel:9705551234' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('https://wa.me/573001234567'), [
+      { type: 'link', text: 'https://wa.me/573001234567', href: 'https://wa.me/573001234567' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('DM @club on Instagram'), [
+      { type: 'text', text: 'DM @club on Instagram' },
+    ]);
+    assert.deepEqual(parseContactWithLinks('Updated 2026-01-15'), [
+      { type: 'text', text: 'Updated 2026-01-15' },
+    ]);
+  });
+});
 
 ================
 File: app/events/linkify.ts
@@ -8949,829 +9204,6 @@ export default function EventDetailView({
 }
 
 ================
-File: app/events/event-helpers.ts
-================
-import { Event } from '../lib/google-sheets';
-import {
-  CityConfig,
-  SITE_URL,
-  getCityCountryCode,
-  getCityPriceConfig,
-  getCityTimeZone,
-} from '../lib/cities';
-import {
-  ensureExternalUrl,
-  formatRecurrenceText,
-  formatTimeRange,
-  isEventActiveOnDate,
-  isFreeOrDonation,
-  matchesDay,
-  parseEventPrice,
-  parseHour,
-} from './utils';
-
-export type EventResolutionResult = {
-  event: Event;
-  canonicalSlug: string;
-  isCanonical: boolean;
-};
-
-export type NextOccurrenceResult = {
-  date: Date;
-  offsetDays: number;
-  label: string;
-  isToday: boolean;
-  isTomorrow: boolean;
-};
-
-export type EventDisplayDetails = {
-  displayVenue: string;
-  venueUrl: string;
-  showDistinctAddress: boolean;
-  organizerName: string;
-  organizerUrl: string;
-  showOrganizer: boolean;
-  recurrenceText: string;
-  preRegistrationText: string;
-  registrationUrl: string;
-  needsSignupIcon: boolean;
-  mapsHref: string;
-  moreDetailsUrl: string;
-};
-
-export type ProveItSource = {
-  prefix: 'Listed at ' | 'Also, at ';
-  url: string;
-  href: string;
-  notes: string;
-};
-
-export type DirectoryGroup = {
-  key: string;
-  label: string;
-  events: Event[];
-};
-
-const MONTH_NAME_MAP: Record<string, number> = {
-  jan: 1,
-  january: 1,
-  feb: 2,
-  february: 2,
-  mar: 3,
-  march: 3,
-  apr: 4,
-  april: 4,
-  may: 5,
-  jun: 6,
-  june: 6,
-  jul: 7,
-  july: 7,
-  aug: 8,
-  august: 8,
-  sep: 9,
-  sept: 9,
-  september: 9,
-  oct: 10,
-  october: 10,
-  nov: 11,
-  november: 11,
-  dec: 12,
-  december: 12,
-};
-
-const DIRECTORY_WEEKDAYS = [
-  { key: 'mon', label: 'Monday' },
-  { key: 'tue', label: 'Tuesday' },
-  { key: 'wed', label: 'Wednesday' },
-  { key: 'thu', label: 'Thursday' },
-  { key: 'fri', label: 'Friday' },
-  { key: 'sat', label: 'Saturday' },
-  { key: 'sun', label: 'Sunday' },
-] as const;
-
-function buildValidUtcNoonDate(
-  year: number,
-  month: number,
-  day: number
-): Date | null {
-  if (year < 2020 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
-    return null;
-  }
-  const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-  if (
-    Number.isNaN(date.getTime()) ||
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
-    return null;
-  }
-  return date;
-}
-
-export function parseLastUpdatedDate(value?: string | null): Date | null {
-  if (!value) return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const gvizMatch = trimmed.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
-  if (gvizMatch) {
-    return buildValidUtcNoonDate(
-      Number(gvizMatch[1]),
-      Number(gvizMatch[2]) + 1,
-      Number(gvizMatch[3])
-    );
-  }
-
-  const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:$|T)/);
-  if (isoMatch) {
-    return buildValidUtcNoonDate(
-      Number(isoMatch[1]),
-      Number(isoMatch[2]),
-      Number(isoMatch[3])
-    );
-  }
-
-  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (slashMatch) {
-    return buildValidUtcNoonDate(
-      Number(slashMatch[3]),
-      Number(slashMatch[1]),
-      Number(slashMatch[2])
-    );
-  }
-
-  const monthFirstMatch = trimmed.match(/^([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})$/);
-  if (monthFirstMatch) {
-    const month = MONTH_NAME_MAP[monthFirstMatch[1].toLowerCase()];
-    if (month) {
-      return buildValidUtcNoonDate(
-        Number(monthFirstMatch[3]),
-        month,
-        Number(monthFirstMatch[2])
-      );
-    }
-  }
-
-  const dayFirstMatch = trimmed.match(/^(\d{1,2})\s+([A-Za-z]+)\.?,?\s+(\d{4})$/);
-  if (dayFirstMatch) {
-    const month = MONTH_NAME_MAP[dayFirstMatch[2].toLowerCase()];
-    if (month) {
-      return buildValidUtcNoonDate(
-        Number(dayFirstMatch[3]),
-        month,
-        Number(dayFirstMatch[1])
-      );
-    }
-  }
-
-  if (/\b20\d{2}\b/.test(trimmed)) {
-    const timestamp = Date.parse(trimmed);
-    if (!Number.isNaN(timestamp)) {
-      const parsed = new Date(timestamp);
-      return buildValidUtcNoonDate(
-        parsed.getFullYear(),
-        parsed.getMonth() + 1,
-        parsed.getDate()
-      );
-    }
-  }
-
-  return null;
-}
-
-export function formatIsoDateAttribute(value?: string | null): string | null {
-  const date = parseLastUpdatedDate(value);
-  if (!date) return null;
-  return date.toISOString().slice(0, 10);
-}
-
-export function groupEventsForDirectory(events: Event[]): DirectoryGroup[] {
-  if (events.length === 0) return [];
-
-  const dailyEvents: Event[] = [];
-  const weekdayBuckets = new Map<string, Event[]>(
-    DIRECTORY_WEEKDAYS.map((d) => [d.key, []])
-  );
-  const otherEvents: Event[] = [];
-
-  for (const ev of events) {
-    const daySpec =
-      (ev.dayOfWeek || '').trim() ||
-      [ev.frequency, ev.frequencyNotes].filter(Boolean).join(' ').trim();
-
-    if (/\b(?:daily|everyday|every day)\b/i.test(daySpec)) {
-      dailyEvents.push(ev);
-      continue;
-    }
-
-    let matchedAny = false;
-    for (const day of DIRECTORY_WEEKDAYS) {
-      if (matchesDay(daySpec, day.label)) {
-        weekdayBuckets.get(day.key)!.push(ev);
-        matchedAny = true;
-      }
-    }
-
-    if (!matchedAny) {
-      otherEvents.push(ev);
-    }
-  }
-
-  const sortByTimeThenTitle = (list: Event[]) =>
-    list.sort((a, b) => {
-      const hourDiff = parseHour(a.startTime) - parseHour(b.startTime);
-      if (hourDiff !== 0) return hourDiff;
-      return a.title.localeCompare(b.title);
-    });
-
-  const groups: DirectoryGroup[] = [];
-  if (dailyEvents.length > 0) {
-    groups.push({
-      key: 'daily',
-      label: 'Daily',
-      events: sortByTimeThenTitle(dailyEvents),
-    });
-  }
-
-  for (const day of DIRECTORY_WEEKDAYS) {
-    const bucket = weekdayBuckets.get(day.key)!;
-    if (bucket.length > 0) {
-      groups.push({
-        key: day.key,
-        label: day.label,
-        events: sortByTimeThenTitle(bucket),
-      });
-    }
-  }
-
-  if (otherEvents.length > 0) {
-    groups.push({
-      key: 'other',
-      label: 'Other Schedules',
-      events: sortByTimeThenTitle(otherEvents),
-    });
-  }
-
-  return groups;
-}
-
-function cleanOptionalField(raw?: string): string {
-  if (!raw) return '';
-  const trimmed = raw.trim();
-  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
-  return trimmed;
-}
-
-export function buildProveItSources(
-  event: Pick<Event, 'url1' | 'url1Notes' | 'url2' | 'url2Notes'>
-): ProveItSource[] {
-  const url1 = cleanOptionalField(event.url1);
-  const href1 = url1 ? ensureExternalUrl(url1) : '';
-  const url1Notes = cleanOptionalField(event.url1Notes);
-
-  const url2 = cleanOptionalField(event.url2);
-  const href2 = url2 ? ensureExternalUrl(url2) : '';
-  const url2Notes = cleanOptionalField(event.url2Notes);
-
-  const sources: ProveItSource[] = [];
-  if (url1 && href1) {
-    sources.push({
-      prefix: 'Listed at ',
-      url: url1,
-      href: href1,
-      notes: url1Notes,
-    });
-  }
-  if (url2 && href2) {
-    sources.push({
-      prefix: sources.length === 0 ? 'Listed at ' : 'Also, at ',
-      url: url2,
-      href: href2,
-      notes: url2Notes,
-    });
-  }
-  return sources;
-}
-
-export function getEventDisplayDetails(
-  event: Event,
-  cityName: string
-): EventDisplayDetails {
-  const displayVenue = (event.venue || event.location || '').trim();
-  const venueUrl =
-    displayVenue && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
-  const showDistinctAddress = Boolean(
-    event.venue.trim() &&
-      event.location.trim() &&
-      event.venue.trim().toLowerCase() !== event.location.trim().toLowerCase()
-  );
-  const organizerName = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const organizerUrl =
-    organizerName && event.organizerUrl
-      ? ensureExternalUrl(event.organizerUrl)
-      : '';
-  const showOrganizer = Boolean(
-    organizerName &&
-      organizerName.toLowerCase() !== displayVenue.toLowerCase()
-  );
-  const recurrenceText = formatRecurrenceText(
-    event.frequency,
-    event.frequencyNotes
-  );
-  const rawPreReg = (event.preRegistration || '').trim();
-  const registrationUrl = event.registrationUrl
-    ? ensureExternalUrl(event.registrationUrl)
-    : '';
-  const preRegistrationText = rawPreReg || (registrationUrl ? 'Registration' : '');
-  const regLower = preRegistrationText.toLowerCase();
-  const isDropInOrNoReg =
-    regLower.startsWith('drop') ||
-    regLower.startsWith('no ') ||
-    regLower.includes('no rsvp') ||
-    regLower.includes('no registration') ||
-    regLower.includes('not required') ||
-    regLower.includes('not needed');
-  const needsSignupIcon =
-    Boolean(registrationUrl) ||
-    (!isDropInOrNoReg &&
-      /\b(reg|register|registration|pre-?registration|rsvp|ticket|ticketed|pre-?pay|required|recommended|sign[\s-]?up)\b/i.test(
-        regLower
-      ));
-  const mapsHref =
-    (event.map ? ensureExternalUrl(event.map) : '') ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      `${displayVenue || event.title}, ${cityName}`
-    )}`;
-  const moreDetailsUrl = cleanOptionalField(event.url1)
-    ? ensureExternalUrl(event.url1)
-    : '';
-  return {
-    displayVenue,
-    venueUrl,
-    showDistinctAddress,
-    organizerName,
-    organizerUrl,
-    showOrganizer,
-    recurrenceText,
-    preRegistrationText,
-    registrationUrl,
-    needsSignupIcon,
-    mapsHref,
-    moreDetailsUrl,
-  };
-}
-
-export function slugifyText(text: string): string {
-  if (!text) return '';
-  return text
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/['’‘`]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function normalizeEventId(id?: string): string {
-  if (!id) return '';
-  return id
-    .trim()
-    .replace(/[^a-zA-Z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase();
-}
-
-export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
-  const titleSlug = slugifyText(event.title);
-  const idPart = normalizeEventId(event.id);
-  if (idPart && titleSlug) {
-    return `${titleSlug}-${idPart}`;
-  }
-  if (idPart) {
-    return `event-${idPart}`;
-  }
-  return titleSlug || 'event';
-}
-
-export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
-  return `/${citySlug}/events/${getEventSlug(event)}`;
-}
-
-export function getEventAbsoluteUrl(
-  citySlug: string,
-  event: Pick<Event, 'id' | 'title'>
-): string {
-  return `${SITE_URL}${getEventPath(citySlug, event)}`;
-}
-
-export function resolveEventBySlug(
-  events: Event[],
-  rawSlug: string
-): EventResolutionResult | null {
-  if (!rawSlug || events.length === 0) return null;
-  let decoded = rawSlug;
-  try {
-    decoded = decodeURIComponent(rawSlug);
-  } catch {
-  }
-  const normalizedSlug = decoded.trim().toLowerCase().replace(/^\/+|\/+$/g, '');
-  if (!normalizedSlug) return null;
-  for (const ev of events) {
-    const canonicalSlug = getEventSlug(ev);
-    if (canonicalSlug === normalizedSlug) {
-      return { event: ev, canonicalSlug, isCanonical: true };
-    }
-  }
-  for (const ev of events) {
-    const normId = normalizeEventId(ev.id);
-    if (!normId) continue;
-    if (normId === normalizedSlug) {
-      const canonicalSlug = getEventSlug(ev);
-      return { event: ev, canonicalSlug, isCanonical: false };
-    }
-  }
-  const lastDashIdx = normalizedSlug.lastIndexOf('-');
-  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
-    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
-    const exactTrailingMatch = events.find(
-      (ev) => normalizeEventId(ev.id) === trailingId
-    );
-    if (exactTrailingMatch) {
-      const canonicalSlug = getEventSlug(exactTrailingMatch);
-      return {
-        event: exactTrailingMatch,
-        canonicalSlug,
-        isCanonical: canonicalSlug === normalizedSlug,
-      };
-    }
-  }
-  let bestHyphenatedMatch: Event | null = null;
-  let bestIdLen = 0;
-  for (const ev of events) {
-    const normId = normalizeEventId(ev.id);
-    if (!normId || !normId.includes('-')) continue;
-    if (normalizedSlug.endsWith(`-${normId}`) && normId.length > bestIdLen) {
-      bestHyphenatedMatch = ev;
-      bestIdLen = normId.length;
-    }
-  }
-  if (bestHyphenatedMatch) {
-    const canonicalSlug = getEventSlug(bestHyphenatedMatch);
-    return {
-      event: bestHyphenatedMatch,
-      canonicalSlug,
-      isCanonical: canonicalSlug === normalizedSlug,
-    };
-  }
-  const barePrefixMatch = events.find((ev) => {
-    const normId = normalizeEventId(ev.id);
-    return Boolean(normId) && normId.startsWith(`${normalizedSlug}-`);
-  });
-  if (barePrefixMatch) {
-    const canonicalSlug = getEventSlug(barePrefixMatch);
-    return {
-      event: barePrefixMatch,
-      canonicalSlug,
-      isCanonical: false,
-    };
-  }
-  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
-    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
-    const trailingPrefixMatch = events.find((ev) => {
-      const normId = normalizeEventId(ev.id);
-      return Boolean(normId) && normId.startsWith(`${trailingId}-`);
-    });
-    if (trailingPrefixMatch) {
-      const canonicalSlug = getEventSlug(trailingPrefixMatch);
-      return {
-        event: trailingPrefixMatch,
-        canonicalSlug,
-        isCanonical: false,
-      };
-    }
-  }
-  const idLessEvents = events.filter((ev) => !normalizeEventId(ev.id));
-  const idLessTitleMatch = idLessEvents.find(
-    (ev) => slugifyText(ev.title) === normalizedSlug
-  );
-  if (idLessTitleMatch) {
-    const canonicalSlug = getEventSlug(idLessTitleMatch);
-    return {
-      event: idLessTitleMatch,
-      canonicalSlug,
-      isCanonical: canonicalSlug === normalizedSlug,
-    };
-  }
-  const hasTrailingNumericId = /-\d+$/.test(normalizedSlug);
-  if (!hasTrailingNumericId) {
-    const titleMatch = events.find((ev) => slugifyText(ev.title) === normalizedSlug);
-    if (titleMatch) {
-      const canonicalSlug = getEventSlug(titleMatch);
-      return {
-        event: titleMatch,
-        canonicalSlug,
-        isCanonical: canonicalSlug === normalizedSlug,
-      };
-    }
-  }
-  return null;
-}
-
-export function getCityToday(timeZone: string, now: Date = new Date()): Date {
-  try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).formatToParts(now);
-    const year = Number(parts.find((p) => p.type === 'year')?.value);
-    const month = Number(parts.find((p) => p.type === 'month')?.value);
-    const day = Number(parts.find((p) => p.type === 'day')?.value);
-    if (year && month && day) {
-      return new Date(year, month - 1, day);
-    }
-  } catch {
-  }
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
-export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
-  if (offsetDays === 0) return 'Today';
-  if (offsetDays === 1) return 'Tomorrow';
-  const formatted = date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  return `Next: ${formatted}`;
-}
-
-export function getNextEventOccurrence(
-  event: Event,
-  timeZone: string,
-  maxDays: number = 90,
-  now: Date = new Date()
-): NextOccurrenceResult | null {
-  const startDay = getCityToday(timeZone, now);
-  for (let offset = 0; offset <= maxDays; offset++) {
-    const candidate = new Date(startDay);
-    candidate.setDate(startDay.getDate() + offset);
-    if (isEventActiveOnDate(event, candidate)) {
-      return {
-        date: candidate,
-        offsetDays: offset,
-        label: formatOccurrenceLabel(candidate, offset),
-        isToday: offset === 0,
-        isTomorrow: offset === 1,
-      };
-    }
-  }
-  return null;
-}
-
-export function buildScheduleLine(event: Event): string {
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const timePart = start && end ? `${start} – ${end}` : start || '';
-  const freqRaw = (event.frequency || '').trim();
-  const notesRaw = (event.frequencyNotes || '').trim();
-  const isPlainWeekly = /^weekly$/i.test(freqRaw) && !notesRaw;
-  const recurrencePart = formatRecurrenceText(freqRaw, notesRaw);
-  const dayRaw = (event.dayOfWeek || '').trim();
-  let whenPart = '';
-  if (dayRaw && recurrencePart && !isPlainWeekly) {
-    if (recurrencePart.toLowerCase().includes(dayRaw.toLowerCase())) {
-      whenPart = recurrencePart;
-    } else {
-      whenPart = `${dayRaw} (${recurrencePart})`;
-    }
-  } else {
-    whenPart = dayRaw || recurrencePart;
-  }
-  return [whenPart, timePart].filter(Boolean).join(' · ');
-}
-
-export function buildEventInviteText(event: Event, citySlug: string): string {
-  const url = getEventAbsoluteUrl(citySlug, event);
-  const title = event.title.trim();
-  const scheduleLine = buildScheduleLine(event);
-  const venue = (event.venue || event.location || '').trim();
-  const area = (event.area || '').trim();
-  let placePart = '';
-  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
-    placePart = `${venue} (${area})`;
-  } else {
-    placePart = venue || area;
-  }
-  const pricePart = (event.price || '').trim();
-  const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
-  return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
-}
-
-export async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-    if (typeof document !== 'undefined') {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return ok;
-    }
-  } catch {
-  }
-  return false;
-}
-
-export function buildEventMetaDescription(event: Event, city: CityConfig): string {
-  const schedule = buildScheduleLine(event);
-  const venue = (event.venue || event.location || '').trim();
-  const area = (event.area || '').trim();
-  const price = (event.price || '').trim();
-  const about = (event.about || event.notes || '').replace(/\s+/g, ' ').trim();
-  let locationPhrase = '';
-  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
-    locationPhrase = `${venue} (${area})`;
-  } else {
-    locationPhrase = venue || area || city.heroLocation;
-  }
-  const headParts: string[] = [];
-  if (schedule && locationPhrase) {
-    headParts.push(`${schedule} at ${locationPhrase}`);
-  } else if (schedule) {
-    headParts.push(schedule);
-  } else if (locationPhrase) {
-    headParts.push(`${locationPhrase}, ${city.name}`);
-  }
-  if (price) {
-    headParts.push(price);
-  }
-  const headerSummary = headParts.join(' · ');
-  const full = [headerSummary ? `${headerSummary}.` : '', about]
-    .filter(Boolean)
-    .join(' ');
-  if (full.length <= 160) return full;
-  const sliced = full.slice(0, 157);
-  const lastSpace = sliced.lastIndexOf(' ');
-  const trimmed = lastSpace > 90 ? sliced.slice(0, lastSpace) : sliced;
-  return `${trimmed.replace(/[.,;:\s]+$/, '')}…`;
-}
-
-function getTimeZoneOffsetString(date: Date, timeZone: string): string {
-  try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      timeZoneName: 'longOffset',
-    }).formatToParts(date);
-    const tzName = parts.find((p) => p.type === 'timeZoneName')?.value || '';
-    const match = tzName.match(/GMT([+-]\d{2}):?(\d{2})/);
-    if (match) {
-      return `${match[1]}:${match[2]}`;
-    }
-    if (tzName === 'GMT') return 'Z';
-  } catch {
-  }
-  return timeZone === 'America/Bogota' ? '-05:00' : '-07:00';
-}
-
-function formatLocalIsoDateTime(
-  date: Date,
-  decimalHour: number,
-  timeZone: string
-): string {
-  const totalMinutes = Math.round(decimalHour * 60);
-  const hours = Math.floor(totalMinutes / 60) % 24;
-  const minutes = totalMinutes % 60;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(hours).padStart(2, '0');
-  const min = String(minutes).padStart(2, '0');
-  const offset = getTimeZoneOffsetString(
-    new Date(Date.UTC(yyyy, date.getMonth(), date.getDate(), 12, 0, 0)),
-    timeZone
-  );
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}:00${offset}`;
-}
-
-function formatLocalIsoDate(date: Date): string {
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-export function buildEventJsonLd(
-  event: Event,
-  city: CityConfig,
-  canonicalUrl: string,
-  occurrence: NextOccurrenceResult | null
-): Record<string, unknown> | null {
-  const venueName = (event.venue || event.location || '').trim();
-  if (!occurrence || (!venueName && !city.name)) {
-    return null;
-  }
-  const timeZone = getCityTimeZone(city);
-  const hasStartTime = Boolean((event.startTime || '').trim());
-  const startHour = parseHour(event.startTime);
-  const startDate = hasStartTime
-    ? formatLocalIsoDateTime(occurrence.date, startHour, timeZone)
-    : formatLocalIsoDate(occurrence.date);
-  let endDate: string | undefined;
-  if (hasStartTime && (event.endTime || '').trim()) {
-    const endHour = parseHour(event.endTime);
-    const endDay = new Date(occurrence.date);
-    if (endHour < startHour) {
-      endDay.setDate(endDay.getDate() + 1);
-    }
-    endDate = formatLocalIsoDateTime(endDay, endHour, timeZone);
-  }
-  const cleanOrg = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const venueUrl =
-    venueName && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
-  const organizerUrl =
-    cleanOrg && event.organizerUrl ? ensureExternalUrl(event.organizerUrl) : '';
-  const registrationUrl = event.registrationUrl
-    ? ensureExternalUrl(event.registrationUrl)
-    : '';
-  const priceConfig = getCityPriceConfig(city);
-  const freeOrDonation = isFreeOrDonation(event.price);
-  const numericPrice = freeOrDonation
-    ? 0
-    : parseEventPrice(event.price, priceConfig.currencyCode);
-  const resolvedOfferPrice =
-    numericPrice !== null
-      ? priceConfig.currencyCode === 'COP' && !freeOrDonation
-        ? Math.round(numericPrice * 1000)
-        : numericPrice
-      : null;
-  const description = (event.about || event.notes || '').trim();
-  const streetAddress = (event.location || '').trim();
-  const countryCode = getCityCountryCode(city);
-  const imageUrl = `${canonicalUrl}/opengraph-image`;
-  const jsonLd: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: event.title.trim(),
-    startDate,
-    ...(endDate ? { endDate } : {}),
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    eventStatus: 'https://schema.org/EventScheduled',
-    url: canonicalUrl,
-    image: imageUrl,
-    location: {
-      '@type': 'Place',
-      name: venueName || city.heroLocation,
-      ...(venueUrl ? { url: venueUrl } : {}),
-      address: {
-        '@type': 'PostalAddress',
-        ...(streetAddress ? { streetAddress } : {}),
-        addressLocality: city.name,
-        ...(city.region ? { addressRegion: city.region } : {}),
-        ...(countryCode ? { addressCountry: countryCode } : {}),
-      },
-    },
-    ...(description ? { description } : {}),
-    ...(cleanOrg
-      ? {
-          organizer: {
-            '@type': 'Organization',
-            name: cleanOrg,
-            ...(organizerUrl ? { url: organizerUrl } : {}),
-          },
-        }
-      : {}),
-    ...(resolvedOfferPrice !== null
-      ? {
-          offers: {
-            '@type': 'Offer',
-            price: resolvedOfferPrice,
-            priceCurrency: priceConfig.currencyCode,
-            availability: 'https://schema.org/InStock',
-            url: registrationUrl || canonicalUrl,
-          },
-        }
-      : {}),
-  };
-  return jsonLd;
-}
-
-================
 File: app/contact/Contact.module.css
 ================
 .page {
@@ -10750,6 +10182,837 @@ File: app/events/components/FilterControls.module.css
     padding: 4px 6px;
     color: var(--accent);
   }
+}
+
+================
+File: app/events/event-helpers.ts
+================
+import { Event } from '../lib/google-sheets';
+import {
+  CityConfig,
+  SITE_URL,
+  getCityCountryCode,
+  getCityPriceConfig,
+  getCityTimeZone,
+} from '../lib/cities';
+import {
+  ensureExternalUrl,
+  formatRecurrenceText,
+  formatTimeRange,
+  isDateRecurringEvent,
+  isEventActiveOnDate,
+  isFreeOrDonation,
+  matchesDay,
+  parseEventPrice,
+  parseHour,
+} from './utils';
+
+export type EventResolutionResult = {
+  event: Event;
+  canonicalSlug: string;
+  isCanonical: boolean;
+};
+
+export type NextOccurrenceResult = {
+  date: Date;
+  offsetDays: number;
+  label: string;
+  isToday: boolean;
+  isTomorrow: boolean;
+};
+
+export type EventDisplayDetails = {
+  displayVenue: string;
+  venueUrl: string;
+  showDistinctAddress: boolean;
+  organizerName: string;
+  organizerUrl: string;
+  showOrganizer: boolean;
+  recurrenceText: string;
+  preRegistrationText: string;
+  registrationUrl: string;
+  needsSignupIcon: boolean;
+  mapsHref: string;
+  moreDetailsUrl: string;
+};
+
+export type ProveItSource = {
+  prefix: 'Listed at ' | 'Also, at ';
+  url: string;
+  href: string;
+  notes: string;
+};
+
+export type DirectoryGroup = {
+  key: string;
+  label: string;
+  events: Event[];
+};
+
+const MONTH_NAME_MAP: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+
+const DIRECTORY_WEEKDAYS = [
+  { key: 'mon', label: 'Monday' },
+  { key: 'tue', label: 'Tuesday' },
+  { key: 'wed', label: 'Wednesday' },
+  { key: 'thu', label: 'Thursday' },
+  { key: 'fri', label: 'Friday' },
+  { key: 'sat', label: 'Saturday' },
+  { key: 'sun', label: 'Sunday' },
+] as const;
+
+function buildValidUtcNoonDate(
+  year: number,
+  month: number,
+  day: number
+): Date | null {
+  if (year < 2020 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+  const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return date;
+}
+
+export function parseLastUpdatedDate(value?: string | null): Date | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const gvizMatch = trimmed.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
+  if (gvizMatch) {
+    return buildValidUtcNoonDate(
+      Number(gvizMatch[1]),
+      Number(gvizMatch[2]) + 1,
+      Number(gvizMatch[3])
+    );
+  }
+
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:$|T)/);
+  if (isoMatch) {
+    return buildValidUtcNoonDate(
+      Number(isoMatch[1]),
+      Number(isoMatch[2]),
+      Number(isoMatch[3])
+    );
+  }
+
+  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    return buildValidUtcNoonDate(
+      Number(slashMatch[3]),
+      Number(slashMatch[1]),
+      Number(slashMatch[2])
+    );
+  }
+
+  const monthFirstMatch = trimmed.match(/^([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})$/);
+  if (monthFirstMatch) {
+    const month = MONTH_NAME_MAP[monthFirstMatch[1].toLowerCase()];
+    if (month) {
+      return buildValidUtcNoonDate(
+        Number(monthFirstMatch[3]),
+        month,
+        Number(monthFirstMatch[2])
+      );
+    }
+  }
+
+  const dayFirstMatch = trimmed.match(/^(\d{1,2})\s+([A-Za-z]+)\.?,?\s+(\d{4})$/);
+  if (dayFirstMatch) {
+    const month = MONTH_NAME_MAP[dayFirstMatch[2].toLowerCase()];
+    if (month) {
+      return buildValidUtcNoonDate(
+        Number(dayFirstMatch[3]),
+        month,
+        Number(dayFirstMatch[1])
+      );
+    }
+  }
+
+  if (/\b20\d{2}\b/.test(trimmed)) {
+    const timestamp = Date.parse(trimmed);
+    if (!Number.isNaN(timestamp)) {
+      const parsed = new Date(timestamp);
+      return buildValidUtcNoonDate(
+        parsed.getFullYear(),
+        parsed.getMonth() + 1,
+        parsed.getDate()
+      );
+    }
+  }
+
+  return null;
+}
+
+export function formatIsoDateAttribute(value?: string | null): string | null {
+  const date = parseLastUpdatedDate(value);
+  if (!date) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+export function groupEventsForDirectory(events: Event[]): DirectoryGroup[] {
+  if (events.length === 0) return [];
+
+  const dailyEvents: Event[] = [];
+  const weekdayBuckets = new Map<string, Event[]>(
+    DIRECTORY_WEEKDAYS.map((d) => [d.key, []])
+  );
+  const otherEvents: Event[] = [];
+
+  for (const ev of events) {
+    if (isDateRecurringEvent(ev)) {
+      otherEvents.push(ev);
+      continue;
+    }
+
+    const daySpec =
+      (ev.dayOfWeek || '').trim() ||
+      [ev.frequency, ev.frequencyNotes].filter(Boolean).join(' ').trim();
+
+    if (/\b(?:daily|everyday|every day)\b/i.test(daySpec)) {
+      dailyEvents.push(ev);
+      continue;
+    }
+
+    let matchedAny = false;
+    for (const day of DIRECTORY_WEEKDAYS) {
+      if (matchesDay(daySpec, day.label)) {
+        weekdayBuckets.get(day.key)!.push(ev);
+        matchedAny = true;
+      }
+    }
+
+    if (!matchedAny) {
+      otherEvents.push(ev);
+    }
+  }
+
+  const sortByTimeThenTitle = (list: Event[]) =>
+    list.sort((a, b) => {
+      const hourDiff = parseHour(a.startTime) - parseHour(b.startTime);
+      if (hourDiff !== 0) return hourDiff;
+      return a.title.localeCompare(b.title);
+    });
+
+  const groups: DirectoryGroup[] = [];
+  if (dailyEvents.length > 0) {
+    groups.push({
+      key: 'daily',
+      label: 'Daily',
+      events: sortByTimeThenTitle(dailyEvents),
+    });
+  }
+
+  for (const day of DIRECTORY_WEEKDAYS) {
+    const bucket = weekdayBuckets.get(day.key)!;
+    if (bucket.length > 0) {
+      groups.push({
+        key: day.key,
+        label: day.label,
+        events: sortByTimeThenTitle(bucket),
+      });
+    }
+  }
+
+  if (otherEvents.length > 0) {
+    groups.push({
+      key: 'other',
+      label: 'Other Schedules',
+      events: sortByTimeThenTitle(otherEvents),
+    });
+  }
+
+  return groups;
+}
+
+function cleanOptionalField(raw?: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
+  return trimmed;
+}
+
+export function buildProveItSources(
+  event: Pick<Event, 'url1' | 'url1Notes' | 'url2' | 'url2Notes'>
+): ProveItSource[] {
+  const url1 = cleanOptionalField(event.url1);
+  const href1 = url1 ? ensureExternalUrl(url1) : '';
+  const url1Notes = cleanOptionalField(event.url1Notes);
+
+  const url2 = cleanOptionalField(event.url2);
+  const href2 = url2 ? ensureExternalUrl(url2) : '';
+  const url2Notes = cleanOptionalField(event.url2Notes);
+
+  const sources: ProveItSource[] = [];
+  if (url1 && href1) {
+    sources.push({
+      prefix: 'Listed at ',
+      url: url1,
+      href: href1,
+      notes: url1Notes,
+    });
+  }
+  if (url2 && href2) {
+    sources.push({
+      prefix: sources.length === 0 ? 'Listed at ' : 'Also, at ',
+      url: url2,
+      href: href2,
+      notes: url2Notes,
+    });
+  }
+  return sources;
+}
+
+export function getEventDisplayDetails(
+  event: Event,
+  cityName: string
+): EventDisplayDetails {
+  const displayVenue = (event.venue || event.location || '').trim();
+  const venueUrl =
+    displayVenue && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
+  const showDistinctAddress = Boolean(
+    event.venue.trim() &&
+      event.location.trim() &&
+      event.venue.trim().toLowerCase() !== event.location.trim().toLowerCase()
+  );
+  const organizerName = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const organizerUrl =
+    organizerName && event.organizerUrl
+      ? ensureExternalUrl(event.organizerUrl)
+      : '';
+  const showOrganizer = Boolean(
+    organizerName &&
+      organizerName.toLowerCase() !== displayVenue.toLowerCase()
+  );
+  const recurrenceText = formatRecurrenceText(
+    event.frequency,
+    event.frequencyNotes
+  );
+  const rawPreReg = (event.preRegistration || '').trim();
+  const registrationUrl = event.registrationUrl
+    ? ensureExternalUrl(event.registrationUrl)
+    : '';
+  const preRegistrationText = rawPreReg || (registrationUrl ? 'Registration' : '');
+  const regLower = preRegistrationText.toLowerCase();
+  const isDropInOrNoReg =
+    regLower.startsWith('drop') ||
+    regLower.startsWith('no ') ||
+    regLower.includes('no rsvp') ||
+    regLower.includes('no registration') ||
+    regLower.includes('not required') ||
+    regLower.includes('not needed');
+  const needsSignupIcon =
+    Boolean(registrationUrl) ||
+    (!isDropInOrNoReg &&
+      /\b(reg|register|registration|pre-?registration|rsvp|ticket|ticketed|pre-?pay|required|recommended|sign[\s-]?up)\b/i.test(
+        regLower
+      ));
+  const mapsHref =
+    (event.map ? ensureExternalUrl(event.map) : '') ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${displayVenue || event.title}, ${cityName}`
+    )}`;
+  const moreDetailsUrl = cleanOptionalField(event.url1)
+    ? ensureExternalUrl(event.url1)
+    : '';
+  return {
+    displayVenue,
+    venueUrl,
+    showDistinctAddress,
+    organizerName,
+    organizerUrl,
+    showOrganizer,
+    recurrenceText,
+    preRegistrationText,
+    registrationUrl,
+    needsSignupIcon,
+    mapsHref,
+    moreDetailsUrl,
+  };
+}
+
+export function slugifyText(text: string): string {
+  if (!text) return '';
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’‘`]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function normalizeEventId(id?: string): string {
+  if (!id) return '';
+  return id
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+
+export function getEventSlug(event: Pick<Event, 'id' | 'title'>): string {
+  const titleSlug = slugifyText(event.title);
+  const idPart = normalizeEventId(event.id);
+  if (idPart && titleSlug) {
+    return `${titleSlug}-${idPart}`;
+  }
+  if (idPart) {
+    return `event-${idPart}`;
+  }
+  return titleSlug || 'event';
+}
+
+export function getEventPath(citySlug: string, event: Pick<Event, 'id' | 'title'>): string {
+  return `/${citySlug}/events/${getEventSlug(event)}`;
+}
+
+export function getEventAbsoluteUrl(
+  citySlug: string,
+  event: Pick<Event, 'id' | 'title'>
+): string {
+  return `${SITE_URL}${getEventPath(citySlug, event)}`;
+}
+
+export function resolveEventBySlug(
+  events: Event[],
+  rawSlug: string
+): EventResolutionResult | null {
+  if (!rawSlug || events.length === 0) return null;
+  let decoded = rawSlug;
+  try {
+    decoded = decodeURIComponent(rawSlug);
+  } catch {
+  }
+  const normalizedSlug = decoded.trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+  if (!normalizedSlug) return null;
+  for (const ev of events) {
+    const canonicalSlug = getEventSlug(ev);
+    if (canonicalSlug === normalizedSlug) {
+      return { event: ev, canonicalSlug, isCanonical: true };
+    }
+  }
+  for (const ev of events) {
+    const normId = normalizeEventId(ev.id);
+    if (!normId) continue;
+    if (normId === normalizedSlug) {
+      const canonicalSlug = getEventSlug(ev);
+      return { event: ev, canonicalSlug, isCanonical: false };
+    }
+  }
+  const lastDashIdx = normalizedSlug.lastIndexOf('-');
+  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
+    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
+    const exactTrailingMatch = events.find(
+      (ev) => normalizeEventId(ev.id) === trailingId
+    );
+    if (exactTrailingMatch) {
+      const canonicalSlug = getEventSlug(exactTrailingMatch);
+      return {
+        event: exactTrailingMatch,
+        canonicalSlug,
+        isCanonical: canonicalSlug === normalizedSlug,
+      };
+    }
+  }
+  let bestHyphenatedMatch: Event | null = null;
+  let bestIdLen = 0;
+  for (const ev of events) {
+    const normId = normalizeEventId(ev.id);
+    if (!normId || !normId.includes('-')) continue;
+    if (normalizedSlug.endsWith(`-${normId}`) && normId.length > bestIdLen) {
+      bestHyphenatedMatch = ev;
+      bestIdLen = normId.length;
+    }
+  }
+  if (bestHyphenatedMatch) {
+    const canonicalSlug = getEventSlug(bestHyphenatedMatch);
+    return {
+      event: bestHyphenatedMatch,
+      canonicalSlug,
+      isCanonical: canonicalSlug === normalizedSlug,
+    };
+  }
+  const barePrefixMatch = events.find((ev) => {
+    const normId = normalizeEventId(ev.id);
+    return Boolean(normId) && normId.startsWith(`${normalizedSlug}-`);
+  });
+  if (barePrefixMatch) {
+    const canonicalSlug = getEventSlug(barePrefixMatch);
+    return {
+      event: barePrefixMatch,
+      canonicalSlug,
+      isCanonical: false,
+    };
+  }
+  if (lastDashIdx !== -1 && lastDashIdx < normalizedSlug.length - 1) {
+    const trailingId = normalizedSlug.slice(lastDashIdx + 1);
+    const trailingPrefixMatch = events.find((ev) => {
+      const normId = normalizeEventId(ev.id);
+      return Boolean(normId) && normId.startsWith(`${trailingId}-`);
+    });
+    if (trailingPrefixMatch) {
+      const canonicalSlug = getEventSlug(trailingPrefixMatch);
+      return {
+        event: trailingPrefixMatch,
+        canonicalSlug,
+        isCanonical: false,
+      };
+    }
+  }
+  const idLessEvents = events.filter((ev) => !normalizeEventId(ev.id));
+  const idLessTitleMatch = idLessEvents.find(
+    (ev) => slugifyText(ev.title) === normalizedSlug
+  );
+  if (idLessTitleMatch) {
+    const canonicalSlug = getEventSlug(idLessTitleMatch);
+    return {
+      event: idLessTitleMatch,
+      canonicalSlug,
+      isCanonical: canonicalSlug === normalizedSlug,
+    };
+  }
+  const hasTrailingNumericId = /-\d+$/.test(normalizedSlug);
+  if (!hasTrailingNumericId) {
+    const titleMatch = events.find((ev) => slugifyText(ev.title) === normalizedSlug);
+    if (titleMatch) {
+      const canonicalSlug = getEventSlug(titleMatch);
+      return {
+        event: titleMatch,
+        canonicalSlug,
+        isCanonical: canonicalSlug === normalizedSlug,
+      };
+    }
+  }
+  return null;
+}
+
+export function getCityToday(timeZone: string, now: Date = new Date()): Date {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    }).formatToParts(now);
+    const year = Number(parts.find((p) => p.type === 'year')?.value);
+    const month = Number(parts.find((p) => p.type === 'month')?.value);
+    const day = Number(parts.find((p) => p.type === 'day')?.value);
+    if (year && month && day) {
+      return new Date(year, month - 1, day);
+    }
+  } catch {
+  }
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+export function formatOccurrenceLabel(date: Date, offsetDays: number): string {
+  if (offsetDays === 0) return 'Today';
+  if (offsetDays === 1) return 'Tomorrow';
+  const formatted = date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  return `Next: ${formatted}`;
+}
+
+export function getNextEventOccurrence(
+  event: Event,
+  timeZone: string,
+  maxDays: number = 90,
+  now: Date = new Date()
+): NextOccurrenceResult | null {
+  const startDay = getCityToday(timeZone, now);
+  for (let offset = 0; offset <= maxDays; offset++) {
+    const candidate = new Date(startDay);
+    candidate.setDate(startDay.getDate() + offset);
+    if (isEventActiveOnDate(event, candidate)) {
+      return {
+        date: candidate,
+        offsetDays: offset,
+        label: formatOccurrenceLabel(candidate, offset),
+        isToday: offset === 0,
+        isTomorrow: offset === 1,
+      };
+    }
+  }
+  return null;
+}
+
+export function buildScheduleLine(event: Event): string {
+  const { start, end } = formatTimeRange(event.startTime, event.endTime);
+  const timePart = start && end ? `${start} – ${end}` : start || '';
+  const freqRaw = (event.frequency || '').trim();
+  const notesRaw = (event.frequencyNotes || '').trim();
+  const isPlainWeekly = /^weekly$/i.test(freqRaw) && !notesRaw;
+  const recurrencePart = formatRecurrenceText(freqRaw, notesRaw);
+  const dayRaw = (event.dayOfWeek || '').trim();
+  let whenPart = '';
+  if (/^varies$/i.test(dayRaw) || isDateRecurringEvent(event)) {
+    whenPart = recurrencePart || freqRaw || 'Varies';
+  } else if (dayRaw && recurrencePart && !isPlainWeekly) {
+    if (recurrencePart.toLowerCase().includes(dayRaw.toLowerCase())) {
+      whenPart = recurrencePart;
+    } else {
+      whenPart = `${dayRaw} (${recurrencePart})`;
+    }
+  } else {
+    whenPart = dayRaw || recurrencePart;
+  }
+  return [whenPart, timePart].filter(Boolean).join(' · ');
+}
+
+export function buildEventInviteText(event: Event, citySlug: string): string {
+  const url = getEventAbsoluteUrl(citySlug, event);
+  const title = event.title.trim();
+  const scheduleLine = buildScheduleLine(event);
+  const venue = (event.venue || event.location || '').trim();
+  const area = (event.area || '').trim();
+  let placePart = '';
+  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
+    placePart = `${venue} (${area})`;
+  } else {
+    placePart = venue || area;
+  }
+  const pricePart = (event.price || '').trim();
+  const detailsLine = [placePart, pricePart].filter(Boolean).join(' · ');
+  return [title, scheduleLine, detailsLine, url].filter(Boolean).join('\n');
+}
+
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    if (typeof document !== 'undefined') {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return ok;
+    }
+  } catch {
+  }
+  return false;
+}
+
+export function buildEventMetaDescription(event: Event, city: CityConfig): string {
+  const schedule = buildScheduleLine(event);
+  const venue = (event.venue || event.location || '').trim();
+  const area = (event.area || '').trim();
+  const price = (event.price || '').trim();
+  const about = (event.about || event.notes || '').replace(/\s+/g, ' ').trim();
+  let locationPhrase = '';
+  if (venue && area && venue.toLowerCase() !== area.toLowerCase()) {
+    locationPhrase = `${venue} (${area})`;
+  } else {
+    locationPhrase = venue || area || city.heroLocation;
+  }
+  const headParts: string[] = [];
+  if (schedule && locationPhrase) {
+    headParts.push(`${schedule} at ${locationPhrase}`);
+  } else if (schedule) {
+    headParts.push(schedule);
+  } else if (locationPhrase) {
+    headParts.push(`${locationPhrase}, ${city.name}`);
+  }
+  if (price) {
+    headParts.push(price);
+  }
+  const headerSummary = headParts.join(' · ');
+  const full = [headerSummary ? `${headerSummary}.` : '', about]
+    .filter(Boolean)
+    .join(' ');
+  if (full.length <= 160) return full;
+  const sliced = full.slice(0, 157);
+  const lastSpace = sliced.lastIndexOf(' ');
+  const trimmed = lastSpace > 90 ? sliced.slice(0, lastSpace) : sliced;
+  return `${trimmed.replace(/[.,;:\s]+$/, '')}…`;
+}
+
+function getTimeZoneOffsetString(date: Date, timeZone: string): string {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'longOffset',
+    }).formatToParts(date);
+    const tzName = parts.find((p) => p.type === 'timeZoneName')?.value || '';
+    const match = tzName.match(/GMT([+-]\d{2}):?(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
+    }
+    if (tzName === 'GMT') return 'Z';
+  } catch {
+  }
+  return timeZone === 'America/Bogota' ? '-05:00' : '-07:00';
+}
+
+function formatLocalIsoDateTime(
+  date: Date,
+  decimalHour: number,
+  timeZone: string
+): string {
+  const totalMinutes = Math.round(decimalHour * 60);
+  const hours = Math.floor(totalMinutes / 60) % 24;
+  const minutes = totalMinutes % 60;
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(hours).padStart(2, '0');
+  const min = String(minutes).padStart(2, '0');
+  const offset = getTimeZoneOffsetString(
+    new Date(Date.UTC(yyyy, date.getMonth(), date.getDate(), 12, 0, 0)),
+    timeZone
+  );
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:00${offset}`;
+}
+
+function formatLocalIsoDate(date: Date): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+export function buildEventJsonLd(
+  event: Event,
+  city: CityConfig,
+  canonicalUrl: string,
+  occurrence: NextOccurrenceResult | null
+): Record<string, unknown> | null {
+  const venueName = (event.venue || event.location || '').trim();
+  if (!occurrence || (!venueName && !city.name)) {
+    return null;
+  }
+  const timeZone = getCityTimeZone(city);
+  const hasStartTime = Boolean((event.startTime || '').trim());
+  const startHour = parseHour(event.startTime);
+  const startDate = hasStartTime
+    ? formatLocalIsoDateTime(occurrence.date, startHour, timeZone)
+    : formatLocalIsoDate(occurrence.date);
+  let endDate: string | undefined;
+  if (hasStartTime && (event.endTime || '').trim()) {
+    const endHour = parseHour(event.endTime);
+    const endDay = new Date(occurrence.date);
+    if (endHour < startHour) {
+      endDay.setDate(endDay.getDate() + 1);
+    }
+    endDate = formatLocalIsoDateTime(endDay, endHour, timeZone);
+  }
+  const cleanOrg = (event.organization || '')
+    .trim()
+    .replace(/^hosted\s+by\s+/i, '')
+    .trim();
+  const venueUrl =
+    venueName && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
+  const organizerUrl =
+    cleanOrg && event.organizerUrl ? ensureExternalUrl(event.organizerUrl) : '';
+  const registrationUrl = event.registrationUrl
+    ? ensureExternalUrl(event.registrationUrl)
+    : '';
+  const priceConfig = getCityPriceConfig(city);
+  const freeOrDonation = isFreeOrDonation(event.price);
+  const numericPrice = freeOrDonation
+    ? 0
+    : parseEventPrice(event.price, priceConfig.currencyCode);
+  const resolvedOfferPrice =
+    numericPrice !== null
+      ? priceConfig.currencyCode === 'COP' && !freeOrDonation
+        ? Math.round(numericPrice * 1000)
+        : numericPrice
+      : null;
+  const description = (event.about || event.notes || '').trim();
+  const streetAddress = (event.location || '').trim();
+  const countryCode = getCityCountryCode(city);
+  const imageUrl = `${canonicalUrl}/opengraph-image`;
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title.trim(),
+    startDate,
+    ...(endDate ? { endDate } : {}),
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    url: canonicalUrl,
+    image: imageUrl,
+    location: {
+      '@type': 'Place',
+      name: venueName || city.heroLocation,
+      ...(venueUrl ? { url: venueUrl } : {}),
+      address: {
+        '@type': 'PostalAddress',
+        ...(streetAddress ? { streetAddress } : {}),
+        addressLocality: city.name,
+        ...(city.region ? { addressRegion: city.region } : {}),
+        ...(countryCode ? { addressCountry: countryCode } : {}),
+      },
+    },
+    ...(description ? { description } : {}),
+    ...(cleanOrg
+      ? {
+          organizer: {
+            '@type': 'Organization',
+            name: cleanOrg,
+            ...(organizerUrl ? { url: organizerUrl } : {}),
+          },
+        }
+      : {}),
+    ...(resolvedOfferPrice !== null
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: resolvedOfferPrice,
+            priceCurrency: priceConfig.currencyCode,
+            availability: 'https://schema.org/InStock',
+            url: registrationUrl || canonicalUrl,
+          },
+        }
+      : {}),
+  };
+  return jsonLd;
 }
 
 ================
@@ -13157,450 +13420,6 @@ File: app/events/EventsView.module.css
 }
 
 ================
-File: app/events/utils.test.ts
-================
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import {
-  filterAndCountEvents,
-  indexEvents,
-  isEventActiveOnDate,
-  isMonthActive,
-} from './utils';
-import { expandEventSchedules } from './schedule-splitter';
-import { makeEvent } from './test-fixtures';
-import { DEFAULT_USD_PRICE_CONFIG } from '../lib/cities';
-
-const jan2Fri = new Date(2026, 0, 2);
-const jan3Sat = new Date(2026, 0, 3);
-const jan4Sun = new Date(2026, 0, 4);
-const jan5Mon = new Date(2026, 0, 5);
-const jan7Wed = new Date(2026, 0, 7);
-const jan9Fri = new Date(2026, 0, 9);
-const jan12Mon = new Date(2026, 0, 12);
-const jan16Fri = new Date(2026, 0, 16);
-const jan23Fri = new Date(2026, 0, 23);
-const jan25Sun = new Date(2026, 0, 25);
-const jan30Fri = new Date(2026, 0, 30);
-const feb3Tue = new Date(2026, 1, 3);
-const feb4Wed = new Date(2026, 1, 4);
-const feb5Thu = new Date(2026, 1, 5);
-const feb6Fri = new Date(2026, 1, 6);
-const feb10Tue = new Date(2026, 1, 10);
-const feb13Fri = new Date(2026, 1, 13);
-const feb17Tue = new Date(2026, 1, 17);
-const feb18Wed = new Date(2026, 1, 18);
-const feb19Thu = new Date(2026, 1, 19);
-const feb20Fri = new Date(2026, 1, 20);
-const feb27Fri = new Date(2026, 1, 27);
-const mar3Tue = new Date(2026, 2, 3);
-const mar17Tue = new Date(2026, 2, 17);
-const mar31Tue = new Date(2026, 2, 31);
-
-describe('isEventActiveOnDate frequency parsing', () => {
-  it('handles Weekly and Weekly, Sat & Sun', () => {
-    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
-    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
-    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
-    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
-  });
-  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
-    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
-    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
-    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
-    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
-  });
-  it('handles Bi-weekly and phrasing variations on even weeks by default', () => {
-    const variations = [
-      { frequency: 'Bi-weekly', frequencyNotes: '' },
-      { frequency: 'Biweekly', frequencyNotes: '' },
-      { frequency: 'bi weekly', frequencyNotes: '' },
-      { frequency: 'Every other week', frequencyNotes: '' },
-      { frequency: 'Every 2 weeks', frequencyNotes: '' },
-      { frequency: 'Alternating weeks', frequencyNotes: '' },
-      { frequency: '', frequencyNotes: 'Every other week' },
-    ];
-    for (const v of variations) {
-      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${v.frequency || v.frequencyNotes} on W1`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on W2`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${v.frequency || v.frequencyNotes} on W3`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), true, `${v.frequency || v.frequencyNotes} on W4`);
-    }
-    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly, Mon', dayOfWeek: 'Mon' });
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
-    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), false);
-  });
-  it('fixes Bi-weekly + Odd weeks and respects explicit Even weeks', () => {
-    const oddEv = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: 'Odd weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
-    const evenEv = makeEvent({
-      frequency: 'Biweekly',
-      frequencyNotes: 'Even weeks',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
-  });
-  it('handles Bi-weekly with ordinal lists including 2nd & 4th Fri and 1st, 3rd & 5th Tue', () => {
-    const ev = makeEvent({
-      frequency: 'Bi-weekly',
-      frequencyNotes: '2nd & 4th Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
-    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
-    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
-    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
-    const fifthTueEv = makeEvent({
-      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
-      dayOfWeek: 'Tue',
-    });
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
-    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
-    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
-  });
-  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
-    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
-      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
-    }
-  });
-  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
-    const lastEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Last Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
-    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
-    const finalEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'Final Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
-    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
-    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
-    const firstAndLastSun = makeEvent({
-      frequency: 'Monthly, 1st & Last Sun',
-      dayOfWeek: 'Sun',
-    });
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
-    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
-  });
-  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
-    const weeksListEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1 & 3',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
-    const slashEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: '1st/3rd',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
-    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
-    const commaAndEv = makeEvent({
-      frequency: 'Monthly',
-      frequencyNotes: 'weeks 1, 3, and 5',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
-    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
-  });
-  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
-    const variations = [
-      'Bi-monthly',
-      'Bimonthly',
-      'Bi monthly',
-      'Every other month',
-      'Every 2 months',
-    ];
-    for (const freq of variations) {
-      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
-      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
-      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
-      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
-    }
-    const oddMonthsEv = makeEvent({
-      frequency: 'Bi-monthly',
-      frequencyNotes: 'Odd months',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
-    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
-    const ordinalBiMonthlyEv = makeEvent({
-      frequency: 'Every 2 months',
-      frequencyNotes: '1st Fri',
-      dayOfWeek: 'Fri',
-    });
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
-    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
-    const pairedBiMonthlyEv = makeEvent({
-      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
-      dayOfWeek: 'Wed, Thu',
-    });
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
-    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
-  });
-  it('handles paused and hiatus statuses', () => {
-    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
-    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
-  });
-  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
-    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
-    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
-    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
-  });
-});
-
-describe('expandEventSchedules', () => {
-  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
-    const karaoke = makeEvent({
-      id: 'FOCO0024',
-      title: 'Weekly Karaoke Night',
-      venue: 'R Bar and Lounge',
-      venueUrl: 'rbar.com',
-      organizerUrl: 'instagram.com/rbar',
-      url1: 'rbar.com/karaoke',
-      url1Notes: 'See events calendar',
-      dayOfWeek: 'Mon, Wed, Sat',
-      startTime: '7p (Mon) / 8p (Wed, Sat)',
-      endTime: '10p (Mon) / 11p (Wed, Sat)',
-      frequency: 'Weekly',
-    });
-    const expanded = expandEventSchedules(karaoke);
-    assert.equal(expanded.length, 3);
-    assert.deepEqual(
-      expanded.map((e) => ({
-        id: e.id,
-        dayOfWeek: e.dayOfWeek,
-        startTime: e.startTime,
-        endTime: e.endTime,
-        venueUrl: e.venueUrl,
-        organizerUrl: e.organizerUrl,
-        url1: e.url1,
-        url1Notes: e.url1Notes,
-      })),
-      [
-        {
-          id: 'FOCO0024-mon',
-          dayOfWeek: 'Mon',
-          startTime: '7p',
-          endTime: '10p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-        {
-          id: 'FOCO0024-wed',
-          dayOfWeek: 'Wed',
-          startTime: '8p',
-          endTime: '11p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-        {
-          id: 'FOCO0024-sat',
-          dayOfWeek: 'Sat',
-          startTime: '8p',
-          endTime: '11p',
-          venueUrl: 'rbar.com',
-          organizerUrl: 'instagram.com/rbar',
-          url1: 'rbar.com/karaoke',
-          url1Notes: 'See events calendar',
-        },
-      ]
-    );
-  });
-  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
-    const commaEv = makeEvent({
-      id: 'E1',
-      dayOfWeek: 'Mon, Wed, Sat',
-      startTime: '7p (Mon), 8p (Wed & Sat)',
-      endTime: '',
-    });
-    const commaExpanded = expandEventSchedules(commaEv);
-    assert.equal(commaExpanded.length, 3);
-    assert.equal(commaExpanded[0].startTime, '7p');
-    assert.equal(commaExpanded[1].startTime, '8p');
-    assert.equal(commaExpanded[2].startTime, '8p');
-    assert.equal(commaExpanded[0].endTime, '');
-    const colonEv = makeEvent({
-      id: 'E2',
-      dayOfWeek: 'Tue, Thu',
-      startTime: 'Tue: 6p / Thu: 7:30p',
-      endTime: '9p',
-    });
-    const colonExpanded = expandEventSchedules(colonEv);
-    assert.deepEqual(
-      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['Tue', '6p', '9p'],
-        ['Thu', '7:30p', '9p'],
-      ]
-    );
-    const rangeEv = makeEvent({
-      id: 'E3',
-      dayOfWeek: 'Mon-Wed',
-      startTime: '5p (Mon-Tue) / 6p (Wed)',
-      endTime: '7p (Mon-Tue) / 8p (Wed)',
-    });
-    const rangeExpanded = expandEventSchedules(rangeEv);
-    assert.deepEqual(
-      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['Mon', '5p', '7p'],
-        ['Tue', '5p', '7p'],
-        ['Wed', '6p', '8p'],
-      ]
-    );
-  });
-  it('supports parallel unlabeled times and same-day multiple slots', () => {
-    const parallelEv = makeEvent({
-      id: 'E4',
-      dayOfWeek: 'Tue, Thu',
-      startTime: '6p / 7p',
-      endTime: '8p / 9p',
-    });
-    assert.deepEqual(
-      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['E4-tue', 'Tue', '6p', '8p'],
-        ['E4-thu', 'Thu', '7p', '9p'],
-      ]
-    );
-    const sameDayEv = makeEvent({
-      id: 'E5',
-      dayOfWeek: 'Sat',
-      startTime: '10a / 2p',
-      endTime: '12p / 4p',
-    });
-    assert.deepEqual(
-      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
-      [
-        ['E5-sat-1', 'Sat', '10a', '12p'],
-        ['E5-sat-2', 'Sat', '2p', '4p'],
-      ]
-    );
-  });
-  it('keeps single-time multi-day events unsplit', () => {
-    const sameTimeMultiDay = makeEvent({
-      id: 'FOCO0020',
-      dayOfWeek: 'Tue, Thu',
-      startTime: '6p',
-      endTime: '9p',
-    });
-    const result = expandEventSchedules(sameTimeMultiDay);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
-    assert.equal(result[0].startTime, '6p');
-    assert.equal(result[0].endTime, '9p');
-  });
-});
-
-describe('isMonthActive', () => {
-  it('respects month ranges, exclusions, bi-monthly, and odd/even months', () => {
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
-    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
-    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
-    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
-  });
-});
-
-describe('filterAndCountEvents with All Events tab', () => {
-  it('includes all matching events across all days and populates dayCounts index 7 when activeDayIdx is 7', () => {
-    const rollingWeek = [
-      new Date(2026, 0, 2),
-      new Date(2026, 0, 3),
-      new Date(2026, 0, 4),
-      new Date(2026, 0, 5),
-      new Date(2026, 0, 6),
-      new Date(2026, 0, 7),
-      new Date(2026, 0, 8),
-    ];
-    const events = [
-      makeEvent({ id: '1', title: 'Friday Jam', dayOfWeek: 'Fri', startTime: '7:00 PM', price: 'Free' }),
-      makeEvent({ id: '2', title: 'Saturday Hike', dayOfWeek: 'Sat', startTime: '9:00 AM', price: '$10' }),
-      makeEvent({ id: '3', title: 'Monday Coding', dayOfWeek: 'Mon', startTime: '6:30 PM', price: 'Free' }),
-    ];
-    const indexed = indexEvents(events, rollingWeek, 'USD');
-    const timeGroups = [
-      { name: 'Morning', predicate: (h: number) => h < 12 },
-      { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
-    ];
-
-    const result = filterAndCountEvents(
-      indexed,
-      7,
-      DEFAULT_USD_PRICE_CONFIG.maxPrice,
-      DEFAULT_USD_PRICE_CONFIG,
-      [],
-      [],
-      [],
-      '',
-      timeGroups
-    );
-
-    assert.equal(result.currentList.length, 3);
-    assert.equal(result.allCount, 3);
-    assert.equal(result.dayCounts[7], 3);
-    assert.equal(result.dayCounts[0], 1);
-    assert.equal(result.dayCounts[1], 1);
-    assert.equal(result.dayCounts[3], 1);
-  });
-});
-
-================
 File: app/lib/cities.ts
 ================
 export type CityPriceConfig = {
@@ -13766,10 +13585,558 @@ export default function Home() {
 }
 
 ================
+File: app/events/utils.test.ts
+================
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  filterAndCountEvents,
+  indexEvents,
+  isDateRecurringEvent,
+  isEventActiveOnDate,
+  isMonthActive,
+  parseDateOfMonthPattern,
+} from './utils';
+import { expandEventSchedules } from './schedule-splitter';
+import { makeEvent } from './test-fixtures';
+import { DEFAULT_USD_PRICE_CONFIG } from '../lib/cities';
+
+const jan1Thu = new Date(2026, 0, 1);
+const jan2Fri = new Date(2026, 0, 2);
+const jan3Sat = new Date(2026, 0, 3);
+const jan4Sun = new Date(2026, 0, 4);
+const jan5Mon = new Date(2026, 0, 5);
+const jan7Wed = new Date(2026, 0, 7);
+const jan9Fri = new Date(2026, 0, 9);
+const jan12Mon = new Date(2026, 0, 12);
+const jan15Thu = new Date(2026, 0, 15);
+const jan16Fri = new Date(2026, 0, 16);
+const jan23Fri = new Date(2026, 0, 23);
+const jan25Sun = new Date(2026, 0, 25);
+const jan30Fri = new Date(2026, 0, 30);
+const jan31Sat = new Date(2026, 0, 31);
+const feb1Sun = new Date(2026, 1, 1);
+const feb3Tue = new Date(2026, 1, 3);
+const feb4Wed = new Date(2026, 1, 4);
+const feb5Thu = new Date(2026, 1, 5);
+const feb6Fri = new Date(2026, 1, 6);
+const feb10Tue = new Date(2026, 1, 10);
+const feb13Fri = new Date(2026, 1, 13);
+const feb17Tue = new Date(2026, 1, 17);
+const feb18Wed = new Date(2026, 1, 18);
+const feb19Thu = new Date(2026, 1, 19);
+const feb20Fri = new Date(2026, 1, 20);
+const feb27Fri = new Date(2026, 1, 27);
+const feb28Sat = new Date(2026, 1, 28);
+const mar3Tue = new Date(2026, 2, 3);
+const mar17Tue = new Date(2026, 2, 17);
+const mar31Tue = new Date(2026, 2, 31);
+
+describe('isEventActiveOnDate frequency parsing', () => {
+  it('handles Weekly and Weekly, Sat & Sun', () => {
+    const weeklyFri = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Fri' });
+    assert.equal(isEventActiveOnDate(weeklyFri, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(weeklyFri, jan3Sat), false);
+    const weekendEv = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat, Sun' });
+    assert.equal(isEventActiveOnDate(weekendEv, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(weekendEv, jan5Mon), false);
+  });
+
+  it('handles Multi-day rows with Sat & Sun appearing under each day', () => {
+    const multiDay = makeEvent({ frequency: 'Weekly', dayOfWeek: 'Sat & Sun' });
+    assert.equal(isEventActiveOnDate(multiDay, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(multiDay, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(multiDay, jan5Mon), false);
+  });
+
+  it('handles Twice-weekly with Mon & Wed and Twice-weekly, Wed & Fri', () => {
+    const monWed = makeEvent({ frequency: 'Twice-weekly', dayOfWeek: 'Mon & Wed' });
+    assert.equal(isEventActiveOnDate(monWed, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(monWed, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(monWed, jan2Fri), false);
+    const wedFri = makeEvent({ frequency: 'Twice-weekly, Wed & Fri', dayOfWeek: 'Wed, Fri' });
+    assert.equal(isEventActiveOnDate(wedFri, jan7Wed), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(wedFri, jan5Mon), false);
+  });
+
+  it('handles Plain Bi-weekly rows without anchor week by showing them on their weekday', () => {
+    const variations = [
+      { frequency: 'Bi-weekly', frequencyNotes: '' },
+      { frequency: 'Biweekly', frequencyNotes: '' },
+      { frequency: 'bi weekly', frequencyNotes: '' },
+      { frequency: 'Every other week', frequencyNotes: '' },
+      { frequency: 'Every 2 weeks', frequencyNotes: '' },
+      { frequency: 'Alternating weeks', frequencyNotes: '' },
+      { frequency: '', frequencyNotes: 'Every other week' },
+    ];
+    for (const v of variations) {
+      const ev = makeEvent({ ...v, dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${v.frequency || v.frequencyNotes} on Fri W1`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), true, `${v.frequency || v.frequencyNotes} on Fri W2`);
+      assert.equal(isEventActiveOnDate(ev, jan3Sat), false, `${v.frequency || v.frequencyNotes} on Sat`);
+    }
+    const biweeklyMon = makeEvent({ frequency: 'Bi-weekly', dayOfWeek: 'Mon' });
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan5Mon), true);
+    assert.equal(isEventActiveOnDate(biweeklyMon, jan12Mon), true);
+  });
+
+  it('respects explicit Odd weeks and Even weeks anchor rules for Bi-weekly', () => {
+    const oddEv = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: 'Odd weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(oddEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(oddEv, jan23Fri), false);
+    const evenEv = makeEvent({
+      frequency: 'Biweekly',
+      frequencyNotes: 'Even weeks',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(evenEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(evenEv, jan9Fri), true);
+  });
+
+  it('handles Week-of-month patterns including 1st & 3rd Tue and 1st, 3rd & 5th Tue with plural weekdays', () => {
+    const ev = makeEvent({
+      frequency: 'Bi-weekly',
+      frequencyNotes: '2nd & 4th Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ev, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan9Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan16Fri), false);
+    assert.equal(isEventActiveOnDate(ev, jan23Fri), true);
+    assert.equal(isEventActiveOnDate(ev, jan30Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb6Fri), false);
+    assert.equal(isEventActiveOnDate(ev, feb13Fri), true);
+
+    const fifthTueEv = makeEvent({
+      frequency: 'Bi-weekly, 1st, 3rd & 5th Tue',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(fifthTueEv, feb17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar3Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar17Tue), true);
+    assert.equal(isEventActiveOnDate(fifthTueEv, mar31Tue), true);
+
+    const pluralTue = makeEvent({
+      frequency: 'Monthly, 1st & 3rd Tuesdays',
+      dayOfWeek: 'Tue',
+    });
+    assert.equal(isEventActiveOnDate(pluralTue, feb3Tue), true);
+    assert.equal(isEventActiveOnDate(pluralTue, feb10Tue), false);
+    assert.equal(isEventActiveOnDate(pluralTue, feb17Tue), true);
+  });
+
+  it('defaults plain Monthly with no ordinal to the 1st occurrence', () => {
+    for (const freq of ['Monthly', 'Once a month', 'Every month']) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), true, `${freq} on 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan9Fri), false, `${freq} on 2nd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan16Fri), false, `${freq} on 3rd Fri`);
+      assert.equal(isEventActiveOnDate(ev, jan23Fri), false, `${freq} on 4th Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} on Feb 1st Fri`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), false, `${freq} on Feb 2nd Fri`);
+    }
+  });
+
+  it('handles Monthly with Last, Final, and 1st & Last ordinals', () => {
+    const lastEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Last Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(lastEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(lastEv, feb20Fri), false);
+    assert.equal(isEventActiveOnDate(lastEv, feb27Fri), true);
+    const finalEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'Final Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(finalEv, jan23Fri), false);
+    assert.equal(isEventActiveOnDate(finalEv, jan30Fri), true);
+    assert.equal(isEventActiveOnDate(finalEv, feb27Fri), true);
+    const firstAndLastSun = makeEvent({
+      frequency: 'Monthly, 1st & Last Sun',
+      dayOfWeek: 'Sun',
+    });
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan4Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, jan25Sun), true);
+    assert.equal(isEventActiveOnDate(firstAndLastSun, new Date(2026, 0, 11)), false);
+  });
+
+  it('handles numeric week lists and slash ordinals like weeks 1 & 3 and 1st/3rd', () => {
+    const weeksListEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1 & 3',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(weeksListEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(weeksListEv, jan23Fri), false);
+    const slashEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: '1st/3rd',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(slashEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(slashEv, jan16Fri), true);
+    assert.equal(isEventActiveOnDate(slashEv, jan23Fri), false);
+    const commaAndEv = makeEvent({
+      frequency: 'Monthly',
+      frequencyNotes: 'weeks 1, 3, and 5',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(commaAndEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan9Fri), false);
+    assert.equal(isEventActiveOnDate(commaAndEv, jan30Fri), true);
+  });
+
+  it('handles Date-of-Month recurring rows (Monthly 1st, 15th, Last day) with Day of Week = Varies', () => {
+    const potluck = makeEvent({
+      title: 'Community Potluck',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 1st',
+    });
+    assert.equal(isDateRecurringEvent(potluck), true);
+    assert.equal(isEventActiveOnDate(potluck, jan1Thu), true);
+    assert.equal(isEventActiveOnDate(potluck, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(potluck, feb1Sun), true);
+
+    const midMonth = makeEvent({
+      title: 'Book Swap',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, 15th',
+    });
+    assert.equal(isDateRecurringEvent(midMonth), true);
+    assert.equal(isEventActiveOnDate(midMonth, jan15Thu), true);
+    assert.equal(isEventActiveOnDate(midMonth, jan16Fri), false);
+
+    const lastDay = makeEvent({
+      title: 'End of Month Party',
+      dayOfWeek: 'Varies',
+      frequency: 'Monthly, Last day',
+    });
+    assert.equal(isDateRecurringEvent(lastDay), true);
+    assert.equal(isEventActiveOnDate(lastDay, jan31Sat), true);
+    assert.equal(isEventActiveOnDate(lastDay, jan30Fri), false);
+    assert.equal(isEventActiveOnDate(lastDay, feb28Sat), true);
+  });
+
+  it('handles Bi-monthly variations, odd months override, and day-paired ordinals', () => {
+    const variations = [
+      'Bi-monthly',
+      'Bimonthly',
+      'Bi monthly',
+      'Every other month',
+      'Every 2 months',
+    ];
+    for (const freq of variations) {
+      const ev = makeEvent({ frequency: freq, frequencyNotes: '', dayOfWeek: 'Fri' });
+      assert.equal(isEventActiveOnDate(ev, jan2Fri), false, `${freq} in Jan (odd)`);
+      assert.equal(isEventActiveOnDate(ev, feb6Fri), true, `${freq} in Feb (even)`);
+      assert.equal(isEventActiveOnDate(ev, feb13Fri), true, `${freq} in Feb 2nd Fri`);
+    }
+    const oddMonthsEv = makeEvent({
+      frequency: 'Bi-monthly',
+      frequencyNotes: 'Odd months',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(oddMonthsEv, jan2Fri), true);
+    assert.equal(isEventActiveOnDate(oddMonthsEv, feb6Fri), false);
+    const ordinalBiMonthlyEv = makeEvent({
+      frequency: 'Every 2 months',
+      frequencyNotes: '1st Fri',
+      dayOfWeek: 'Fri',
+    });
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, jan2Fri), false);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb6Fri), true);
+    assert.equal(isEventActiveOnDate(ordinalBiMonthlyEv, feb13Fri), false);
+    const pairedBiMonthlyEv = makeEvent({
+      frequency: 'Bi-monthly, 1st Wed & 3rd Thu',
+      dayOfWeek: 'Wed, Thu',
+    });
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb4Wed), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb5Thu), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb18Wed), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb19Thu), true);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, feb3Tue), false);
+    assert.equal(isEventActiveOnDate(pairedBiMonthlyEv, jan7Wed), false);
+  });
+
+  it('handles paused and hiatus statuses', () => {
+    const pausedEv = makeEvent({ frequency: 'Weekly', frequencyNotes: 'On hold' });
+    assert.equal(isEventActiveOnDate(pausedEv, jan2Fri), false);
+  });
+
+  it('matches only event.dayOfWeek when split event has multi-day text in frequency', () => {
+    const splitSat = makeEvent({ frequency: 'Weekly, Sat & Sun', dayOfWeek: 'Sat' });
+    assert.equal(isEventActiveOnDate(splitSat, jan3Sat), true);
+    assert.equal(isEventActiveOnDate(splitSat, jan4Sun), false);
+  });
+});
+
+describe('expandEventSchedules', () => {
+  it('splits FOCO0024-style day-mapped schedules into separate clean events', () => {
+    const karaoke = makeEvent({
+      id: 'FOCO0024',
+      title: 'Weekly Karaoke Night',
+      venue: 'R Bar and Lounge',
+      venueUrl: 'rbar.com',
+      organizerUrl: 'instagram.com/rbar',
+      url1: 'rbar.com/karaoke',
+      url1Notes: 'See events calendar',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon) / 8p (Wed, Sat)',
+      endTime: '10p (Mon) / 11p (Wed, Sat)',
+      frequency: 'Weekly',
+    });
+    const expanded = expandEventSchedules(karaoke);
+    assert.equal(expanded.length, 3);
+    assert.deepEqual(
+      expanded.map((e) => ({
+        id: e.id,
+        dayOfWeek: e.dayOfWeek,
+        startTime: e.startTime,
+        endTime: e.endTime,
+        venueUrl: e.venueUrl,
+        organizerUrl: e.organizerUrl,
+        url1: e.url1,
+        url1Notes: e.url1Notes,
+      })),
+      [
+        {
+          id: 'FOCO0024-mon',
+          dayOfWeek: 'Mon',
+          startTime: '7p',
+          endTime: '10p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+        {
+          id: 'FOCO0024-wed',
+          dayOfWeek: 'Wed',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+        {
+          id: 'FOCO0024-sat',
+          dayOfWeek: 'Sat',
+          startTime: '8p',
+          endTime: '11p',
+          venueUrl: 'rbar.com',
+          organizerUrl: 'instagram.com/rbar',
+          url1: 'rbar.com/karaoke',
+          url1Notes: 'See events calendar',
+        },
+      ]
+    );
+  });
+
+  it('supports comma-separated, colon-prefixed, and day-range schedules', () => {
+    const commaEv = makeEvent({
+      id: 'E1',
+      dayOfWeek: 'Mon, Wed, Sat',
+      startTime: '7p (Mon), 8p (Wed & Sat)',
+      endTime: '',
+    });
+    const commaExpanded = expandEventSchedules(commaEv);
+    assert.equal(commaExpanded.length, 3);
+    assert.equal(commaExpanded[0].startTime, '7p');
+    assert.equal(commaExpanded[1].startTime, '8p');
+    assert.equal(commaExpanded[2].startTime, '8p');
+    assert.equal(commaExpanded[0].endTime, '');
+    const colonEv = makeEvent({
+      id: 'E2',
+      dayOfWeek: 'Tue, Thu',
+      startTime: 'Tue: 6p / Thu: 7:30p',
+      endTime: '9p',
+    });
+    const colonExpanded = expandEventSchedules(colonEv);
+    assert.deepEqual(
+      colonExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Tue', '6p', '9p'],
+        ['Thu', '7:30p', '9p'],
+      ]
+    );
+    const rangeEv = makeEvent({
+      id: 'E3',
+      dayOfWeek: 'Mon-Wed',
+      startTime: '5p (Mon-Tue) / 6p (Wed)',
+      endTime: '7p (Mon-Tue) / 8p (Wed)',
+    });
+    const rangeExpanded = expandEventSchedules(rangeEv);
+    assert.deepEqual(
+      rangeExpanded.map((e) => [e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['Mon', '5p', '7p'],
+        ['Tue', '5p', '7p'],
+        ['Wed', '6p', '8p'],
+      ]
+    );
+  });
+
+  it('supports parallel unlabeled times and same-day multiple slots', () => {
+    const parallelEv = makeEvent({
+      id: 'E4',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p / 7p',
+      endTime: '8p / 9p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(parallelEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E4-tue', 'Tue', '6p', '8p'],
+        ['E4-thu', 'Thu', '7p', '9p'],
+      ]
+    );
+    const sameDayEv = makeEvent({
+      id: 'E5',
+      dayOfWeek: 'Sat',
+      startTime: '10a / 2p',
+      endTime: '12p / 4p',
+    });
+    assert.deepEqual(
+      expandEventSchedules(sameDayEv).map((e) => [e.id, e.dayOfWeek, e.startTime, e.endTime]),
+      [
+        ['E5-sat-1', 'Sat', '10a', '12p'],
+        ['E5-sat-2', 'Sat', '2p', '4p'],
+      ]
+    );
+  });
+
+  it('keeps single-time multi-day events unsplit', () => {
+    const sameTimeMultiDay = makeEvent({
+      id: 'FOCO0020',
+      dayOfWeek: 'Tue, Thu',
+      startTime: '6p',
+      endTime: '9p',
+    });
+    const result = expandEventSchedules(sameTimeMultiDay);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dayOfWeek, 'Tue, Thu');
+    assert.equal(result[0].startTime, '6p');
+    assert.equal(result[0].endTime, '9p');
+  });
+});
+
+describe('isMonthActive seasonal multi-ranges and exclusions', () => {
+  it('respects single ranges, multi-season ranges (Sep-Nov & Feb-Apr), exclusions, and bimonthly', () => {
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('May-Sep', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Sep–Nov Only', new Date(2026, 9, 15)), true);
+    assert.equal(isMonthActive('Sep–Nov Only', new Date(2026, 0, 15)), false);
+
+    assert.equal(isMonthActive('Sep–Nov & Feb–Apr Only', new Date(2026, 9, 15)), true);
+    assert.equal(isMonthActive('Sep–Nov & Feb–Apr Only', new Date(2026, 2, 15)), true);
+    assert.equal(isMonthActive('Sep–Nov & Feb–Apr Only', new Date(2026, 0, 15)), false);
+    assert.equal(isMonthActive('Sep–Nov & Feb–Apr Only', new Date(2026, 6, 15)), false);
+
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 6, 1)), false);
+    assert.equal(isMonthActive('Except July and August', new Date(2026, 5, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 0, 1)), false);
+    assert.equal(isMonthActive('Bi-monthly', new Date(2026, 1, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 0, 1)), true);
+    assert.equal(isMonthActive('Bi-monthly, odd months', new Date(2026, 1, 1)), false);
+  });
+});
+
+describe('filterAndCountEvents with Date-of-Month recurring events and All Events tab', () => {
+  it('does not pin date-recurring rows to weekday tabs but includes them in full directory and search results', () => {
+    const rollingWeek = [
+      new Date(2026, 0, 1),
+      new Date(2026, 0, 2),
+      new Date(2026, 0, 3),
+      new Date(2026, 0, 4),
+      new Date(2026, 0, 5),
+      new Date(2026, 0, 6),
+      new Date(2026, 0, 7),
+    ];
+    const events = [
+      makeEvent({ id: '1', title: 'Friday Jam', dayOfWeek: 'Fri', startTime: '7:00 PM', price: 'Free' }),
+      makeEvent({ id: '2', title: 'Saturday Hike', dayOfWeek: 'Sat', startTime: '9:00 AM', price: '$10' }),
+      makeEvent({ id: '3', title: 'Community Potluck', dayOfWeek: 'Varies', frequency: 'Monthly, 1st', startTime: '5:00 PM', price: 'Free' }),
+    ];
+    const indexed = indexEvents(events, rollingWeek, 'USD');
+    const timeGroups = [
+      { name: 'Morning', predicate: (h: number) => h < 12 },
+      { name: 'Evening', predicate: (h: number) => h >= 17 && h < 20 },
+    ];
+
+    assert.deepEqual(indexed[2].activeDays, [false, false, false, false, false, false, false]);
+
+    const day0NoSearch = filterAndCountEvents(
+      indexed,
+      0,
+      DEFAULT_USD_PRICE_CONFIG.maxPrice,
+      DEFAULT_USD_PRICE_CONFIG,
+      [],
+      [],
+      [],
+      '',
+      timeGroups
+    );
+    assert.equal(day0NoSearch.currentList.some((e) => e.title === 'Community Potluck'), false);
+    assert.equal(day0NoSearch.dayCounts[0], 0);
+    assert.equal(day0NoSearch.dayCounts[1], 1);
+    assert.equal(day0NoSearch.dayCounts[2], 1);
+    assert.equal(day0NoSearch.dayCounts[7], 3);
+    assert.equal(day0NoSearch.allCount, 3);
+
+    const day0WithSearch = filterAndCountEvents(
+      indexed,
+      0,
+      DEFAULT_USD_PRICE_CONFIG.maxPrice,
+      DEFAULT_USD_PRICE_CONFIG,
+      [],
+      [],
+      [],
+      'potluck',
+      timeGroups
+    );
+    assert.equal(day0WithSearch.currentList.length, 1);
+    assert.equal(day0WithSearch.currentList[0].title, 'Community Potluck');
+
+    const allEventsTab = filterAndCountEvents(
+      indexed,
+      7,
+      DEFAULT_USD_PRICE_CONFIG.maxPrice,
+      DEFAULT_USD_PRICE_CONFIG,
+      [],
+      [],
+      [],
+      '',
+      timeGroups
+    );
+    assert.equal(allEventsTab.currentList.length, 3);
+    assert.equal(allEventsTab.currentList.some((e) => e.title === 'Community Potluck'), true);
+  });
+});
+
+================
 File: app/events/utils.ts
 ================
 import { Event } from '../lib/google-sheets';
 import { CityPriceConfig } from '../lib/cities';
+
 export type IndexedEvent = Event & {
   parsedHour: number;
   parsedPrice: number | null;
@@ -13777,6 +14144,7 @@ export type IndexedEvent = Event & {
   searchCorpus: string;
   activeDays: boolean[];
 };
+
 export function parseHour(timeStr: string): number {
   if (!timeStr) return 18;
   const cleaned = timeStr.trim().toLowerCase();
@@ -13800,6 +14168,7 @@ export function parseHour(timeStr: string): number {
   const numMatch = cleaned.match(/\d+/);
   return numMatch ? parseInt(numMatch[0], 10) : 18;
 }
+
 export function formatTimeLabel(timeStr: string): string {
   if (!timeStr) return '';
   const cleaned = timeStr.trim();
@@ -13812,6 +14181,7 @@ export function formatTimeLabel(timeStr: string): string {
   }
   return cleaned;
 }
+
 export function formatTimeRange(
   startTime: string,
   endTime: string
@@ -13820,6 +14190,7 @@ export function formatTimeRange(
   const end = endTime ? formatTimeLabel(endTime) : undefined;
   return { start, end };
 }
+
 export function formatRecurrenceText(
   frequency?: string,
   frequencyNotes?: string
@@ -13842,11 +14213,13 @@ export function formatRecurrenceText(
   }
   return freq || notes || '';
 }
+
 export function isFreePrice(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
   return p.startsWith('free') || p.startsWith('gratis') || p === '0' || p === '$0';
 }
+
 export function isFreeOrDonation(price: string): boolean {
   if (!price) return true;
   const p = price.trim().toLowerCase();
@@ -13858,6 +14231,7 @@ export function isFreeOrDonation(price: string): boolean {
     p === '0k'
   );
 }
+
 export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'): number | null {
   if (!priceStr) return 0;
   const cleaned = priceStr.trim().toLowerCase();
@@ -13889,6 +14263,7 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
   }
   return null;
 }
+
 export function matchesPriceFilter(
   eventPrice: string,
   maxPriceFilter: number,
@@ -13909,6 +14284,7 @@ export function matchesPriceFilter(
   }
   return num <= maxPriceFilter;
 }
+
 export function formatPriceValue(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free';
   if (config.unitSuffix) {
@@ -13916,34 +14292,38 @@ export function formatPriceValue(val: number, config: CityPriceConfig): string {
   }
   return `${config.currencySymbol}${val}`;
 }
+
 export function formatPriceReadout(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   if (val >= config.maxPrice) return 'Any price';
   return `Up to ${formatPriceValue(val, config)}`;
 }
+
 export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
   if (val >= config.maxPrice) return 'All prices';
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   return `Up to ${formatPriceValue(val, config)}`;
 }
+
 const DAY_ALIAS_MAP: Record<string, string[]> = {
-  sun: ['sun', 'sunday'],
-  sunday: ['sun', 'sunday'],
-  mon: ['mon', 'monday'],
-  monday: ['mon', 'monday'],
-  tue: ['tue', 'tues', 'tuesday'],
-  tuesday: ['tue', 'tues', 'tuesday'],
-  wed: ['wed', 'weds', 'wednesday'],
-  wednesday: ['wed', 'weds', 'wednesday'],
-  thu: ['thu', 'thur', 'thurs', 'thursday'],
-  thursday: ['thu', 'thur', 'thurs', 'thursday'],
-  fri: ['fri', 'friday'],
-  friday: ['fri', 'friday'],
-  sat: ['sat', 'saturday'],
-  saturday: ['sat', 'saturday'],
+  sun: ['sun', 'sunday', 'sundays'],
+  sunday: ['sun', 'sunday', 'sundays'],
+  mon: ['mon', 'monday', 'mondays'],
+  monday: ['mon', 'monday', 'mondays'],
+  tue: ['tue', 'tues', 'tuesday', 'tuesdays'],
+  tuesday: ['tue', 'tues', 'tuesday', 'tuesdays'],
+  wed: ['wed', 'weds', 'wednesday', 'wednesdays'],
+  wednesday: ['wed', 'weds', 'wednesday', 'wednesdays'],
+  thu: ['thu', 'thur', 'thurs', 'thursday', 'thursdays'],
+  thursday: ['thu', 'thur', 'thurs', 'thursday', 'thursdays'],
+  fri: ['fri', 'friday', 'fridays'],
+  friday: ['fri', 'friday', 'fridays'],
+  sat: ['sat', 'saturday', 'saturdays'],
+  saturday: ['sat', 'saturday', 'saturdays'],
 };
+
 const DAY_INDEX: Record<string, number> = {
   sun: 0,
   sunday: 0,
@@ -13964,32 +14344,43 @@ const DAY_INDEX: Record<string, number> = {
   sat: 6,
   saturday: 6,
 };
+
 export function normalizeDayOfWeek(dayStr: string): string {
   if (!dayStr) return '';
   const trimmed = dayStr.trim();
   const lower = trimmed.toLowerCase();
+  if (lower === 'varies' || lower.startsWith('varies')) {
+    return 'Varies';
+  }
   if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
     return 'Daily';
   }
   const DAY_TO_SHORT: Record<string, string> = {
     sun: 'Sun',
     sunday: 'Sun',
+    sundays: 'Sun',
     mon: 'Mon',
     monday: 'Mon',
+    mondays: 'Mon',
     tue: 'Tue',
     tues: 'Tue',
     tuesday: 'Tue',
+    tuesdays: 'Tue',
     wed: 'Wed',
     weds: 'Wed',
     wednesday: 'Wed',
+    wednesdays: 'Wed',
     thu: 'Thu',
     thur: 'Thu',
     thurs: 'Thu',
     thursday: 'Thu',
+    thursdays: 'Thu',
     fri: 'Fri',
     friday: 'Fri',
+    fridays: 'Fri',
     sat: 'Sat',
     saturday: 'Sat',
+    saturdays: 'Sat',
   };
   const rangeMatch = trimmed.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
   if (rangeMatch) {
@@ -14009,12 +14400,16 @@ export function normalizeDayOfWeek(dayStr: string): string {
   }
   return normalized.length > 0 ? normalized.join(', ') : trimmed;
 }
+
 export function matchesDay(eventDays: string, targetDayName: string): boolean {
   if (!eventDays || !targetDayName) return false;
   const targetKey = targetDayName.trim().toLowerCase();
   const targetIndex = DAY_INDEX[targetKey];
   const aliases = DAY_ALIAS_MAP[targetKey] || [targetKey];
   const rawLower = eventDays.toLowerCase();
+  if (rawLower.includes('varies')) {
+    return false;
+  }
   if (rawLower.includes('daily') || rawLower.includes('everyday') || rawLower.includes('every day')) {
     return true;
   }
@@ -14038,6 +14433,7 @@ export function matchesDay(eventDays: string, targetDayName: string): boolean {
   }
   return false;
 }
+
 const MONTH_NAME_TO_NUM: Record<string, number> = {
   jan: 1, january: 1, enero: 1, ene: 1,
   feb: 2, february: 2, febrero: 2,
@@ -14052,18 +14448,67 @@ const MONTH_NAME_TO_NUM: Record<string, number> = {
   nov: 11, november: 11, noviembre: 11,
   dec: 12, december: 12, diciembre: 12, dic: 12,
 };
-const BIWEEKLY_REGEX =
-  /\b(?:bi[-\s]?weekly|every\s+other\s+week|every\s+(?:2|two)\s+weeks?|alternating\s+weeks?)\b/i;
+
 const BIMONTHLY_REGEX =
   /\b(?:bi[-\s]?monthly|every\s+other\s+month|every\s+(?:2|two)\s+months?)\b/i;
+
 const ORDINAL_TOKEN_PATTERN =
   '(?:1st|first|primer[oa]?|2nd|second|segund[oa]|3rd|third|tercer[oa]?|4th|fourth|cuart[oa]|5th|fifth|quint[oa]|last|final|ultimo|últim[oa])';
+
 const WEEKDAY_TOKEN_PATTERN =
-  '(?:sun(?:day)?|mon(?:day)?|tue(?:s|sday)?|wed(?:s|nesday)?|thu(?:r|rs|rsday)?|fri(?:day)?|sat(?:urday)?)';
+  '(?:sun(?:days?|s)?|mon(?:days?|s)?|tue(?:sdays?|s)?|wed(?:nesdays?|s)?|thu(?:rsdays?|rs?|s)?|fri(?:days?|s)?|sat(?:urdays?|s)?)';
+
 const DAY_PAIRED_ORDINAL_REGEX = new RegExp(
   `\\b((?:${ORDINAL_TOKEN_PATTERN})(?:\\s*(?:,\\s*(?:and\\b|&|y\\b)?|&|/|\\band\\b|\\by\\b)\\s*(?:${ORDINAL_TOKEN_PATTERN}))*)\\s+(?:of\\s+)?(${WEEKDAY_TOKEN_PATTERN})\\b`,
   'gi'
 );
+
+export type DateOfMonthPattern = {
+  isDateOfMonth: boolean;
+  days: number[];
+  isLastDay: boolean;
+};
+
+export function parseDateOfMonthPattern(
+  frequency?: string,
+  frequencyNotes?: string
+): DateOfMonthPattern {
+  const combined = [frequency, frequencyNotes].filter(Boolean).join(' ').trim();
+  if (!combined) {
+    return { isDateOfMonth: false, days: [], isLastDay: false };
+  }
+  const hasWeekday = new RegExp(`\\b${WEEKDAY_TOKEN_PATTERN}\\b`, 'i').test(combined);
+  if (hasWeekday) {
+    return { isDateOfMonth: false, days: [], isLastDay: false };
+  }
+  const isMonthlyStyle =
+    /\b(?:monthly|every\s+month|once\s+(?:a|per)\s+month|cada\s+mes|mensual)\b/i.test(combined);
+  const isLastDay = /\b(?:last|final|ultimo|último)\s+day\b/i.test(combined);
+  const days: number[] = [];
+  for (const m of combined.matchAll(/\b([1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\b/gi)) {
+    const num = parseInt(m[1], 10);
+    if (num >= 1 && num <= 31 && !days.includes(num)) {
+      days.push(num);
+    }
+  }
+  const isDateOfMonth = isMonthlyStyle || isLastDay || days.length > 0;
+  return { isDateOfMonth, days, isLastDay };
+}
+
+export function isDateRecurringEvent(
+  event: Pick<Event, 'dayOfWeek' | 'frequency' | 'frequencyNotes'>
+): boolean {
+  const dayStr = (event.dayOfWeek || '').trim().toLowerCase();
+  if (dayStr === 'varies' || dayStr.startsWith('varies')) {
+    return true;
+  }
+  const parsed = parseDateOfMonthPattern(event.frequency, event.frequencyNotes);
+  if (parsed.isDateOfMonth && (dayStr === '' || dayStr === 'varies')) {
+    return true;
+  }
+  return false;
+}
+
 type OrdinalFlags = {
   has1st: boolean;
   has2nd: boolean;
@@ -14072,6 +14517,7 @@ type OrdinalFlags = {
   has5th: boolean;
   hasLast: boolean;
 };
+
 function parseOrdinalFlags(text: string, numericWeeks?: Set<number>): OrdinalFlags {
   return {
     has1st: /\b(1st|first|primer[oa]?)\b/i.test(text) || Boolean(numericWeeks?.has(1)),
@@ -14082,6 +14528,7 @@ function parseOrdinalFlags(text: string, numericWeeks?: Set<number>): OrdinalFla
     hasLast: /\b(last|final|ultimo|últim[oa])\b/i.test(text),
   };
 }
+
 function matchesOrdinalFlags(flags: OrdinalFlags, occurrence: number, isLast: boolean): boolean {
   return (
     (flags.has1st && occurrence === 1) ||
@@ -14092,6 +14539,7 @@ function matchesOrdinalFlags(flags: OrdinalFlags, occurrence: number, isLast: bo
     (flags.hasLast && isLast)
   );
 }
+
 export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Date()): boolean {
   if (!frequencyNotes) return true;
   const cleaned = frequencyNotes.trim();
@@ -14109,27 +14557,35 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
     if (m1 && targetMonth === m1) return false;
     if (m2 && targetMonth === m2) return false;
   }
+
+  const ranges: [number, number][] = [];
   for (const rangeMatch of cleaned.matchAll(
     /\b([a-zA-Z]{3,10})\s*(?:[\u2013\u2014\-]|--|\bto\b|\bthrough\b|\bthru\b|\ba\b)\s*([a-zA-Z]{3,10})\b/gi
   )) {
     const startMonth = MONTH_NAME_TO_NUM[rangeMatch[1].toLowerCase()];
     const endMonth = MONTH_NAME_TO_NUM[rangeMatch[2].toLowerCase()];
     if (startMonth && endMonth) {
-      const inRange =
-        startMonth <= endMonth
-          ? targetMonth >= startMonth && targetMonth <= endMonth
-          : targetMonth >= startMonth || targetMonth <= endMonth;
-      if (!inRange) return false;
-      break;
+      ranges.push([startMonth, endMonth]);
     }
   }
-  const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,10})\s+only\b/i);
-  if (singleMonthMatch) {
-    const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
-    if (m) {
-      return targetMonth === m;
+
+  if (ranges.length > 0) {
+    const inAnyRange = ranges.some(([startMonth, endMonth]) =>
+      startMonth <= endMonth
+        ? targetMonth >= startMonth && targetMonth <= endMonth
+        : targetMonth >= startMonth || targetMonth <= endMonth
+    );
+    if (!inAnyRange) return false;
+  } else {
+    const singleMonthMatch = cleaned.match(/\b([a-zA-Z]{3,10})\s+only\b/i);
+    if (singleMonthMatch) {
+      const m = MONTH_NAME_TO_NUM[singleMonthMatch[1].toLowerCase()];
+      if (m && targetMonth !== m) {
+        return false;
+      }
     }
   }
+
   if (/\bsummer\b/i.test(cleaned) && (targetMonth < 6 || targetMonth > 8)) {
     return false;
   }
@@ -14155,6 +14611,7 @@ export function isMonthActive(frequencyNotes?: string, targetDate: Date = new Da
   }
   return true;
 }
+
 export function getWeekdayOccurrence(targetDate: Date): {
   occurrence: number;
   isLast: boolean;
@@ -14169,6 +14626,7 @@ export function getWeekdayOccurrence(targetDate: Date): {
   const isLast = dayOfMonth + 7 > daysInMonth;
   return { occurrence, isLast };
 }
+
 function getWeekNumber(d: Date): number {
   const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dayNum = target.getUTCDay() || 7;
@@ -14176,6 +14634,7 @@ function getWeekNumber(d: Date): number {
   const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
   return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
+
 export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   const combinedText = [event.frequency, event.frequencyNotes]
     .map((s) => (s || '').trim())
@@ -14187,6 +14646,22 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   if (!isMonthActive(combinedText, targetDate)) {
     return false;
   }
+
+  if (isDateRecurringEvent(event)) {
+    const pattern = parseDateOfMonthPattern(event.frequency, event.frequencyNotes);
+    if (!pattern.isDateOfMonth) {
+      return false;
+    }
+    const dayNum = targetDate.getDate();
+    const daysInMonth = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth() + 1,
+      0
+    ).getDate();
+    const isLastDay = dayNum === daysInMonth;
+    return pattern.days.includes(dayNum) || (pattern.isLastDay && isLastDay);
+  }
+
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const DAY_SHORT_NAMES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const dayIdx = targetDate.getDay();
@@ -14255,10 +14730,6 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   ) {
     return matchesOrdinalFlags(globalFlags, occurrence, isLast);
   }
-  if (BIWEEKLY_REGEX.test(combinedText)) {
-    const weekNum = getWeekNumber(targetDate);
-    return weekNum % 2 === 0;
-  }
   const isBiMonthly = BIMONTHLY_REGEX.test(combinedText);
   const isPlainMonthly =
     !isBiMonthly &&
@@ -14269,6 +14740,7 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
   }
   return true;
 }
+
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
@@ -14278,6 +14750,7 @@ export function ensureExternalUrl(url: string): string {
   if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
 }
+
 export function getTagStyle(tag: string): { color: string; background: string } {
   const t = (tag || '').trim().toLowerCase();
   if (t.includes('science')) {
@@ -14312,6 +14785,7 @@ export function getTagStyle(tag: string): { color: string; background: string } 
   }
   return { color: 'var(--tag-default-ink, #4f483e)', background: 'var(--tag-default-bg, #f3ead4)' };
 }
+
 export function indexEvents(
   events: Event[],
   rollingWeek: Date[],
@@ -14331,11 +14805,16 @@ export function indexEvents(
       ...ev.activities,
       ev.about,
       ev.notes,
+      ev.frequency,
+      ev.frequencyNotes,
     ]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
-    const activeDays = rollingWeek.map((day) => isEventActiveOnDate(ev, day));
+    const isDateRec = isDateRecurringEvent(ev);
+    const activeDays = isDateRec
+      ? [false, false, false, false, false, false, false]
+      : rollingWeek.map((day) => isEventActiveOnDate(ev, day));
     return {
       ...ev,
       parsedHour,
@@ -14346,6 +14825,7 @@ export function indexEvents(
     };
   });
 }
+
 export function filterAndCountEvents(
   indexedEvents: IndexedEvent[],
   activeDayIdx: number,
@@ -14414,7 +14894,8 @@ export function filterAndCountEvents(
         dayCounts[d]++;
       }
     }
-    if (isAllEvents || ev.activeDays[activeDayIdx]) {
+    const isDateRec = isDateRecurringEvent(ev);
+    if (isAllEvents || (queryTerms !== null && isDateRec) || ev.activeDays[activeDayIdx]) {
       currentList.push(ev);
     }
   }
@@ -14751,6 +15232,7 @@ import type { Event } from '../lib/google-sheets';
 import {
   indexEvents,
   filterAndCountEvents,
+  isDateRecurringEvent,
 } from './utils';
 import {
   getCityToday,
@@ -15278,6 +15760,7 @@ export default function CityEventsView({
                       const sourceEvent = idx >= 0 ? allEvents[idx] : ev;
                       const uniqueId =
                         eventKeyMap.get(sourceEvent) || getEventSlug(ev);
+                      const isDateRec = isDateRecurringEvent(sourceEvent);
                       return (
                         <EventCard
                           key={uniqueId}
@@ -15286,7 +15769,7 @@ export default function CityEventsView({
                           isOpen={openEventId === uniqueId}
                           isNextUp={uniqueId === nextUpEventId}
                           city={city}
-                          selectedDate={activeDate}
+                          selectedDate={isDateRec ? null : activeDate}
                           onToggle={() => handleToggleEvent(sourceEvent, uniqueId)}
                           onOpenEdit={setEditModalEvent}
                         />
