@@ -27,7 +27,7 @@ export default function Footer({ city }: FooterProps) {
           </div>
           <nav className={styles.footerNav} aria-label="Footer navigation">
             <Link href="/" className={styles.footerNavLink}>
-              All Cities
+              Home
             </Link>
             {cities.map((c) => {
               const isActive = city?.slug === c.slug;
@@ -43,9 +43,6 @@ export default function Footer({ city }: FooterProps) {
                 </Link>
               );
             })}
-            <Link href="/support" className={styles.footerNavLink}>
-              Support
-            </Link>
             <Link href={contactHref} className={styles.footerNavLink}>
               Contact
             </Link>

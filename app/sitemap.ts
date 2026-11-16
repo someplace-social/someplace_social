@@ -56,6 +56,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...eventUrls,
     { url: `${baseUrl}/about` },
     { url: `${baseUrl}/contact` },
-    { url: `${baseUrl}/support` },
   ];
 }
