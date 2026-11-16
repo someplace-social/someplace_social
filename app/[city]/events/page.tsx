@@ -1,16 +1,20 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getCityBySlug, getAllCitySlugs } from '../../lib/cities';
+import { getCityBySlug, getAllCitySlugs, SITE_URL } from '../../lib/cities';
 import { getEvents, getLastUpdated } from '../../lib/google-sheets';
 import CityEventsView from '../../events/CityEventsView';
+
 export const revalidate = 60;
+
 type PageProps = {
   params: Promise<{ city: string }>;
   searchParams?: Promise<{ tab?: string }>;
 };
+
 export async function generateStaticParams() {
   return getAllCitySlugs().map((city) => ({ city }));
 }
+
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { city: citySlug } = await params;
   const sParams = searchParams ? await searchParams : undefined;
@@ -18,7 +22,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const city = getCityBySlug(citySlug);
   if (!city) {
     return {
-      title: 'City Not Found · Someplace Social',
+      title: 'City Not Found',
       robots: { index: false, follow: false },
     };
   }
@@ -44,6 +48,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       siteName: 'Someplace Social',
       type: 'website',
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Someplace Social`,
+      description,
+    },
     robots: {
       index: true,
       follow: true,
@@ -54,6 +63,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     },
   };
 }
+
 export default async function CityEventsPage({ params, searchParams }: PageProps) {
   const { city: citySlug } = await params;
   const sParams = searchParams ? await searchParams : undefined;
@@ -68,12 +78,40 @@ export default async function CityEventsPage({ params, searchParams }: PageProps
     getEvents(city),
     getLastUpdated(city),
   ]);
+
+  const breadcrumbsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: SITE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: `${city.name} Events`,
+        item: `${SITE_URL}/${city.slug}/events`,
+      },
+    ],
+  };
+
   return (
-    <CityEventsView
-      city={city}
-      initialEvents={events}
-      lastUpdated={lastUpdated}
-      initialTab={sParams?.tab === 'all' ? 'all' : undefined}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbsJsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
+      <CityEventsView
+        city={city}
+        initialEvents={events}
+        lastUpdated={lastUpdated}
+        initialTab={sParams?.tab === 'all' ? 'all' : undefined}
+      />
+    </>
   );
 }

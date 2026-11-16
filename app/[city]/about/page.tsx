@@ -24,15 +24,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `About — ${city.name}`,
     description: `Learn about Someplace Social and community event listings in ${city.heroLocation}.`,
     alternates: {
-      canonical: '/',
+      canonical: '/about',
     },
-    robots: {
-      index: false,
-      follow: true,
-      googleBot: {
-        index: false,
-        follow: true,
-      },
+    openGraph: {
+      title: `About — ${city.name} | Someplace Social`,
+      description: `Learn about Someplace Social and community event listings in ${city.heroLocation}.`,
+      url: `/${city.slug}/about`,
+      siteName: 'Someplace Social',
+      locale: 'en_US',
+      type: 'website',
     },
   };
 }

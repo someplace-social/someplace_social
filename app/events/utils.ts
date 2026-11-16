@@ -659,6 +659,7 @@ export function indexEvents(
     const parsedHour = parseHour(ev.startTime);
     const freeOrDonation = isFreeOrDonation(ev.price);
     const parsedPrice = freeOrDonation ? 0 : parseEventPrice(ev.price, currencyCode);
+    const activityList = Array.isArray(ev.activities) ? ev.activities : [];
     const searchCorpus = [
       ev.title,
       ev.venue,
@@ -666,7 +667,7 @@ export function indexEvents(
       ev.location,
       ev.area,
       ev.activity,
-      ...ev.activities,
+      ...activityList,
       ev.about,
       ev.notes,
       ev.frequency,
@@ -681,6 +682,7 @@ export function indexEvents(
       : rollingWeek.map((day) => isEventActiveOnDate(ev, day));
     return {
       ...ev,
+      activities: activityList,
       parsedHour,
       parsedPrice,
       isFreeOrDonationPrice: freeOrDonation,
@@ -735,7 +737,8 @@ export function filterAndCountEvents(
       if (!matchesTime) continue;
     }
     if (selectedActivitiesLower) {
-      const hasActivityMatch = ev.activities.some((act) =>
+      const activityList = Array.isArray(ev.activities) ? ev.activities : [];
+      const hasActivityMatch = activityList.some((act) =>
         selectedActivitiesLower.includes(act.trim().toLowerCase())
       );
       if (!hasActivityMatch) continue;

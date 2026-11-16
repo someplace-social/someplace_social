@@ -3,27 +3,31 @@ import { Bricolage_Grotesque, Karla } from 'next/font/google';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import ThemeScript from './components/ThemeScript';
+
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
   weight: ['500', '700', '800'],
   variable: '--font-bricolage',
   display: 'swap',
 });
+
 const karla = Karla({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
   variable: '--font-karla',
   display: 'swap',
 });
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
 };
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.someplacesocial.org'),
   title: {
-    default: 'Someplace Social | Community Event Listings',
+    default: 'Someplace Social | Regular Things to Do, All in One Place',
     template: '%s | Someplace Social',
   },
   description:
@@ -44,7 +48,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Someplace Social | Community Event Listings',
+    title: 'Someplace Social | Regular Things to Do, All in One Place',
     description:
       'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
     url: 'https://www.someplacesocial.org',
@@ -52,7 +56,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Someplace Social | Regular Things to Do, All in One Place',
+    description:
+      'Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including traveler friendly language exchanges, free salsa classes, and more.',
+  },
 };
+
 export default function RootLayout({
   children,
 }: {

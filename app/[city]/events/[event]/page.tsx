@@ -15,10 +15,13 @@ import {
   resolveEventBySlug,
 } from '../../../events/event-helpers';
 import EventDetailView from './EventDetailView';
+
 export const revalidate = 3600;
+
 type PageProps = {
   params: Promise<{ city: string; event: string }>;
 };
+
 export async function generateStaticParams() {
   const cities = getAllCities();
   const allParams = await Promise.all(
@@ -32,6 +35,7 @@ export async function generateStaticParams() {
   );
   return allParams.flat();
 }
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { city: citySlug, event: eventSlug } = await params;
   const city = getCityBySlug(citySlug);
@@ -82,6 +86,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
   };
 }
+
 export default async function EventPage({ params }: PageProps) {
   const { city: citySlug, event: eventSlug } = await params;
   const city = getCityBySlug(citySlug);
@@ -100,14 +105,46 @@ export default async function EventPage({ params }: PageProps) {
   const timeZone = getCityTimeZone(city);
   const nextOccurrence = getNextEventOccurrence(event, timeZone, 90);
   const canonicalUrl = `${SITE_URL}/${city.slug}/events/${canonicalSlug}`;
-  const jsonLd = buildEventJsonLd(event, city, canonicalUrl, nextOccurrence);
+  const eventJsonLd = buildEventJsonLd(event, city, canonicalUrl, nextOccurrence);
+
+  const breadcrumbsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: SITE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: `${city.name} Events`,
+        item: `${SITE_URL}/${city.slug}/events`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: event.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
     <>
-      {jsonLd && (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbsJsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
+      {eventJsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(eventJsonLd).replace(/</g, '\\u003c'),
           }}
         />
       )}

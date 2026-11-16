@@ -38,15 +38,18 @@ export default function Header({ city }: HeaderProps) {
 
   const isEventsActive = Boolean(
     city &&
+      pathname &&
       (pathname === `/${city.slug}/events` ||
         pathname.startsWith(`/${city.slug}/events/`))
   );
-  const isAboutActive = city
-    ? pathname === `/${city.slug}/about`
-    : pathname === '/about';
-  const isContactActive = city
-    ? pathname === `/${city.slug}/contact`
-    : pathname === '/contact';
+  const isAboutActive = Boolean(
+    pathname &&
+      (city ? pathname === `/${city.slug}/about` : pathname === '/about')
+  );
+  const isContactActive = Boolean(
+    pathname &&
+      (city ? pathname === `/${city.slug}/contact` : pathname === '/contact')
+  );
 
   return (
     <>

@@ -113,34 +113,6 @@
   height: 1px;
   background-color: var(--line);
 }
-.howItWorksGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-.howItWorksItem {
-  display: flex;
-  flex-direction: column;
-  padding: 16px 18px;
-  background-color: var(--topbar-bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-}
-.howItWorksTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 0 0 8px;
-  line-height: 1.25;
-}
-.howItWorksDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: var(--text-subtle);
-  margin: 0;
-}
 .criteriaList {
   list-style: none;
   margin: 0;
@@ -221,10 +193,6 @@
   }
   .sectionBlock {
     margin-bottom: 36px;
-  }
-  .howItWorksGrid {
-    grid-template-columns: 1fr;
-    gap: 12px;
   }
   .criteriaListItem {
     gap: 16px;

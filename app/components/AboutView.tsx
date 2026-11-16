@@ -33,31 +33,15 @@ const CRITERIA_ITEMS = [
   },
 ] as const;
 
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: 'Weekly Updates',
-    description: 'Listings are updated once per week.',
-  },
-  {
-    title: 'Community Supported',
-    description: 'Anyone can submit new recurring activities.',
-  },
-  {
-    title: '100% Free & Ad-Free',
-    description: 'No accounts, no sponsors, no cookies, and no paywalls.',
-  },
-] as const;
-
 interface AboutViewProps {
   city?: CityConfig;
 }
 
 export default function AboutView({ city }: AboutViewProps) {
   const cities = getAllCities();
-  const isHome = !city;
-  const eyebrowText = isHome ? 'SOMEPLACE SOCIAL' : 'ABOUT';
-  const headingText = isHome
-    ? 'Weekly Community Events & Social Clubs'
+  const eyebrowText = 'ABOUT';
+  const headingText = city
+    ? `About Someplace Social — ${city.name}`
     : 'About Someplace Social';
 
   return (
@@ -94,22 +78,7 @@ export default function AboutView({ city }: AboutViewProps) {
             />
           </div>
         </section>
-        <section className={styles.sectionBlock} aria-labelledby="how-it-works-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="how-it-works-heading" className={styles.sectionHeaderTitle}>
-              How It Works
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <div className={styles.howItWorksGrid}>
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <div key={step.title} className={styles.howItWorksItem}>
-                <h3 className={styles.howItWorksTitle}>{step.title}</h3>
-                <p className={styles.howItWorksDescription}>{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+
         <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
           <div className={styles.sectionHeader}>
             <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
