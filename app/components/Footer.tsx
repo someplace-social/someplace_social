@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type CityConfig, getAllCities } from '../lib/cities';
+import { type CityConfig } from '../lib/cities';
 import styles from './Footer.module.css';
 
 interface FooterProps {
@@ -7,8 +7,9 @@ interface FooterProps {
 }
 
 export default function Footer({ city }: FooterProps) {
+  const homeHref = city ? `/${city.slug}/events` : '/';
+  const aboutHref = city ? `/${city.slug}/about` : '/about';
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
-  const cities = getAllCities();
 
   return (
     <footer className={styles.footer}>
@@ -26,23 +27,12 @@ export default function Footer({ city }: FooterProps) {
             </a>
           </div>
           <nav className={styles.footerNav} aria-label="Footer navigation">
-            <Link href="/" className={styles.footerNavLink}>
+            <Link href={homeHref} className={styles.footerNavLink}>
               Home
             </Link>
-            {cities.map((c) => {
-              const isActive = city?.slug === c.slug;
-              return (
-                <Link
-                  key={c.slug}
-                  href={`/${c.slug}/events`}
-                  className={`${styles.footerNavLink} ${
-                    isActive ? styles.footerNavLinkActive : ''
-                  }`}
-                >
-                  {c.name}
-                </Link>
-              );
-            })}
+            <Link href={aboutHref} className={styles.footerNavLink}>
+              About
+            </Link>
             <Link href={contactHref} className={styles.footerNavLink}>
               Contact
             </Link>
