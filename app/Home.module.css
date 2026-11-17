@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  padding: 80px 24px 96px;
+  padding: 80px 24px 480px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -91,7 +91,7 @@
 
 @media (max-width: 768px) {
   .page {
-    padding: 48px 16px 64px;
+    padding: 48px 16px 320px;
   }
 
   .heroTitle {
