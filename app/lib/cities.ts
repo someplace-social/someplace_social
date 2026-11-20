@@ -80,7 +80,7 @@ export const CITIES: Record<string, CityConfig> = {
       midLabel: '$25',
     },
     alertBanner: {
-      message: 'This page is new! Some info may not be correct. Having issues?',
+      message: 'November, 2026: This page is new! Some info may not be correct. Having issues?',
       linkText: 'Contact.',
       linkHref: '/fort-collins-colorado/contact',
     },

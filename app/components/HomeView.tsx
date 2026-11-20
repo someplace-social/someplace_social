@@ -14,7 +14,7 @@ export default function HomeView() {
             Regular things to do, all in one place.
           </h1>
           <p className={styles.lead}>
-            Find weekly stuff to do, happening near you. Trivia, dance lessons, board games, language practice, open mics, book clubs, arts, comedy, karaoke, and more.
+            Find weekly stuff to do happening near you. Trivia, dance lessons, board games, language practice, open mics, book clubs, arts, comedy, karaoke, and more.
           </p>
           <div className={styles.btns}>
             <Link
