@@ -35,34 +35,6 @@
 .buyDrinkLink:hover {
   color: var(--accent);
 }
-.footerNav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 6px 18px;
-}
-.footerNavLink {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 4px 2px;
-  transition: color 0.15s ease;
-}
-.footerNavLink:hover {
-  color: var(--accent);
-}
-.footerNavLinkActive {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.footerNavLink:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
 .footerQuoteSection {
   display: flex;
   flex-direction: column;
@@ -130,9 +102,6 @@
   }
   .footerSupportText {
     font-size: 13.5px;
-  }
-  .footerNav {
-    gap: 4px 14px;
   }
   .footerQuoteText {
     font-size: 13px;

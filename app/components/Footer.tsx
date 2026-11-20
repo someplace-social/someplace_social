@@ -7,8 +7,6 @@ interface FooterProps {
 }
 
 export default function Footer({ city }: FooterProps) {
-  const homeHref = city ? `/${city.slug}/events` : '/';
-  const aboutHref = city ? `/${city.slug}/about` : '/about';
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
 
   return (
@@ -26,17 +24,6 @@ export default function Footer({ city }: FooterProps) {
               Buy me a drink.
             </a>
           </div>
-          <nav className={styles.footerNav} aria-label="Footer navigation">
-            <Link href={homeHref} className={styles.footerNavLink}>
-              Home
-            </Link>
-            <Link href={aboutHref} className={styles.footerNavLink}>
-              About
-            </Link>
-            <Link href={contactHref} className={styles.footerNavLink}>
-              Contact
-            </Link>
-          </nav>
           <div className={styles.footerQuoteSection}>
             <blockquote className={styles.footerQuoteText}>
               “What should young people do with their lives today? Many things,
