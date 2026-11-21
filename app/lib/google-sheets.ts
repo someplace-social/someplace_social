@@ -2,6 +2,8 @@ import { CityConfig, CITIES, MAIN_SPREADSHEET_ID } from './cities';
 import { normalizeDayOfWeek } from '../events/utils';
 import { expandEventSchedules } from '../events/schedule-splitter';
 
+const SHEET_FETCH_TIMEOUT_MS = 8000;
+
 export type Event = {
   id: string;
   title: string;
@@ -33,10 +35,11 @@ export type Event = {
 };
 
 function getFetchOptions(revalidateSeconds: number = 30): RequestInit {
+  const signal = AbortSignal.timeout(SHEET_FETCH_TIMEOUT_MS);
   if (process.env.NODE_ENV === 'development') {
-    return { cache: 'no-store' };
+    return { cache: 'no-store', signal };
   }
-  return { next: { revalidate: revalidateSeconds } };
+  return { next: { revalidate: revalidateSeconds }, signal };
 }
 
 function getCandidateUrls(city: CityConfig, discoveredGid: string | null): string[] {
@@ -350,7 +353,6 @@ const HEADER_ALIASES: Record<string, string[]> = {
   url2Notes: ['url2notes', 'url2note'],
   about: ['about', 'description'],
   notes: ['notes', 'note'],
-  database: ['database', 'db', 'sheet'],
 };
 
 export async function getLastUpdated(
@@ -421,11 +423,26 @@ export async function getEvents(
       cityConfig = CITIES['medellin-colombia'];
     }
     const targetId = cityConfig.spreadsheetId || MAIN_SPREADSHEET_ID;
-    const discoveredGid = cityConfig.csvUrl
-      ? null
-      : await discoverTabGid(targetId, [cityConfig.sheetTab], revalidateSeconds);
-    const candidateUrls = getCandidateUrls(cityConfig, discoveredGid);
-    const rows = await fetchSheetRows(candidateUrls, revalidateSeconds);
+    let rows: string[][] = [];
+    if (cityConfig.csvUrl || cityConfig.sheetGid) {
+      rows = await fetchSheetRows(getCandidateUrls(cityConfig, null), revalidateSeconds);
+    }
+    if (rows.length < 2 && !cityConfig.csvUrl) {
+      const discoveredGid = await discoverTabGid(
+        targetId,
+        [cityConfig.sheetTab],
+        revalidateSeconds
+      );
+      if (
+        (discoveredGid && discoveredGid !== cityConfig.sheetGid) ||
+        !cityConfig.sheetGid
+      ) {
+        rows = await fetchSheetRows(
+          getCandidateUrls(cityConfig, discoveredGid),
+          revalidateSeconds
+        );
+      }
+    }
     if (rows.length < 2) {
       console.error(`[Someplace Social] No live sheet data found for ${cityConfig.sheetTab} (${targetId})`);
       return [];
@@ -507,7 +524,7 @@ export async function getEvents(
           url2Notes: getValue('url2Notes'),
           about: getValue('about'),
           notes: getValue('notes'),
-          database: getValue('database'),
+          database: '',
         };
       })
       .filter((event): event is Event => event !== null);

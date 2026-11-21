@@ -1,10 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getCityBySlug } from './app/lib/cities';
+
+const CONTROL_CHAR_REGEX = /[\u0000-\u001F\u007F]/;
+
 export function proxy(request: NextRequest) {
   const rawEvent = request.nextUrl.searchParams.get('event')?.trim() || '';
   if (
     !rawEvent ||
     rawEvent.length > 200 ||
+    CONTROL_CHAR_REGEX.test(rawEvent) ||
     rawEvent.includes('/') ||
     rawEvent.includes('\\') ||
     rawEvent.includes('..')
@@ -33,6 +37,7 @@ export function proxy(request: NextRequest) {
   destination.searchParams.delete('event');
   return NextResponse.redirect(destination, 308);
 }
+
 export const config = {
   matcher: [
     {

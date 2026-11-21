@@ -580,12 +580,71 @@ export function isEventActiveOnDate(event: Event, targetDate: Date): boolean {
 
 export function ensureExternalUrl(url: string): string {
   if (!url) return '';
-  const trimmed = url.trim();
-  if (!trimmed || trimmed.toLowerCase() === 'x') return '';
-  if (/^(javascript|data|vbscript):/i.test(trimmed)) return '';
-  if (trimmed.startsWith('//')) return `https:${trimmed}`;
-  if (/^(https?:\/\/|mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
+  const cleaned = url.replace(/[\u0000-\u001F\u007F]/g, '').trim();
+  if (!cleaned || cleaned.toLowerCase() === 'x') return '';
+
+  if (/^(mailto|tel|sms):/i.test(cleaned)) {
+    const colonIdx = cleaned.indexOf(':');
+    const scheme = cleaned.slice(0, colonIdx).toLowerCase();
+    const rest = cleaned.slice(colonIdx + 1).trim();
+    const target = rest.split('?')[0];
+    if (!target || /[<>"'`\s]/.test(target)) return '';
+    return `${scheme}:${rest}`;
+  }
+
+  if (/^https?:\/\//i.test(cleaned)) {
+    try {
+      const parsed = new URL(cleaned);
+      if (
+        (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+        parsed.hostname
+      ) {
+        return cleaned;
+      }
+    } catch {
+      return '';
+    }
+    return '';
+  }
+
+  if (cleaned.startsWith('//')) {
+    if (cleaned.startsWith('///')) return '';
+    const candidate = `https:${cleaned}`;
+    try {
+      const parsed = new URL(candidate);
+      if (
+        parsed.hostname &&
+        parsed.hostname.includes('.') &&
+        !parsed.hostname.startsWith('.') &&
+        !parsed.hostname.endsWith('.')
+      ) {
+        return candidate;
+      }
+    } catch {
+      return '';
+    }
+    return '';
+  }
+
+  if (/^[a-zA-Z][a-zA-Z0-9+-]*:/.test(cleaned)) {
+    return '';
+  }
+
+  const candidate = `https://${cleaned}`;
+  try {
+    const parsed = new URL(candidate);
+    if (
+      parsed.hostname &&
+      parsed.hostname.includes('.') &&
+      !parsed.hostname.startsWith('.') &&
+      !parsed.hostname.endsWith('.')
+    ) {
+      return candidate;
+    }
+  } catch {
+    return '';
+  }
+  return '';
 }
 
 export function getTagStyle(tag: string): { color: string; background: string } {

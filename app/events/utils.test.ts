@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  ensureExternalUrl,
   filterAndCountEvents,
   indexEvents,
   isDateRecurringEvent,
@@ -538,5 +539,27 @@ describe('filterAndCountEvents with Date-of-Month recurring events and All Event
     );
     assert.equal(allEventsTab.currentList.length, 3);
     assert.equal(allEventsTab.currentList.some((e) => e.title === 'Community Potluck'), true);
+  });
+});
+
+describe('ensureExternalUrl protocol hardening', () => {
+  it('blocks dangerous, obfuscated, and unsupported schemes while preserving valid URLs', () => {
+    assert.equal(ensureExternalUrl('javascript:alert(1)'), '');
+    assert.equal(ensureExternalUrl('java\tscript:alert(1)'), '');
+    assert.equal(ensureExternalUrl('\u0000javascript:alert(1)'), '');
+    assert.equal(ensureExternalUrl('data:text/html,<script>alert(1)</script>'), '');
+    assert.equal(ensureExternalUrl('vbscript:msgbox(1)'), '');
+    assert.equal(ensureExternalUrl('file:///etc/passwd'), '');
+    assert.equal(ensureExternalUrl('ftp://example.com/file'), '');
+    assert.equal(ensureExternalUrl('http:evil.com'), '');
+    assert.equal(ensureExternalUrl('///evil.com'), '');
+    assert.equal(ensureExternalUrl('TBD'), '');
+
+    assert.equal(ensureExternalUrl('maxlinebrewing.com/events?tab=1'), 'https://maxlinebrewing.com/events?tab=1');
+    assert.equal(ensureExternalUrl('example.com:8080/events'), 'https://example.com:8080/events');
+    assert.equal(ensureExternalUrl('//example.com/events?img_index=3'), 'https://example.com/events?img_index=3');
+    assert.equal(ensureExternalUrl('https://example.com/path'), 'https://example.com/path');
+    assert.equal(ensureExternalUrl('mailto:info@venue.com'), 'mailto:info@venue.com');
+    assert.equal(ensureExternalUrl('tel:+19705551234'), 'tel:+19705551234');
   });
 });
