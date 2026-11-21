@@ -1,11 +1,29 @@
 #TASK
 
-Get rid of the footer “Home About Contact”
+We are doing a clean up audit. I’m trying to clean up my code base and and ideally make it less lines / tokens. Use DRY principles when helpful. Our goal is to have a strong, robust, efficient, logical code base. What files or lines of code don’t serve a purpose and we can delete with 100% certainty? Make an in-depth COMPLETE list / plan. You will organize this starting with the most significant things we can delete. If there is nothing to delete or clean up that’s 100% totally fine, just say so. DON’T DELETE ANYTHING THAT MIGHT BE USEFUL OR WILL NEGATIVELY EFFECT FUNCTIONALITY.
 
 ### **#0-PROJECT SPECIFICS (SPS**)
 
 - Project Name: Someplace Social
 - About: A totally free, highly excellent, simple, fast, modern website where people can go to see local recurring activities, weekly events, monthly happenings. It’s totally free with no ads.
+
+### #2-Make a plan
+
+As soon as you get the files, investigate the issue at hand and find the root.
+
+#RULES
+
+- Take a step back and look big picture at anything that’s unnecessary and might be getting in the way. There may be conflicting code that exists because of updates that didn’t get fully cleaned up. You will big picture figure out what’s needed to clean up this whole area of the app, address the problem at its core, and fix to make the system extremely robust. You will always see what you can take away first rather than add to prevent over engineering, and come up with the most simple, straightforward, solid fix you can. Keep solutions lean.
+- The notes I give that you build a plan around are just the beginning of what I want done. I want you to consider the entire area that we are working on and what else should be part of this plan that I didn’t list that will make this new feature / update the best it can be given the context of the whole platform. So finish my thoughts, and then make the plan.
+- When planning, imagine that you are a user of the platform. This is someone who runs a small-business (not a financial professional, for example). What does this person want to see in this area on their software? Design the changes from their point of view.
+- Always do whatever is standard for similar professional applications like ours.
+- Shared UI Components: Before building any new component or layout, you MUST check @/components/ui-shared/ and @/components/ui/ for existing blueprints. Do not write raw HTML <select>, custom dropdowns, custom tables, bespoke modals, or manual page headers. Strictly use our existing shared design system (e.g., DataTable, SearchableSelect, PageHeader, DestructiveModal, EntityDetailDrawer)."
+- In your plan, if a single response may be over 2000 lines of code, you MUST break your response up logically into multiple similar sized batches that you will follow when coding. If you do break your responses up, you will end your responses with. “The next step is [very briefly describe], are you ready?”. Once complete, you will say “The outline is complete” at the end of your response.
+- At the end of your plan (step 2), you will ask me if I’m ready to execute the plan.
+
+3) Implement plan:
+
+Implement the outline / plan.
 
 ### **#3-GENERAL CODING GUIDELINES**
 
@@ -218,7 +236,8 @@ Project Structure Map:
 |   +--- contact
 |   |   +--- components
 |   |   |   +--- ContactMessageForm.tsx
-|   |   |   \--- EventSubmissionForm.tsx
+|   |   |   +--- EventSubmissionForm.tsx
+|   |   |   \--- SimpleEventSubmissionForm.tsx
 |   |   +--- Contact.module.css
 |   |   +--- ContactView.tsx
 |   |   \--- page.tsx
@@ -367,6 +386,7 @@ app/components/ThemeToggle.module.css
 app/components/ThemeToggle.tsx
 app/contact/components/ContactMessageForm.tsx
 app/contact/components/EventSubmissionForm.tsx
+app/contact/components/SimpleEventSubmissionForm.tsx
 app/contact/Contact.module.css
 app/contact/ContactView.tsx
 app/contact/page.tsx
@@ -1099,6 +1119,164 @@ File: app/components/ThemeToggle.module.css
   background-color: var(--topbar-bg);
   color: var(--muted);
   border: 1px solid var(--line);
+}
+
+================
+File: app/contact/components/SimpleEventSubmissionForm.tsx
+================
+'use client';
+import { useState } from 'react';
+import styles from '../Contact.module.css';
+
+interface SimpleEventSubmissionFormProps {
+  cityName?: string;
+}
+
+export default function SimpleEventSubmissionForm({
+  cityName,
+}: SimpleEventSubmissionFormProps) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [eventName, setEventName] = useState('');
+  const [eventLink, setEventLink] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null);
+    const messageLines = [
+      cityName ? `City Page: ${cityName}` : null,
+      `Name: ${name}`,
+      `Email Address: ${email}`,
+      `Event Name: ${eventName}`,
+      `Event Link: ${eventLink}`,
+    ].filter((line): line is string => line !== null);
+
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: cityName ? `Submit an Event (${cityName})` : 'Submit an Event',
+          message: messageLines.join('\n'),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setStatus({
+          success: true,
+          message:
+            'Thank you! Your event submission has been sent. We will review and add it shortly.',
+        });
+        setName('');
+        setEmail('');
+        setEventName('');
+        setEventLink('');
+      } else {
+        setStatus({
+          success: false,
+          message: 'Failed to submit event. Please try again.',
+        });
+      }
+    } catch {
+      setStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form
+      id="panel-submit"
+      role="tabpanel"
+      aria-labelledby="tab-submit"
+      onSubmit={handleSubmit}
+    >
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.legend}>Submit an Event</legend>
+        <p className={styles.sectionDescription}>
+          Know of an event not on the list? Tell us. Note: events must already be
+          listed somewhere online - we&apos;ll get the details from there.
+        </p>
+        <div className={styles.row}>
+          <div className={styles.field}>
+            <label htmlFor="s-name" className={styles.label}>
+              Name *
+            </label>
+            <input
+              id="s-name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. John Doe"
+              className={styles.input}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="s-email" className={styles.label}>
+              Email *
+            </label>
+            <input
+              id="s-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e.g. john@doe.com"
+              className={styles.input}
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="s-event-name" className={styles.label}>
+            Name of Event *
+          </label>
+          <input
+            id="s-event-name"
+            type="text"
+            required
+            value={eventName}
+            onChange={(e) => setEventName(e.target.value)}
+            placeholder="e.g. Weekly Board Game Night"
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="s-event-link" className={styles.label}>
+            Link to Event *
+          </label>
+          <input
+            id="s-event-link"
+            type="text"
+            required
+            value={eventLink}
+            onChange={(e) => setEventLink(e.target.value)}
+            placeholder="e.g. instagram.com/... or meetup.com/..."
+            className={styles.input}
+          />
+        </div>
+      </fieldset>
+      <button type="submit" className={styles.submitBtn} disabled={loading}>
+        {loading ? 'Submitting event...' : 'Submit Event'}
+      </button>
+      {status && (
+        <div
+          className={`${styles.statusAlert} ${
+            status.success ? styles.statusSuccess : styles.statusError
+          }`}
+          role="status"
+        >
+          {status.message}
+        </div>
+      )}
+    </form>
+  );
 }
 
 ================
@@ -3083,6 +3261,724 @@ function DayPicker({
 export default memo(DayPicker);
 
 ================
+File: app/events/components/PriceFilterDropdown.tsx
+================
+'use client';
+import { useMemo } from 'react';
+import { CityPriceConfig } from '../../lib/cities';
+import { formatPriceValue, formatPriceReadout } from '../utils';
+import styles from './FilterControls.module.css';
+
+interface PriceFilterDropdownProps {
+  priceConfig: CityPriceConfig;
+  maxPrice: number;
+  onPriceChange: (val: number) => void;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  flexStyle?: boolean;
+}
+
+export default function PriceFilterDropdown({
+  priceConfig,
+  maxPrice,
+  onPriceChange,
+  isOpen,
+  onToggleOpen,
+  containerRef,
+  flexStyle = false,
+}: PriceFilterDropdownProps) {
+  const isFreeActive = maxPrice === 0;
+  const isUnderActive = maxPrice === priceConfig.underValue;
+  const isFiltered = maxPrice < priceConfig.maxPrice;
+
+  const priceValue = useMemo(() => {
+    if (maxPrice >= priceConfig.maxPrice) return 'All';
+    if (maxPrice === 0) return 'Free';
+    if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
+    return `Up to ${formatPriceValue(maxPrice, priceConfig)}`;
+  }, [maxPrice, priceConfig]);
+
+  const readoutText = useMemo(() => {
+    return formatPriceReadout(maxPrice, priceConfig);
+  }, [maxPrice, priceConfig]);
+
+  const readoutColor = isFreeActive ? 'var(--free)' : 'var(--ink)';
+  const trackFill = isFreeActive ? 'var(--free)' : 'var(--ink)';
+  const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
+
+  const handleToggleFree = () => {
+    onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
+  };
+
+  const handleToggleUnder = () => {
+    onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
+  };
+
+  return (
+    <div
+      className={styles.multiSelectWrapper}
+      ref={containerRef}
+      style={flexStyle ? { flex: 1, minWidth: 120 } : undefined}
+    >
+      <button
+        type="button"
+        className={`${styles.multiSelectTrigger} ${
+          isFiltered ? styles.multiSelectTriggerActive : ''
+        }`}
+        aria-expanded={isOpen}
+        onClick={onToggleOpen}
+      >
+        <span className={styles.filterTriggerLeft}>
+          <span className={styles.filterTriggerIcon}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+              <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+            </svg>
+          </span>
+          <span className={styles.filterCategory}>Price</span>
+          <span className={styles.filterValue}>{priceValue}</span>
+        </span>
+        <svg
+          className={styles.filterChevron}
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
+          <div className={styles.priceHeaderRow}>
+            <span className={styles.priceHeaderTitle}>Price</span>
+            <span
+              className={styles.priceHeaderReadout}
+              style={{ color: readoutColor }}
+            >
+              {readoutText}
+            </span>
+          </div>
+          <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isFreeActive ? styles.priceChipFreeActive : ''
+              }`}
+              onClick={handleToggleFree}
+              aria-pressed={isFreeActive}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
+              </svg>
+              Free / donation
+            </button>
+            <button
+              type="button"
+              className={`${styles.priceChip} ${
+                isUnderActive ? styles.priceChipUnderActive : ''
+              }`}
+              onClick={handleToggleUnder}
+              aria-pressed={isUnderActive}
+            >
+              {priceConfig.underLabel}
+            </button>
+          </div>
+          <div className={styles.sliderSection}>
+            <input
+              type="range"
+              min={0}
+              max={priceConfig.maxPrice}
+              step={priceConfig.step}
+              value={maxPrice}
+              onChange={(e) => onPriceChange(Number(e.target.value))}
+              className={styles.rangeSlider}
+              aria-label="Maximum price"
+              style={{
+                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, var(--slider-track) ${trackPercent}%, var(--slider-track) 100%)`,
+              }}
+            />
+            <div className={styles.sliderLabelsRow} aria-hidden="true">
+              <span>Free</span>
+              <span>{priceConfig.midLabel}</span>
+              <span>Any</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+================
+File: app/events/components/SuggestEditModal.tsx
+================
+'use client';
+import { useState, useMemo, useEffect } from 'react';
+import { Event } from '../../lib/google-sheets';
+import styles from './SuggestEditModal.module.css';
+
+interface SuggestEditModalProps {
+  event: Event;
+  cityName: string;
+  onClose: () => void;
+}
+
+interface FormValues {
+  title: string;
+  organization: string;
+  organizerUrl: string;
+  venue: string;
+  venueUrl: string;
+  location: string;
+  area: string;
+  map: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  frequency: string;
+  frequencyNotes: string;
+  price: string;
+  preRegistration: string;
+  registrationUrl: string;
+}
+
+const FIELD_LABELS: Record<keyof FormValues, string> = {
+  title: 'Event Title',
+  organization: 'Organizer / Host',
+  organizerUrl: 'Organizer URL',
+  venue: 'Venue',
+  venueUrl: 'Venue URL',
+  location: 'Address / Location',
+  area: 'Neighborhood / Area',
+  map: 'Google Maps Link',
+  dayOfWeek: 'Day of Week',
+  startTime: 'Start Time',
+  endTime: 'End Time',
+  frequency: 'Frequency',
+  frequencyNotes: 'Frequency Notes',
+  price: 'Price',
+  preRegistration: 'Pre-Registration',
+  registrationUrl: 'Registration URL',
+};
+
+function EditField({
+  id,
+  label,
+  value,
+  changed,
+  placeholder,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  changed: boolean;
+  placeholder?: string;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div className={styles.field}>
+      <div className={styles.fieldHeader}>
+        <label htmlFor={id} className={styles.label}>
+          {label}
+        </label>
+        {changed && <span className={styles.changedBadge}>Edited</span>}
+      </div>
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`${styles.input} ${changed ? styles.inputChanged : ''}`}
+      />
+    </div>
+  );
+}
+
+export default function SuggestEditModal({
+  event,
+  cityName,
+  onClose,
+}: SuggestEditModalProps) {
+  const initialValues: FormValues = useMemo(
+    () => ({
+      title: event.title || '',
+      organization: event.organization || '',
+      organizerUrl: event.organizerUrl || '',
+      venue: event.venue || '',
+      venueUrl: event.venueUrl || '',
+      location: event.location || '',
+      area: event.area || '',
+      map: event.map || '',
+      dayOfWeek: event.dayOfWeek || '',
+      startTime: event.startTime || '',
+      endTime: event.endTime || '',
+      frequency: event.frequency || '',
+      frequencyNotes: event.frequencyNotes || '',
+      price: event.price || '',
+      preRegistration: event.preRegistration || '',
+      registrationUrl: event.registrationUrl || '',
+    }),
+    [event]
+  );
+  const [values, setValues] = useState<FormValues>(initialValues);
+  const [notes, setNotes] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && !isSubmitting) {
+        onClose();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose, isSubmitting]);
+
+  const handleChange = (key: keyof FormValues, val: string) => {
+    setValues((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const changedFields = useMemo(() => {
+    const diffs: {
+      key: keyof FormValues;
+      label: string;
+      original: string;
+      updated: string;
+    }[] = [];
+    (Object.keys(initialValues) as (keyof FormValues)[]).forEach((key) => {
+      const orig = (initialValues[key] || '').trim();
+      const curr = (values[key] || '').trim();
+      if (orig !== curr) {
+        diffs.push({
+          key,
+          label: FIELD_LABELS[key],
+          original: orig || '(empty)',
+          updated: curr || '(cleared)',
+        });
+      }
+    });
+    return diffs;
+  }, [initialValues, values]);
+
+  const hasChanges = changedFields.length > 0 || notes.trim().length > 0;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hasChanges) return;
+    setIsSubmitting(true);
+    setStatus(null);
+    const messageLines: string[] = [
+      `Event: ${event.title}`,
+      `City: ${cityName}`,
+      `Submitter Email: ${email.trim() || 'Not provided'}`,
+      '',
+    ];
+    if (changedFields.length > 0) {
+      messageLines.push(`EDITED FIELDS (${changedFields.length}):`);
+      messageLines.push('────────────────────────────────────────');
+      changedFields.forEach((diff) => {
+        messageLines.push(`• ${diff.label}:`);
+        messageLines.push(`    Original: ${diff.original}`);
+        messageLines.push(`    Updated:  ${diff.updated}`);
+      });
+      messageLines.push('────────────────────────────────────────');
+    } else {
+      messageLines.push('No individual field changes detected.');
+    }
+    if (notes.trim()) {
+      messageLines.push('');
+      messageLines.push('Additional Notes / Context:');
+      messageLines.push(notes.trim());
+    }
+    try {
+      const response = await fetch('/api/send-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: `Edit a Listing (${cityName})`,
+          message: messageLines.join('\n'),
+        }),
+      });
+      const res = await response.json();
+      if (res.success) {
+        setStatus({
+          success: true,
+          message: 'Thank you! Your suggested edits have been sent for review.',
+        });
+        setTimeout(onClose, 1800);
+      } else {
+        setStatus({
+          success: false,
+          message: 'Failed to send edit. Please try again.',
+        });
+      }
+    } catch {
+      setStatus({
+        success: false,
+        message: 'A connection error occurred. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFieldChanged = (key: keyof FormValues) =>
+    (initialValues[key] || '').trim() !== (values[key] || '').trim();
+
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div
+        className={styles.modalContent}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="suggest-edit-title"
+      >
+        <div className={styles.modalHeader}>
+          <div className={styles.modalTitleGroup}>
+            <h2 id="suggest-edit-title" className={styles.modalTitle}>
+              Suggest Edit
+            </h2>
+            <div className={styles.modalSubtitle}>
+              {event.title} · {cityName}
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.modalCloseBtn}
+            onClick={onClose}
+            aria-label="Close modal"
+            disabled={isSubmitting}
+          >
+            ✕
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.modalScrollArea}>
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Event Info</span>
+                <div className={styles.sectionLine} aria-hidden="true" />
+              </div>
+              <EditField
+                id="edit-title"
+                label="Event Title"
+                value={values.title}
+                changed={isFieldChanged('title')}
+                onChange={(v) => handleChange('title', v)}
+              />
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-org"
+                  label="Organizer / Host"
+                  value={values.organization}
+                  changed={isFieldChanged('organization')}
+                  onChange={(v) => handleChange('organization', v)}
+                />
+                <EditField
+                  id="edit-org-url"
+                  label="Organizer URL"
+                  value={values.organizerUrl}
+                  changed={isFieldChanged('organizerUrl')}
+                  placeholder="Website or social profile"
+                  onChange={(v) => handleChange('organizerUrl', v)}
+                />
+              </div>
+            </div>
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Venue &amp; Location</span>
+                <div className={styles.sectionLine} aria-hidden="true" />
+              </div>
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-venue"
+                  label="Venue"
+                  value={values.venue}
+                  changed={isFieldChanged('venue')}
+                  onChange={(v) => handleChange('venue', v)}
+                />
+                <EditField
+                  id="edit-venue-url"
+                  label="Venue URL"
+                  value={values.venueUrl}
+                  changed={isFieldChanged('venueUrl')}
+                  placeholder="Website or social profile"
+                  onChange={(v) => handleChange('venueUrl', v)}
+                />
+              </div>
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-area"
+                  label="Neighborhood / Area"
+                  value={values.area}
+                  changed={isFieldChanged('area')}
+                  onChange={(v) => handleChange('area', v)}
+                />
+                <EditField
+                  id="edit-map"
+                  label="Google Maps Link"
+                  value={values.map}
+                  changed={isFieldChanged('map')}
+                  onChange={(v) => handleChange('map', v)}
+                />
+              </div>
+              <EditField
+                id="edit-location"
+                label="Address / Full Location"
+                value={values.location}
+                changed={isFieldChanged('location')}
+                onChange={(v) => handleChange('location', v)}
+              />
+            </div>
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Time &amp; Schedule</span>
+                <div className={styles.sectionLine} aria-hidden="true" />
+              </div>
+              <div className={styles.gridRow3}>
+                <EditField
+                  id="edit-day"
+                  label="Day of Week"
+                  value={values.dayOfWeek}
+                  changed={isFieldChanged('dayOfWeek')}
+                  onChange={(v) => handleChange('dayOfWeek', v)}
+                />
+                <EditField
+                  id="edit-start"
+                  label="Start Time"
+                  value={values.startTime}
+                  changed={isFieldChanged('startTime')}
+                  onChange={(v) => handleChange('startTime', v)}
+                />
+                <EditField
+                  id="edit-end"
+                  label="End Time"
+                  value={values.endTime}
+                  changed={isFieldChanged('endTime')}
+                  onChange={(v) => handleChange('endTime', v)}
+                />
+              </div>
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-freq"
+                  label="Frequency"
+                  value={values.frequency}
+                  changed={isFieldChanged('frequency')}
+                  onChange={(v) => handleChange('frequency', v)}
+                />
+                <EditField
+                  id="edit-freq-notes"
+                  label="Frequency Notes"
+                  value={values.frequencyNotes}
+                  changed={isFieldChanged('frequencyNotes')}
+                  placeholder="e.g. Even weeks, May-Sep"
+                  onChange={(v) => handleChange('frequencyNotes', v)}
+                />
+              </div>
+            </div>
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Price &amp; Registration</span>
+                <div className={styles.sectionLine} aria-hidden="true" />
+              </div>
+              <div className={styles.gridRow}>
+                <EditField
+                  id="edit-price"
+                  label="Price"
+                  value={values.price}
+                  changed={isFieldChanged('price')}
+                  onChange={(v) => handleChange('price', v)}
+                />
+                <EditField
+                  id="edit-prereg"
+                  label="Pre-Registration / RSVP"
+                  value={values.preRegistration}
+                  changed={isFieldChanged('preRegistration')}
+                  onChange={(v) => handleChange('preRegistration', v)}
+                />
+              </div>
+              <EditField
+                id="edit-reg-url"
+                label="Registration URL"
+                value={values.registrationUrl}
+                changed={isFieldChanged('registrationUrl')}
+                placeholder="Only if registration is required or recommended"
+                onChange={(v) => handleChange('registrationUrl', v)}
+              />
+            </div>
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Notes &amp; Submitter Info</span>
+                <div className={styles.sectionLine} aria-hidden="true" />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="edit-notes" className={styles.label}>
+                  What changed or needs updating? (optional)
+                </label>
+                <textarea
+                  id="edit-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Explain reason for changes or provide additional links..."
+                  className={styles.textarea}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="edit-email" className={styles.label}>
+                  Your Email (optional)
+                </label>
+                <input
+                  id="edit-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className={styles.input}
+                />
+              </div>
+            </div>
+            {status && (
+              <div
+                className={`${styles.statusAlert} ${
+                  status.success ? styles.statusSuccess : styles.statusError
+                }`}
+                role="status"
+              >
+                {status.message}
+              </div>
+            )}
+          </div>
+          <div className={styles.modalFooter}>
+            <div
+              className={`${styles.changeSummary} ${
+                changedFields.length > 0 ? styles.changeSummaryActive : ''
+              }`}
+            >
+              {changedFields.length === 0
+                ? notes.trim()
+                  ? 'Note only'
+                  : 'No changes made yet'
+                : `${changedFields.length} field${changedFields.length === 1 ? '' : 's'} modified`}
+            </div>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.modalCancelBtn}
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={styles.modalSubmitBtn}
+                disabled={isSubmitting || !hasChanges}
+              >
+                {isSubmitting
+                  ? 'Sending...'
+                  : changedFields.length > 0
+                  ? `Send ${changedFields.length} Edit${changedFields.length === 1 ? '' : 's'}`
+                  : 'Send Edit'}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================
+File: next.config.ts
+================
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/medellin',
+        destination: '/medellin-colombia/events',
+        permanent: true,
+      },
+      {
+        source: '/medellin-v2',
+        destination: '/medellin-colombia/events',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado',
+        destination: '/fort-collins-colorado/events',
+        permanent: true,
+      },
+      {
+        source: '/events/fortcollins-colorado/:path*',
+        destination: '/fort-collins-colorado/events/:path*',
+        permanent: true,
+      },
+      {
+        source: '/events',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/events/:city',
+        destination: '/:city/events',
+        permanent: true,
+      },
+      {
+        source: '/events/:city/:path*',
+        destination: '/:city/events/:path*',
+        permanent: true,
+      },
+    ];
+  },
+};
+
+export default nextConfig;
+
+================
 File: app/[city]/about/page.tsx
 ================
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -3483,6 +4379,59 @@ export default async function CityEventsPage({ params, searchParams }: PageProps
         lastUpdated={lastUpdated}
         initialTab={sParams?.tab === 'all' ? 'all' : undefined}
       />
+    </>
+  );
+}
+
+================
+File: app/about/page.tsx
+================
+import type { Metadata } from 'next';
+import { SITE_URL } from '../lib/cities';
+import AboutView from '../components/AboutView';
+
+export const metadata: Metadata = {
+  title: 'About',
+  description:
+    'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'About | Someplace Social',
+    description:
+      'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
+    url: '/about',
+    siteName: 'Someplace Social',
+    locale: 'en_US',
+    type: 'website',
+  },
+};
+
+export default function AboutPage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About Someplace Social',
+    url: `${SITE_URL}/about`,
+    description:
+      'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Someplace Social',
+      url: SITE_URL,
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
+      <AboutView />
     </>
   );
 }
@@ -4378,495 +5327,354 @@ export default function ShareButton({
 }
 
 ================
-File: app/events/components/SuggestEditModal.tsx
+File: app/events/components/SuggestEditModal.module.css
 ================
-'use client';
-import { useState, useMemo, useEffect } from 'react';
-import { Event } from '../../lib/google-sheets';
-import styles from './SuggestEditModal.module.css';
-
-interface SuggestEditModalProps {
-  event: Event;
-  cityName: string;
-  onClose: () => void;
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--backdrop);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
-interface FormValues {
-  title: string;
-  organization: string;
-  organizerUrl: string;
-  venue: string;
-  venueUrl: string;
-  location: string;
-  area: string;
-  map: string;
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  frequency: string;
-  frequencyNotes: string;
-  price: string;
-  preRegistration: string;
-  registrationUrl: string;
+.modalContent {
+  background-color: var(--surface-elevated);
+  color: var(--ink);
+  border-radius: 20px;
+  max-width: 640px;
+  width: 100%;
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: auto;
 }
 
-const FIELD_LABELS: Record<keyof FormValues, string> = {
-  title: 'Event Title',
-  organization: 'Organizer / Host',
-  organizerUrl: 'Organizer URL',
-  venue: 'Venue',
-  venueUrl: 'Venue URL',
-  location: 'Address / Location',
-  area: 'Neighborhood / Area',
-  map: 'Google Maps Link',
-  dayOfWeek: 'Day of Week',
-  startTime: 'Start Time',
-  endTime: 'End Time',
-  frequency: 'Frequency',
-  frequencyNotes: 'Frequency Notes',
-  price: 'Price',
-  preRegistration: 'Pre-Registration',
-  registrationUrl: 'Registration URL',
-};
-
-function EditField({
-  id,
-  label,
-  value,
-  changed,
-  placeholder,
-  onChange,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  changed: boolean;
-  placeholder?: string;
-  onChange: (val: string) => void;
-}) {
-  return (
-    <div className={styles.field}>
-      <div className={styles.fieldHeader}>
-        <label htmlFor={id} className={styles.label}>
-          {label}
-        </label>
-        {changed && <span className={styles.changedBadge}>Edited</span>}
-      </div>
-      <input
-        id={id}
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={`${styles.input} ${changed ? styles.inputChanged : ''}`}
-      />
-    </div>
-  );
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--surface-elevated);
+  flex-shrink: 0;
 }
 
-export default function SuggestEditModal({
-  event,
-  cityName,
-  onClose,
-}: SuggestEditModalProps) {
-  const initialValues: FormValues = useMemo(
-    () => ({
-      title: event.title || '',
-      organization: event.organization || '',
-      organizerUrl: event.organizerUrl || '',
-      venue: event.venue || '',
-      venueUrl: event.venueUrl || '',
-      location: event.location || '',
-      area: event.area || '',
-      map: event.map || '',
-      dayOfWeek: event.dayOfWeek || '',
-      startTime: event.startTime || '',
-      endTime: event.endTime || '',
-      frequency: event.frequency || '',
-      frequencyNotes: event.frequencyNotes || '',
-      price: event.price || '',
-      preRegistration: event.preRegistration || '',
-      registrationUrl: event.registrationUrl || '',
-    }),
-    [event]
-  );
-  const [values, setValues] = useState<FormValues>(initialValues);
-  const [notes, setNotes] = useState('');
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+.modalTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    const originalTouchAction = document.body.style.touchAction;
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && !isSubmitting) {
-        onClose();
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.touchAction = originalTouchAction;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onClose, isSubmitting]);
+.modalTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.2;
+}
 
-  const handleChange = (key: keyof FormValues, val: string) => {
-    setValues((prev) => ({ ...prev, [key]: val }));
-  };
+.modalSubtitle {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
 
-  const changedFields = useMemo(() => {
-    const diffs: {
-      key: keyof FormValues;
-      label: string;
-      original: string;
-      updated: string;
-    }[] = [];
-    (Object.keys(initialValues) as (keyof FormValues)[]).forEach((key) => {
-      const orig = (initialValues[key] || '').trim();
-      const curr = (values[key] || '').trim();
-      if (orig !== curr) {
-        diffs.push({
-          key,
-          label: FIELD_LABELS[key],
-          original: orig || '(empty)',
-          updated: curr || '(cleared)',
-        });
-      }
-    });
-    return diffs;
-  }, [initialValues, values]);
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
 
-  const hasChanges = changedFields.length > 0 || notes.trim().length > 0;
+.modalCloseBtn:hover {
+  color: var(--ink);
+  background-color: var(--topbar-bg);
+}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!hasChanges) return;
-    setIsSubmitting(true);
-    setStatus(null);
-    const messageLines: string[] = [
-      `Event: ${event.title}`,
-      `City: ${cityName}`,
-      `Submitter Email: ${email.trim() || 'Not provided'}`,
-      '',
-    ];
-    if (changedFields.length > 0) {
-      messageLines.push(`EDITED FIELDS (${changedFields.length}):`);
-      messageLines.push('────────────────────────────────────────');
-      changedFields.forEach((diff) => {
-        messageLines.push(`• ${diff.label}:`);
-        messageLines.push(`    Original: ${diff.original}`);
-        messageLines.push(`    Updated:  ${diff.updated}`);
-      });
-      messageLines.push('────────────────────────────────────────');
-    } else {
-      messageLines.push('No individual field changes detected.');
-    }
-    if (notes.trim()) {
-      messageLines.push('');
-      messageLines.push('Additional Notes / Context:');
-      messageLines.push(notes.trim());
-    }
-    try {
-      const response = await fetch('/api/send-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: `Edit a Listing (${cityName})`,
-          message: messageLines.join('\n'),
-        }),
-      });
-      const res = await response.json();
-      if (res.success) {
-        setStatus({
-          success: true,
-          message: 'Thank you! Your suggested edits have been sent for review.',
-        });
-        setTimeout(onClose, 1800);
-      } else {
-        setStatus({
-          success: false,
-          message: 'Failed to send edit. Please try again.',
-        });
-      }
-    } catch {
-      setStatus({
-        success: false,
-        message: 'A connection error occurred. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
 
-  const isFieldChanged = (key: keyof FormValues) =>
-    (initialValues[key] || '').trim() !== (values[key] || '').trim();
+.modalScrollArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 20px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-  return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div
-        className={styles.modalContent}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="suggest-edit-title"
-      >
-        <div className={styles.modalHeader}>
-          <div className={styles.modalTitleGroup}>
-            <h2 id="suggest-edit-title" className={styles.modalTitle}>
-              Suggest Edit
-            </h2>
-            <div className={styles.modalSubtitle}>
-              {event.title} · {cityName}
-            </div>
-          </div>
-          <button
-            type="button"
-            className={styles.modalCloseBtn}
-            onClick={onClose}
-            aria-label="Close modal"
-            disabled={isSubmitting}
-          >
-            ✕
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className={styles.modalForm}>
-          <div className={styles.modalScrollArea}>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Event Info</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <EditField
-                id="edit-title"
-                label="Event Title"
-                value={values.title}
-                changed={isFieldChanged('title')}
-                onChange={(v) => handleChange('title', v)}
-              />
-              <div className={styles.gridRow}>
-                <EditField
-                  id="edit-org"
-                  label="Organizer / Host"
-                  value={values.organization}
-                  changed={isFieldChanged('organization')}
-                  onChange={(v) => handleChange('organization', v)}
-                />
-                <EditField
-                  id="edit-org-url"
-                  label="Organizer URL"
-                  value={values.organizerUrl}
-                  changed={isFieldChanged('organizerUrl')}
-                  placeholder="Website or social profile"
-                  onChange={(v) => handleChange('organizerUrl', v)}
-                />
-              </div>
-            </div>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Venue &amp; Location</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <div className={styles.gridRow}>
-                <EditField
-                  id="edit-venue"
-                  label="Venue"
-                  value={values.venue}
-                  changed={isFieldChanged('venue')}
-                  onChange={(v) => handleChange('venue', v)}
-                />
-                <EditField
-                  id="edit-venue-url"
-                  label="Venue URL"
-                  value={values.venueUrl}
-                  changed={isFieldChanged('venueUrl')}
-                  placeholder="Website or social profile"
-                  onChange={(v) => handleChange('venueUrl', v)}
-                />
-              </div>
-              <div className={styles.gridRow}>
-                <EditField
-                  id="edit-area"
-                  label="Neighborhood / Area"
-                  value={values.area}
-                  changed={isFieldChanged('area')}
-                  onChange={(v) => handleChange('area', v)}
-                />
-                <EditField
-                  id="edit-map"
-                  label="Google Maps Link"
-                  value={values.map}
-                  changed={isFieldChanged('map')}
-                  onChange={(v) => handleChange('map', v)}
-                />
-              </div>
-              <EditField
-                id="edit-location"
-                label="Address / Full Location"
-                value={values.location}
-                changed={isFieldChanged('location')}
-                onChange={(v) => handleChange('location', v)}
-              />
-            </div>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Time &amp; Schedule</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <div className={styles.gridRow3}>
-                <EditField
-                  id="edit-day"
-                  label="Day of Week"
-                  value={values.dayOfWeek}
-                  changed={isFieldChanged('dayOfWeek')}
-                  onChange={(v) => handleChange('dayOfWeek', v)}
-                />
-                <EditField
-                  id="edit-start"
-                  label="Start Time"
-                  value={values.startTime}
-                  changed={isFieldChanged('startTime')}
-                  onChange={(v) => handleChange('startTime', v)}
-                />
-                <EditField
-                  id="edit-end"
-                  label="End Time"
-                  value={values.endTime}
-                  changed={isFieldChanged('endTime')}
-                  onChange={(v) => handleChange('endTime', v)}
-                />
-              </div>
-              <div className={styles.gridRow}>
-                <EditField
-                  id="edit-freq"
-                  label="Frequency"
-                  value={values.frequency}
-                  changed={isFieldChanged('frequency')}
-                  onChange={(v) => handleChange('frequency', v)}
-                />
-                <EditField
-                  id="edit-freq-notes"
-                  label="Frequency Notes"
-                  value={values.frequencyNotes}
-                  changed={isFieldChanged('frequencyNotes')}
-                  placeholder="e.g. Even weeks, May-Sep"
-                  onChange={(v) => handleChange('frequencyNotes', v)}
-                />
-              </div>
-            </div>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Price &amp; Registration</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <div className={styles.gridRow}>
-                <EditField
-                  id="edit-price"
-                  label="Price"
-                  value={values.price}
-                  changed={isFieldChanged('price')}
-                  onChange={(v) => handleChange('price', v)}
-                />
-                <EditField
-                  id="edit-prereg"
-                  label="Pre-Registration / RSVP"
-                  value={values.preRegistration}
-                  changed={isFieldChanged('preRegistration')}
-                  onChange={(v) => handleChange('preRegistration', v)}
-                />
-              </div>
-              <EditField
-                id="edit-reg-url"
-                label="Registration URL"
-                value={values.registrationUrl}
-                changed={isFieldChanged('registrationUrl')}
-                placeholder="Only if registration is required or recommended"
-                onChange={(v) => handleChange('registrationUrl', v)}
-              />
-            </div>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionTitle}>Notes &amp; Submitter Info</span>
-                <div className={styles.sectionLine} aria-hidden="true" />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="edit-notes" className={styles.label}>
-                  What changed or needs updating? (optional)
-                </label>
-                <textarea
-                  id="edit-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Explain reason for changes or provide additional links..."
-                  className={styles.textarea}
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="edit-email" className={styles.label}>
-                  Your Email (optional)
-                </label>
-                <input
-                  id="edit-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className={styles.input}
-                />
-              </div>
-            </div>
-            {status && (
-              <div
-                className={`${styles.statusAlert} ${
-                  status.success ? styles.statusSuccess : styles.statusError
-                }`}
-                role="status"
-              >
-                {status.message}
-              </div>
-            )}
-          </div>
-          <div className={styles.modalFooter}>
-            <div
-              className={`${styles.changeSummary} ${
-                changedFields.length > 0 ? styles.changeSummaryActive : ''
-              }`}
-            >
-              {changedFields.length === 0
-                ? notes.trim()
-                  ? 'Note only'
-                  : 'No changes made yet'
-                : `${changedFields.length} field${changedFields.length === 1 ? '' : 's'} modified`}
-            </div>
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.modalCancelBtn}
-                onClick={onClose}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className={styles.modalSubmitBtn}
-                disabled={isSubmitting || !hasChanges}
-              >
-                {isSubmitting
-                  ? 'Sending...'
-                  : changedFields.length > 0
-                  ? `Send ${changedFields.length} Edit${changedFields.length === 1 ? '' : 's'}`
-                  : 'Send Edit'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background-color: var(--line);
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gridRow3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.changedBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--changed-badge-bg);
+  color: var(--changed-badge-text);
+  border: 1px solid var(--changed-badge-border);
+}
+
+.input,
+.textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background-color: var(--input-bg);
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  background-color: var(--input-focus-bg);
+  border-color: var(--ink);
+}
+
+.inputChanged,
+.textareaChanged {
+  border-color: #d97706;
+  background-color: var(--input-bg);
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modalFooter {
+  flex-shrink: 0;
+  padding: 16px 24px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background-color: var(--modal-footer-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.changeSummary {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.changeSummaryActive {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modalCancelBtn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.modalCancelBtn:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.modalSubmitBtn {
+  background-color: var(--ink);
+  color: var(--bg);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.modalSubmitBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.modalSubmitBtn:disabled,
+.modalCancelBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.statusAlert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.statusSuccess {
+  background-color: var(--free-bg);
+  border: 1px solid var(--free);
+  color: var(--free);
+}
+
+.statusError {
+  background-color: #fde8e8;
+  border: 1px solid #f8b4b4;
+  color: #9b1c1c;
+}
+
+:global(html[data-theme='dark']) .statusError {
+  background-color: #2b1616;
+  border-color: #4a2121;
+  color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+  .modalBackdrop {
+    padding: 8px;
+  }
+
+  .modalContent {
+    max-height: calc(100dvh - 16px);
+    border-radius: 16px;
+  }
+
+  .modalHeader {
+    padding: 14px 16px;
+  }
+
+  .modalScrollArea {
+    padding: 14px 16px 20px;
+    gap: 14px;
+  }
+
+  .gridRow,
+  .gridRow3 {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+
+  .modalActions {
+    width: 100%;
+  }
+
+  .modalCancelBtn,
+  .modalSubmitBtn {
+    flex: 1;
+    text-align: center;
+  }
 }
 
 ================
@@ -5660,55 +6468,6 @@ File: app/Page.module.css
 }
 
 ================
-File: next.config.ts
-================
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/medellin',
-        destination: '/medellin-colombia/events',
-        permanent: true,
-      },
-      {
-        source: '/medellin-v2',
-        destination: '/medellin-colombia/events',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado',
-        destination: '/fort-collins-colorado/events',
-        permanent: true,
-      },
-      {
-        source: '/events/fortcollins-colorado/:path*',
-        destination: '/fort-collins-colorado/events/:path*',
-        permanent: true,
-      },
-      {
-        source: '/events',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/events/:city',
-        destination: '/:city/events',
-        permanent: true,
-      },
-      {
-        source: '/events/:city/:path*',
-        destination: '/:city/events/:path*',
-        permanent: true,
-      },
-    ];
-  },
-};
-
-export default nextConfig;
-
-================
 File: package.json
 ================
 {
@@ -5797,246 +6556,6 @@ export const config = {
     },
   ],
 };
-
-================
-File: app/about/page.tsx
-================
-import type { Metadata } from 'next';
-import { SITE_URL } from '../lib/cities';
-import AboutView from '../components/AboutView';
-
-export const metadata: Metadata = {
-  title: 'About',
-  description:
-    'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
-  alternates: {
-    canonical: '/about',
-  },
-  openGraph: {
-    title: 'About | Someplace Social',
-    description:
-      'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
-    url: '/about',
-    siteName: 'Someplace Social',
-    locale: 'en_US',
-    type: 'website',
-  },
-};
-
-export default function AboutPage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: 'About Someplace Social',
-    url: `${SITE_URL}/about`,
-    description:
-      'Learn about Someplace Social, our mission to build in-person community, and our event listing criteria. 100% free and ad-free.',
-    isPartOf: {
-      '@type': 'WebSite',
-      name: 'Someplace Social',
-      url: SITE_URL,
-    },
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-        }}
-      />
-      <AboutView />
-    </>
-  );
-}
-
-================
-File: app/components/Footer.module.css
-================
-.footer {
-  border-top: 1px solid var(--line);
-  background-color: var(--bg);
-  margin-top: auto;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.footerInner {
-  max-width: 1120px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 40px 24px 36px;
-}
-.footerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 24px;
-  max-width: 680px;
-  margin: 0 auto;
-}
-.footerSupportText {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--text-subtle);
-}
-.buyDrinkLink {
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.15s ease;
-}
-.buyDrinkLink:hover {
-  color: var(--accent);
-}
-.footerNav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 6px 18px;
-}
-.footerNavLink {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 4px 2px;
-  transition: color 0.15s ease;
-}
-.footerNavLink:hover {
-  color: var(--accent);
-}
-.footerNavLinkActive {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.footerNavLink:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.footerQuoteSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.footerQuoteText {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink);
-}
-.footerAuthor {
-  font-size: 12px;
-  color: var(--muted);
-}
-.footerBottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.footerSocialLinks {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.footerIconLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  color: var(--text-subtle);
-  text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-.footerIconLink:hover {
-  background-color: var(--topbar-bg);
-  border-color: var(--line);
-  color: var(--accent);
-}
-.footerIconLink:active {
-  transform: scale(0.95);
-}
-.footerIconLink:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-.footerCopyright {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-@media (max-width: 899px) {
-  .footerInner {
-    padding: 32px 16px 28px;
-  }
-  .footerContent {
-    gap: 20px;
-  }
-  .footerSupportText {
-    font-size: 13.5px;
-  }
-  .footerNav {
-    gap: 4px 14px;
-  }
-  .footerQuoteText {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-}
-
-================
-File: app/components/HomeView.tsx
-================
-import Link from 'next/link';
-import Header from './Header';
-import Footer from './Footer';
-import styles from '../Home.module.css';
-
-export default function HomeView() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.hero}>
-          <p className={styles.tag}>Free. No ads. Updated every week</p>
-          <h1 className={styles.heroTitle}>
-            Regular things to do, all in one place.
-          </h1>
-          <p className={styles.lead}>
-            Find weekly stuff to do happening near you. Trivia, dance lessons, board games, language practice, open mics, book clubs, arts, comedy, karaoke, and more.
-          </p>
-          <div className={styles.btns}>
-            <Link
-              href="/medellin-colombia/events"
-              className={`${styles.btn} ${styles.btnPrimary}`}
-            >
-              Medellín
-            </Link>
-            <Link
-              href="/fort-collins-colorado/events"
-              className={`${styles.btn} ${styles.btnSecondary}`}
-            >
-              Fort Collins
-            </Link>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
 
 ================
 File: app/contact/components/EventSubmissionForm.tsx
@@ -6888,183 +7407,6 @@ File: app/events/components/ActionPopover.module.css
 }
 
 ================
-File: app/events/components/PriceFilterDropdown.tsx
-================
-'use client';
-import { useMemo } from 'react';
-import { CityPriceConfig } from '../../lib/cities';
-import { formatPriceValue, formatPriceReadout } from '../utils';
-import styles from './FilterControls.module.css';
-
-interface PriceFilterDropdownProps {
-  priceConfig: CityPriceConfig;
-  maxPrice: number;
-  onPriceChange: (val: number) => void;
-  isOpen: boolean;
-  onToggleOpen: () => void;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
-  flexStyle?: boolean;
-}
-
-export default function PriceFilterDropdown({
-  priceConfig,
-  maxPrice,
-  onPriceChange,
-  isOpen,
-  onToggleOpen,
-  containerRef,
-  flexStyle = false,
-}: PriceFilterDropdownProps) {
-  const isFreeActive = maxPrice === 0;
-  const isUnderActive = maxPrice === priceConfig.underValue;
-  const isFiltered = maxPrice < priceConfig.maxPrice;
-
-  const priceValue = useMemo(() => {
-    if (maxPrice >= priceConfig.maxPrice) return 'All';
-    if (maxPrice === 0) return 'Free';
-    if (maxPrice === priceConfig.underValue) return priceConfig.underLabel;
-    return `Up to ${formatPriceValue(maxPrice, priceConfig)}`;
-  }, [maxPrice, priceConfig]);
-
-  const readoutText = useMemo(() => {
-    return formatPriceReadout(maxPrice, priceConfig);
-  }, [maxPrice, priceConfig]);
-
-  const readoutColor = isFreeActive ? 'var(--free)' : 'var(--ink)';
-  const trackFill = isFreeActive ? 'var(--free)' : 'var(--ink)';
-  const trackPercent = (maxPrice / priceConfig.maxPrice) * 100;
-
-  const handleToggleFree = () => {
-    onPriceChange(isFreeActive ? priceConfig.maxPrice : 0);
-  };
-
-  const handleToggleUnder = () => {
-    onPriceChange(isUnderActive ? priceConfig.maxPrice : priceConfig.underValue);
-  };
-
-  return (
-    <div
-      className={styles.multiSelectWrapper}
-      ref={containerRef}
-      style={flexStyle ? { flex: 1, minWidth: 120 } : undefined}
-    >
-      <button
-        type="button"
-        className={`${styles.multiSelectTrigger} ${
-          isFiltered ? styles.multiSelectTriggerActive : ''
-        }`}
-        aria-expanded={isOpen}
-        onClick={onToggleOpen}
-      >
-        <span className={styles.filterTriggerLeft}>
-          <span className={styles.filterTriggerIcon}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
-              <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
-            </svg>
-          </span>
-          <span className={styles.filterCategory}>Price</span>
-          <span className={styles.filterValue}>{priceValue}</span>
-        </span>
-        <svg
-          className={styles.filterChevron}
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
-          <div className={styles.priceHeaderRow}>
-            <span className={styles.priceHeaderTitle}>Price</span>
-            <span
-              className={styles.priceHeaderReadout}
-              style={{ color: readoutColor }}
-            >
-              {readoutText}
-            </span>
-          </div>
-          <div className={styles.priceChipsRow} role="group" aria-label="Price quick filters">
-            <button
-              type="button"
-              className={`${styles.priceChip} ${
-                isFreeActive ? styles.priceChipFreeActive : ''
-              }`}
-              onClick={handleToggleFree}
-              aria-pressed={isFreeActive}
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
-                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
-              </svg>
-              Free / donation
-            </button>
-            <button
-              type="button"
-              className={`${styles.priceChip} ${
-                isUnderActive ? styles.priceChipUnderActive : ''
-              }`}
-              onClick={handleToggleUnder}
-              aria-pressed={isUnderActive}
-            >
-              {priceConfig.underLabel}
-            </button>
-          </div>
-          <div className={styles.sliderSection}>
-            <input
-              type="range"
-              min={0}
-              max={priceConfig.maxPrice}
-              step={priceConfig.step}
-              value={maxPrice}
-              onChange={(e) => onPriceChange(Number(e.target.value))}
-              className={styles.rangeSlider}
-              aria-label="Maximum price"
-              style={{
-                background: `linear-gradient(to right, ${trackFill} 0%, ${trackFill} ${trackPercent}%, var(--slider-track) ${trackPercent}%, var(--slider-track) 100%)`,
-              }}
-            />
-            <div className={styles.sliderLabelsRow} aria-hidden="true">
-              <span>Free</span>
-              <span>{priceConfig.midLabel}</span>
-              <span>Any</span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-================
 File: app/events/components/ShareButton.module.css
 ================
 .shareWrapper {
@@ -7096,463 +7438,157 @@ button.copied:hover {
 }
 
 ================
-File: app/events/components/SuggestEditModal.module.css
+File: app/components/Footer.module.css
 ================
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  height: 100%;
-  height: 100dvh;
-  background-color: var(--backdrop);
-  backdrop-filter: blur(2px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  overscroll-behavior: contain;
-  touch-action: none;
-}
-
-.modalContent {
-  background-color: var(--surface-elevated);
-  color: var(--ink);
-  border-radius: 20px;
-  max-width: 640px;
-  width: 100%;
-  max-height: calc(100dvh - 32px);
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  overscroll-behavior: contain;
-  touch-action: auto;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
-  background-color: var(--surface-elevated);
-  flex-shrink: 0;
-}
-
-.modalTitleGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.modalTitle {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-  line-height: 1.2;
-}
-
-.modalSubtitle {
-  font-size: 13.5px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.modalCloseBtn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.modalCloseBtn:hover {
-  color: var(--ink);
-  background-color: var(--topbar-bg);
-}
-
-.modalForm {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.modalScrollArea {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  padding: 20px 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sectionTitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.sectionLine {
-  flex: 1;
-  height: 1px;
-  background-color: var(--line);
-}
-
-.gridRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.gridRow3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.fieldHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.changedBadge {
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: var(--changed-badge-bg);
-  color: var(--changed-badge-text);
-  border: 1px solid var(--changed-badge-border);
-}
-
-.input,
-.textarea {
-  font-family: inherit;
-  font-size: 14px;
-  padding: 10px 12px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
-  background-color: var(--input-bg);
-  color: var(--ink);
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.input:focus,
-.textarea:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  background-color: var(--input-focus-bg);
-  border-color: var(--ink);
-}
-
-.inputChanged,
-.textareaChanged {
-  border-color: #d97706;
-  background-color: var(--input-bg);
-}
-
-.textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-.modalFooter {
-  flex-shrink: 0;
-  padding: 16px 24px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
+.footer {
   border-top: 1px solid var(--line);
-  background-color: var(--modal-footer-bg);
+  background-color: var(--bg);
+  margin-top: auto;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 40px 24px 36px;
+}
+.footerContent {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  text-align: center;
+  gap: 24px;
+  max-width: 680px;
+  margin: 0 auto;
 }
-
-.changeSummary {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
+.footerSupportText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-subtle);
 }
-
-.changeSummaryActive {
+.buyDrinkLink {
   color: var(--ink);
   font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
 }
-
-.modalActions {
+.buyDrinkLink:hover {
+  color: var(--accent);
+}
+.footerQuoteSection {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
   align-items: center;
+  gap: 8px;
 }
-
-.modalCancelBtn {
-  background: transparent;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  min-height: 44px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.modalCancelBtn:hover:not(:disabled) {
-  color: var(--ink);
-  border-color: var(--ink);
-}
-
-.modalSubmitBtn {
-  background-color: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  min-height: 44px;
-  transition: opacity 0.15s ease;
-}
-
-.modalSubmitBtn:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.modalSubmitBtn:disabled,
-.modalCancelBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.statusAlert {
-  padding: 12px 14px;
-  border-radius: 10px;
+.footerQuoteText {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 500;
   font-size: 13.5px;
-  font-weight: 600;
+  line-height: 1.6;
+  color: var(--ink);
 }
-
-.statusSuccess {
-  background-color: var(--free-bg);
-  border: 1px solid var(--free);
-  color: var(--free);
+.footerAuthor {
+  font-size: 12px;
+  color: var(--muted);
 }
-
-.statusError {
-  background-color: #fde8e8;
-  border: 1px solid #f8b4b4;
-  color: #9b1c1c;
+.footerBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
-
-:global(html[data-theme='dark']) .statusError {
-  background-color: #2b1616;
-  border-color: #4a2121;
-  color: #fca5a5;
+.footerSocialLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
-
-@media (max-width: 600px) {
-  .modalBackdrop {
-    padding: 8px;
+.footerIconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--text-subtle);
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.footerIconLink:hover {
+  background-color: var(--topbar-bg);
+  border-color: var(--line);
+  color: var(--accent);
+}
+.footerIconLink:active {
+  transform: scale(0.95);
+}
+.footerIconLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.footerCopyright {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+@media (max-width: 899px) {
+  .footerInner {
+    padding: 32px 16px 28px;
   }
-
-  .modalContent {
-    max-height: calc(100dvh - 16px);
-    border-radius: 16px;
+  .footerContent {
+    gap: 20px;
   }
-
-  .modalHeader {
-    padding: 14px 16px;
+  .footerSupportText {
+    font-size: 13.5px;
   }
-
-  .modalScrollArea {
-    padding: 14px 16px 20px;
-    gap: 14px;
-  }
-
-  .gridRow,
-  .gridRow3 {
-    grid-template-columns: 1fr;
-  }
-
-  .modalFooter {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 12px 16px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-    gap: 8px;
-  }
-
-  .modalActions {
-    width: 100%;
-  }
-
-  .modalCancelBtn,
-  .modalSubmitBtn {
-    flex: 1;
-    text-align: center;
+  .footerQuoteText {
+    font-size: 13px;
+    line-height: 1.55;
   }
 }
 
 ================
-File: app/components/AboutView.tsx
+File: app/components/HomeView.tsx
 ================
-import Image from 'next/image';
 import Link from 'next/link';
-import { CityConfig, getAllCities } from '../lib/cities';
 import Header from './Header';
 import Footer from './Footer';
-import styles from '../about/About.module.css';
+import styles from '../Home.module.css';
 
-const CRITERIA_ITEMS = [
-  {
-    number: '01',
-    title: 'Regularly Occurring',
-    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
-  },
-  {
-    number: '02',
-    title: 'Group Event',
-    description: 'Must be open to multiple people. No private or one-on-one sessions.',
-  },
-  {
-    number: '03',
-    title: 'Open & Inclusive',
-    description: 'Must be welcoming and open to anyone who wishes to attend.',
-  },
-  {
-    number: '04',
-    title: 'Affordable',
-    description: 'Must be free, donation-based, or reasonably priced for the community.',
-  },
-  {
-    number: '05',
-    title: 'In-Person Only',
-    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
-  },
-] as const;
-
-interface AboutViewProps {
-  city?: CityConfig;
-}
-
-export default function AboutView({ city }: AboutViewProps) {
-  const cities = getAllCities();
-  const eyebrowText = 'ABOUT';
-  const headingText = city
-    ? `About Someplace Social — ${city.name}`
-    : 'About Someplace Social';
-
+export default function HomeView() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header city={city} />
+      <Header />
       <main className={styles.page} style={{ flex: 1 }}>
-        <section className={styles.heroSection}>
-          <div className={styles.heroText}>
-            <p className={styles.eyebrow}>{eyebrowText}</p>
-            <h1 className={styles.heroTitle}>{headingText}</h1>
-            <p className={styles.heroDescription}>
-              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
-            </p>
-            <div className={styles.heroCityLinks}>
-              {cities.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/${c.slug}/events`}
-                  className={styles.cityPill}
-                >
-                  {c.name} Events →
-                </Link>
-              ))}
-            </div>
+        <section className={styles.hero}>
+          <p className={styles.tag}>Free. No ads. Updated every week</p>
+          <h1 className={styles.heroTitle}>
+            Regular things to do, all in one place.
+          </h1>
+          <p className={styles.lead}>
+            Find weekly stuff to do happening near you. Trivia, dance lessons, board games, language practice, open mics, book clubs, arts, comedy, karaoke, and more.
+          </p>
+          <div className={styles.btns}>
+            <Link
+              href="/medellin-colombia/events"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+            >
+              Medellín
+            </Link>
+            <Link
+              href="/fort-collins-colorado/events"
+              className={`${styles.btn} ${styles.btnSecondary}`}
+            >
+              Fort Collins
+            </Link>
           </div>
-          <div className={styles.illustrationContainer}>
-            <Image
-              src="/images/hero-guides.png"
-              alt="Illustration of capybaras sitting around a table"
-              width={400}
-              height={300}
-              priority
-              className={styles.heroImage}
-            />
-          </div>
-        </section>
-
-        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
-              Event Listings Criteria
-            </h2>
-            <div className={styles.sectionHeaderLine} aria-hidden="true" />
-          </div>
-          <ol className={styles.criteriaList}>
-            {CRITERIA_ITEMS.map((item) => (
-              <li key={item.number} className={styles.criteriaListItem}>
-                <span className={styles.criteriaListNumber} aria-hidden="true">
-                  {item.number}
-                </span>
-                <div className={styles.criteriaListContent}>
-                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
-                  <p className={styles.criteriaListDescription}>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
         </section>
       </main>
-      <Footer city={city} />
+      <Footer />
     </div>
   );
 }
@@ -7779,367 +7815,6 @@ export default function EventActions({
         </button>
       </div>
     </div>
-  );
-}
-
-================
-File: app/events/components/EventIcons.tsx
-================
-interface IconProps {
-  className?: string;
-  size?: number;
-  strokeWidth?: number;
-}
-
-export function PinIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
-export function TagIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
-      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
-    </svg>
-  );
-}
-
-export function CompassIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
-    </svg>
-  );
-}
-
-export function ChevronDownIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-export function RepeatIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="m17 2 4 4-4 4" />
-      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-      <path d="m7 22-4-4 4-4" />
-      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
-}
-
-export function CheckIcon({
-  className,
-  size = 16,
-  strokeWidth = 2,
-}: IconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-
-export function CopyIcon({
-  className,
-  size = 15,
-  strokeWidth = 2,
-}: IconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
-
-export function PenIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
-    </svg>
-  );
-}
-
-export function LinkIcon({ className, size = 15 }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
-  );
-}
-
-export function ShareIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-      <polyline points="16 6 12 2 8 6" />
-      <line x1="12" x2="12" y1="2" y2="15" />
-    </svg>
-  );
-}
-
-export function ShieldCheckIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
-
-export function CalendarIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-      <line x1="16" x2="16" y1="2" y2="6" />
-      <line x1="8" x2="8" y1="2" y2="6" />
-      <line x1="3" x2="21" y1="10" y2="10" />
-    </svg>
-  );
-}
-
-export function CalendarPlusIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M8 2v4" />
-      <path d="M16 2v4" />
-      <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" />
-      <path d="M3 10h18" />
-      <path d="M16 19h6" />
-      <path d="M19 16v6" />
-    </svg>
-  );
-}
-
-export function DownloadIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" x2="12" y1="15" y2="3" />
-    </svg>
-  );
-}
-
-export function ExternalLinkIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.1"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M7 17 17 7" />
-      <path d="M7 7h10v10" />
-    </svg>
-  );
-}
-
-export function CloseIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ flex: 'none' }}
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }
 
@@ -8587,6 +8262,1455 @@ function FilterControls({
   );
 }
 export default memo(FilterControls);
+
+================
+File: app/components/AboutView.tsx
+================
+import Image from 'next/image';
+import Link from 'next/link';
+import { CityConfig, getAllCities } from '../lib/cities';
+import Header from './Header';
+import Footer from './Footer';
+import styles from '../about/About.module.css';
+
+const CRITERIA_ITEMS = [
+  {
+    number: '01',
+    title: 'Regularly Occurring',
+    description: 'Must happen weekly, bi-weekly, or monthly on a predictable schedule.',
+  },
+  {
+    number: '02',
+    title: 'Group Event',
+    description: 'Must be open to multiple people. No private or one-on-one sessions.',
+  },
+  {
+    number: '03',
+    title: 'Open & Inclusive',
+    description: 'Must be welcoming and open to anyone who wishes to attend.',
+  },
+  {
+    number: '04',
+    title: 'Affordable',
+    description: 'Must be free, donation-based, or reasonably priced for the community.',
+  },
+  {
+    number: '05',
+    title: 'In-Person Only',
+    description: 'Must take place at a physical venue. No virtual, online, or webinar gatherings.',
+  },
+] as const;
+
+interface AboutViewProps {
+  city?: CityConfig;
+}
+
+export default function AboutView({ city }: AboutViewProps) {
+  const cities = getAllCities();
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header city={city} />
+      <main className={styles.page} style={{ flex: 1 }}>
+        <section className={styles.heroSection}>
+          <div className={styles.heroText}>
+            <p className={styles.eyebrow}>ABOUT</p>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
+            <p className={styles.heroDescription}>
+              We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
+            </p>
+            <div className={styles.heroCityLinks}>
+              {cities.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/${c.slug}/events`}
+                  className={styles.cityPill}
+                >
+                  {c.name} Events →
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className={styles.illustrationContainer}>
+            <Image
+              src="/images/hero-guides.png"
+              alt="Illustration of capybaras sitting around a table"
+              width={400}
+              height={300}
+              priority
+              className={styles.heroImage}
+            />
+          </div>
+        </section>
+
+        <section className={styles.sectionBlock} aria-labelledby="criteria-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="criteria-heading" className={styles.sectionHeaderTitle}>
+              Event Listings Criteria
+            </h2>
+            <div className={styles.sectionHeaderLine} aria-hidden="true" />
+          </div>
+          <ol className={styles.criteriaList}>
+            {CRITERIA_ITEMS.map((item) => (
+              <li key={item.number} className={styles.criteriaListItem}>
+                <span className={styles.criteriaListNumber} aria-hidden="true">
+                  {item.number}
+                </span>
+                <div className={styles.criteriaListContent}>
+                  <h3 className={styles.criteriaListTitle}>{item.title}</h3>
+                  <p className={styles.criteriaListDescription}>{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+      <Footer city={city} />
+    </div>
+  );
+}
+
+================
+File: app/contact/Contact.module.css
+================
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 24px 80px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 36px;
+}
+.heroText {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 500px;
+  max-width: 540px;
+}
+.eyebrow {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--free);
+  margin: 0 0 10px;
+}
+.heroTitle {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.heroDescription {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0;
+}
+.heroImageContainer {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.pillGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background-color: var(--topbar-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pillBtn:hover {
+  background-color: var(--pill-hover);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.pillBtnActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.pillBtnActive:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.panel {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.criteria {
+  background-color: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.criteriaHeading {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.criteriaGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+}
+.criteriaItem {
+  line-height: 1.45;
+}
+.criteriaItem strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.criteriaFootnote {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.fieldset {
+  border: 0;
+  padding: 0 0 24px;
+  margin: 0 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+.fieldset:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 28px;
+}
+.legend {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 0;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.legendOptional {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.sectionDescription {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.labelSub {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 13px;
+  margin-left: 4px;
+}
+.helperText {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+.input,
+.select,
+.textarea {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background-color: var(--input-bg);
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  background-color: var(--input-focus-bg);
+  border-color: var(--ink);
+}
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.select {
+  cursor: pointer;
+  appearance: auto;
+}
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.dayCheckbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.dayPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: var(--input-bg);
+  color: var(--ink);
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.dayPill:hover {
+  background-color: var(--pill-hover);
+}
+.dayPillActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.dayPillActive:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.radioPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  background-color: var(--input-bg);
+  color: var(--ink);
+  user-select: none;
+  min-height: 40px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.radioPill:hover {
+  background-color: var(--pill-hover);
+}
+.radioPillActive {
+  background-color: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.radioPillActive:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  cursor: pointer;
+  min-height: 36px;
+}
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+.checkboxLabelText {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ink);
+  color: var(--bg);
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.submitBtn:hover {
+  opacity: 0.9;
+}
+.submitBtn:active {
+  transform: scale(0.99);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.statusAlert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  margin-top: 18px;
+  line-height: 1.4;
+}
+.statusSuccess {
+  background-color: var(--free-bg);
+  border: 1px solid var(--free);
+  color: var(--free);
+}
+.statusError {
+  background-color: #fde8e8;
+  border: 1px solid #f8b4b4;
+  color: #9b1c1c;
+}
+:global(html[data-theme='dark']) .statusError {
+  background-color: #2b1616;
+  border-color: #4a2121;
+  color: #fca5a5;
+}
+@media (max-width: 899px) {
+  .page {
+    padding: 20px 16px 48px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .heroText {
+    max-width: 100%;
+  }
+  .heroTitle {
+    font-size: 34px;
+  }
+  .heroDescription {
+    font-size: 16px;
+  }
+  .heroImageContainer {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+  .pillGroup {
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+  .pillBtn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 13.5px;
+  }
+  .panel {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+  .criteriaGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .days {
+    gap: 6px;
+  }
+  .dayPill {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .radioGroup {
+    gap: 6px;
+  }
+  .radioPill {
+    padding: 7px 11px;
+    font-size: 12.5px;
+  }
+  .submitBtn {
+    width: 100%;
+  }
+}
+
+================
+File: app/events/components/EventIcons.tsx
+================
+interface IconProps {
+  className?: string;
+  size?: number;
+  strokeWidth?: number;
+}
+
+export function PinIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function CompassIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+export function RepeatIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="m17 2 4 4-4 4" />
+      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+      <path d="m7 22-4-4 4-4" />
+      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+    </svg>
+  );
+}
+
+export function CheckIcon({
+  className,
+  size = 16,
+  strokeWidth = 2,
+}: IconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+export function CopyIcon({
+  className,
+  size = 15,
+  strokeWidth = 2,
+}: IconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+export function PenIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" />
+    </svg>
+  );
+}
+
+export function LinkIcon({ className, size = 15 }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+
+export function ShareIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <polyline points="16 6 12 2 8 6" />
+      <line x1="12" x2="12" y1="2" y2="15" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+export function CalendarIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  );
+}
+
+export function CalendarPlusIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" />
+      <path d="M3 10h18" />
+      <path d="M16 19h6" />
+      <path d="M19 16v6" />
+    </svg>
+  );
+}
+
+export function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" x2="12" y1="15" y2="3" />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M7 17 17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flex: 'none' }}
+      aria-hidden="true"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+================
+File: app/events/components/FilterControls.module.css
+================
+.filterBlockDesktop {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.filterTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+.clearFiltersLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.clearFiltersLink:hover {
+  text-decoration: underline;
+}
+.filterListVertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.searchInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 36px 0 38px;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.searchInput::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+.searchInput:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--line-strong);
+}
+.searchClearBtn {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--topbar-bg);
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.searchClearBtn:hover {
+  background-color: var(--ink);
+  color: var(--bg);
+}
+.multiSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+.multiSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 0 16px;
+  background-color: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.multiSelectTrigger:hover {
+  background-color: var(--card-hover);
+  border-color: var(--line-strong);
+}
+.multiSelectTriggerActive {
+  border-color: var(--ink);
+}
+.filterTriggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.filterTriggerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--free);
+  flex-shrink: 0;
+}
+.filterCategory {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+}
+.filterValue {
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 14.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filterChevron {
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: var(--muted);
+}
+.multiSelectMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: var(--shadow-md);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.multiSelectMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.multiSelectClearLink {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  user-select: none;
+}
+.multiSelectOption:hover {
+  background-color: var(--topbar-bg);
+}
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+}
+.customCheckboxChecked {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.priceMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 6px;
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.priceHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.priceHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.priceHeaderReadout {
+  font-size: 13px;
+  font-weight: 700;
+}
+.priceChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.priceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.priceChip:hover {
+  border-color: var(--line-strong);
+}
+.priceChipFreeActive {
+  background: var(--free-bg);
+  color: var(--free);
+  border-color: var(--free);
+}
+.priceChipFreeActive:hover {
+  border-color: var(--free);
+}
+.priceChipUnderActive {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.priceChipUnderActive:hover {
+  border-color: var(--ink);
+}
+.sliderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin: 0;
+  outline: none;
+  cursor: pointer;
+}
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+.rangeSlider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 999px;
+}
+.rangeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+.rangeSlider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid var(--free);
+  outline-offset: 2px;
+}
+.sliderLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+.clearFiltersBtn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 4px 6px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clearFiltersBtn:hover {
+  color: var(--accent);
+}
+.mobileAccordionWrapper {
+  display: none;
+}
+@media (max-width: 899px) {
+  .filterBlockDesktop {
+    display: none;
+  }
+  .mobileAccordionWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    gap: 8px;
+  }
+  .mobileAccordionTrigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 46px;
+    padding: 0 14px;
+    background-color: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .mobileAccordionTrigger:hover {
+    background-color: var(--card-hover);
+    border-color: var(--line-strong);
+  }
+  .mobileAccordionTriggerOpen {
+    border-color: var(--ink);
+    background-color: var(--card);
+  }
+  .mobileTriggerLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mobileTriggerIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--free);
+  }
+  .mobileTriggerText {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .mobileActiveBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background-color: var(--ink);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .mobileTriggerRight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mobileTriggerStatus {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .mobileAccordionChevron {
+    color: var(--muted);
+    transition: transform 0.2s ease;
+  }
+  .mobileAccordionChevronOpen {
+    transform: rotate(180deg);
+  }
+  .mobileAccordionContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .mobileFiltersRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+  }
+  .mobileFiltersRow .multiSelectWrapper {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 130px;
+  }
+  .multiSelectTrigger {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 13.5px;
+  }
+  .filterCategory {
+    font-size: 13.5px;
+  }
+  .filterValue {
+    font-size: 13.5px;
+  }
+  .multiSelectMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 270px;
+    max-width: calc(100vw - 32px);
+    right: auto;
+    z-index: 60;
+  }
+  .mobilePriceMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    right: auto;
+    z-index: 60;
+  }
+  .mobileClearRow {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px dashed var(--line);
+  }
+  .clearFiltersBtn {
+    font-size: 12.5px;
+    padding: 4px 6px;
+    color: var(--accent);
+  }
+}
 
 ================
 File: app/events/components/ProveItButton.tsx
@@ -9591,139 +10715,26 @@ export default function EventDetailView({
 }
 
 ================
-File: app/components/Footer.tsx
+File: app/events/components/CityHeroCard.module.css
 ================
-import Link from 'next/link';
-import { type CityConfig } from '../lib/cities';
-import styles from './Footer.module.css';
-
-interface FooterProps {
-  city?: CityConfig;
-}
-
-export default function Footer({ city }: FooterProps) {
-  const homeHref = city ? `/${city.slug}/events` : '/';
-  const aboutHref = city ? `/${city.slug}/about` : '/about';
-  const contactHref = city ? `/${city.slug}/contact` : '/contact';
-
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerInner}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerSupportText}>
-            Free for all, no ads.{' '}
-            <a
-              href="https://buymeacoffee.com/someplacesocial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.buyDrinkLink}
-            >
-              Buy me a drink.
-            </a>
-          </div>
-          <nav className={styles.footerNav} aria-label="Footer navigation">
-            <Link href={homeHref} className={styles.footerNavLink}>
-              Home
-            </Link>
-            <Link href={aboutHref} className={styles.footerNavLink}>
-              About
-            </Link>
-            <Link href={contactHref} className={styles.footerNavLink}>
-              Contact
-            </Link>
-          </nav>
-          <div className={styles.footerQuoteSection}>
-            <blockquote className={styles.footerQuoteText}>
-              “What should young people do with their lives today? Many things,
-              obviously. But the most daring thing is to create stable
-              communities in which the terrible disease of loneliness can be
-              cured.”
-            </blockquote>
-            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
-          </div>
-          <div className={styles.footerBottom}>
-            <div className={styles.footerSocialLinks}>
-              <a
-                href="https://www.instagram.com/someplace.social/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.footerIconLink}
-                aria-label="Instagram"
-                title="Instagram"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </a>
-              <Link
-                href={contactHref}
-                className={styles.footerIconLink}
-                aria-label="Contact us"
-                title="Contact us"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-              </Link>
-            </div>
-            <div className={styles.footerCopyright}>
-              © 2026 Someplace Social.
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-================
-File: app/contact/Contact.module.css
-================
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 48px 24px 80px;
-}
-.hero {
+.heroCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0 0;
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 48px;
-  align-items: center;
-  margin-bottom: 36px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
+  gap: 16px 48px;
+  align-items: start;
 }
-.heroText {
+.titleCol {
   display: flex;
   flex-direction: column;
-  flex: 1 1 500px;
-  max-width: 540px;
+}
+.descCol {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
 }
 .eyebrow {
   font-family: var(--font-karla), system-ui, sans-serif;
@@ -9733,951 +10744,263 @@ File: app/contact/Contact.module.css
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--free);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
-.heroTitle {
+.title {
   font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 52px;
-  font-weight: 800;
+  font-size: 44px;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  margin: 0 0 16px;
+  font-weight: 800;
+  margin: 0;
   color: var(--ink);
 }
-.heroDescription {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 18px;
-  line-height: 1.5;
-  color: var(--muted);
-  max-width: 480px;
-  margin: 0;
-}
-.heroImageContainer {
-  width: 100%;
-  max-width: 340px;
-  border-radius: 18px;
-  overflow: hidden;
+.metaRow {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.lastUpdatedBadge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background-color: var(--free-bg);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
 }
-.heroImage {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
+.lastUpdatedIcon {
+  color: var(--free);
+  flex-shrink: 0;
 }
-.pillGroup {
+.lastUpdatedLabel {
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+.lastUpdatedDate {
+  font-weight: 700;
+  color: var(--ink);
+}
+.metaSubtitle {
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.lead {
+  margin: 0;
+  font-family: var(--font-karla), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-subtle);
+}
+.chips {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 20px;
-  margin-bottom: 0;
+  margin-top: 12px;
 }
-.pillBtn {
+.chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 18px;
   background-color: var(--topbar-bg);
   border: 1.5px solid var(--line);
   border-radius: 999px;
+  padding: 8px 16px;
   font-family: var(--font-karla), system-ui, sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
   cursor: pointer;
+  text-decoration: none;
   user-select: none;
-  min-height: 40px;
+  min-height: 38px;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pillBtn:hover {
+.chip:hover {
   background-color: var(--pill-hover);
   border-color: var(--line-strong);
   color: var(--ink);
 }
-.pillBtnActive {
+.chipActive {
   background-color: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
 }
-.pillBtnActive:hover {
+.chipActive:hover {
   background-color: var(--ink);
   color: var(--bg);
-}
-.panel {
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 32px;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-.criteria {
-  background-color: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px 20px;
-  margin-bottom: 28px;
-  font-size: 14.5px;
-  color: var(--muted);
-}
-.criteriaHeading {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink);
-  margin: 0 0 10px;
-}
-.criteriaGrid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 24px;
-}
-.criteriaItem {
-  line-height: 1.45;
-}
-.criteriaItem strong {
-  color: var(--ink);
-  font-weight: 700;
-}
-.criteriaFootnote {
-  margin: 12px 0 0;
-  padding-top: 10px;
-  border-top: 1px dashed var(--line);
-  font-size: 13.5px;
-  color: var(--muted);
-}
-.fieldset {
-  border: 0;
-  padding: 0 0 24px;
-  margin: 0 0 28px;
-  border-bottom: 1px solid var(--line);
-}
-.fieldset:last-of-type {
-  border-bottom: 0;
-  padding-bottom: 0;
-  margin-bottom: 28px;
-}
-.legend {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  padding: 0;
-  margin-bottom: 6px;
-  color: var(--ink);
-}
-.legendOptional {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  color: var(--muted);
-  margin-left: 6px;
-}
-.sectionDescription {
-  font-size: 13.5px;
-  color: var(--muted);
-  margin: 0 0 16px;
-  line-height: 1.4;
-}
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-.label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.labelSub {
-  font-weight: 400;
-  color: var(--muted);
-  font-size: 13px;
-  margin-left: 4px;
-}
-.helperText {
-  font-size: 12.5px;
-  color: var(--muted);
-  line-height: 1.35;
-  margin-top: 2px;
-}
-.input,
-.select,
-.textarea {
-  font-family: inherit;
-  font-size: 15px;
-  padding: 12px 14px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
-  background-color: var(--input-bg);
-  color: var(--ink);
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-}
-.input::placeholder,
-.textarea::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
-}
-.input:focus,
-.select:focus,
-.textarea:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  background-color: var(--input-focus-bg);
-  border-color: var(--ink);
-}
-.textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-.select {
-  cursor: pointer;
-  appearance: auto;
-}
-.days {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-}
-.dayCheckbox {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-.dayPill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  background-color: var(--input-bg);
-  color: var(--ink);
-  user-select: none;
-  min-height: 40px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.dayPill:hover {
-  background-color: var(--pill-hover);
-}
-.dayPillActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.dayPillActive:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.radioGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-}
-.radioInput {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-.radioPill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 13.5px;
-  cursor: pointer;
-  background-color: var(--input-bg);
-  color: var(--ink);
-  user-select: none;
-  min-height: 40px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.radioPill:hover {
-  background-color: var(--pill-hover);
-}
-.radioPillActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.radioPillActive:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.checkboxContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 4px;
-  cursor: pointer;
-  min-height: 36px;
-}
-.checkboxCustom {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--ink);
-  cursor: pointer;
-}
-.checkboxLabelText {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.submitBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 28px;
-  font-family: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  min-height: 48px;
-  transition: opacity 0.15s ease, transform 0.1s ease;
-}
-.submitBtn:hover {
-  opacity: 0.9;
-}
-.submitBtn:active {
-  transform: scale(0.99);
-}
-.submitBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.statusAlert {
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 14.5px;
-  font-weight: 600;
-  margin-top: 18px;
-  line-height: 1.4;
-}
-.statusSuccess {
-  background-color: var(--free-bg);
-  border: 1px solid var(--free);
-  color: var(--free);
-}
-.statusError {
-  background-color: #fde8e8;
-  border: 1px solid #f8b4b4;
-  color: #9b1c1c;
-}
-:global(html[data-theme='dark']) .statusError {
-  background-color: #2b1616;
-  border-color: #4a2121;
-  color: #fca5a5;
 }
 @media (max-width: 899px) {
-  .page {
-    padding: 20px 16px 48px;
-  }
-  .hero {
+  .heroCard {
     grid-template-columns: 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
+    gap: 16px;
+    padding: 8px 0 0;
   }
-  .heroText {
-    max-width: 100%;
+  .descCol {
+    padding-top: 0;
   }
-  .heroTitle {
-    font-size: 34px;
+  .title {
+    font-size: 32px;
   }
-  .heroDescription {
-    font-size: 16px;
+  .metaRow {
+    margin-top: 6px;
+    gap: 6px;
   }
-  .heroImageContainer {
-    max-width: 260px;
-    margin: 0 auto;
+  .lastUpdatedBadge {
+    font-size: 12.5px;
+    padding: 4px 9px;
   }
-  .pillGroup {
-    gap: 8px;
-    margin-top: 16px;
-    margin-bottom: 0;
-  }
-  .pillBtn {
-    flex: 1;
-    text-align: center;
-    padding: 8px 12px;
+  .metaSubtitle {
     font-size: 13.5px;
   }
-  .panel {
-    padding: 20px 16px;
-    border-radius: 18px;
+  .lead {
+    font-size: 15px;
+    line-height: 1.55;
   }
-  .criteriaGrid {
-    grid-template-columns: 1fr;
+  .chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 8px;
+    margin-top: 4px;
+    padding-bottom: 4px;
   }
-  .row {
-    grid-template-columns: 1fr;
-    gap: 0;
+  .chips::-webkit-scrollbar {
+    display: none;
   }
-  .days {
-    gap: 6px;
+  .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 14px;
+    font-size: 13.5px;
+    min-height: 36px;
   }
-  .dayPill {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  .radioGroup {
-    gap: 6px;
-  }
-  .radioPill {
-    padding: 7px 11px;
-    font-size: 12.5px;
-  }
-  .submitBtn {
-    width: 100%;
+}
+@media (max-width: 480px) {
+  .title {
+    font-size: 28px;
   }
 }
 
 ================
-File: app/events/components/FilterControls.module.css
+File: app/events/components/CityHeroCard.tsx
 ================
-.filterBlockDesktop {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+'use client';
+import { formatIsoDateAttribute } from '../event-helpers';
+import styles from './CityHeroCard.module.css';
+
+interface CityHeroCardProps {
+  cityName: string;
+  introTitle?: string;
+  introDescription?: string;
+  eventCount?: number;
+  lastUpdated?: string | null;
+  activities: string[];
+  selectedActivities: string[];
+  onSelectChip: (activity: string) => void;
+  onClearActivities: () => void;
 }
-.filterHeaderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.filterTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  margin: 0;
-}
-.clearFiltersLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-.clearFiltersLink:hover {
-  text-decoration: underline;
-}
-.filterListVertical {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.searchWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.searchIcon {
-  position: absolute;
-  left: 14px;
-  color: var(--muted);
-  pointer-events: none;
-  flex-shrink: 0;
-}
-.searchInput {
-  width: 100%;
-  min-height: 46px;
-  padding: 0 36px 0 38px;
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 14.5px;
-  color: var(--ink);
-  outline: none;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
-.searchInput::placeholder {
-  color: var(--muted);
-  opacity: 0.9;
-}
-.searchInput:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 2px var(--line-strong);
-}
-.searchClearBtn {
-  position: absolute;
-  right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: var(--topbar-bg);
-  border: 0;
-  border-radius: 50%;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.searchClearBtn:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-.multiSelectWrapper {
-  position: relative;
-  width: 100%;
-}
-.multiSelectTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 0 16px;
-  background-color: var(--card);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 14.5px;
-  cursor: pointer;
-  text-align: left;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.multiSelectTrigger:hover {
-  background-color: var(--card-hover);
-  border-color: var(--line-strong);
-}
-.multiSelectTriggerActive {
-  border-color: var(--ink);
-}
-.filterTriggerLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  flex: 1;
-}
-.filterTriggerIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--free);
-  flex-shrink: 0;
-}
-.filterCategory {
-  font-weight: 700;
-  color: var(--ink);
-  font-size: 14.5px;
-  white-space: nowrap;
-}
-.filterValue {
-  font-weight: 500;
-  color: var(--ink);
-  font-size: 14.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.filterChevron {
-  flex-shrink: 0;
-  margin-left: 8px;
-  color: var(--muted);
-}
-.multiSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: var(--surface-elevated);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: var(--shadow-md);
-  max-height: 250px;
-  overflow-y: auto;
-}
-.multiSelectMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.multiSelectClearLink {
-  background: none;
-  border: 0;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-.multiSelectOption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--ink);
-  user-select: none;
-}
-.multiSelectOption:hover {
-  background-color: var(--topbar-bg);
-}
-.hiddenCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.customCheckbox {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--muted);
-  border-radius: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-}
-.customCheckboxChecked {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
-}
-.priceMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  margin-top: 6px;
-  background-color: var(--surface-elevated);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.priceHeaderRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.priceHeaderTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.priceHeaderReadout {
-  font-size: 13px;
-  font-weight: 700;
-}
-.priceChipsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.priceChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  background: var(--card);
-  color: var(--ink);
-  border: 1.5px solid var(--line);
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-.priceChip:hover {
-  border-color: var(--line-strong);
-}
-.priceChipFreeActive {
-  background: var(--free-bg);
-  color: var(--free);
-  border-color: var(--free);
-}
-.priceChipFreeActive:hover {
-  border-color: var(--free);
-}
-.priceChipUnderActive {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.priceChipUnderActive:hover {
-  border-color: var(--ink);
-}
-.sliderSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 2px 0;
-}
-.rangeSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  margin: 0;
-  outline: none;
-  cursor: pointer;
-}
-.rangeSlider::-webkit-slider-runnable-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  margin-top: -8px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 2px solid var(--ink);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-}
-.rangeSlider::-moz-range-track {
-  height: 6px;
-  background: transparent;
-  border-radius: 999px;
-}
-.rangeSlider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 2px solid var(--ink);
-  cursor: pointer;
-}
-.rangeSlider:focus-visible::-webkit-slider-thumb {
-  outline: 3px solid var(--free);
-  outline-offset: 2px;
-}
-.sliderLabelsRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 500;
-  margin-top: 4px;
-}
-.clearFiltersBtn {
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 13px;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 4px 6px;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.clearFiltersBtn:hover {
-  color: var(--accent);
-}
-.mobileAccordionWrapper {
-  display: none;
-}
-@media (max-width: 899px) {
-  .filterBlockDesktop {
-    display: none;
-  }
-  .mobileAccordionWrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-    gap: 8px;
-  }
-  .mobileAccordionTrigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    min-height: 46px;
-    padding: 0 14px;
-    background-color: var(--card);
-    border: 1.5px solid var(--line);
-    border-radius: 12px;
-    font-family: inherit;
-    color: var(--ink);
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .mobileAccordionTrigger:hover {
-    background-color: var(--card-hover);
-    border-color: var(--line-strong);
-  }
-  .mobileAccordionTriggerOpen {
-    border-color: var(--ink);
-    background-color: var(--card);
-  }
-  .mobileTriggerLeft {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .mobileTriggerIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--free);
-  }
-  .mobileTriggerText {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink);
-  }
-  .mobileActiveBadge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background-color: var(--ink);
-    color: var(--bg);
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .mobileTriggerRight {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .mobileTriggerStatus {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--muted);
-  }
-  .mobileAccordionChevron {
-    color: var(--muted);
-    transition: transform 0.2s ease;
-  }
-  .mobileAccordionChevronOpen {
-    transform: rotate(180deg);
-  }
-  .mobileAccordionContent {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background-color: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: var(--shadow-sm);
-  }
-  .mobileFiltersRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    width: 100%;
-    align-items: center;
-  }
-  .mobileFiltersRow .multiSelectWrapper {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 130px;
-  }
-  .multiSelectTrigger {
-    min-height: 42px;
-    padding: 0 12px;
-    font-size: 13.5px;
-  }
-  .filterCategory {
-    font-size: 13.5px;
-  }
-  .filterValue {
-    font-size: 13.5px;
-  }
-  .multiSelectMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 270px;
-    max-width: calc(100vw - 32px);
-    right: auto;
-    z-index: 60;
-  }
-  .mobilePriceMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 280px;
-    max-width: calc(100vw - 32px);
-    right: auto;
-    z-index: 60;
-  }
-  .mobileClearRow {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 4px;
-    border-top: 1px dashed var(--line);
-  }
-  .clearFiltersBtn {
-    font-size: 12.5px;
-    padding: 4px 6px;
-    color: var(--accent);
-  }
+
+export default function CityHeroCard({
+  cityName,
+  introTitle,
+  introDescription,
+  eventCount,
+  lastUpdated,
+  activities,
+  selectedActivities,
+  onSelectChip,
+  onClearActivities,
+}: CityHeroCardProps) {
+  const isAllActive = selectedActivities.length === 0;
+  const lastUpdatedIso = formatIsoDateAttribute(lastUpdated);
+
+  return (
+    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
+      <div className={styles.titleCol}>
+        <p className={styles.eyebrow}>Someplace Social</p>
+        <h1 id="city-intro-heading" className={styles.title}>
+          {introTitle || `${cityName} Community Listings`}
+        </h1>
+        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
+          <div className={styles.metaRow}>
+            {typeof eventCount === 'number' && eventCount > 0 && (
+              <span className={styles.metaSubtitle}>
+                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
+              </span>
+            )}
+            {lastUpdated && (
+              <div className={styles.lastUpdatedBadge}>
+                <svg
+                  className={styles.lastUpdatedIcon}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 12.5l2 2 4-4.5" />
+                </svg>
+                <span className={styles.lastUpdatedLabel}>Last updated:</span>
+                <time
+                  dateTime={lastUpdatedIso ?? undefined}
+                  className={styles.lastUpdatedDate}
+                >
+                  {lastUpdated}
+                </time>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className={styles.descCol}>
+        <p className={styles.lead}>
+          {introDescription ||
+            `Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including weekly meetups, classes, and fun stuff to do in ${cityName}.`}
+        </p>
+      </div>
+      <div className={styles.chips} role="group" aria-label="Filter by activity">
+        <button
+          type="button"
+          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
+          aria-pressed={isAllActive}
+          onClick={onClearActivities}
+        >
+          All
+        </button>
+        {activities.map((act) => {
+          const isSelected = selectedActivities.includes(act);
+          return (
+            <button
+              key={act}
+              type="button"
+              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectChip(act)}
+            >
+              {act}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
 
 ================
@@ -10962,6 +11285,102 @@ File: app/about/About.module.css
   .heroTitle {
     font-size: 28px;
   }
+}
+
+================
+File: app/components/Footer.tsx
+================
+import Link from 'next/link';
+import { type CityConfig } from '../lib/cities';
+import styles from './Footer.module.css';
+
+interface FooterProps {
+  city?: CityConfig;
+}
+
+export default function Footer({ city }: FooterProps) {
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerInner}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerSupportText}>
+            Free for all, no ads.{' '}
+            <a
+              href="https://buymeacoffee.com/someplacesocial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.buyDrinkLink}
+            >
+              Buy me a drink.
+            </a>
+          </div>
+          <div className={styles.footerQuoteSection}>
+            <blockquote className={styles.footerQuoteText}>
+              “What should young people do with their lives today? Many things,
+              obviously. But the most daring thing is to create stable
+              communities in which the terrible disease of loneliness can be
+              cured.”
+            </blockquote>
+            <div className={styles.footerAuthor}>- Kurt Vonnegut</div>
+          </div>
+          <div className={styles.footerBottom}>
+            <div className={styles.footerSocialLinks}>
+              <a
+                href="https://www.instagram.com/someplace.social/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.footerIconLink}
+                aria-label="Instagram"
+                title="Instagram"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+              </a>
+              <Link
+                href={contactHref}
+                className={styles.footerIconLink}
+                aria-label="Contact us"
+                title="Contact us"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </Link>
+            </div>
+            <div className={styles.footerCopyright}>
+              © 2026 Someplace Social.
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }
 
 ================
@@ -12016,7 +12435,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CityConfig } from '../lib/cities';
 import ContactMessageForm from './components/ContactMessageForm';
-import EventSubmissionForm from './components/EventSubmissionForm';
+import SimpleEventSubmissionForm from './components/SimpleEventSubmissionForm';
 import styles from './Contact.module.css';
 interface ContactViewProps {
   city?: CityConfig;
@@ -12081,10 +12500,7 @@ export default function ContactView({ city }: ContactViewProps) {
         {activeTab === 'question' ? (
           <ContactMessageForm cityName={city?.heroLocation} />
         ) : (
-          <EventSubmissionForm
-            key={city?.slug || 'global'}
-            defaultCity={city?.heroLocation}
-          />
+          <SimpleEventSubmissionForm cityName={city?.heroLocation} />
         )}
       </section>
     </main>
@@ -12092,291 +12508,204 @@ export default function ContactView({ city }: ContactViewProps) {
 }
 
 ================
-File: app/events/components/CityHeroCard.module.css
-================
-.heroCard {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 16px 0 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
-  gap: 16px 48px;
-  align-items: start;
-}
-.titleCol {
-  display: flex;
-  flex-direction: column;
-}
-.descCol {
-  display: flex;
-  flex-direction: column;
-  padding-top: 24px;
-}
-.eyebrow {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--free);
-  margin: 0 0 12px;
-}
-.title {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-size: 44px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-}
-.metaRow {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
-}
-.lastUpdatedBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border-radius: 8px;
-  background-color: var(--free-bg);
-  border: 1px solid var(--line-strong);
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 13px;
-  line-height: 1.2;
-}
-.lastUpdatedIcon {
-  color: var(--free);
-  flex-shrink: 0;
-}
-.lastUpdatedLabel {
-  font-weight: 600;
-  color: var(--text-subtle);
-}
-.lastUpdatedDate {
-  font-weight: 700;
-  color: var(--ink);
-}
-.metaSubtitle {
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  line-height: 1.35;
-}
-.lead {
-  margin: 0;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text-subtle);
-}
-.chips {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--topbar-bg);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-family: var(--font-karla), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-  min-height: 38px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.chip:hover {
-  background-color: var(--pill-hover);
-  border-color: var(--line-strong);
-  color: var(--ink);
-}
-.chipActive {
-  background-color: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.chipActive:hover {
-  background-color: var(--ink);
-  color: var(--bg);
-}
-@media (max-width: 899px) {
-  .heroCard {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 8px 0 0;
-  }
-  .descCol {
-    padding-top: 0;
-  }
-  .title {
-    font-size: 32px;
-  }
-  .metaRow {
-    margin-top: 6px;
-    gap: 6px;
-  }
-  .lastUpdatedBadge {
-    font-size: 12.5px;
-    padding: 4px 9px;
-  }
-  .metaSubtitle {
-    font-size: 13.5px;
-  }
-  .lead {
-    font-size: 15px;
-    line-height: 1.55;
-  }
-  .chips {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 8px;
-    margin-top: 4px;
-    padding-bottom: 4px;
-  }
-  .chips::-webkit-scrollbar {
-    display: none;
-  }
-  .chip {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 7px 14px;
-    font-size: 13.5px;
-    min-height: 36px;
-  }
-}
-@media (max-width: 480px) {
-  .title {
-    font-size: 28px;
-  }
-}
-
-================
-File: app/events/components/CityHeroCard.tsx
+File: app/components/Header.tsx
 ================
 'use client';
-import { formatIsoDateAttribute } from '../event-helpers';
-import styles from './CityHeroCard.module.css';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { CityConfig } from '../lib/cities';
+import ThemeToggle from './ThemeToggle';
+import styles from './Header.module.css';
 
-interface CityHeroCardProps {
-  cityName: string;
-  introTitle?: string;
-  introDescription?: string;
-  eventCount?: number;
-  lastUpdated?: string | null;
-  activities: string[];
-  selectedActivities: string[];
-  onSelectChip: (activity: string) => void;
-  onClearActivities: () => void;
+interface HeaderProps {
+  city?: CityConfig;
 }
 
-export default function CityHeroCard({
-  cityName,
-  introTitle,
-  introDescription,
-  eventCount,
-  lastUpdated,
-  activities,
-  selectedActivities,
-  onSelectChip,
-  onClearActivities,
-}: CityHeroCardProps) {
-  const isAllActive = selectedActivities.length === 0;
-  const lastUpdatedIso = formatIsoDateAttribute(lastUpdated);
+export default function Header({ city }: HeaderProps) {
+  const pathname = usePathname();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileDrawerOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMobileDrawerOpen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileDrawerOpen]);
+
+  const homeHref = city ? `/${city.slug}/events` : '/';
+  const eventsHref = city ? `/${city.slug}/events` : '';
+  const aboutHref = city ? `/${city.slug}/about` : '/about';
+  const contactHref = city ? `/${city.slug}/contact` : '/contact';
+
+  const isEventsActive = Boolean(
+    city &&
+      pathname &&
+      (pathname === `/${city.slug}/events` ||
+        pathname.startsWith(`/${city.slug}/events/`))
+  );
+  const isAboutActive = Boolean(
+    pathname &&
+      (city ? pathname === `/${city.slug}/about` : pathname === '/about')
+  );
+  const isContactActive = Boolean(
+    pathname &&
+      (city ? pathname === `/${city.slug}/contact` : pathname === '/contact')
+  );
 
   return (
-    <section className={styles.heroCard} aria-labelledby="city-intro-heading">
-      <div className={styles.titleCol}>
-        <p className={styles.eyebrow}>Someplace Social</p>
-        <h1 id="city-intro-heading" className={styles.title}>
-          {introTitle || `${cityName} Community Listings`}
-        </h1>
-        {((typeof eventCount === 'number' && eventCount > 0) || lastUpdated) && (
-          <div className={styles.metaRow}>
-            {typeof eventCount === 'number' && eventCount > 0 && (
-              <span className={styles.metaSubtitle}>
-                {eventCount} {eventCount === 1 ? 'Event & Activity' : 'Events & Activities'}
-              </span>
-            )}
-            {lastUpdated && (
-              <div className={styles.lastUpdatedBadge}>
-                <svg
-                  className={styles.lastUpdatedIcon}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M9 12.5l2 2 4-4.5" />
-                </svg>
-                <span className={styles.lastUpdatedLabel}>Last updated:</span>
-                <time
-                  dateTime={lastUpdatedIso ?? undefined}
-                  className={styles.lastUpdatedDate}
-                >
-                  {lastUpdated}
-                </time>
-              </div>
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandCol}>
+            <Link href={homeHref} className={styles.brandLogoLink}>
+              <Image
+                src="/images/logo.svg"
+                alt="Someplace Social"
+                width={540}
+                height={150}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+            {city && (
+              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
             )}
           </div>
-        )}
-      </div>
-      <div className={styles.descCol}>
-        <p className={styles.lead}>
-          {introDescription ||
-            `Regular community events, weekly activities, and recurring meetups all in one place. Find things to do including weekly meetups, classes, and fun stuff to do in ${cityName}.`}
-        </p>
-      </div>
-      <div className={styles.chips} role="group" aria-label="Filter by activity">
-        <button
-          type="button"
-          className={`${styles.chip} ${isAllActive ? styles.chipActive : ''}`}
-          aria-pressed={isAllActive}
-          onClick={onClearActivities}
-        >
-          All
-        </button>
-        {activities.map((act) => {
-          const isSelected = selectedActivities.includes(act);
-          return (
-            <button
-              key={act}
-              type="button"
-              className={`${styles.chip} ${isSelected ? styles.chipActive : ''}`}
-              aria-pressed={isSelected}
-              onClick={() => onSelectChip(act)}
+          <nav className={styles.navDesktop} aria-label="Primary">
+            {city && (
+              <Link
+                href={eventsHref}
+                className={`${styles.navLink} ${
+                  isEventsActive ? styles.navLinkActive : ''
+                }`}
+              >
+                Events
+              </Link>
+            )}
+            <Link
+              href={aboutHref}
+              className={`${styles.navLink} ${
+                isAboutActive ? styles.navLinkActive : ''
+              }`}
             >
-              {act}
+              About
+            </Link>
+            <Link
+              href={contactHref}
+              className={`${styles.navLink} ${
+                isContactActive ? styles.navLinkActive : ''
+              }`}
+            >
+              Contact
+            </Link>
+            <ThemeToggle />
+          </nav>
+          <div className={styles.navMobileActions}>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              aria-label="Open menu"
+              onClick={() => setMobileDrawerOpen(true)}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
             </button>
-          );
-        })}
-      </div>
-    </section>
+          </div>
+        </div>
+      </header>
+      {mobileDrawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setMobileDrawerOpen(false)}
+        >
+          <div
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerTitle}>Someplace Social</div>
+              <button
+                type="button"
+                className={styles.drawerCloseBtn}
+                aria-label="Close menu"
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerSectionTitle}>Navigation</div>
+            <div className={styles.drawerNavLinks}>
+              {city ? (
+                <Link
+                  href={eventsHref}
+                  className={`${styles.drawerNavLink} ${
+                    isEventsActive ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Events
+                </Link>
+              ) : (
+                <Link
+                  href="/"
+                  className={`${styles.drawerNavLink} ${
+                    pathname === '/' ? styles.drawerNavLinkActive : ''
+                  }`}
+                  onClick={() => setMobileDrawerOpen(false)}
+                >
+                  Home
+                </Link>
+              )}
+              <Link
+                href={aboutHref}
+                className={`${styles.drawerNavLink} ${
+                  isAboutActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href={contactHref}
+                className={`${styles.drawerNavLink} ${
+                  isContactActive ? styles.drawerNavLinkActive : ''
+                }`}
+                onClick={() => setMobileDrawerOpen(false)}
+              >
+                Contact
+              </Link>
+            </div>
+            <div className={styles.drawerSectionTitle}>Preferences</div>
+            <div className={styles.drawerNavLinks}>
+              <ThemeToggle showLabel />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -13413,7 +13742,7 @@ export const CITIES: Record<string, CityConfig> = {
       midLabel: '$25',
     },
     alertBanner: {
-      message: 'November, 2026: This page is new! Some info may not be correct. Having issues?',
+      message: 'November, 2026: This page is new! Having issues?',
       linkText: 'Contact.',
       linkHref: '/fort-collins-colorado/contact',
     },
@@ -13461,208 +13790,6 @@ export function getAllCitySlugs(): string[] {
 }
 export function getAllCities(): CityConfig[] {
   return Object.values(CITIES).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-================
-File: app/components/Header.tsx
-================
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { CityConfig } from '../lib/cities';
-import ThemeToggle from './ThemeToggle';
-import styles from './Header.module.css';
-
-interface HeaderProps {
-  city?: CityConfig;
-}
-
-export default function Header({ city }: HeaderProps) {
-  const pathname = usePathname();
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    if (!mobileDrawerOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setMobileDrawerOpen(false);
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [mobileDrawerOpen]);
-
-  const homeHref = city ? `/${city.slug}/events` : '/';
-  const eventsHref = city ? `/${city.slug}/events` : '';
-  const aboutHref = city ? `/${city.slug}/about` : '/about';
-  const contactHref = city ? `/${city.slug}/contact` : '/contact';
-
-  const isEventsActive = Boolean(
-    city &&
-      pathname &&
-      (pathname === `/${city.slug}/events` ||
-        pathname.startsWith(`/${city.slug}/events/`))
-  );
-  const isAboutActive = Boolean(
-    pathname &&
-      (city ? pathname === `/${city.slug}/about` : pathname === '/about')
-  );
-  const isContactActive = Boolean(
-    pathname &&
-      (city ? pathname === `/${city.slug}/contact` : pathname === '/contact')
-  );
-
-  return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.brandCol}>
-            <Link href={homeHref} className={styles.brandLogoLink}>
-              <Image
-                src="/images/logo.svg"
-                alt="Someplace Social"
-                width={540}
-                height={150}
-                priority
-                className={styles.logoImage}
-              />
-            </Link>
-            {city && (
-              <div className={styles.brandSubtitle}>{city.heroLocation}</div>
-            )}
-          </div>
-          <nav className={styles.navDesktop} aria-label="Primary">
-            {city && (
-              <Link
-                href={eventsHref}
-                className={`${styles.navLink} ${
-                  isEventsActive ? styles.navLinkActive : ''
-                }`}
-              >
-                Events
-              </Link>
-            )}
-            <Link
-              href={aboutHref}
-              className={`${styles.navLink} ${
-                isAboutActive ? styles.navLinkActive : ''
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href={contactHref}
-              className={`${styles.navLink} ${
-                isContactActive ? styles.navLinkActive : ''
-              }`}
-            >
-              Contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-          <div className={styles.navMobileActions}>
-            <button
-              type="button"
-              className={styles.hamburgerBtn}
-              aria-label="Open menu"
-              onClick={() => setMobileDrawerOpen(true)}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              >
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-      {mobileDrawerOpen && (
-        <div
-          className={styles.drawerBackdrop}
-          onClick={() => setMobileDrawerOpen(false)}
-        >
-          <div
-            className={styles.drawer}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-          >
-            <div className={styles.drawerHeader}>
-              <div className={styles.drawerTitle}>Someplace Social</div>
-              <button
-                type="button"
-                className={styles.drawerCloseBtn}
-                aria-label="Close menu"
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className={styles.drawerSectionTitle}>Navigation</div>
-            <div className={styles.drawerNavLinks}>
-              {city ? (
-                <Link
-                  href={eventsHref}
-                  className={`${styles.drawerNavLink} ${
-                    isEventsActive ? styles.drawerNavLinkActive : ''
-                  }`}
-                  onClick={() => setMobileDrawerOpen(false)}
-                >
-                  Events
-                </Link>
-              ) : (
-                <Link
-                  href="/"
-                  className={`${styles.drawerNavLink} ${
-                    pathname === '/' ? styles.drawerNavLinkActive : ''
-                  }`}
-                  onClick={() => setMobileDrawerOpen(false)}
-                >
-                  Home
-                </Link>
-              )}
-              <Link
-                href={aboutHref}
-                className={`${styles.drawerNavLink} ${
-                  isAboutActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href={contactHref}
-                className={`${styles.drawerNavLink} ${
-                  isContactActive ? styles.drawerNavLinkActive : ''
-                }`}
-                onClick={() => setMobileDrawerOpen(false)}
-              >
-                Contact
-              </Link>
-            </div>
-            <div className={styles.drawerSectionTitle}>Preferences</div>
-            <div className={styles.drawerNavLinks}>
-              <ThemeToggle showLabel />
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
 }
 
 ================
