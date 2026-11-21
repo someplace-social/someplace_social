@@ -197,8 +197,7 @@
   border-color: var(--ink);
 }
 
-.inputChanged,
-.textareaChanged {
+.inputChanged {
   border-color: #d97706;
   background-color: var(--input-bg);
 }

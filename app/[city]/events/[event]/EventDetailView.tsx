@@ -4,11 +4,6 @@ import Link from 'next/link';
 import { CityConfig, getCityTimeZone } from '../../../lib/cities';
 import { Event } from '../../../lib/google-sheets';
 import {
-  formatTimeRange,
-  getTagStyle,
-  isFreePrice,
-} from '../../../events/utils';
-import {
   buildScheduleLine,
   getEventDisplayDetails,
 } from '../../../events/event-helpers';
@@ -16,14 +11,10 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import EventActions from '../../../events/components/EventActions';
 import EventFacts from '../../../events/components/EventFacts';
+import EventMeta from '../../../events/components/EventMeta';
 import InlineExternalLink from '../../../events/components/InlineExternalLink';
 import SuggestEditModal from '../../../events/components/SuggestEditModal';
-import {
-  CalendarIcon,
-  CompassIcon,
-  PinIcon,
-  TagIcon,
-} from '../../../events/components/EventIcons';
+import { CalendarIcon, PinIcon } from '../../../events/components/EventIcons';
 import NextOccurrenceBadge from './NextOccurrenceBadge';
 import styles from './EventDetail.module.css';
 
@@ -40,9 +31,7 @@ export default function EventDetailView({
 }: EventDetailViewProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const timeZone = getCityTimeZone(city);
-  const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const scheduleSummary =
-    buildScheduleLine(event) || (start && end ? `${start} – ${end}` : start);
+  const scheduleSummary = buildScheduleLine(event);
   const {
     displayVenue,
     venueUrl,
@@ -57,9 +46,6 @@ export default function EventDetailView({
     mapsHref,
     moreDetailsUrl,
   } = getEventDisplayDetails(event, city.name);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities || [];
-  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
   const descriptionText = (event.about || event.notes || '').trim();
   const eyebrowText = event.area ? `${city.name} · ${event.area}` : city.name;
 
@@ -122,51 +108,13 @@ export default function EventDetailView({
                 )}
               </div>
             )}
-            {hasMeta && (
-              <div className={styles.meta}>
-                {event.price && (
-                  <span
-                    className={`${styles.price} ${
-                      isFree ? styles.priceFree : styles.pricePaid
-                    }`}
-                  >
-                    <TagIcon />
-                    <span>{event.price}</span>
-                  </span>
-                )}
-                {event.price && event.area && (
-                  <span className={styles.dot} aria-hidden="true" />
-                )}
-                {event.area && (
-                  <span className={styles.area}>
-                    <CompassIcon />
-                    <span>{event.area}</span>
-                  </span>
-                )}
-                {(event.price || event.area) && tagList.length > 0 && (
-                  <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
-                )}
-                {tagList.length > 0 && (
-                  <div className={styles.tags}>
-                    {tagList.map((tag) => {
-                      const customStyle = getTagStyle(tag);
-                      return (
-                        <span
-                          key={tag}
-                          className={styles.tag}
-                          style={{
-                            color: customStyle.color,
-                            backgroundColor: customStyle.background,
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+            <EventMeta
+              price={event.price}
+              area={event.area}
+              activities={event.activities}
+              variant="detail"
+              className={styles.meta}
+            />
           </div>
           <div className={styles.body}>
             {(descriptionText || moreDetailsUrl) && (

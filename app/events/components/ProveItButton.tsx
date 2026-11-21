@@ -98,7 +98,6 @@ export default function ProveItButton({
       btnActiveClassName={btnActiveClassName}
       dialogLabel="Event source and verification details"
       headerLabel="Prove It"
-      wide
       align="left"
     >
       {() => (

@@ -275,22 +275,14 @@ export function resolveCalendarOccurrence(
     let endDay = dayDate;
     let endHour: number;
     let endMin: number;
+    const rawEndMins = hasEndTime ? Math.round(parseHour(rawEnd) * 60) : null;
 
-    if (hasEndTime) {
-      const rawEndMins = Math.round(parseHour(rawEnd) * 60);
-      if (rawEndMins === startTotalMins) {
-        const fallbackTotal = startTotalMins + 60;
-        endDay = addCalendarDays(dayDate, Math.floor(fallbackTotal / 1440));
-        const wrapped = fallbackTotal % 1440;
-        endHour = Math.floor(wrapped / 60);
-        endMin = wrapped % 60;
-      } else {
-        if (rawEndMins < startTotalMins) {
-          endDay = addCalendarDays(dayDate, 1);
-        }
-        endHour = Math.floor(rawEndMins / 60) % 24;
-        endMin = rawEndMins % 60;
+    if (rawEndMins !== null && rawEndMins !== startTotalMins) {
+      if (rawEndMins < startTotalMins) {
+        endDay = addCalendarDays(dayDate, 1);
       }
+      endHour = Math.floor(rawEndMins / 60) % 24;
+      endMin = rawEndMins % 60;
     } else {
       const fallbackTotal = startTotalMins + 60;
       endDay = addCalendarDays(dayDate, Math.floor(fallbackTotal / 1440));

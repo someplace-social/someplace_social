@@ -4,7 +4,6 @@ import styles from './ThemeToggle.module.css';
 interface ThemeToggleProps {
   showLabel?: boolean;
 }
-const emptySubscribe = () => () => {};
 function subscribeTheme(callback: () => void) {
   const observer = new MutationObserver(callback);
   observer.observe(document.documentElement, {
@@ -28,11 +27,6 @@ function getThemeServerSnapshot(): 'light' | 'dark' {
   return 'light';
 }
 export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
   const theme = useSyncExternalStore(
     subscribeTheme,
     getThemeSnapshot,
@@ -46,7 +40,7 @@ export default function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
     } catch {
     }
   };
-  const isDark = mounted ? theme === 'dark' : false;
+  const isDark = theme === 'dark';
   const sunIcon = (
     <svg
       width="18"

@@ -2,21 +2,13 @@
 import { memo, useId, useRef } from 'react';
 import type { CityConfig } from '../../lib/cities';
 import { Event } from '../../lib/google-sheets';
-import {
-  formatTimeRange,
-  isFreePrice,
-  getTagStyle,
-} from '../utils';
+import { formatTimeRange } from '../utils';
 import { getEventDisplayDetails, getEventPath } from '../event-helpers';
 import EventActions from './EventActions';
 import EventFacts from './EventFacts';
+import EventMeta from './EventMeta';
 import InlineExternalLink from './InlineExternalLink';
-import {
-  ChevronDownIcon,
-  CompassIcon,
-  PinIcon,
-  TagIcon,
-} from './EventIcons';
+import { ChevronDownIcon, PinIcon } from './EventIcons';
 import styles from './EventCard.module.css';
 
 const DRAG_THRESHOLD_PX = 5;
@@ -113,8 +105,6 @@ function EventCard({
   };
 
   const { start, end } = formatTimeRange(event.startTime, event.endTime);
-  const isFree = isFreePrice(event.price);
-  const tagList = event.activities || [];
   const {
     displayVenue,
     venueUrl,
@@ -130,7 +120,6 @@ function EventCard({
     moreDetailsUrl,
   } = getEventDisplayDetails(event, city.name);
   const eventPageHref = getEventPath(city.slug, event);
-  const hasMeta = Boolean(event.price || event.area || tagList.length > 0);
   const descriptionText = (event.about || event.notes || '').trim();
 
   return (
@@ -181,51 +170,12 @@ function EventCard({
               </InlineExternalLink>
             </div>
           )}
-          {hasMeta && (
-            <div className={styles.meta}>
-              {event.price && (
-                <span
-                  className={`${styles.price} ${
-                    isFree ? styles.priceFree : styles.pricePaid
-                  }`}
-                >
-                  <TagIcon className={styles.icon} />
-                  <span>{event.price}</span>
-                </span>
-              )}
-              {event.price && event.area && (
-                <span className={styles.dot} aria-hidden="true" />
-              )}
-              {event.area && (
-                <span className={styles.area}>
-                  <CompassIcon className={styles.icon} />
-                  <span>{event.area}</span>
-                </span>
-              )}
-              {(event.price || event.area) && tagList.length > 0 && (
-                <span className={`${styles.dot} ${styles.sep2}`} aria-hidden="true" />
-              )}
-              {tagList.length > 0 && (
-                <div className={styles.tags}>
-                  {tagList.map((tag) => {
-                    const customStyle = getTagStyle(tag);
-                    return (
-                      <span
-                        key={tag}
-                        className={styles.tag}
-                        style={{
-                          color: customStyle.color,
-                          backgroundColor: customStyle.background,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+          <EventMeta
+            price={event.price}
+            area={event.area}
+            activities={event.activities}
+            className={styles.meta}
+          />
         </div>
         <button
           type="button"

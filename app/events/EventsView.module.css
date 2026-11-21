@@ -156,9 +156,6 @@
   color: var(--bg);
   opacity: 0.85;
 }
-.dayCountTextActive {
-  color: var(--bg);
-}
 .mobileDaysGrid {
   display: none;
 }

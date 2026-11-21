@@ -9,7 +9,6 @@ interface DayPickerProps {
   activeDayIdx: number;
   onSelectDay: (idx: number) => void;
   dayCounts?: number[];
-  getEventCountForDay?: (idx: number) => number;
   allEventsCount?: number;
   citySlug?: string;
 }
@@ -19,25 +18,15 @@ function DayPicker({
   activeDayIdx,
   onSelectDay,
   dayCounts,
-  getEventCountForDay,
   allEventsCount,
   citySlug,
 }: DayPickerProps) {
   const allEventsIdx = rollingWeek.length;
   const getCount = (idx: number) => {
     if (idx === allEventsIdx) {
-      if (allEventsCount !== undefined) {
-        return allEventsCount;
-      }
-      if (dayCounts && dayCounts[allEventsIdx] !== undefined) {
-        return dayCounts[allEventsIdx];
-      }
-      return 0;
+      return allEventsCount ?? dayCounts?.[allEventsIdx] ?? 0;
     }
-    if (dayCounts && dayCounts[idx] !== undefined) {
-      return dayCounts[idx];
-    }
-    return getEventCountForDay ? getEventCountForDay(idx) : 0;
+    return dayCounts?.[idx] ?? 0;
   };
 
   const isAllEventsSelected = activeDayIdx === allEventsIdx;
@@ -65,13 +54,7 @@ function DayPicker({
               onClick={() => onSelectDay(idx)}
             >
               <span>{label}</span>
-              <span
-                className={`${styles.dayCountText} ${
-                  isSelected ? styles.dayCountTextActive : ''
-                }`}
-              >
-                {count} events
-              </span>
+              <span className={styles.dayCountText}>{count} events</span>
             </button>
           );
         })}
@@ -80,20 +63,14 @@ function DayPicker({
           className={`${styles.dayBtnVertical} ${
             isAllEventsSelected ? styles.dayBtnVerticalActive : ''
           }`}
-          aria-pressed={isAllEventsSelected}
+          aria-current={isAllEventsSelected ? 'page' : undefined}
           onClick={(e) => {
             e.preventDefault();
             onSelectDay(allEventsIdx);
           }}
         >
           <span>All Events</span>
-          <span
-            className={`${styles.dayCountText} ${
-              isAllEventsSelected ? styles.dayCountTextActive : ''
-            }`}
-          >
-            {allCount} events
-          </span>
+          <span className={styles.dayCountText}>{allCount} events</span>
         </a>
       </div>
       <div className={styles.mobileDaysGrid} role="group" aria-label="Pick day">
@@ -111,21 +88,9 @@ function DayPicker({
               aria-pressed={isSelected}
               onClick={() => onSelectDay(idx)}
             >
-              <span
-                className={`${styles.mobileDayLabel} ${
-                  isSelected ? styles.mobileDayLabelActive : ''
-                }`}
-              >
-                {dayShort}
-              </span>
+              <span className={styles.mobileDayLabel}>{dayShort}</span>
               <span className={styles.mobileDayNum}>{day.getDate()}</span>
-              <span
-                className={`${styles.mobileDayCount} ${
-                  isSelected ? styles.mobileDayCountActive : ''
-                }`}
-              >
-                {count}
-              </span>
+              <span className={styles.mobileDayCount}>{count}</span>
             </button>
           );
         })}
@@ -134,29 +99,17 @@ function DayPicker({
           className={`${styles.mobileDayBtn} ${
             isAllEventsSelected ? styles.mobileDayBtnActive : ''
           }`}
-          aria-pressed={isAllEventsSelected}
+          aria-current={isAllEventsSelected ? 'page' : undefined}
           onClick={(e) => {
             e.preventDefault();
             onSelectDay(allEventsIdx);
           }}
         >
-          <span
-            className={`${styles.mobileDayLabel} ${
-              isAllEventsSelected ? styles.mobileDayLabelActive : ''
-            }`}
-          >
-            All
-          </span>
+          <span className={styles.mobileDayLabel}>All</span>
           <span className={`${styles.mobileDayNum} ${styles.mobileDayNumAll}`}>
             Events
           </span>
-          <span
-            className={`${styles.mobileDayCount} ${
-              isAllEventsSelected ? styles.mobileDayCountActive : ''
-            }`}
-          >
-            {allCount}
-          </span>
+          <span className={styles.mobileDayCount}>{allCount}</span>
         </a>
       </div>
     </>

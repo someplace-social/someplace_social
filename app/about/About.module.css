@@ -157,13 +157,6 @@
   color: var(--text-subtle);
   margin: 0;
 }
-.criteriaFootnote {
-  margin: 20px 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);
-  font-style: italic;
-}
 @media (max-width: 899px) {
   .page {
     padding: 20px 16px 48px;

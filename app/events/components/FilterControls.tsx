@@ -2,8 +2,11 @@
 import { useState, useRef, useEffect, useMemo, memo } from 'react';
 import FilterDropdown from './FilterDropdown';
 import PriceFilterDropdown from './PriceFilterDropdown';
+import { ChevronDownIcon, CloseIcon, PinIcon } from './EventIcons';
 import { CityPriceConfig } from '../../lib/cities';
 import styles from './FilterControls.module.css';
+
+type MenuKey = 'activity' | 'time' | 'area' | 'price';
 
 interface FilterControlsProps {
   searchQuery: string;
@@ -26,6 +29,13 @@ interface FilterControlsProps {
   hasActiveFilters: boolean;
   onClearAllFilters: () => void;
 }
+
+type FilterDropdownGroupProps = Omit<
+  FilterControlsProps,
+  'searchQuery' | 'onSearchChange' | 'hasActiveFilters' | 'onClearAllFilters'
+> & {
+  isMobile: boolean;
+};
 
 const activityIcon = (
   <svg
@@ -60,23 +70,6 @@ const timeIcon = (
   </svg>
 );
 
-const areaIcon = (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10z" />
-    <circle cx="12" cy="11" r="2.5" />
-  </svg>
-);
-
 const filterSliderIcon = (
   <svg
     width="16"
@@ -101,6 +94,117 @@ const filterSliderIcon = (
   </svg>
 );
 
+function formatSelectionValue(selected: string[]): string {
+  if (selected.length === 0) return 'All';
+  if (selected.length === 1) return selected[0];
+  return `${selected.length} selected`;
+}
+
+function FilterDropdownGroup({
+  isMobile,
+  priceConfig,
+  maxPrice,
+  onPriceChange,
+  timeSections,
+  selectedTimes,
+  onToggleTime,
+  onClearTimes,
+  activities,
+  selectedActivities,
+  onToggleActivity,
+  onClearActivities,
+  areas,
+  selectedAreas,
+  onToggleArea,
+  onClearAreas,
+}: FilterDropdownGroupProps) {
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
+  const actRef = useRef<HTMLDivElement>(null);
+  const timeRef = useRef<HTMLDivElement>(null);
+  const areaRef = useRef<HTMLDivElement>(null);
+  const priceRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!openMenu) return;
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node;
+      const activeRef =
+        openMenu === 'activity'
+          ? actRef
+          : openMenu === 'time'
+          ? timeRef
+          : openMenu === 'area'
+          ? areaRef
+          : priceRef;
+      if (activeRef.current && !activeRef.current.contains(target)) {
+        setOpenMenu(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openMenu]);
+
+  const toggleMenu = (key: MenuKey) => {
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
+  return (
+    <>
+      <FilterDropdown
+        icon={activityIcon}
+        category="Activity"
+        value={formatSelectionValue(selectedActivities)}
+        title={isMobile ? 'Activities' : 'Select activities'}
+        options={activities}
+        selected={selectedActivities}
+        isOpen={openMenu === 'activity'}
+        onToggleOpen={() => toggleMenu('activity')}
+        onToggleOption={onToggleActivity}
+        onClear={onClearActivities}
+        containerRef={actRef}
+        flexStyle={isMobile}
+      />
+      <FilterDropdown
+        icon={timeIcon}
+        category="Time"
+        value={formatSelectionValue(selectedTimes)}
+        title="Time of day"
+        options={timeSections}
+        selected={selectedTimes}
+        isOpen={openMenu === 'time'}
+        onToggleOpen={() => toggleMenu('time')}
+        onToggleOption={onToggleTime}
+        onClear={onClearTimes}
+        containerRef={timeRef}
+        flexStyle={isMobile}
+      />
+      <FilterDropdown
+        icon={<PinIcon strokeWidth={2.2} />}
+        category="Area"
+        value={formatSelectionValue(selectedAreas)}
+        title={isMobile ? 'Areas' : 'Select areas'}
+        options={areas}
+        selected={selectedAreas}
+        isOpen={openMenu === 'area'}
+        onToggleOpen={() => toggleMenu('area')}
+        onToggleOption={onToggleArea}
+        onClear={onClearAreas}
+        containerRef={areaRef}
+        flexStyle={isMobile}
+      />
+      <PriceFilterDropdown
+        priceConfig={priceConfig}
+        maxPrice={maxPrice}
+        onPriceChange={onPriceChange}
+        isOpen={openMenu === 'price'}
+        onToggleOpen={() => toggleMenu('price')}
+        containerRef={priceRef}
+        flexStyle={isMobile}
+      />
+    </>
+  );
+}
+
 function FilterControls({
   searchQuery,
   onSearchChange,
@@ -123,63 +227,12 @@ function FilterControls({
   onClearAllFilters,
 }: FilterControlsProps) {
   const [mobileAccordionOpen, setMobileAccordionOpen] = useState(false);
-  const [priceMenuOpen, setPriceMenuOpen] = useState(false);
-  const [timeMenuOpen, setTimeMenuOpen] = useState(false);
-  const [actMenuOpen, setActMenuOpen] = useState(false);
-  const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-  const priceMenuRef = useRef<HTMLDivElement>(null);
-  const priceMobileMenuRef = useRef<HTMLDivElement>(null);
-  const timeMenuRef = useRef<HTMLDivElement>(null);
-  const timeMobileMenuRef = useRef<HTMLDivElement>(null);
-  const actMenuRef = useRef<HTMLDivElement>(null);
-  const actMobileMenuRef = useRef<HTMLDivElement>(null);
-  const areaMenuRef = useRef<HTMLDivElement>(null);
-  const areaMobileMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        priceMenuRef.current &&
-        !priceMenuRef.current.contains(target) &&
-        (!priceMobileMenuRef.current || !priceMobileMenuRef.current.contains(target))
-      ) {
-        setPriceMenuOpen(false);
-      }
-      if (
-        timeMenuRef.current &&
-        !timeMenuRef.current.contains(target) &&
-        (!timeMobileMenuRef.current || !timeMobileMenuRef.current.contains(target))
-      ) {
-        setTimeMenuOpen(false);
-      }
-      if (
-        actMenuRef.current &&
-        !actMenuRef.current.contains(target) &&
-        (!actMobileMenuRef.current || !actMobileMenuRef.current.contains(target))
-      ) {
-        setActMenuOpen(false);
-      }
-      if (
-        areaMenuRef.current &&
-        !areaMenuRef.current.contains(target) &&
-        (!areaMobileMenuRef.current || !areaMobileMenuRef.current.contains(target))
-      ) {
-        setAreaMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim().length > 0) count++;
     if (maxPrice < priceConfig.maxPrice) count++;
-    count += selectedTimes.length;
-    count += selectedActivities.length;
-    count += selectedAreas.length;
-    return count;
+    return count + selectedTimes.length + selectedActivities.length + selectedAreas.length;
   }, [
     searchQuery,
     maxPrice,
@@ -189,23 +242,23 @@ function FilterControls({
     selectedAreas.length,
   ]);
 
-  const timeValue = useMemo(() => {
-    if (selectedTimes.length === 0) return 'All';
-    if (selectedTimes.length === 1) return selectedTimes[0];
-    return `${selectedTimes.length} selected`;
-  }, [selectedTimes]);
-
-  const activityValue = useMemo(() => {
-    if (selectedActivities.length === 0) return 'All';
-    if (selectedActivities.length === 1) return selectedActivities[0];
-    return `${selectedActivities.length} selected`;
-  }, [selectedActivities]);
-
-  const areaValue = useMemo(() => {
-    if (selectedAreas.length === 0) return 'All';
-    if (selectedAreas.length === 1) return selectedAreas[0];
-    return `${selectedAreas.length} selected`;
-  }, [selectedAreas]);
+  const sharedDropdownProps = {
+    priceConfig,
+    maxPrice,
+    onPriceChange,
+    timeSections,
+    selectedTimes,
+    onToggleTime,
+    onClearTimes,
+    activities,
+    selectedActivities,
+    onToggleActivity,
+    onClearActivities,
+    areas,
+    selectedAreas,
+    onToggleArea,
+    onClearAreas,
+  };
 
   const renderSearchInput = () => (
     <div className={styles.searchWrapper}>
@@ -241,18 +294,7 @@ function FilterControls({
           onClick={() => onSearchChange('')}
           aria-label="Clear search query"
         >
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
+          <CloseIcon size={13} strokeWidth={2.5} />
         </button>
       )}
     </div>
@@ -275,53 +317,7 @@ function FilterControls({
         </div>
         <div className={styles.filterListVertical}>
           {renderSearchInput()}
-          <FilterDropdown
-            icon={activityIcon}
-            category="Activity"
-            value={activityValue}
-            title="Select activities"
-            options={activities}
-            selected={selectedActivities}
-            isOpen={actMenuOpen}
-            onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
-            onToggleOption={onToggleActivity}
-            onClear={onClearActivities}
-            containerRef={actMenuRef}
-          />
-          <FilterDropdown
-            icon={timeIcon}
-            category="Time"
-            value={timeValue}
-            title="Time of day"
-            options={timeSections}
-            selected={selectedTimes}
-            isOpen={timeMenuOpen}
-            onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
-            onToggleOption={onToggleTime}
-            onClear={onClearTimes}
-            containerRef={timeMenuRef}
-          />
-          <FilterDropdown
-            icon={areaIcon}
-            category="Area"
-            value={areaValue}
-            title="Select areas"
-            options={areas}
-            selected={selectedAreas}
-            isOpen={areaMenuOpen}
-            onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
-            onToggleOption={onToggleArea}
-            onClear={onClearAreas}
-            containerRef={areaMenuRef}
-          />
-          <PriceFilterDropdown
-            priceConfig={priceConfig}
-            maxPrice={maxPrice}
-            onPriceChange={onPriceChange}
-            isOpen={priceMenuOpen}
-            onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
-            containerRef={priceMenuRef}
-          />
+          <FilterDropdownGroup isMobile={false} {...sharedDropdownProps} />
         </div>
       </div>
       <div className={styles.mobileAccordionWrapper}>
@@ -347,79 +343,20 @@ function FilterControls({
             <span className={styles.mobileTriggerStatus}>
               {mobileAccordionOpen ? 'Hide' : activeFilterCount > 0 ? 'Edit' : 'Show'}
             </span>
-            <svg
+            <ChevronDownIcon
               className={`${styles.mobileAccordionChevron} ${
                 mobileAccordionOpen ? styles.mobileAccordionChevronOpen : ''
               }`}
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+              size={15}
+              strokeWidth={2.4}
+            />
           </div>
         </button>
         {mobileAccordionOpen && (
           <div id="mobile-filters-content" className={styles.mobileAccordionContent}>
             {renderSearchInput()}
             <div className={styles.mobileFiltersRow}>
-              <FilterDropdown
-                icon={activityIcon}
-                category="Activity"
-                value={activityValue}
-                title="Activities"
-                options={activities}
-                selected={selectedActivities}
-                isOpen={actMenuOpen}
-                onToggleOpen={() => setActMenuOpen(!actMenuOpen)}
-                onToggleOption={onToggleActivity}
-                onClear={onClearActivities}
-                containerRef={actMobileMenuRef}
-                flexStyle
-              />
-              <FilterDropdown
-                icon={timeIcon}
-                category="Time"
-                value={timeValue}
-                title="Time of day"
-                options={timeSections}
-                selected={selectedTimes}
-                isOpen={timeMenuOpen}
-                onToggleOpen={() => setTimeMenuOpen(!timeMenuOpen)}
-                onToggleOption={onToggleTime}
-                onClear={onClearTimes}
-                containerRef={timeMobileMenuRef}
-                flexStyle
-              />
-              <FilterDropdown
-                icon={areaIcon}
-                category="Area"
-                value={areaValue}
-                title="Areas"
-                options={areas}
-                selected={selectedAreas}
-                isOpen={areaMenuOpen}
-                onToggleOpen={() => setAreaMenuOpen(!areaMenuOpen)}
-                onToggleOption={onToggleArea}
-                onClear={onClearAreas}
-                containerRef={areaMobileMenuRef}
-                flexStyle
-              />
-              <PriceFilterDropdown
-                priceConfig={priceConfig}
-                maxPrice={maxPrice}
-                onPriceChange={onPriceChange}
-                isOpen={priceMenuOpen}
-                onToggleOpen={() => setPriceMenuOpen(!priceMenuOpen)}
-                containerRef={priceMobileMenuRef}
-                flexStyle
-              />
+              <FilterDropdownGroup isMobile {...sharedDropdownProps} />
             </div>
             {hasActiveFilters && (
               <div className={styles.mobileClearRow}>

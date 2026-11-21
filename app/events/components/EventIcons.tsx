@@ -1,19 +1,26 @@
+import type { CSSProperties } from 'react';
+
 interface IconProps {
   className?: string;
   size?: number;
   strokeWidth?: number;
+  style?: CSSProperties;
 }
 
-export function PinIcon({ className }: IconProps) {
+export function PinIcon({
+  className,
+  size = 16,
+  strokeWidth = 2,
+}: IconProps) {
   return (
     <svg
       className={className}
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ flex: 'none' }}
@@ -25,16 +32,20 @@ export function PinIcon({ className }: IconProps) {
   );
 }
 
-export function TagIcon({ className }: IconProps) {
+export function TagIcon({
+  className,
+  size = 16,
+  strokeWidth = 2,
+}: IconProps) {
   return (
     <svg
       className={className}
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ flex: 'none' }}
@@ -67,19 +78,24 @@ export function CompassIcon({ className }: IconProps) {
   );
 }
 
-export function ChevronDownIcon({ className }: IconProps) {
+export function ChevronDownIcon({
+  className,
+  size = 16,
+  strokeWidth = 2,
+  style,
+}: IconProps) {
   return (
     <svg
       className={className}
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ flex: 'none' }}
+      style={{ flex: 'none', ...style }}
       aria-hidden="true"
     >
       <path d="m6 9 6 6 6-6" />
@@ -335,16 +351,20 @@ export function ExternalLinkIcon({ className }: IconProps) {
   );
 }
 
-export function CloseIcon({ className }: IconProps) {
+export function CloseIcon({
+  className,
+  size = 14,
+  strokeWidth = 2.2,
+}: IconProps) {
   return (
     <svg
       className={className}
-      width="14"
-      height="14"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.2"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ flex: 'none' }}

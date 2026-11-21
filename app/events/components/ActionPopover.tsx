@@ -12,7 +12,6 @@ interface ActionPopoverProps {
   wrapperClassName?: string;
   dialogLabel: string;
   headerLabel: string;
-  wide?: boolean;
   align?: 'left' | 'right';
   children: (close: () => void) => React.ReactNode;
 }
@@ -85,7 +84,6 @@ export default function ActionPopover({
   wrapperClassName,
   dialogLabel,
   headerLabel,
-  wide = false,
   align = 'right',
   children,
 }: ActionPopoverProps) {
@@ -133,7 +131,7 @@ export default function ActionPopover({
       </button>
       {isOpen && (
         <div
-          className={`${styles.popover} ${wide ? styles.popoverWide : ''} ${
+          className={`${styles.popover} ${
             align === 'left' ? styles.popoverAlignLeft : ''
           }`}
           role="dialog"

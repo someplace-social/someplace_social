@@ -1,4 +1,6 @@
 'use client';
+import type { Ref } from 'react';
+import { CheckIcon, ChevronDownIcon } from './EventIcons';
 import styles from './FilterControls.module.css';
 
 interface FilterDropdownProps {
@@ -12,7 +14,7 @@ interface FilterDropdownProps {
   onToggleOpen: () => void;
   onToggleOption: (option: string) => void;
   onClear: () => void;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  containerRef?: Ref<HTMLDivElement>;
   flexStyle?: boolean;
 }
 
@@ -49,20 +51,12 @@ export default function FilterDropdown({
           <span className={styles.filterCategory}>{category}</span>
           <span className={styles.filterValue}>{value}</span>
         </span>
-        <svg
+        <ChevronDownIcon
           className={styles.filterChevron}
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-        </svg>
+          size={14}
+          strokeWidth={2.4}
+          style={isOpen ? { transform: 'rotate(180deg)' } : undefined}
+        />
       </button>
       {isOpen && (
         <div className={styles.multiSelectMenu}>
@@ -93,20 +87,7 @@ export default function FilterDropdown({
                     isChecked ? styles.customCheckboxChecked : ''
                   }`}
                 >
-                  {isChecked && (
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                  {isChecked && <CheckIcon size={12} strokeWidth={3} />}
                 </span>
                 <span>{opt}</span>
               </label>

@@ -1,35 +1,8 @@
 import type { Event } from '../lib/google-sheets';
+import { DAY_TOKEN_TO_SHORT } from './utils';
 
 const ORDERED_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 const DAILY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
-
-const DAY_TOKEN_TO_SHORT: Record<string, string> = {
-  sun: 'Sun',
-  sunday: 'Sun',
-  sundays: 'Sun',
-  mon: 'Mon',
-  monday: 'Mon',
-  mondays: 'Mon',
-  tue: 'Tue',
-  tues: 'Tue',
-  tuesday: 'Tue',
-  tuesdays: 'Tue',
-  wed: 'Wed',
-  weds: 'Wed',
-  wednesday: 'Wed',
-  wednesdays: 'Wed',
-  thu: 'Thu',
-  thur: 'Thu',
-  thurs: 'Thu',
-  thursday: 'Thu',
-  thursdays: 'Thu',
-  fri: 'Fri',
-  friday: 'Fri',
-  fridays: 'Fri',
-  sat: 'Sat',
-  saturday: 'Sat',
-  saturdays: 'Sat',
-};
 
 type ScheduleSpec = {
   isDayMapped: boolean;

@@ -1,7 +1,8 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, type Ref } from 'react';
 import { CityPriceConfig } from '../../lib/cities';
 import { formatPriceValue, formatPriceReadout } from '../utils';
+import { ChevronDownIcon, TagIcon } from './EventIcons';
 import styles from './FilterControls.module.css';
 
 interface PriceFilterDropdownProps {
@@ -10,7 +11,7 @@ interface PriceFilterDropdownProps {
   onPriceChange: (val: number) => void;
   isOpen: boolean;
   onToggleOpen: () => void;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  containerRef?: Ref<HTMLDivElement>;
   flexStyle?: boolean;
 }
 
@@ -66,38 +67,17 @@ export default function PriceFilterDropdown({
       >
         <span className={styles.filterTriggerLeft}>
           <span className={styles.filterTriggerIcon}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
-              <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
-            </svg>
+            <TagIcon size={16} strokeWidth={2.2} />
           </span>
           <span className={styles.filterCategory}>Price</span>
           <span className={styles.filterValue}>{priceValue}</span>
         </span>
-        <svg
+        <ChevronDownIcon
           className={styles.filterChevron}
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d={isOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} />
-        </svg>
+          size={14}
+          strokeWidth={2.4}
+          style={isOpen ? { transform: 'rotate(180deg)' } : undefined}
+        />
       </button>
       {isOpen && (
         <div className={`${styles.priceMenu} ${flexStyle ? styles.mobilePriceMenu : ''}`}>
@@ -119,20 +99,7 @@ export default function PriceFilterDropdown({
               onClick={handleToggleFree}
               aria-pressed={isFreeActive}
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
-                <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" />
-              </svg>
+              <TagIcon size={15} strokeWidth={2} />
               Free / donation
             </button>
             <button

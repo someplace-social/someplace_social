@@ -76,7 +76,6 @@ export default function AddToCalendarButton({
       wrapperClassName={wrapperClassName}
       dialogLabel="Add event to calendar"
       headerLabel="Add to Calendar"
-      wide
       align="right"
     >
       {(close) => (

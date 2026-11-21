@@ -128,27 +128,6 @@ export function parseEventPrice(priceStr: string, currencyCode: string = 'USD'):
   return null;
 }
 
-export function matchesPriceFilter(
-  eventPrice: string,
-  maxPriceFilter: number,
-  priceConfig: CityPriceConfig
-): boolean {
-  if (maxPriceFilter >= priceConfig.maxPrice) {
-    return true;
-  }
-  if (isFreeOrDonation(eventPrice)) {
-    return true;
-  }
-  if (maxPriceFilter === 0) {
-    return isFreeOrDonation(eventPrice);
-  }
-  const num = parseEventPrice(eventPrice, priceConfig.currencyCode);
-  if (num === null) {
-    return false;
-  }
-  return num <= maxPriceFilter;
-}
-
 export function formatPriceValue(val: number, config: CityPriceConfig): string {
   if (val === 0) return 'Free';
   if (config.unitSuffix) {
@@ -161,13 +140,6 @@ export function formatPriceReadout(val: number, config: CityPriceConfig): string
   if (val === 0) return 'Free / donation';
   if (val === config.underValue) return config.underLabel;
   if (val >= config.maxPrice) return 'Any price';
-  return `Up to ${formatPriceValue(val, config)}`;
-}
-
-export function formatPriceTriggerLabel(val: number, config: CityPriceConfig): string {
-  if (val >= config.maxPrice) return 'All prices';
-  if (val === 0) return 'Free / donation';
-  if (val === config.underValue) return config.underLabel;
   return `Up to ${formatPriceValue(val, config)}`;
 }
 
@@ -209,6 +181,34 @@ const DAY_INDEX: Record<string, number> = {
   saturday: 6,
 };
 
+export const DAY_TOKEN_TO_SHORT: Record<string, string> = {
+  sun: 'Sun',
+  sunday: 'Sun',
+  sundays: 'Sun',
+  mon: 'Mon',
+  monday: 'Mon',
+  mondays: 'Mon',
+  tue: 'Tue',
+  tues: 'Tue',
+  tuesday: 'Tue',
+  tuesdays: 'Tue',
+  wed: 'Wed',
+  weds: 'Wed',
+  wednesday: 'Wed',
+  wednesdays: 'Wed',
+  thu: 'Thu',
+  thur: 'Thu',
+  thurs: 'Thu',
+  thursday: 'Thu',
+  thursdays: 'Thu',
+  fri: 'Fri',
+  friday: 'Fri',
+  fridays: 'Fri',
+  sat: 'Sat',
+  saturday: 'Sat',
+  saturdays: 'Sat',
+};
+
 export function normalizeDayOfWeek(dayStr: string): string {
   if (!dayStr) return '';
   const trimmed = dayStr.trim();
@@ -219,37 +219,10 @@ export function normalizeDayOfWeek(dayStr: string): string {
   if (lower.includes('daily') || lower.includes('everyday') || lower.includes('every day')) {
     return 'Daily';
   }
-  const DAY_TO_SHORT: Record<string, string> = {
-    sun: 'Sun',
-    sunday: 'Sun',
-    sundays: 'Sun',
-    mon: 'Mon',
-    monday: 'Mon',
-    mondays: 'Mon',
-    tue: 'Tue',
-    tues: 'Tue',
-    tuesday: 'Tue',
-    tuesdays: 'Tue',
-    wed: 'Wed',
-    weds: 'Wed',
-    wednesday: 'Wed',
-    wednesdays: 'Wed',
-    thu: 'Thu',
-    thur: 'Thu',
-    thurs: 'Thu',
-    thursday: 'Thu',
-    thursdays: 'Thu',
-    fri: 'Fri',
-    friday: 'Fri',
-    fridays: 'Fri',
-    sat: 'Sat',
-    saturday: 'Sat',
-    saturdays: 'Sat',
-  };
   const rangeMatch = trimmed.match(/^([a-zA-Z]+)\s*(?:[\u2013\u2014\-]|\bto\b)\s*([a-zA-Z]+)$/i);
   if (rangeMatch) {
-    const startShort = DAY_TO_SHORT[rangeMatch[1].toLowerCase()];
-    const endShort = DAY_TO_SHORT[rangeMatch[2].toLowerCase()];
+    const startShort = DAY_TOKEN_TO_SHORT[rangeMatch[1].toLowerCase()];
+    const endShort = DAY_TOKEN_TO_SHORT[rangeMatch[2].toLowerCase()];
     if (startShort && endShort) {
       return `${startShort}-${endShort}`;
     }
@@ -257,7 +230,7 @@ export function normalizeDayOfWeek(dayStr: string): string {
   const tokens = trimmed.split(/[^a-zA-Z]+/).filter(Boolean);
   const normalized: string[] = [];
   for (const token of tokens) {
-    const short = DAY_TO_SHORT[token.toLowerCase()];
+    const short = DAY_TOKEN_TO_SHORT[token.toLowerCase()];
     if (short && !normalized.includes(short)) {
       normalized.push(short);
     }

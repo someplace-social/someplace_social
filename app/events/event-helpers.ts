@@ -12,7 +12,6 @@ import {
   formatTimeRange,
   isDateRecurringEvent,
   isEventActiveOnDate,
-  isFreeOrDonation,
   matchesDay,
   parseEventPrice,
   parseHour,
@@ -734,8 +733,14 @@ export function buildEventJsonLd(
   canonicalUrl: string,
   occurrence: NextOccurrenceResult | null
 ): Record<string, unknown> | null {
-  const venueName = (event.venue || event.location || '').trim();
-  if (!occurrence || (!venueName && !city.name)) {
+  const {
+    displayVenue,
+    venueUrl,
+    organizerName,
+    organizerUrl,
+    registrationUrl,
+  } = getEventDisplayDetails(event, city.name);
+  if (!occurrence || (!displayVenue && !city.name)) {
     return null;
   }
   const timeZone = getCityTimeZone(city);
@@ -753,25 +758,11 @@ export function buildEventJsonLd(
     }
     endDate = formatLocalIsoDateTime(endDay, endHour, timeZone);
   }
-  const cleanOrg = (event.organization || '')
-    .trim()
-    .replace(/^hosted\s+by\s+/i, '')
-    .trim();
-  const venueUrl =
-    venueName && event.venueUrl ? ensureExternalUrl(event.venueUrl) : '';
-  const organizerUrl =
-    cleanOrg && event.organizerUrl ? ensureExternalUrl(event.organizerUrl) : '';
-  const registrationUrl = event.registrationUrl
-    ? ensureExternalUrl(event.registrationUrl)
-    : '';
   const priceConfig = getCityPriceConfig(city);
-  const freeOrDonation = isFreeOrDonation(event.price);
-  const numericPrice = freeOrDonation
-    ? 0
-    : parseEventPrice(event.price, priceConfig.currencyCode);
+  const numericPrice = parseEventPrice(event.price, priceConfig.currencyCode);
   const resolvedOfferPrice =
     numericPrice !== null
-      ? priceConfig.currencyCode === 'COP' && !freeOrDonation
+      ? priceConfig.currencyCode === 'COP'
         ? Math.round(numericPrice * 1000)
         : numericPrice
       : null;
@@ -791,7 +782,7 @@ export function buildEventJsonLd(
     image: imageUrl,
     location: {
       '@type': 'Place',
-      name: venueName || city.heroLocation,
+      name: displayVenue || city.heroLocation,
       ...(venueUrl ? { url: venueUrl } : {}),
       address: {
         '@type': 'PostalAddress',
@@ -802,11 +793,11 @@ export function buildEventJsonLd(
       },
     },
     ...(description ? { description } : {}),
-    ...(cleanOrg
+    ...(organizerName
       ? {
           organizer: {
             '@type': 'Organization',
-            name: cleanOrg,
+            name: organizerName,
             ...(organizerUrl ? { url: organizerUrl } : {}),
           },
         }

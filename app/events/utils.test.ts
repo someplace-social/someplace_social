@@ -6,7 +6,6 @@ import {
   isDateRecurringEvent,
   isEventActiveOnDate,
   isMonthActive,
-  parseDateOfMonthPattern,
 } from './utils';
 import { expandEventSchedules } from './schedule-splitter';
 import { makeEvent } from './test-fixtures';
