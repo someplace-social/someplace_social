@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CityConfig } from '../lib/cities';
 import ContactMessageForm from './components/ContactMessageForm';
-import EventSubmissionForm from './components/EventSubmissionForm';
+import SimpleEventSubmissionForm from './components/SimpleEventSubmissionForm';
 import styles from './Contact.module.css';
 interface ContactViewProps {
   city?: CityConfig;
@@ -68,10 +68,7 @@ export default function ContactView({ city }: ContactViewProps) {
         {activeTab === 'question' ? (
           <ContactMessageForm cityName={city?.heroLocation} />
         ) : (
-          <EventSubmissionForm
-            key={city?.slug || 'global'}
-            defaultCity={city?.heroLocation}
-          />
+          <SimpleEventSubmissionForm cityName={city?.heroLocation} />
         )}
       </section>
     </main>
