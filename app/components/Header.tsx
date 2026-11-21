@@ -31,7 +31,6 @@ export default function Header({ city }: HeaderProps) {
     };
   }, [mobileDrawerOpen]);
 
-  const homeHref = city ? `/${city.slug}/events` : '/';
   const eventsHref = city ? `/${city.slug}/events` : '';
   const aboutHref = city ? `/${city.slug}/about` : '/about';
   const contactHref = city ? `/${city.slug}/contact` : '/contact';
@@ -56,7 +55,7 @@ export default function Header({ city }: HeaderProps) {
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.brandCol}>
-            <Link href={homeHref} className={styles.brandLogoLink}>
+            <Link href="/" className={styles.brandLogoLink}>
               <Image
                 src="/images/logo.svg"
                 alt="Someplace Social"

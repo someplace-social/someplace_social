@@ -17,19 +17,19 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
-    "next": "^16.4.5",
+    "next": "^16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "resend": "^6.4.2"
+    "resend": "^6.39.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.4.5",
-    "repomix": "^0.2.32",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
+    "repomix": "^0.2.43",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
   }
 }
