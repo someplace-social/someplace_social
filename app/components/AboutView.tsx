@@ -39,10 +39,6 @@ interface AboutViewProps {
 
 export default function AboutView({ city }: AboutViewProps) {
   const cities = getAllCities();
-  const eyebrowText = 'ABOUT';
-  const headingText = city
-    ? `About Someplace Social — ${city.name}`
-    : 'About Someplace Social';
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -50,8 +46,8 @@ export default function AboutView({ city }: AboutViewProps) {
       <main className={styles.page} style={{ flex: 1 }}>
         <section className={styles.heroSection}>
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>{eyebrowText}</p>
-            <h1 className={styles.heroTitle}>{headingText}</h1>
+            <p className={styles.eyebrow}>ABOUT</p>
+            <h1 className={styles.heroTitle}>About Someplace Social</h1>
             <p className={styles.heroDescription}>
               We are social creatures. However, modern life can sometimes lead to isolation and be a bummer. The solution is actually quite fun: more clubs, classes, music, games, and art.
             </p>
