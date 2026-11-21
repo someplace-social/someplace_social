@@ -13,6 +13,7 @@ export default function SimpleEventSubmissionForm({
   const [email, setEmail] = useState('');
   const [eventName, setEventName] = useState('');
   const [eventLink, setEventLink] = useState('');
+  const [hp, setHp] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -35,6 +36,7 @@ export default function SimpleEventSubmissionForm({
         body: JSON.stringify({
           formType: cityName ? `Submit an Event (${cityName})` : 'Submit an Event',
           message: messageLines.join('\n'),
+          hp,
         }),
       });
       const result = await response.json();
@@ -48,10 +50,11 @@ export default function SimpleEventSubmissionForm({
         setEmail('');
         setEventName('');
         setEventLink('');
+        setHp('');
       } else {
         setStatus({
           success: false,
-          message: 'Failed to submit event. Please try again.',
+          message: result.message || 'Failed to submit event. Please try again.',
         });
       }
     } catch {
@@ -71,6 +74,18 @@ export default function SimpleEventSubmissionForm({
       aria-labelledby="tab-submit"
       onSubmit={handleSubmit}
     >
+      <div className={styles.hpField} aria-hidden="true">
+        <label htmlFor="s-contact-ref">Leave this blank</label>
+        <input
+          id="s-contact-ref"
+          name="contact_ref"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={hp}
+          onChange={(e) => setHp(e.target.value)}
+        />
+      </div>
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Submit an Event</legend>
         <p className={styles.sectionDescription}>
@@ -86,6 +101,7 @@ export default function SimpleEventSubmissionForm({
               id="s-name"
               type="text"
               required
+              maxLength={120}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. John Doe"
@@ -100,6 +116,7 @@ export default function SimpleEventSubmissionForm({
               id="s-email"
               type="email"
               required
+              maxLength={160}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. john@doe.com"
@@ -115,6 +132,7 @@ export default function SimpleEventSubmissionForm({
             id="s-event-name"
             type="text"
             required
+            maxLength={200}
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
             placeholder="e.g. Weekly Board Game Night"
@@ -129,6 +147,7 @@ export default function SimpleEventSubmissionForm({
             id="s-event-link"
             type="text"
             required
+            maxLength={500}
             value={eventLink}
             onChange={(e) => setEventLink(e.target.value)}
             placeholder="e.g. instagram.com/... or meetup.com/..."

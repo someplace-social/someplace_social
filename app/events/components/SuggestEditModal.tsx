@@ -53,6 +53,7 @@ function EditField({
   value,
   changed,
   placeholder,
+  maxLength = 300,
   onChange,
 }: {
   id: string;
@@ -60,6 +61,7 @@ function EditField({
   value: string;
   changed: boolean;
   placeholder?: string;
+  maxLength?: number;
   onChange: (val: string) => void;
 }) {
   return (
@@ -73,6 +75,7 @@ function EditField({
       <input
         id={id}
         type="text"
+        maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -111,6 +114,7 @@ export default function SuggestEditModal({
   const [values, setValues] = useState<FormValues>(initialValues);
   const [notes, setNotes] = useState('');
   const [email, setEmail] = useState('');
+  const [hp, setHp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -195,6 +199,7 @@ export default function SuggestEditModal({
         body: JSON.stringify({
           formType: `Edit a Listing (${cityName})`,
           message: messageLines.join('\n'),
+          hp,
         }),
       });
       const res = await response.json();
@@ -203,11 +208,12 @@ export default function SuggestEditModal({
           success: true,
           message: 'Thank you! Your suggested edits have been sent for review.',
         });
+        setHp('');
         setTimeout(onClose, 1800);
       } else {
         setStatus({
           success: false,
-          message: 'Failed to send edit. Please try again.',
+          message: res.message || 'Failed to send edit. Please try again.',
         });
       }
     } catch {
@@ -252,6 +258,18 @@ export default function SuggestEditModal({
           </button>
         </div>
         <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.hpField} aria-hidden="true">
+            <label htmlFor="edit-contact-ref">Leave this blank</label>
+            <input
+              id="edit-contact-ref"
+              name="contact_ref"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={hp}
+              onChange={(e) => setHp(e.target.value)}
+            />
+          </div>
           <div className={styles.modalScrollArea}>
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
@@ -279,6 +297,7 @@ export default function SuggestEditModal({
                   value={values.organizerUrl}
                   changed={isFieldChanged('organizerUrl')}
                   placeholder="Website or social profile"
+                  maxLength={500}
                   onChange={(v) => handleChange('organizerUrl', v)}
                 />
               </div>
@@ -302,6 +321,7 @@ export default function SuggestEditModal({
                   value={values.venueUrl}
                   changed={isFieldChanged('venueUrl')}
                   placeholder="Website or social profile"
+                  maxLength={500}
                   onChange={(v) => handleChange('venueUrl', v)}
                 />
               </div>
@@ -318,6 +338,7 @@ export default function SuggestEditModal({
                   label="Google Maps Link"
                   value={values.map}
                   changed={isFieldChanged('map')}
+                  maxLength={500}
                   onChange={(v) => handleChange('map', v)}
                 />
               </div>
@@ -402,6 +423,7 @@ export default function SuggestEditModal({
                 value={values.registrationUrl}
                 changed={isFieldChanged('registrationUrl')}
                 placeholder="Only if registration is required or recommended"
+                maxLength={500}
                 onChange={(v) => handleChange('registrationUrl', v)}
               />
             </div>
@@ -416,6 +438,7 @@ export default function SuggestEditModal({
                 </label>
                 <textarea
                   id="edit-notes"
+                  maxLength={4000}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Explain reason for changes or provide additional links..."
@@ -429,6 +452,7 @@ export default function SuggestEditModal({
                 <input
                   id="edit-email"
                   type="email"
+                  maxLength={160}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
